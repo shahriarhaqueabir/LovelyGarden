@@ -2,7 +2,7 @@ import { RxJsonSchema } from 'rxdb';
 
 export const catalogSchema: RxJsonSchema<any> = {
   title: 'catalog',
-  version: 0,
+  version: 1,
   description: 'Master library of plants',
   primaryKey: 'id',
   type: 'object',
@@ -27,14 +27,23 @@ export const catalogSchema: RxJsonSchema<any> = {
     companions: { type: 'array', items: { type: 'string' } },
     antagonists: { type: 'array', items: { type: 'string' } },
     confidence_score: { type: 'number' },
-    sources: { type: 'array', items: { type: 'string' } }
+    sources: { type: 'array', items: { type: 'string' } },
+    // Expanded Fields for Command Center UI
+    seasonality: { type: 'object' },
+    sunlight: { type: 'string' },
+    water_requirements: { type: 'string' },
+    soil_type: { type: 'array', items: { type: 'string' } },
+    common_pests: { type: 'array', items: { type: 'string' } },
+    common_diseases: { type: 'array', items: { type: 'string' } },
+    nutrient_preferences: { type: 'array', items: { type: 'string' } },
+    source_metadata: { type: 'array', items: { type: 'object' } }
   },
   required: ['id', 'name', 'stages']
 };
 
 export const plantKbSchema: RxJsonSchema<any> = {
   title: 'plant_kb',
-  version: 0,
+  version: 1,
   description: 'Expanded plant knowledge base (seasonality, pests, diseases, nutrients, sources) hydrated from plants-kb.json',
   primaryKey: 'plant_id',
   type: 'object',
@@ -147,7 +156,7 @@ export const plantedSchema: RxJsonSchema<any> = {
 
 export const settingsSchema: RxJsonSchema<any> = {
   title: 'settings',
-  version: 1,
+  version: 2,
   description: 'User settings',
   primaryKey: 'id',
   type: 'object',
@@ -157,7 +166,8 @@ export const settingsSchema: RxJsonSchema<any> = {
     hemisphere: { type: 'string' },
     city: { type: 'string' },
     currentDay: { type: 'number' },
-    xp: { type: 'number' }
+    xp: { type: 'number' },
+    dataVersion: { type: 'number' }
   },
   required: ['id', 'firstLoadComplete']
 };

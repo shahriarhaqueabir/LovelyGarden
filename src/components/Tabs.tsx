@@ -49,7 +49,6 @@ export const TabButton: React.FC<TabButtonProps> = ({ label, icon, isActive, onC
           transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
         />
       )}
-      {icon}
       <span>{label}</span>
     </button>
   );
@@ -59,13 +58,13 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<TabType>('virtual-garden');
 
   const tabs = [
-    { id: 'virtual-garden' as TabType, label: '🏡 Virtual Garden', icon: <Sprout className="w-4 h-4" /> },
-    { id: 'sowing-calendar' as TabType, label: '📅 Sowing Calendar', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'plant-knowledgebase' as TabType, label: '📖 Knowledgebase', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'seed-inventory' as TabType, label: '📦 Seed Inventory', icon: <Package className="w-4 h-4" /> },
-    { id: 'seeds-in-hand' as TabType, label: '🤲 Seeds in Hand', icon: <Package className="w-4 h-4" /> },
-    { id: 'weather-forecast' as TabType, label: '🌈 Weather', icon: <CloudSun className="w-4 h-4" /> },
-    { id: 'settings' as TabType, label: '⚙️ Settings', icon: <Settings className="w-4 h-4" /> },
+    { id: 'virtual-garden' as TabType, label: '🏡 Virtual Garden', icon: null },
+    { id: 'sowing-calendar' as TabType, label: '📅 Sowing Calendar', icon: null },
+    { id: 'plant-knowledgebase' as TabType, label: '📖 Knowledgebase', icon: null },
+    { id: 'seed-inventory' as TabType, label: '📦 Seed Vault', icon: null },
+    { id: 'seeds-in-hand' as TabType, label: '🧺 Bag', icon: null },
+    { id: 'weather-forecast' as TabType, label: '🌈 Weather', icon: null },
+    { id: 'settings' as TabType, label: '⚙️ Settings', icon: null },
   ];
 
   return (

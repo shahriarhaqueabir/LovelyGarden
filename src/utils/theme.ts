@@ -60,3 +60,12 @@ export const applyTheme = (baseHex: string) => {
     root.style.setProperty(`--color-garden-${key}`, value);
   });
 };
+
+export const toggleThemeMode = (mode: 'light' | 'dark') => {
+  const root = document.documentElement;
+  if (mode === 'light') {
+    root.classList.add('light');
+  } else {
+    root.classList.remove('light');
+  }
+};

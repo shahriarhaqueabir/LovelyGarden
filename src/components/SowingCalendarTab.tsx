@@ -71,11 +71,10 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
         {/* Search Panel */}
         <div className="bg-stone-900/30 rounded-2xl border border-stone-800 p-6 z-10 relative">
           <div className="flex flex-col gap-2">
-            <label htmlFor="sow-search" className="text-xs font-bold text-stone-500 uppercase tracking-widest">Filter Library</label>
+            <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Filter Library</label>
             <div className="flex items-center gap-2 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-garden-500/50 transition-all">
               <Search className="w-4 h-4 text-stone-500" />
               <input
-                id="sow-search"
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}

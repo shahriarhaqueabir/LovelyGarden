@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Package, Search, Droplets, Sun, Leaf } from 'lucide-react';
+import { Package, Search, Droplets, Sun, Leaf, Info } from 'lucide-react';
 import { useInventory } from '../hooks/useInventory';
 import { PlantSpecies } from '../schema/knowledge-graph';
+import { DetailModal } from './SeedStore';
 
 interface SeedInventoryTabProps {
   catalog: PlantSpecies[];
@@ -12,6 +13,7 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name');
+  const [selectedPlant, setSelectedPlant] = useState<PlantSpecies | null>(null);
 
   // Get full plant details for inventory items
   const inventoryWithDetails = inventory.map(invItem => {
@@ -50,9 +52,9 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Package className="w-6 h-6 text-garden-400" />
-          <h1 className="text-xl font-bold text-stone-100">Seed Inventory</h1>
+          <h1 className="text-xl font-bold text-stone-100">Seed Vault</h1>
         </div>
-        <p className="text-stone-400 text-sm">Manage your collection of seeds and planting materials</p>
+        <p className="text-stone-400 text-sm">Your secure collection of acquired botanical assets</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
@@ -128,13 +130,20 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
             {sortedItems.map((item) => {
               const catalogItem = catalog.find(c => c.id === item.catalogId);
               return (
-                <div key={item.id} className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30">
+                <div 
+                  key={item.id} 
+                  className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30 hover:border-garden-700/50 cursor-pointer transition-all group"
+                  onClick={() => catalogItem && setSelectedPlant(catalogItem)}
+                >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-bold text-stone-100">{item.name}</h3>
+                      <h3 className="font-bold text-stone-100 group-hover:text-garden-400 transition-colors">{item.name}</h3>
                       <p className="text-xs text-stone-500 italic">{item.scientificName}</p>
                     </div>
                     <div className="flex gap-1">
+                      <div className="p-1.5 bg-stone-900 border border-stone-800 rounded-lg text-stone-600 group-hover:text-garden-400 transition-colors">
+                        <Info className="w-3.5 h-3.5" />
+                      </div>
                       {catalogItem?.categories.map(cat => (
                         <span key={cat} className="text-[9px] px-1.5 py-0.5 rounded border border-stone-800 bg-stone-900/50 text-stone-400">
                           {cat}
@@ -179,8 +188,16 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
       </div>
 
       <div className="mt-auto text-xs text-stone-600 p-4 bg-stone-900/20 rounded-xl border border-stone-800">
-        <p>Your seed inventory contains all the seeds you've acquired for planting in your garden.</p>
+        <p>Your seed vault contains all the seeds you've acquired for planting in your garden.</p>
       </div>
+
+      {selectedPlant && (
+        <DetailModal
+          plant={selectedPlant}
+          isOpen={!!selectedPlant}
+          onClose={() => setSelectedPlant(null)}
+        />
+      )}
     </div>
   );
 };

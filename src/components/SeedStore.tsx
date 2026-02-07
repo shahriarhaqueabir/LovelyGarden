@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { X, Search, ShoppingBag, Leaf, Droplets, Sun, Clock, Info, AlertTriangle, Package, Sprout, Plus, Check } from 'lucide-react';
+import { X, Search, ShoppingBag, Info, AlertTriangle, Plus, Check, BookOpen, Package } from 'lucide-react';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
 import { isSowingSeason } from '../logic/reasoning';
@@ -11,136 +11,306 @@ interface SeedStoreProps {
 }
 
 // Detail Modal Component
-const DetailModal: React.FC<{
+export const DetailModal: React.FC<{
   plant: PlantSpecies;
   isOpen: boolean;
   onClose: () => void;
-  onBuy: () => void;
-  isRisky: boolean;
+  onBuy?: () => void;
+  isRisky?: boolean;
 }> = ({ plant, isOpen, onClose, onBuy, isRisky }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="p-6 border-b border-stone-800 flex justify-between items-start">
-          <div>
-            <h2 className="text-xl font-bold text-stone-100 flex items-center gap-2"><Leaf className="w-5 h-5 text-garden-500" /> {plant.name}</h2>
-            <p className="text-sm text-stone-500 italic">{plant.scientificName}</p>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+      <div className="w-full max-w-4xl bg-stone-900 border border-stone-800 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden my-8">
+        {/* Header Section */}
+        <div className="relative p-8 border-b border-stone-800 bg-gradient-to-br from-stone-900 to-stone-950">
+          <div className="flex justify-between items-start relative z-10">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h2 className="text-3xl font-black text-stone-100 uppercase tracking-tighter">{plant.name}</h2>
+                <span className="px-2 py-0.5 bg-garden-500/10 text-garden-400 border border-garden-500/20 rounded text-[10px] font-bold uppercase tracking-widest leading-none">
+                  {plant.categories?.[0] || 'Species'}
+                </span>
+                {isRisky && <WarningBadge />}
+              </div>
+              <p className="text-sm text-stone-500 italic font-medium tracking-tight mb-4">{plant.scientificName}</p>
+            </div>
+            <button onClick={onClose} className="p-2 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded-full transition-all">
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
-            <X className="w-5 h-5" />
-          </button>
+          
+          <div className="bg-stone-900/50 border border-stone-800 p-4 rounded-xl">
+             <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-600 mb-2 flex items-center gap-2">
+                <BookOpen className="w-3 h-3 text-garden-500" /> Knowledge Base
+             </h3>
+             <p className="text-sm text-stone-300 leading-relaxed italic">"{plant.description}"</p>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Risk Warning */}
-          {isRisky && (
-            <div className="flex items-center gap-3 p-3 bg-amber-900/20 border border-amber-700/50 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-amber-500" />
-              <div>
-                <p className="text-sm font-bold text-amber-400">Risky Timing</p>
-                <p className="text-xs text-amber-300/70">Current date is outside optimal sowing window for Dresden (Zone 7b)</p>
+        {/* Intelligence Grid */}
+        <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          
+          {/* Left Column: Core Identity */}
+          <div className="space-y-8">
+            {/* Taxonomy */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                🧬 Taxonomy
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Family</span>
+                  <span className="text-stone-300">{plant.family || "—"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Genus</span>
+                  <span className="text-stone-300">{plant.genus || "—"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Species</span>
+                  <span className="text-stone-300">{plant.species || "—"}</span>
+                </div>
               </div>
-            </div>
-          )}
+            </section>
 
-          {/* Description */}
-          <p className="text-sm text-stone-300 leading-relaxed">{plant.description}</p>
+            {/* Biology */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                🌿 Biology
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Life Cycle</span>
+                  <span className="text-stone-300 capitalize">{plant.life_cycle || "Annual"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Habit</span>
+                  <span className="text-stone-300 capitalize">{plant.growth_habit?.join(', ') || "Bushy"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Photo</span>
+                  <span className="text-stone-300">{plant.photosynthesis_type || "C3"}</span>
+                </div>
+              </div>
+            </section>
 
-          {/* Growth Stages */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2">
-              <Sprout className="w-4 h-4" /> Growth Stages
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {plant.stages?.map((stage, idx) => (
-                <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-stone-800/50 rounded-lg">
-                  <span className="text-xs font-bold text-garden-400">{stage.id}</span>
-                  <span className="text-[10px] text-stone-500">{stage.durationDays}d</span>
+            {/* Edibility */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                🍴 Edibility
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Edible</span>
+                  <span className="text-garden-400 font-bold">{plant.edible_parts?.join(', ') || "—"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Toxic</span>
+                  <span className="text-red-400 font-bold font-mono text-[10px]">{plant.toxic_parts?.join(', ') || "—"}</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Middle Column: Operational Parameters */}
+          <div className="space-y-8">
+            {/* SOWING */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                🧪 Sowing
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Method</span>
+                  <span className="text-amber-500 font-bold">{plant.sowingMethod || "Direct"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Seasons</span>
+                  <span className="text-stone-300">{plant.sowingSeason?.join(', ') || "—"}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600 font-bold uppercase tracking-tighter">Pollination</span>
+                  <span className="text-stone-300 capitalize">{plant.pollination_type || "Insect"}</span>
+                </div>
+              </div>
+            </section>
+
+            {/* RELATIONSHIPS */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                👯 Relationships
+              </h4>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Companions</span>
+                  <div className="flex flex-wrap gap-1">
+                    {plant.companions?.length ? plant.companions.map(c => (
+                      <span key={c} className="px-2 py-0.5 bg-garden-900/30 text-garden-400 border border-garden-800 rounded text-[10px]">{c.replace('plant_', '')}</span>
+                    )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Antagonists</span>
+                  <div className="flex flex-wrap gap-1">
+                    {plant.antagonists?.length ? plant.antagonists.map(c => (
+                      <span key={c} className="px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-800 rounded text-[10px]">{c.replace('plant_', '')}</span>
+                    )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* STAGES */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                📊 Growth Graph
+              </h4>
+              <div className="space-y-2">
+                {plant.stages?.map((stage, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-2 bg-stone-950 border border-stone-800 rounded-lg group hover:border-stone-700 transition-colors">
+                    <div className="w-8 h-8 rounded bg-stone-900 border border-stone-800 flex items-center justify-center text-xs group-hover:text-garden-400">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[11px] font-bold uppercase text-stone-400">{stage.id}</span>
+                        <span className="text-[10px] font-mono text-stone-600">{stage.durationDays}d</span>
+                      </div>
+                      <div className="h-1 w-full bg-stone-900 rounded-full mt-1 overflow-hidden">
+                        <div className="h-full bg-stone-700 rounded-full" style={{ width: `${(stage.durationDays / 60) * 100}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column: Environmental Intelligence */}
+          <div className="space-y-8">
+            {/* SEASONALITY */}
+            <section className="bg-stone-950/50 p-4 rounded-xl border border-stone-800/50 shadow-inner">
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
+                📅 Diagnostics Intel
+              </h4>
+              {plant.seasonality && (
+                <div className="space-y-6">
+                  <div className="relative pl-6 border-l-2 border-amber-600/30">
+                    <div className="absolute -left-1.5 top-0 w-3 h-3 bg-amber-600 rounded-full ring-4 ring-stone-900" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Sowing Window</span>
+                    <p className="text-xs text-stone-300 font-bold mt-1">
+                      {plant.seasonality.sowing.start_month} — {plant.seasonality.sowing.end_month}
+                    </p>
+                  </div>
+                  <div className="relative pl-6 border-l-2 border-garden-600/30">
+                    <div className="absolute -left-1.5 top-0 w-3 h-3 bg-garden-600 rounded-full ring-4 ring-stone-900" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-garden-500">Optimal Harvest</span>
+                    <p className="text-xs text-stone-300 font-bold mt-1">
+                      {plant.seasonality.harvest.start_month} — {plant.seasonality.harvest.end_month}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            {/* PESTS & DISEASES */}
+            <section>
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
+                🛑 Threat Assessment
+              </h4>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Common Pests</span>
+                  <div className="flex flex-wrap gap-1">
+                    {plant.common_pests?.length ? plant.common_pests.map(p => (
+                      <span key={p} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{p.replace('pest_', '').replace('_', ' ')}</span>
+                    )) : <span className="text-[10px] text-stone-700 italic">No threats logged</span>}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Known Diseases</span>
+                  <div className="flex flex-wrap gap-1">
+                    {plant.common_diseases?.length ? plant.common_diseases.map(d => (
+                      <span key={d} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{d.replace('disease_', '').replace('_', ' ')}</span>
+                    )) : <span className="text-[10px] text-stone-700 italic">No threats logged</span>}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ENVIRONMENT */}
+            <section className="bg-stone-800/10 p-4 rounded-xl border border-stone-800">
+               <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 border-b border-stone-800 pb-2">
+                🌍 Environment
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[9px] font-bold text-stone-600 uppercase">Sunlight</span>
+                  <p className="text-xs text-stone-300 capitalize">{plant.sunlight?.replace('_', ' ') || "—"}</p>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-stone-600 uppercase">Water</span>
+                  <p className="text-xs text-stone-300 capitalize">{plant.water_requirements || "—"}</p>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-[9px] font-bold text-stone-600 uppercase">Soil Preferences</span>
+                  <p className="text-xs text-stone-300 capitalize">{plant.soil_type?.join(', ') || "—"}</p>
+                </div>
+              </div>
+
+               <div className="mt-4 pt-4 border-t border-stone-800">
+                  <span className="text-[9px] font-bold text-stone-600 uppercase">Nutrient Needs</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {plant.nutrient_preferences?.map(n => (
+                      <span key={n} className="px-1.5 py-0.5 bg-stone-950 text-[10px] text-blue-400 border border-stone-800 rounded">{n.replace('_', ' ')}</span>
+                    ))}
+                  </div>
+               </div>
+            </section>
+          </div>
+        </div>
+
+        {/* Footer: Sources & Action */}
+        <div className="p-8 border-t border-stone-800 bg-stone-900/50 flex flex-col sm:flex-row gap-6 items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600">KB Intelligence Sources</h5>
+            <div className="flex gap-4">
+              {plant.source_metadata?.map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="text-[11px] font-bold text-stone-300">{s.source_name}</div>
+                  <div className="px-1.5 py-0.5 bg-green-900/40 text-green-400 rounded text-[9px] font-mono border border-green-800/50">
+                    {Math.round(s.confidence_score * 100)}%
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Soil & Water Needs */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-3 bg-stone-800/30 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Droplets className="w-4 h-4 text-blue-400" />
-                <span className="text-xs font-bold text-stone-400">Water</span>
-              </div>
-              <p className="text-sm text-stone-300">
-                Every {plant.stages?.[0]?.waterFrequencyDays || 2} days
-              </p>
-            </div>
-            <div className="p-3 bg-stone-800/30 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Sun className="w-4 h-4 text-amber-400" />
-                <span className="text-xs font-bold text-stone-400">Sowing</span>
-              </div>
-              <p className="text-sm text-stone-300">
-                {plant.sowingMethod} • {plant.sowingSeason?.join(', ')}
-              </p>
-            </div>
+          <div className="flex gap-4 w-full sm:w-auto">
+            <button
+              onClick={onClose}
+              className="flex-1 sm:flex-none px-8 py-3 bg-stone-800 text-stone-400 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-stone-700 hover:text-stone-100 transition-all border border-stone-700"
+            >
+              Close
+            </button>
+            {onBuy && (
+              <button
+                onClick={() => { onBuy(); onClose(); }}
+                className="flex-1 sm:flex-none px-8 py-3 bg-garden-600 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-garden-400 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" /> Deploy to Hand
+              </button>
+            )}
           </div>
-
-          {/* Companion Logic */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2">
-              <Leaf className="w-4 h-4" /> Companion Logic
-            </h3>
-            <div className="space-y-2">
-              {plant.companions && plant.companions.length > 0 && (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] px-2 py-1 bg-garden-900/30 text-garden-400 rounded border border-garden-700/30">Companions</span>
-                  <span className="text-xs text-stone-400">{plant.companions.length} compatible plants</span>
-                </div>
-              )}
-              {plant.antagonists && plant.antagonists.length > 0 && (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] px-2 py-1 bg-red-900/30 text-red-400 rounded border border-red-700/30">Antagonists</span>
-                  <span className="text-xs text-stone-400">{plant.antagonists.length} incompatible plants</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sowing Window */}
-          <div className="p-3 bg-stone-800/30 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-stone-400" />
-              <span className="text-xs font-bold text-stone-400">Optimal Sowing Window</span>
-            </div>
-            <p className="text-sm text-stone-300">
-              {plant.sowingSeason?.join(', ')} (Dresden Zone 7b)
-            </p>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 border-t border-stone-800 flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 bg-stone-800 text-stone-300 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-stone-700 transition-all flex items-center justify-center gap-2"
-          >
-            <X className="w-4 h-4" /> Cancel
-          </button>
-          <button
-            onClick={() => { onBuy(); onClose(); }}
-            className="flex-1 py-3 bg-garden-600 text-stone-950 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-garden-500 transition-all flex items-center justify-center gap-2"
-          >
-            <ShoppingBag className="w-4 h-4" /> Add to Bag
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-const WarningBadge: React.FC = () => (
+export const WarningBadge: React.FC = () => (
   <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-900/40 border border-amber-700/50 rounded text-[9px] font-bold text-amber-400">
     <AlertTriangle className="w-3 h-3" /> Risky
   </span>

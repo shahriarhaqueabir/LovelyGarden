@@ -14,18 +14,42 @@
   --color-garden-800: #166534;
   --color-garden-900: #14532d;
   --color-garden-950: #052e16;
+
+  /* Semantic Theme Variables - Dark (Default) */
+  --bg-primary: #0c0a09;
+  --bg-secondary: #1c1917;
+  --bg-tertiary: #292524;
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: #78716c;
+  --border-primary: #44403c;
+  --surface-primary: #1c1917;
+  --glass-bg: rgba(28, 25, 23, 0.7);
+
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0c0a09;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Light Mode Overrides */
+:root.light {
+  --bg-primary: #fafaf9;
+  --bg-secondary: #f5f5f4;
+  --bg-tertiary: #e7e5e4;
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --border-primary: #d6d3d1;
+  --surface-primary: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  color-scheme: light;
 }
 
 body {
@@ -34,7 +58,8 @@ body {
   flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0c0a09;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 #root {
@@ -49,7 +74,6 @@ body {
 
 .glass {
   background: rgba(28, 25, 23, 0.7);
-  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(68, 64, 60, 0.4);
 }

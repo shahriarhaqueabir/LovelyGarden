@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hydrateDatabase, getDatabase } from './db';
-import { applyTheme } from './utils/theme';
+import { applyTheme, toggleThemeMode } from './utils/theme';
 import { useWeather } from './hooks/useWeather';
 import { PlantSpecies } from './schema/knowledge-graph';
 import { Tabs, TabPanel } from './components/Tabs';
@@ -65,6 +65,9 @@ const AppContent: React.FC = () => {
       const savedTheme = localStorage.getItem('theme-color');
       if (savedTheme) applyTheme(savedTheme);
 
+      const savedMode = localStorage.getItem('theme-mode');
+      if (savedMode === 'light') toggleThemeMode('light');
+
       const settings = await db.settings.findOne('local-user').exec();
       if (settings) {
         setCurrentDay(settings.currentDay || 1);
@@ -104,30 +107,30 @@ const AppContent: React.FC = () => {
             <div className="flex items-center gap-4 text-stone-500">
               {weather ? (
                 <>
-                  <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.sunlightHours}h</span></div>
-                  <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplet className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.moisturePercentage}%</span></div>
-                  <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.temperatureCelsius}°C</span></div>
+                  <div className="flex items-center gap-1.5" title="Sunlight hours"><span className="text-sm">☀️</span> <span className="text-[13px] font-bold">{weather.sunlightHours}h</span></div>
+                  <div className="flex items-center gap-1.5" title="Moisture"><span className="text-sm">💧</span> <span className="text-[13px] font-bold">{weather.moisturePercentage}%</span></div>
+                  <div className="flex items-center gap-1.5" title="Temp"><span className="text-sm">🌡️</span> <span className="text-[13px] font-bold">{weather.temperatureCelsius}°C</span></div>
                 </>
               ) : loading ? (
                 <>
-                  <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--h</span></div>
-                  <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplet className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--%</span></div>
-                  <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--°C</span></div>
+                  <div className="flex items-center gap-1.5" title="Sunlight hours"><span className="text-sm">☀️</span> <span className="text-[13px] font-bold">--h</span></div>
+                  <div className="flex items-center gap-1.5" title="Moisture"><span className="text-sm">💧</span> <span className="text-[13px] font-bold">--%</span></div>
+                  <div className="flex items-center gap-1.5" title="Temp"><span className="text-sm">🌡️</span> <span className="text-[13px] font-bold">--°C</span></div>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                  <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplet className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                  <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
+                  <div className="flex items-center gap-1.5" title="Sunlight hours"><span className="text-sm">☀️</span> <span className="text-[13px] font-bold text-red-400">Err</span></div>
+                  <div className="flex items-center gap-1.5" title="Moisture"><span className="text-sm">💧</span> <span className="text-[13px] font-bold text-red-400">Err</span></div>
+                  <div className="flex items-center gap-1.5" title="Temp"><span className="text-sm">🌡️</span> <span className="text-[13px] font-bold text-red-400">Err</span></div>
                 </>
               )}
             </div>
             <div className="flex items-center gap-2 bg-stone-900 px-3 py-1 rounded-full border border-stone-800 shadow-inner">
-              <span className="text-[9px] font-bold text-garden-400">⭐ {xp} XP</span>
+              <span className="text-[12px] font-bold text-garden-400">⭐ {xp} XP</span>
               <div className="h-2 w-16 bg-stone-800 rounded-full overflow-hidden border border-stone-700">
                 <div className="h-full bg-gradient-to-r from-garden-600 to-garden-400 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
               </div>
-              <span className="text-[10px] font-bold text-stone-300">Lv.{Math.floor(xp / 100) + 1}</span>
+              <span className="text-[13px] font-bold text-stone-300">Lv.{Math.floor(xp / 100) + 1}</span>
             </div>
           </div>
         </header>

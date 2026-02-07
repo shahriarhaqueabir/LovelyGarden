@@ -21,7 +21,12 @@ export const getDatabase = async () => {
       });
 
       await db.addCollections({
-        catalog: { schema: catalogSchema },
+        catalog: { 
+          schema: catalogSchema,
+          migrationStrategies: {
+            1: (oldDoc: any) => oldDoc
+          }
+        },
         sources: { schema: sourceSchema },
         planted: { schema: plantedSchema },
         inventory: { schema: inventorySchema },
@@ -33,10 +38,21 @@ export const getDatabase = async () => {
                 ...oldDoc,
                 xp: 0 // Initialize xp for existing users
               };
+            },
+            2: (oldDoc: any) => {
+              return {
+                ...oldDoc,
+                dataVersion: 0 // Initialize dataVersion for existing users
+              };
             }
           }
         },
-        plant_kb: { schema: plantKbSchema },
+        plant_kb: { 
+          schema: plantKbSchema,
+          migrationStrategies: {
+            1: (oldDoc: any) => oldDoc
+          }
+        },
         gardens: { schema: gardenSchema }
       });
 
@@ -44,17 +60,7 @@ export const getDatabase = async () => {
     })();
   }
   
-  const db = await dbPromise;
-  
-  // Dynamic Hot-Patch: Ensure gardens collection exists (fixes HMR/Migration issues)
-  if (!db.collections.gardens) {
-    console.log('Hot-patching: Adding missing gardens collection...');
-    await db.addCollections({
-      gardens: { schema: gardenSchema }
-    });
-  }
-
-  return db;
+  return await dbPromise;
 };
 
 /**
@@ -65,7 +71,9 @@ export const hydrateDatabase = async () => {
   
   // Check if already hydrated
   const settings = await db.settings.findOne('local-user').exec();
-  if (settings && settings.firstLoadComplete) {
+  const currentDataVersion = 2; // Increment this when botanical structure changes
+  
+  if (settings && settings.firstLoadComplete && (settings.dataVersion || 0) >= currentDataVersion) {
     
     // --- DEMO GARDENS / MIGRATION CHECK ---
     const existingGardens = await db.gardens.find().exec();
@@ -79,7 +87,7 @@ export const hydrateDatabase = async () => {
         soilType: 'Loam', // Balanced
         sunExposure: 'Full Sun',
         gridWidth: 4,
-        gridHeight: 4,
+        gridHeight: 3,
         createdDate: 1677640000000
       },
       {
@@ -98,7 +106,7 @@ export const hydrateDatabase = async () => {
          type: 'Container',
          soilType: 'Sandy', // Xeric
          sunExposure: 'Full Sun',
-         gridWidth: 2,
+         gridWidth: 3,
          gridHeight: 2,
          createdDate: 1677642000000
       },
@@ -108,8 +116,8 @@ export const hydrateDatabase = async () => {
         type: 'In-ground',
         soilType: 'Silt', // Moisture retention
         sunExposure: 'Partial Shade',
-        gridWidth: 3,
-        gridHeight: 3,
+        gridWidth: 4,
+        gridHeight: 2,
         createdDate: 1677643000000
       },
       {
@@ -118,8 +126,8 @@ export const hydrateDatabase = async () => {
         type: 'Vertical',
         soilType: 'Loam',
         sunExposure: 'Partial Sun',
-        gridWidth: 3,
-        gridHeight: 3,
+        gridWidth: 2,
+        gridHeight: 4,
         createdDate: 1677644000000
       }
     ];
@@ -150,7 +158,15 @@ export const hydrateDatabase = async () => {
     return;
   }
 
-  console.log('Starting data hydration...');
+  console.log(`Starting data hydration (v${currentDataVersion})...`);
+  
+  // Clear old catalog/kb if updating
+  if (settings?.firstLoadComplete) {
+    console.log('Update detected: Refreshing catalog intelligence...');
+    await db.catalog.find().remove();
+    await db.plant_kb.find().remove();
+    await db.sources.find().remove();
+  }
 
   try {
     const [sourcesRes, plantKbRes] = await Promise.all([
@@ -197,7 +213,16 @@ export const hydrateDatabase = async () => {
       companions: kb.companion_plants || [],
       antagonists: kb.incompatible_plants || [],
       confidence_score: 0.95,
-      sources: (kb.source_metadata || []).map((m: any) => m.source_name)
+      sources: (kb.source_metadata || []).map((m: any) => m.source_name),
+      // Expanded Fields
+      seasonality: kb.seasonality,
+      sunlight: kb.sunlight,
+      water_requirements: kb.water_requirements,
+      soil_type: kb.soil_type || [],
+      common_pests: kb.common_pests || [],
+      common_diseases: kb.common_diseases || [],
+      nutrient_preferences: kb.nutrient_preferences || [],
+      source_metadata: kb.source_metadata || []
     }));
 
     // Bulk insert
@@ -213,7 +238,7 @@ export const hydrateDatabase = async () => {
       soilType: 'Loam', // Default best
       sunExposure: 'Full Sun',
       gridWidth: 4,
-      gridHeight: 4,
+      gridHeight: 3,
       createdDate: Date.now()
     });
 
@@ -226,7 +251,8 @@ export const hydrateDatabase = async () => {
       id: 'local-user',
       firstLoadComplete: true,
       hemisphere: 'northern', // Default
-      city: 'Unknown'
+      city: 'Unknown',
+      dataVersion: currentDataVersion
     });
 
     console.log('Hydration complete!');
