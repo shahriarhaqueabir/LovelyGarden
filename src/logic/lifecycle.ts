@@ -59,18 +59,18 @@ export const plantLifecycleMachine = createMachine({
 export const calculateCurrentStage = (
   plantedDate: number,
   stages: { id: string, durationDays: number }[],
-  now: number = Date.now()
+  currentDay: number
 ) => {
-  const oneDayMs = 86400000;
-  const daysElapsed = Math.floor((now - plantedDate) / oneDayMs);
+  const daysElapsed = currentDay - plantedDate;
   
   let accumulatedDays = 0;
   for (const stage of stages) {
+    if (!stage) continue; // Safety check
     accumulatedDays += stage.durationDays;
     if (daysElapsed < accumulatedDays) {
       return stage.id;
     }
   }
   
-  return stages[stages.length - 1].id; // Return last stage
+  return stages[stages.length - 1]?.id || 'seed'; // Return last stage or seed if empty
 };

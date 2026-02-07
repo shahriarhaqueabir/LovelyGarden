@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FastForward,
   RotateCcw,
@@ -15,9 +15,10 @@ import {
   Hourglass,
   Sprout,
   Plus,
-  Minus
+  Minus,
+  Edit
 } from 'lucide-react';
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
 import { GardenField } from './GardenGrid';
 import { InventoryTray } from './InventoryTray';
 import { PlantInspector } from './PlantInspector';
@@ -25,7 +26,9 @@ import { usePlantedCards } from '../hooks/usePlantedCards';
 import { useWeather } from '../hooks/useWeather';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay } from '../db/queries';
+import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, deleteGarden } from '../db/queries';
+import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
+import { isSowingSeason } from '../logic/reasoning'; // Fixed import
 
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
@@ -70,7 +73,12 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   alerts,
   onOpenSeedStore 
 }) => {
-  const plantedCards = usePlantedCards();
+  // Garden State
+  const [gardens, setGardens] = useState<GardenConfig[]>([]);
+  const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
+  const activeGarden = gardens.find(g => g.id === activeGardenId);
+
+  const plantedCards = usePlantedCards(activeGardenId || undefined);
   const [selectedPlant, setSelectedPlant] = useState<any | null>(null);
   const [spectralLayer, setSpectralLayer] = useState<'normal' | 'hydration' | 'health' | 'nutrients'>('normal');
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
@@ -79,9 +87,44 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [plantNowSet, setPlantNowSet] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   
-  // Grid dimensions state
-  const [gridRows, setGridRows] = useState(3);
-  const [gridCols, setGridCols] = useState(4);
+  // Dialog State
+  const [showGardenDialog, setShowGardenDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
+
+  // Load gardens on mount
+  useEffect(() => {
+    const loadGardens = async () => {
+      const db = await getDatabase();
+        const docs = await db.gardens.find().exec();
+        const gardensData = docs.map(d => d.toJSON());
+        // Sort: Main garden first, then by date
+        gardensData.sort((a, b) => {
+            if (a.id === 'main-garden') return -1;
+            if (b.id === 'main-garden') return 1;
+            return (a.createdDate || 0) - (b.createdDate || 0);
+        });
+        setGardens(gardensData);
+      
+      // Default to first garden if none active
+      if (!activeGardenId && gardensData.length > 0) {
+        setActiveGardenId(gardensData[0].id);
+      }
+    };
+    loadGardens();
+  }, []); // Run once on mount
+
+  // Sync garden list periodically or subscribe? For now, fetch on updates.
+  const refreshGardens = async () => {
+      const db = await getDatabase();
+      const docs = await db.gardens.find().exec();
+      const gardensData = docs.map(d => d.toJSON());
+      gardensData.sort((a, b) => {
+          if (a.id === 'main-garden') return -1;
+          if (b.id === 'main-garden') return 1;
+          return (a.createdDate || 0) - (b.createdDate || 0);
+      });
+      setGardens(gardensData);
+  };
 
   // Weather data
   const { weather, loading } = useWeather(currentDay);
@@ -105,12 +148,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     setActiveSeedCatalogId(null);
 
     if (over && active.id.toString().startsWith('seed-')) {
+      if (!activeGarden) {
+        setToast({ message: 'No active garden selected', type: 'error' });
+        return;
+      }
+
       const inventoryId = active.id.toString().replace('seed-', '');
       const catalogId = active.data.current?.id;
       const { x, y } = over.data.current as { x: number; y: number };
       
       // Check grid capacity
-      const totalCells = gridRows * gridCols;
+      const totalCells = activeGarden.gridWidth * activeGarden.gridHeight;
       const occupiedCells = plantedCards.length;
       
       if (occupiedCells >= totalCells) {
@@ -127,9 +175,71 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       
       // Import plantSeed function
       const { plantSeed } = await import('../db/queries');
-      await plantSeed(catalogId, x, y, inventoryId);
-      setToast({ message: 'Plant added to garden', type: 'success' });
+      try {
+        await plantSeed(catalogId, x, y, inventoryId, activeGarden.id);
+        setToast({ message: 'Plant added to garden', type: 'success' });
+      } catch (err) {
+        setToast({ message: 'Failed to plant seed', type: 'error' });
+      }
     }
+  };
+
+  const handleSaveGarden = async (config: GardenConfig) => {
+      try {
+          if (dialogMode === 'create') {
+              const newId = await createGarden(config);
+              await refreshGardens();
+              setActiveGardenId(newId); // Immediately switch to new garden
+              setToast({ message: 'New garden sector established', type: 'success' });
+          } else {
+              // Edit
+              if (!config.id) return;
+              await updateGarden(config.id, {
+                 name: config.name,
+                 type: config.type,
+                 soilType: config.soilType,
+                 sunExposure: config.sunExposure,
+                 gridWidth: config.gridWidth,
+                 gridHeight: config.gridHeight
+              });
+              await refreshGardens();
+              setToast({ message: 'Garden specs updated', type: 'success' });
+          }
+      } catch (err) {
+          console.error("Failed to save garden:", err);
+          setToast({ message: 'Failed to save garden configuration', type: 'error' });
+      }
+  };
+
+  const handleDeleteGarden = async () => {
+      if (!activeGardenId) return;
+      
+      // Prevent deleting the main garden (default sector)
+      if (activeGardenId === 'main-garden') {
+          setToast({ message: 'Primary garden sector cannot be decommissioned', type: 'error' });
+          return;
+      }
+      
+      if (confirm('Delete this garden sector and all plants within it? This action cannot be undone.')) {
+          await deleteGarden(activeGardenId);
+          await refreshGardens();
+          // Switch to another garden (likely main-garden)
+          const db = await getDatabase();
+          const remaining = await db.gardens.find().exec();
+          
+          // Re-sort to find best candidate
+          const gardensData = remaining.map(d => d.toJSON());
+          gardensData.sort((a, b) => {
+              if (a.id === 'main-garden') return -1;
+              if (b.id === 'main-garden') return 1;
+              return (a.createdDate || 0) - (b.createdDate || 0);
+          });
+          
+          if (gardensData.length > 0) setActiveGardenId(gardensData[0].id);
+          else setActiveGardenId(null); // Should not happen if main exists
+          
+          setToast({ message: 'Garden sector decommissioned', type: 'info' });
+      }
   };
 
   const handleAdvanceDay = async () => {
@@ -147,14 +257,12 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   };
 
   // --- Sprint 2: "Plant Now" filter ---
-  // Map simulated day -> month (fast approximation: day 1 = Jan 1)
   const currentMonth = Math.floor(((currentDay - 1) % 365) / 30.42);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (plantNowMode) {
       const newPlantNowSet = new Set<string>();
       for (const c of catalog) {
-        const { isSowingSeason } = require('../logic/reasoning');
         const res = isSowingSeason(c, { hemisphere: 'North', region: 'DE-SN' } as any, currentMonth);
         if (res.eligible) newPlantNowSet.add(c.id);
       }
@@ -162,45 +270,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     }
   }, [plantNowMode, catalog, currentMonth]);
 
-  // Grid expansion functions
-  const addRow = () => {
-    if (gridRows < 10) {
-      setGridRows(prev => prev + 1);
-      setToast({ message: 'Grid expanded: Row added', type: 'success' });
-    } else {
-      setToast({ message: 'Maximum grid size reached', type: 'error' });
-    }
-  };
-
-  const addColumn = () => {
-    if (gridCols < 10) {
-      setGridCols(prev => prev + 1);
-      setToast({ message: 'Grid expanded: Column added', type: 'success' });
-    } else {
-      setToast({ message: 'Maximum grid size reached', type: 'error' });
-    }
-  };
-
-  const removeRow = () => {
-    if (gridRows > 2) {
-      setGridRows(prev => prev - 1);
-      setToast({ message: 'Grid reduced: Row removed', type: 'info' });
-    } else {
-      setToast({ message: 'Minimum grid size reached', type: 'error' });
-    }
-  };
-
-  const removeColumn = () => {
-    if (gridCols > 2) {
-      setGridCols(prev => prev - 1);
-      setToast({ message: 'Grid reduced: Column removed', type: 'info' });
-    } else {
-      setToast({ message: 'Minimum grid size reached', type: 'error' });
-    }
-  };
-
   // Calculate grid capacity
-  const totalCells = gridRows * gridCols;
+  const totalCells = activeGarden ? activeGarden.gridWidth * activeGarden.gridHeight : 0;
   const occupiedCells = plantedCards.length;
   const isGridFull = occupiedCells >= totalCells;
 
@@ -211,6 +282,16 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         {/* Toast Notification */}
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         
+        {/* Garden Configuration Dialog */}
+        {showGardenDialog && (
+            <GardenConfigDialog
+                mode={dialogMode}
+                initialConfig={dialogMode === 'edit' ? activeGarden : null}
+                onClose={() => setShowGardenDialog(false)}
+                onSave={handleSaveGarden}
+            />
+        )}
+
         {/* HUD OVERLAY */}
         <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
           <div className="flex items-center gap-8">
@@ -326,81 +407,121 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           />
 
           {/* MAIN CONTENT COLUMN */}
-          <div className="flex-1 flex flex-col relative overflow-hidden">
+          <div className="flex-1 flex flex-col relative overflow-hidden bg-stone-950/50">
+            {/* Garden Tabs Bar */}
+            {/* Garden Tabs Bar (5 Fixed Slots) */}
+            <div className="h-12 bg-stone-900/80 border-b border-stone-800 flex items-center px-4 gap-2 overflow-x-auto no-scrollbar">
+                {Array.from({ length: 5 }).map((_, i) => {
+                    const garden = gardens[i];
+                    const isActive = garden && activeGardenId === garden.id;
+                    
+                    return (
+                        <button
+                            key={garden ? garden.id : `slot-${i}`}
+                            onClick={() => {
+                                if (garden) setActiveGardenId(garden.id || null);
+                                else {
+                                    setDialogMode('create');
+                                    setShowGardenDialog(true);
+                                }
+                            }}
+                            className={`
+                                relative h-full px-4 flex items-center justify-center text-[10px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 min-w-[140px]
+                                ${i === 0 ? 'border-l' : ''}
+                                ${isActive
+                                    ? 'bg-[#0c0a09] text-garden-400 border-b-[#0c0a09] translate-y-[1px] z-10'
+                                    : garden 
+                                        ? 'bg-stone-900 text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-stone-800'
+                                        : 'bg-stone-950/30 text-stone-700 hover:text-stone-500 hover:bg-stone-900/50 border-b-stone-800'}
+                            `}
+                        >
+                            {garden ? (
+                                <span className="truncate max-w-[120px]">{garden.name}</span>
+                            ) : (
+                                <span className="flex items-center gap-2 opacity-60">
+                                    <Plus className="w-3 h-3" /> Space {i + 1}
+                                </span>
+                            )}
+                            {i === 0 && garden && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]" title="Primary Axis" />}
+                        </button>
+                    );
+                })}
+            </div>
+
             <div className="flex flex-1 relative overflow-hidden">
 
             {/* CENTER PANE: TACTICAL FIELD */}
             <div className="flex-1 flex flex-col relative overflow-hidden grid-dot">
-              {/* Grid Controls */}
-              <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                {/* Row Controls */}
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold uppercase text-stone-500 w-8">Rows</span>
-                  <button
-                    onClick={() => removeRow()}
-                    disabled={gridRows <= 2}
-                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-red-400 hover:border-red-600 transition-all disabled:opacity-30"
-                    title="Remove Row"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <span className="text-xs font-mono text-stone-300 w-4 text-center">{gridRows}</span>
-                  <button
-                    onClick={addRow}
-                    disabled={gridRows >= 10}
-                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-30"
-                    title="Add Row"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
-
-                {/* Col Controls */}
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold uppercase text-stone-500 w-8">Cols</span>
-                  <button
-                    onClick={() => removeColumn()}
-                    disabled={gridCols <= 2}
-                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-red-400 hover:border-red-600 transition-all disabled:opacity-30"
-                    title="Remove Column"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <span className="text-xs font-mono text-stone-300 w-4 text-center">{gridCols}</span>
-                  <button
-                    onClick={addColumn}
-                    disabled={gridCols >= 10}
-                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-30"
-                     title="Add Column"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
+              {/* Garden Config Controls (Edit/Delete Active) */}
+              {activeGarden && (
+                  <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                      <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-800 rounded-xl p-2 shadow-lg backdrop-blur-sm">
+                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                              {activeGarden.type}
+                          </div>
+                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                             <Sun className="w-3 h-3 inline mr-1" />{activeGarden.sunExposure}
+                          </div>
+                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                             <Droplets className="w-3 h-3 inline mr-1" />{activeGarden.soilType}
+                          </div>
+                          <button
+                              onClick={() => { setDialogMode('edit'); setShowGardenDialog(true); }}
+                              className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
+                              title="Configure Garden"
+                          >
+                              <Edit className="w-3 h-3" />
+                          </button>
+                          {gardens.length > 1 && (
+                              <button
+                                  onClick={handleDeleteGarden}
+                                  className="p-1.5 hover:bg-red-900/20 rounded-lg text-stone-500 hover:text-red-400 transition-colors"
+                                  title="Decommission Garden"
+                              >
+                                  <Minus className="w-3 h-3" />
+                              </button>
+                          )}
+                      </div>
+                  </div>
+              )}
 
               {/* THE FIELD */}
               <main className="flex-1 flex justify-center items-center overflow-auto p-12">
-                <GardenField
-                  items={plantedCards.map((p: any) => ({
-                    ...p,
-                    hydration: Math.max(0, Math.round((p.hydration ?? 100) * Math.pow(0.85, scrubDays))),
-                    stressLevel: Math.min(100, Math.round((p.stressLevel ?? 0) + (scrubDays > 0 && (p.hydration ?? 100) * Math.pow(0.85, scrubDays) < 20 ? scrubDays * 5 : 0)))
-                  }))}
-                  onSelect={setSelectedPlant}
-                  layer={spectralLayer}
-                  activeSeedCatalogId={activeSeedCatalogId}
-                  catalog={catalog}
-                  rows={gridRows}
-                  cols={gridCols}
-                  onEdit={(item: any) => console.log('Edit plant:', item)}
-                  onDelete={async (item: any) => {
-                    if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
-                      const db = await getDatabase();
-                      await db.planted.findOne(item.id).remove();
-                      setToast({ message: 'Plant removed from garden', type: 'info' });
-                    }
-                  }}
-                />
+                {activeGarden ? (
+                    <GardenField
+                      items={plantedCards.map((p: any) => ({
+                        ...p,
+                        hydration: Math.max(0, Math.round((p.hydration ?? 100) * Math.pow(0.85, scrubDays))),
+                        stressLevel: Math.min(100, Math.round((p.stressLevel ?? 0) + (scrubDays > 0 && (p.hydration ?? 100) * Math.pow(0.85, scrubDays) < 20 ? scrubDays * 5 : 0)))
+                      }))}
+                      onSelect={setSelectedPlant}
+                      layer={spectralLayer}
+                      activeSeedCatalogId={activeSeedCatalogId}
+                      catalog={catalog}
+                      rows={activeGarden.gridHeight}
+                      cols={activeGarden.gridWidth}
+                      onEdit={(item: any) => console.log('Edit plant:', item)}
+                      onDelete={async (item: any) => {
+                        if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
+                          const db = await getDatabase();
+                          await db.planted.findOne(item.id).remove();
+                          setToast({ message: 'Plant removed from garden', type: 'info' });
+                        }
+                      }}
+                    />
+                ) : (
+                    <div className="flex flex-col items-center justify-center opacity-30">
+                        <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
+                        <h3 className="text-lg font-bold text-stone-400 uppercase tracking-widest">No Sector Online</h3>
+                        <p className="text-stone-500 text-xs mt-2">Initialize a garden sector to begin operations.</p>
+                        <button
+                            onClick={() => { setDialogMode('create'); setShowGardenDialog(true); }}
+                            className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
+                        >
+                            Initialize Sector
+                        </button>
+                    </div>
+                )}
               </main>
             </div>
 
@@ -414,6 +535,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   plant={selectedPlant}
                   catalogItem={catalog.find(c => c.id === selectedPlant.catalogId)}
                   companionScore={1}
+                  currentDay={currentDay + scrubDays}
                   onClose={() => setSelectedPlant(null)}
                   docked
                 />

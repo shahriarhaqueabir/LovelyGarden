@@ -3,7 +3,9 @@ import { getDatabase } from './index';
 /**
  * PLANTING LOGIC
  */
-export const plantSeed = async (catalogId: string, x: number, y: number, inventoryId: string) => {
+// --- PLANTING LOGIC ---
+
+export const plantSeed = async (catalogId: string, x: number, y: number, inventoryId: string, gardenId: string = 'main-garden') => {
   const db = await getDatabase();
   const id = `plant-${catalogId}-${x}-${y}-${Date.now()}`;
 
@@ -16,22 +18,25 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
 
     // Check if slot is already occupied
     const existingPlant = await db.planted.findOne({
-      selector: { gridX: x, gridY: y, bedId: 'default-bed' }
+      selector: { gridX: x, gridY: y, bedId: gardenId }
     }).exec();
     
     if (existingPlant) {
       throw new Error(`Slot (${x}, ${y}) is already occupied`);
     }
 
+    const settings = await db.settings.findOne('local-user').exec();
+    const currentDay = settings?.currentDay || 1;
+
     // 1. Insert into planted with simulation defaults
     await db.planted.insert({
       id,
-      bedId: 'default-bed',
+      bedId: gardenId,
       catalogId,
       gridX: x,
       gridY: y,
-      plantedDate: Date.now(),
-      lastWateredDate: Date.now(),
+      plantedDate: currentDay,
+      lastWateredDate: currentDay,
       currentStageIndex: 0,
       healthStatus: 'Healthy',
       hydration: 100,
@@ -46,6 +51,64 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
   } catch (error) {
     console.error('Error planting seed:', error);
     throw error;
+  }
+};
+
+
+// --- GARDEN MANAGEMENT ---
+
+export const createGarden = async (config: any) => {
+  console.log('Creating garden with config:', config);
+  const db = await getDatabase();
+  
+  if (!db.gardens) {
+    console.error('Gardens collection not found on database instance!');
+    throw new Error('Database not fully initialized. Reloading...');
+  }
+
+  const id = `garden-${Date.now()}`;
+  const newGarden = {
+    id,
+    name: config.name,
+    type: config.type,
+    soilType: config.soilType,
+    sunExposure: config.sunExposure,
+    gridWidth: Number(config.gridWidth),
+    gridHeight: Number(config.gridHeight),
+    createdDate: Date.now()
+  };
+
+  try {
+    await db.gardens.insert(newGarden);
+    console.log('Garden created successfully:', id);
+    return id;
+  } catch (err) {
+    console.error('Failed to create garden:', err);
+    throw err;
+  }
+};
+
+export const updateGarden = async (id: string, updates: any) => {
+  const db = await getDatabase();
+  const doc = await db.gardens.findOne(id).exec();
+  if (doc) {
+    await doc.patch(updates);
+  }
+};
+
+export const deleteGarden = async (id: string) => {
+  const db = await getDatabase();
+  const doc = await db.gardens.findOne(id).exec();
+  if (doc) {
+    // Check if it's the last garden? Logic handled in UI, but good to ensure 1 exists.
+    const allGardens = await db.gardens.find().exec();
+    if (allGardens.length <= 1) {
+       throw new Error("Cannot delete the last garden.");
+    }
+    await doc.remove();
+    // Also remove all plants in this garden
+    const plants = await db.planted.find({ selector: { bedId: id } }).exec();
+    await Promise.all(plants.map(p => p.remove()));
   }
 };
 
