@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, X, MapPin, Palette, Database, Upload, FileType, FileJson } from 'lucide-react';
+import { Settings, X, MapPin, Palette, Database, Upload, FileType, FileJson, Trash2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { getDatabase } from '../db';
 import { applyTheme } from '../utils/theme';
 import { exportDatabaseToJson, exportCollectionToCsv, importDatabaseFromJson, downloadFile } from '../db/export-import';
@@ -84,6 +84,22 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleClearCache = () => {
+    if (confirm('Clear local application cache? This will reset theme and local preferences but keep your garden data.')) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
+  const handleFactoryReset = async () => {
+    if (confirm('⚠️ FACTORY RESET WARNING ⚠️\n\nThis will permanently DELETE all your gardens, plants, and inventory.\n\nAre you absolutely sure you want to start over?')) {
+      const db = await getDatabase();
+      await db.remove();
+      localStorage.clear();
+      window.location.reload();
+    }
   };
 
   if (!config) return null;
@@ -232,6 +248,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
                    {importStatus}
                  </p>
               )}
+            </div>
+          </section>
+
+          {/* DANGER ZONE */}
+          <section className="space-y-4 pt-4 border-t border-red-900/30">
+             <div className="flex items-center gap-2 text-red-900/50 pb-2 border-b border-red-900/20">
+              <AlertTriangle className="w-4 h-4 text-red-900/50" />
+              <h3 className="text-xs uppercase font-bold tracking-widest text-red-900/50">Danger Zone</h3>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+               <button 
+                  onClick={handleClearCache}
+                  className="w-full py-3 bg-stone-900 border border-stone-800 hover:bg-stone-800 hover:text-stone-200 text-stone-500 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Clear App Cache
+                </button>
+                
+                <button 
+                  onClick={handleFactoryReset}
+                  className="w-full py-3 bg-red-950/10 border border-red-900/20 hover:bg-red-900/20 hover:border-red-900/40 text-red-800 hover:text-red-500 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Factory Reset
+                </button>
             </div>
           </section>
 

@@ -161,3 +161,22 @@ export const settingsSchema: RxJsonSchema<any> = {
   },
   required: ['id', 'firstLoadComplete']
 };
+
+export const gardenSchema: RxJsonSchema<any> = {
+  title: 'gardens',
+  version: 0,
+  description: 'User defined garden beds',
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    name: { type: 'string' },
+    type: { type: 'string' }, // In-ground, Raised Bed, Container, Greenhouse
+    soilType: { type: 'string' }, // Clay, Loam, Sandy, Custom Mix
+    sunExposure: { type: 'string' }, // Full Sun, Partial Shade, Full Shade
+    gridWidth: { type: 'number' },
+    gridHeight: { type: 'number' },
+    createdDate: { type: 'number' }
+  },
+  required: ['id', 'name', 'type', 'gridWidth', 'gridHeight']
+};

@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
  * HOOK: usePlantedCards
  * Subscribes to the RxDB 'planted' collection and returns real-time updates.
  */
-export const usePlantedCards = () => {
+export const usePlantedCards = (gardenId?: string) => {
   const [cards, setCards] = useState<any[]>([]);
 
   useEffect(() => {
@@ -14,7 +14,10 @@ export const usePlantedCards = () => {
 
     const init = async () => {
       const db = await getDatabase();
-      const query = db.planted.find();
+      // If gardenId is provided, filter by it. Otherwise show all (or handle as main)
+      const query = gardenId 
+        ? db.planted.find({ selector: { bedId: gardenId } })
+        : db.planted.find();
       
       sub = query.$.subscribe(results => {
         setCards(results.map(doc => doc.toJSON()));
@@ -26,7 +29,7 @@ export const usePlantedCards = () => {
     return () => {
       if (sub) sub.unsubscribe();
     };
-  }, []);
+  }, [gardenId]);
 
   return cards;
 };

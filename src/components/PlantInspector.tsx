@@ -21,6 +21,7 @@ interface PlantInspectorProps {
   plant: any; // The planted document
   catalogItem: PlantSpecies | undefined;
   companionScore: number;
+  currentDay: number;
   onClose: () => void;
   /**
    * If true, the inspector is rendered as a docked right-pane.
@@ -33,6 +34,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   plant,
   catalogItem,
   companionScore,
+  currentDay,
   onClose,
   docked
 }) => {
@@ -72,7 +74,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
   if (!catalogItem) return null;
 
-  const currentStageId = calculateCurrentStage(plant.plantedDate, catalogItem.stages);
+  const currentStageId = calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay);
   const currentStage = catalogItem.stages.find(s => s.id === currentStageId) as PlantStage;
   const confidenceLevel = getConfidenceThreshold(catalogItem.confidence_score);
 

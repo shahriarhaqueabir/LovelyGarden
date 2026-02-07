@@ -26,10 +26,33 @@ const AppContent: React.FC = () => {
   const [currentDay, setCurrentDay] = useState(1);
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
-  const alerts = ['Frost Warning: Cover plants tonight!', 'Peak Planting: Tomatoes ready for sowing.'];
-
   // Weather data - now safely inside QueryClientProvider
   const { weather, loading } = useWeather(currentDay);
+
+  const alerts = React.useMemo(() => {
+    if (!weather) return [];
+    const activeAlerts: string[] = [];
+
+    if (weather.temperatureCelsius <= 0) {
+      activeAlerts.push('❄️ Frost Warning: Cover sensitive plants!');
+    } else if (weather.temperatureCelsius <= 4) {
+      activeAlerts.push('🌡️ Cold Snap: Protect seedlings.');
+    }
+
+    if (weather.temperatureCelsius >= 30) {
+      activeAlerts.push('🔥 Heat Wave: Ensure adequate hydration.');
+    }
+
+    if (weather.condition === 'stormy') {
+      activeAlerts.push('⛈️ Storm Warning: Heavy rain and wind.');
+    } else if (weather.condition === 'rainy' && weather.moisturePercentage > 80) {
+      activeAlerts.push('🌧️ Heavy Rain: Check drainage.');
+    } else if (weather.moisturePercentage < 20) {
+      activeAlerts.push('🌵 Drought Warning: Water crops immediately.');
+    }
+
+    return activeAlerts.length > 0 ? activeAlerts : ['✅ Conditions Normal'];
+  }, [weather]);
 
   React.useEffect(() => {
     const init = async () => {
@@ -46,7 +69,8 @@ const AppContent: React.FC = () => {
           description: d.notes || d.description,
           categories: d.type ? [d.type] : d.categories,
           companions: d.companion_plants || d.companions,
-          antagonists: d.incompatible_plants || d.antagonists
+          antagonists: d.incompatible_plants || d.antagonists,
+          stages: d.growth_stages || d.stages
         };
       }));
 
