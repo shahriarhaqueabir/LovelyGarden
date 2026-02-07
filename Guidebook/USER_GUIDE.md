@@ -2,40 +2,47 @@
 
 Welcome to **Garden Deck**, your personal horticultural grimoire. This guide will help you transform your empty grid into a thriving garden.
 
-## 1. The Dashboard
+## 1. The Command Center Dashboard
 
-Your screen is divided into three main zones:
-1. **The Garden Grid**: Your 2D field of possibility. This is where you plant and manage your crops.
-2. **The Hand (Inventory)**: Your current collection of seed packets.
-3. **The Seed Vault**: Access this via the **(+)** button in your Hand to acquire new species.
+Your gardening interface is now a high-density tactical display:
 
-## 2. Planting Your First Crop
+1. **Environment HUD (Header)**: Monitor real-time (and simulated) atmospheric data:
+   - **Sun Intensity**: Based on time-of-day and seasonal position.
+   - **Moisture Level**: Current humidity and soil saturation.
+   - **Temperature**: Realized temperature for Dresden (or your set location).
+2. **The Garden Grid**: Your 2D field. Use the **Layer Toggles** to switch between:
+   - **Hydration View**: See which plants are thirsty.
+   - **Health View**: Monitor stress levels and wilting.
+   - **Nutrient (NPK) View**: Check soil fertility levels.
+3. **The Hand (Inventory)**: Seed packets available for planting.
+4. **The Seed Vault**: Access 52+ species via the **(+)** button.
 
-1. **Select a Seed**: Look at your Hand at the bottom of the screen.
-2. **Drag and Drop**: Pick up a seed packet (like "Beefsteak Tomato") and drag it onto an empty slot in the Garden Grid.
-3. **Verify**: The seed will appear in its "Germination" stage.
+## 2. Planting & Multi-Layer Management
 
-## 3. The Plant Inspector
+1. **Select a Seed**: Drag a packet from your Hand onto an empty slot.
+2. **Synergy Indicators**: Look for the **Glow Effect** — this indicates a companion planting bonus (+10% growth).
+3. **Temporal Scrubber**: (Upcoming) Use the slider to advance the simulation by days or weeks to predict growth patterns.
 
-Want to know more about a specific plant in your garden?
-1. **Click on any plant** in the grid.
-2. A side-panel will open (the **Inspector**).
-3. Here you can see:
-   - **Growth Progress**: A bar showing how close the plant is to the next stage.
-   - **Health & Harmony**: Real-time stats on how well the plant is doing and if its neighbors are helping it grow (Companion Planting).
-   - **Horticultural Integrity**: Proof of where our data comes from.
+## 3. The Botanical Inspector
 
-## 4. Seasonal Awareness
+Click any plant to open the **Inspector Pane**:
 
-The Garden Deck is smart. It knows what time of year it is.
-- **Set Your Location**: Click the **Settings (Gear)** icon at the top right to set your Hemisphere.
-- **Check Recommendations**: In the Plant Inspector, we'll tell you if it's the right time to sow that specific plant based on your location.
+- **Real-time Lifecycle**: Track progress through stages (Seedling → Vegetative → Harvest).
+- **Synergy Breakdown**: See exactly which neighbors are helping or hindering.
+- **Ritual Actions**: (Upcoming) Use the "Water" or "Fertilize" buttons to manually intervene in the plant's health.
+- **Horticultural Integrity**: Review the scientific sources (RHS, UC Davis) for every botanical fact.
 
-## 5. Offline Access
+## 4. Seasonal Simulation
 
-Since Garden Deck is a **Local-First** app, you can use it anywhere—even in remote garden patches without Wi-Fi.
-- On most browsers, you can "Install" the app or "Add to Home Screen" to use it just like a regular mobile app.
+The Garden Deck is synchronized with the **Global Clock**:
+
+- **Location Settings**: Set your Hemisphere and City in the **Settings Gear**.
+- **Seasonal Warnings**: A "Risky Timing" badge appears on seeds that are out-of-window for your current simulation day.
+
+## 5. Offline Grimoire
+
+Garden Deck is a **Local-First** application. All data is saved on your device. You can "Install" it as a PWA on your home screen for true offline management.
 
 ---
 
-*Happy Gardening! May your harvest be plentiful.*
+*Happy Gardening! Optimize your yield, master the cycle.*

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { X, Search, BookOpen, Sun, Droplets, Leaf, Sprout } from 'lucide-react';
+import { X, Search, BookOpen, Sun, Droplets } from 'lucide-react';
 
 interface PlantKB {
   plant_id: string;

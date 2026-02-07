@@ -2,19 +2,20 @@ import React, { useMemo, useState, useEffect } from 'react';
 import {
   X,
   Droplets,
-  Star,
   Info,
   ExternalLink,
   Calendar,
   Leaf,
   AlertCircle,
   FlaskConical,
-  Users
+  Users,
+  LineChart as ChartIcon
 } from 'lucide-react';
 import { PlantSpecies, PlantStage, UserLocation } from '../schema/knowledge-graph';
 import { calculateCurrentStage } from '../logic/lifecycle';
 import { getConfidenceThreshold, isSowingSeason } from '../logic/reasoning';
 import { getDatabase } from '../db';
+import { GrowthTelemetry } from './GrowthTelemetry';
 
 interface PlantInspectorProps {
   plant: any; // The planted document
@@ -141,7 +142,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 className={`w-5 h-5 shrink-0 ${seasonalAdvice.eligible ? 'text-garden-400' : 'text-amber-500'}`}
               />
               <div className="space-y-1">
-                <h4 className="text-[10px] uppercase font-bold tracking-widest opacity-60">Seasonal Status</h4>
+                <h4 className="text-[10px] uppercase font-bold tracking-widest opacity-60">📅 Seasonal Status</h4>
                 <p className="text-xs leading-relaxed">{seasonalAdvice.reason}</p>
               </div>
             </div>
@@ -152,25 +153,38 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
               <div className="flex items-center gap-2 mb-2 text-garden-400">
                 <Droplets className="w-4 h-4" />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Health</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">❤️ Health</span>
               </div>
               <div className="text-xl font-semibold">{plant.healthStatus}</div>
             </div>
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
               <div className="flex items-center gap-2 mb-2 text-amber-400">
-                <Star className="w-4 h-4" />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Harmony</span>
+                <ChartIcon className="w-4 h-4" />
+                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">🤝 Harmony</span>
               </div>
               <div className="text-xl font-semibold">
-                {companionScore > 0 ? `+${companionScore}` : companionScore}
+                {companionScore > 0 ? `✨ +${companionScore}` : companionScore}
               </div>
             </div>
           </div>
 
+          {/* Growth Telemetry */}
+          <GrowthTelemetry 
+            data={[
+              { day: 1, health: 80, biomass: 10 },
+              { day: 2, health: 82, biomass: 15 },
+              { day: 3, health: 75, biomass: 20 },
+              { day: 4, health: 85, biomass: 25 },
+              { day: 5, health: 90, biomass: 35 },
+              { day: 6, health: 88, biomass: 45 },
+              { day: 7, health: 92, biomass: 60 },
+            ]} 
+          />
+
           {/* Lifecycle Progress */}
           <section className="space-y-4">
             <div className="flex justify-between items-end">
-              <h3 className="text-xs uppercase font-bold tracking-widest text-stone-500">Lifecycle: {currentStage.name}</h3>
+              <h3 className="text-xs uppercase font-bold tracking-widest text-stone-500">🌱 Lifecycle: {currentStage.name}</h3>
               <span className="text-[10px] text-stone-600 font-mono">
                 Stage {catalogItem.stages.indexOf(currentStage) + 1}/{catalogItem.stages.length}
               </span>
@@ -184,7 +198,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               />
             </div>
             <p className="text-xs text-stone-400 leading-relaxed">
-              Currently in the <span className="text-garden-400">{currentStage.name}</span> stage. Requires watering every{' '}
+              Currently in the <span className="text-garden-400">{currentStage.name}</span> stage. Requires watering 💧 every{' '}
               <span className="text-garden-400">{currentStage.waterFrequencyDays} days</span>.
             </p>
           </section>
@@ -202,7 +216,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Taxonomy</div>
+                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧬 Taxonomy</div>
                 <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
                   <div><span className="text-stone-500">Family:</span> {(catalogItem as any).family || '—'}</div>
                   <div><span className="text-stone-500">Genus:</span> {(catalogItem as any).genus || '—'}</div>
@@ -210,7 +224,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 </div>
               </div>
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Biology</div>
+                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🌿 Biology</div>
                 <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
                   <div><span className="text-stone-500">Life cycle:</span> {(catalogItem as any).life_cycle || '—'}</div>
                   <div><span className="text-stone-500">Habit:</span> {(((catalogItem as any).growth_habit || []) as string[]).join(', ') || '—'}</div>
@@ -223,7 +237,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
                   <FlaskConical className="w-3.5 h-3.5 text-stone-500" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Sowing</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧪 Sowing</div>
                 </div>
                 <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
                   <div><span className="text-stone-500">Method:</span> {(catalogItem as any).sowingMethod || '—'}</div>
@@ -235,7 +249,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-3.5 h-3.5 text-stone-500" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Edibility</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🍴 Edibility</div>
                 </div>
                 <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
                   <div><span className="text-stone-500">Edible:</span> {edibleParts.join(', ') || '—'}</div>
@@ -431,11 +445,11 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-stone-800 grid grid-cols-2 gap-3">
-          <button className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20">
-            Water Now
+          <button className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95">
+            💧 Water Now
           </button>
-          <button className="py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold transition-all border border-stone-700">
-            Harvest
+          <button className="py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold transition-all border border-stone-700 active:scale-95">
+            🧺 Harvest
           </button>
         </div>
       </div>

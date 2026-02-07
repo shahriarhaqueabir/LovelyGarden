@@ -1,31 +1,32 @@
-2. Architecture & Tech Stack
-Based on "Browser-First," "Offline-First," and "Card Game Mechanics," here is the proposed stack prioritizing reliability and local state management.
+2. Architecture & Tech Stack (Actual Realization)
 
-Core Philosophy: Local-First
-The app behaves like a desktop application. The server is only used for backup or multiplayer features (if any).
+The system is built on a "Local-First" architecture, ensuring 100% offline functionality and data privacy.
 
-Language: TypeScript.
+Core Philosophy: Local-First Sovereignty
+All data remains in the user's browser (IndexedDB). No cloud dependency exists for core operations.
 
-Why: Essential for maintaining strict contracts between the Game Logic, Data Models, and UI. Prevents an entire class of runtime errors.
+Language: TypeScript 5.5
+Used to enforce strict domain models (16 domains) and prevent runtime errors in complex horticultural reasoning.
 
-Runtime/Framework: React (via Vite).
+Framework: React 18 (Vite 5)
+Orchestrates the "Garden Deck" HUD and reactive UI components.
 
-Why: The "Card" metaphor maps 1:1 to React Components. The ecosystem for Drag-and-Drop (planting cards) and virtualized lists (inventory) is mature.
+State & Database: RxDB 15 + Dexie.js
+Sitting on top of IndexedDB. RxDB provides the reactive query engine (Observables), while Dexie handles the high-performance storage bucket. This allows for instant UI updates when plant metrics change.
 
-State & Database (The Critical Piece): RxDB (Reactive Database) sitting on top of IndexedDB.
+Simulation Logic: XState 5 (Finite State Machines)
+Manages the non-linear progression of 52+ plant species through their lifecycles.
 
-Why: Standard Redux/Context is insufficient for offline persistence. RxDB allows us to treat the local database as the "Store." It supports real-time UI updates when data changes and handles replication to a backend (if added later) seamlessly.
+PWA: vite-plugin-pwa
+Automates service worker generation and asset caching for true desktop/mobile standalone operation.
 
-PWA (Progressive Web App): Vite PWA Plugin.
+3. The "Garden Codex" Transformation
+Phase 4 saw the transformation into a "Command Center" aesthetic with high-density data visualization.
 
-Why: Handles the Service Worker caching strategies required to load the app shell and static assets without an internet connection.
-
-Logic Engine: XState.
-
-Why: Managing plant lifecycles (Seed → Sprout → Veg → Flower → Harvest) is a Finite State Machine. XState visualizes and enforces these logic flows to prevent bugs (e.g., harvesting a plant that hasn't grown).
-
-3. The "Garden Codex": AI Orchestration Plan
-This is the Master Design Plan. You will use these definitions to initialize your AI session or sub-agents.
+Key Decisions:
+- Lazy Evaluation: Growth stages are calculated at runtime (CurrentDay - PlantedDay) to optimize performance.
+- Direct-to-Storage: All botanical knowledge (52 species) is hydrated into the local DB on first boot from `plants-kb.json`.
+- Multi-Layer Grid: Support for Hydration, Health, and NPK tactical overlays toggled via HUD.
 
 Phase 1: Project definition & Guardrails
 Mission: Build "Garden Deck" (working title), a local-first PWA that gamifies gardening through card-based interactions while providing agronomic accuracy. Vision: To make gardening accessible and engaging by visualizing plant biology as game mechanics.

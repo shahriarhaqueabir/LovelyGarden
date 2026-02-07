@@ -7,26 +7,80 @@
     "family": "Solanaceae",
     "genus": "Solanum",
     "species": "lycopersicum",
-    "categories": ["vegetable", "fruiting_crop"],
+    "categories": [
+      "vegetable",
+      "fruiting_crop"
+    ],
     "life_cycle": "annual",
-    "growth_habit": ["upright"],
+    "growth_habit": [
+      "upright"
+    ],
     "photosynthesis_type": "C3",
-    "edible_parts": ["fruit"],
-    "toxic_parts": ["leaves", "stems"],
+    "edible_parts": [
+      "fruit"
+    ],
+    "toxic_parts": [
+      "leaves",
+      "stems"
+    ],
     "pollination_type": "self_pollinating",
-    "sowingSeason": ["Spring"],
+    "sowingSeason": [
+      "Spring"
+    ],
     "sowingMethod": "Transplant",
     "stages": [
-      { "id": "germination", "name": "Germination", "durationDays": 7, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
-      { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2, "imageAssetId": "tomato_seedling" },
-      { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2, "imageAssetId": "tomato_bush" },
-      { "id": "flowering", "name": "Flowering", "durationDays": 20, "waterFrequencyDays": 1, "imageAssetId": "tomato_flower" },
-      { "id": "harvest", "name": "Harvest", "durationDays": 15, "waterFrequencyDays": 2, "imageAssetId": "tomato_fruit" }
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "tomato_seedling"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "tomato_bush"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "tomato_flower"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "tomato_fruit"
+      }
     ],
-    "companions": ["basil-genovese", "marigold-french", "onion-yellow", "carrot-danvers"],
-    "antagonists": ["broccoli-calabrese", "potato-russet", "corn-sweet"],
+    "companions": [
+      "basil-genovese",
+      "marigold-french",
+      "onion-yellow",
+      "carrot-danvers"
+    ],
+    "antagonists": [
+      "broccoli-calabrese",
+      "potato-russet",
+      "corn-sweet"
+    ],
     "confidence_score": 0.95,
-    "sources": ["source_rhs", "source_extension_ucdavis"]
+    "sources": [
+      "source_rhs",
+      "source_extension_ucdavis"
+    ]
   },
   {
     "id": "basil-genovese",
@@ -36,24 +90,56 @@
     "family": "Lamiaceae",
     "genus": "Ocimum",
     "species": "basilicum",
-    "categories": ["herb"],
+    "categories": [
+      "herb"
+    ],
     "life_cycle": "annual",
-    "growth_habit": ["bushy"],
+    "growth_habit": [
+      "bushy"
+    ],
     "photosynthesis_type": "C3",
-    "edible_parts": ["leaves"],
+    "edible_parts": [
+      "leaves"
+    ],
     "toxic_parts": [],
     "pollination_type": "insect",
-    "sowingSeason": ["Spring", "Summer"],
+    "sowingSeason": [
+      "Spring",
+      "Summer"
+    ],
     "sowingMethod": "Direct",
     "stages": [
-      { "id": "germination", "name": "Germination", "durationDays": 5, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
-      { "id": "seedling", "name": "Young Herb", "durationDays": 15, "waterFrequencyDays": 2, "imageAssetId": "basil_small" },
-      { "id": "harvest", "name": "Harvest", "durationDays": 40, "waterFrequencyDays": 2, "imageAssetId": "basil_large" }
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 5,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Young Herb",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "basil_small"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 40,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "basil_large"
+      }
     ],
-    "companions": ["tomato-beefsteak", "pepper-bell"],
+    "companions": [
+      "tomato-beefsteak",
+      "pepper-bell"
+    ],
     "antagonists": [],
     "confidence_score": 0.98,
-    "sources": ["source_rhs"]
+    "sources": [
+      "source_rhs"
+    ]
   },
   {
     "id": "carrot-danvers",
@@ -63,24 +149,61 @@
     "family": "Apiaceae",
     "genus": "Daucus",
     "species": "carota",
-    "categories": ["root_crop"],
+    "categories": [
+      "root_crop"
+    ],
     "life_cycle": "biennial",
-    "growth_habit": ["upright"],
+    "growth_habit": [
+      "upright"
+    ],
     "photosynthesis_type": "C3",
-    "edible_parts": ["root", "leaves"],
+    "edible_parts": [
+      "root",
+      "leaves"
+    ],
     "toxic_parts": [],
     "pollination_type": "insect",
-    "sowingSeason": ["Spring", "Summer", "Autumn"],
+    "sowingSeason": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
     "sowingMethod": "Direct",
     "stages": [
-      { "id": "germination", "name": "Germination", "durationDays": 14, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
-      { "id": "vegetative", "name": "Top Growth", "durationDays": 30, "waterFrequencyDays": 3, "imageAssetId": "carrot_greens" },
-      { "id": "harvest", "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 4, "imageAssetId": "carrot_root" }
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 14,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Top Growth",
+        "durationDays": 30,
+        "waterFrequencyDays": 3,
+        "imageAssetId": "carrot_greens"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 30,
+        "waterFrequencyDays": 4,
+        "imageAssetId": "carrot_root"
+      }
     ],
-    "companions": ["onion-yellow", "tomato-beefsteak", "lettuce-butterhead"],
-    "antagonists": ["dill-mammoth"],
+    "companions": [
+      "onion-yellow",
+      "tomato-beefsteak",
+      "lettuce-butterhead"
+    ],
+    "antagonists": [
+      "dill-mammoth"
+    ],
     "confidence_score": 0.96,
-    "sources": ["source_cornell_extension"]
+    "sources": [
+      "source_cornell_extension"
+    ]
   },
   {
     "id": "marigold-french",
@@ -90,23 +213,3254 @@
     "family": "Asteraceae",
     "genus": "Tagetes",
     "species": "patula",
-    "categories": ["flower"],
+    "categories": [
+      "flower"
+    ],
     "life_cycle": "annual",
-    "growth_habit": ["bushy"],
+    "growth_habit": [
+      "bushy"
+    ],
     "photosynthesis_type": "C3",
-    "edible_parts": ["flowers"],
+    "edible_parts": [
+      "flowers"
+    ],
     "toxic_parts": [],
     "pollination_type": "insect",
-    "sowingSeason": ["Spring", "Summer"],
+    "sowingSeason": [
+      "Spring",
+      "Summer"
+    ],
     "sowingMethod": "Direct",
     "stages": [
-      { "id": "germination", "name": "Germination", "durationDays": 5, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
-      { "id": "vegetative", "name": "Leafing", "durationDays": 20, "waterFrequencyDays": 2, "imageAssetId": "flower_leaf" },
-      { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 3, "imageAssetId": "marigold_bloom" }
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 5,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Leafing",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "flower_leaf"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 60,
+        "waterFrequencyDays": 3,
+        "imageAssetId": "marigold_bloom"
+      }
     ],
-    "companions": ["tomato-beefsteak", "cucumber-marketmore", "squash-zucchini"],
+    "companions": [
+      "tomato-beefsteak",
+      "cucumber-marketmore",
+      "squash-zucchini"
+    ],
     "antagonists": [],
     "confidence_score": 0.92,
-    "sources": ["source_rhs"]
+    "sources": [
+      "source_rhs"
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "scientificName": "Malus domestica",
+    "description": "Requires pruning and pollinator variety for best yields.",
+    "family": "Rosaceae",
+    "genus": "Malus",
+    "species": "domestica",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "chives",
+      "garlic"
+    ],
+    "antagonists": [
+      "fennel"
+    ],
+    "confidence_score": 0.96,
+    "sources": [
+      "uc_davis_fruit_research"
+    ]
+  },
+  {
+    "id": "basil",
+    "name": "Basil",
+    "scientificName": "Ocimum basilicum",
+    "description": "Pinch flowers to extend leaf growth; attracts pollinators.",
+    "family": "Lamiaceae",
+    "genus": "Ocimum",
+    "species": "basilicum",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "tomato",
+      "pepper"
+    ],
+    "antagonists": [
+      "fennel"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "beetroot",
+    "name": "Beetroot",
+    "scientificName": "Beta vulgaris",
+    "description": "Thin seedlings to avoid overcrowding; sensitive to frost.",
+    "family": "Amaranthaceae",
+    "genus": "Beta",
+    "species": "vulgaris",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Root Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "onion",
+      "lettuce"
+    ],
+    "antagonists": [
+      "mustard"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "borage",
+    "name": "Borage",
+    "scientificName": "Borago officinalis",
+    "description": "Attracts pollinators and beneficial insects.",
+    "family": "Boraginaceae",
+    "genus": "Borago",
+    "species": "officinalis",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "strawberry",
+      "tomato",
+      "peach"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.95,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "cabbage",
+    "name": "Cabbage",
+    "scientificName": "Brassica oleracea var. capitata",
+    "description": "Ensure crop rotation to prevent disease.",
+    "family": "Brassicaceae",
+    "genus": "Brassica",
+    "species": "oleracea",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Head Development",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "beetroot",
+      "onion",
+      "mint",
+      "rosemary",
+      "sage",
+      "thyme"
+    ],
+    "antagonists": [
+      "tomato",
+      "strawberry"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "carrot",
+    "name": "Carrot",
+    "scientificName": "Daucus carota subsp. sativus",
+    "description": "Loose soil recommended for straight roots; thin seedlings.",
+    "family": "Apiaceae",
+    "genus": "Daucus",
+    "species": "carota",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Root Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "tomato",
+      "lettuce",
+      "pea",
+      "parsley",
+      "thyme",
+      "chives"
+    ],
+    "antagonists": [
+      "dill"
+    ],
+    "confidence_score": 0.965,
+    "sources": [
+      "royal_horticultural_society",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "chives",
+    "name": "Chives",
+    "scientificName": "Allium schoenoprasum",
+    "description": "Perennial; cut leaves to encourage growth.",
+    "family": "Amaryllidaceae",
+    "genus": "Allium",
+    "species": "schoenoprasum",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "tomato",
+      "apple",
+      "peach"
+    ],
+    "antagonists": [
+      "pea"
+    ],
+    "confidence_score": 0.95,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "corn",
+    "name": "Corn",
+    "scientificName": "Zea mays",
+    "description": "Tall plants; avoid shading smaller crops.",
+    "family": "Poaceae",
+    "genus": "Zea",
+    "species": "mays",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Tasseling",
+        "durationDays": 10,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Silking",
+        "durationDays": 5,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "squash",
+      "sunflower",
+      "melon",
+      "watermelon",
+      "cucumber"
+    ],
+    "antagonists": [
+      "tomato"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "cucumber",
+    "name": "Cucumber",
+    "scientificName": "Cucumis sativus",
+    "description": "Provide trellis support for vining varieties.",
+    "family": "Cucurbitaceae",
+    "genus": "Cucumis",
+    "species": "sativus",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "lettuce",
+      "melon",
+      "corn",
+      "sunflower",
+      "squash"
+    ],
+    "antagonists": [
+      "potato"
+    ],
+    "confidence_score": 0.965,
+    "sources": [
+      "royal_horticultural_society",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "garlic",
+    "name": "Garlic",
+    "scientificName": "Allium sativum",
+    "description": "Plant cloves with pointed side up; frost-hardy.",
+    "family": "Amaryllidaceae",
+    "genus": "Allium",
+    "species": "sativum",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Autumn"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bulb Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "apple",
+      "tomato",
+      "raspberry"
+    ],
+    "antagonists": [
+      "pea"
+    ],
+    "confidence_score": 0.96,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "kale",
+    "name": "Kale",
+    "scientificName": "Brassica oleracea var. sabellica",
+    "description": "Cold-tolerant; harvest outer leaves first.",
+    "family": "Brassicaceae",
+    "genus": "Brassica",
+    "species": "oleracea",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "beetroot",
+      "onion"
+    ],
+    "antagonists": [
+      "strawberry"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "lavender",
+    "name": "Lavender",
+    "scientificName": "Lavandula angustifolia",
+    "description": "Attracts pollinators; drought-tolerant.",
+    "family": "Lamiaceae",
+    "genus": "Lavandula",
+    "species": "angustifolia",
+    "categories": [
+      "flower"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "rosemary",
+      "sage"
+    ],
+    "antagonists": [
+      "blueberry"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "lettuce",
+    "name": "Lettuce",
+    "scientificName": "Lactuca sativa",
+    "description": "Succession sowing extends harvest season; keep soil moist.",
+    "family": "Asteraceae",
+    "genus": "Lactuca",
+    "species": "sativa",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "radish",
+      "cucumber",
+      "onion",
+      "beetroot",
+      "pea"
+    ],
+    "antagonists": [
+      "basil",
+      "parsley"
+    ],
+    "confidence_score": 0.965,
+    "sources": [
+      "uc_davis_vegetable_research",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "melon",
+    "name": "Cantaloupe",
+    "scientificName": "Cucumis melo",
+    "description": "Require space for vines to spread.",
+    "family": "Cucurbitaceae",
+    "genus": "Cucumis",
+    "species": "melo",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "cucumber",
+      "corn"
+    ],
+    "antagonists": [
+      "potato"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "mint",
+    "name": "Mint",
+    "scientificName": "Mentha sp.",
+    "description": "Invasive; grow in pots to control spread.",
+    "family": "Lamiaceae",
+    "genus": "Mentha",
+    "species": "sp.",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "cabbage",
+      "carrot",
+      "orange"
+    ],
+    "antagonists": [
+      "pea"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "onion",
+    "name": "Onion",
+    "scientificName": "Allium cepa",
+    "description": "Rotate crops to prevent disease; thin seedlings for bulb development.",
+    "family": "Amaryllidaceae",
+    "genus": "Allium",
+    "species": "cepa",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bulb Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "lettuce",
+      "beetroot",
+      "raspberry",
+      "kale"
+    ],
+    "antagonists": [
+      "pea"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "orange",
+    "name": "Orange",
+    "scientificName": "Citrus sinensis",
+    "description": "Citrus trees prefer pots in cooler climates; frost sensitive.",
+    "family": "Rutaceae",
+    "genus": "Citrus",
+    "species": "sinensis",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "mint",
+      "basil"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "parsley",
+    "name": "Parsley",
+    "scientificName": "Petroselinum crispum",
+    "description": "Biennial; can harvest leaves continuously.",
+    "family": "Apiaceae",
+    "genus": "Petroselinum",
+    "species": "crispum",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "tomato",
+      "carrot"
+    ],
+    "antagonists": [
+      "lettuce"
+    ],
+    "confidence_score": 0.95,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "pea",
+    "name": "Garden Pea",
+    "scientificName": "Pisum sativum",
+    "description": "Supports soil nitrogen levels; trellis for climbing varieties.",
+    "family": "Fabaceae",
+    "genus": "Pisum",
+    "species": "sativum",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "lettuce",
+      "radish"
+    ],
+    "antagonists": [
+      "onion",
+      "garlic",
+      "chives"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "uc_davis_vegetable_research",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "peach",
+    "name": "Peach",
+    "scientificName": "Prunus persica",
+    "description": "Thin fruits to improve size; prune annually.",
+    "family": "Rosaceae",
+    "genus": "Prunus",
+    "species": "persica",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "borage",
+      "chives"
+    ],
+    "antagonists": [
+      "fennel"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "pepper",
+    "name": "Bell Pepper",
+    "scientificName": "Capsicum annuum",
+    "description": "Warm-season crop; protect from frost.",
+    "family": "Solanaceae",
+    "genus": "Capsicum",
+    "species": "annuum",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "basil",
+      "carrot",
+      "tomato"
+    ],
+    "antagonists": [
+      "fennel"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "uc_davis_vegetable_research",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "raspberry",
+    "name": "Raspberry",
+    "scientificName": "Rubus idaeus",
+    "description": "Support canes with trellis; prune to encourage fruiting.",
+    "family": "Rosaceae",
+    "genus": "Rubus",
+    "species": "idaeus",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "garlic",
+      "onion"
+    ],
+    "antagonists": [
+      "fennel"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "rosemary",
+    "name": "Rosemary",
+    "scientificName": "Salvia rosmarinus",
+    "description": "Drought-tolerant; prune to maintain shape.",
+    "family": "Lamiaceae",
+    "genus": "Salvia",
+    "species": "rosmarinus",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "cabbage",
+      "lavender"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.95,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "sage",
+    "name": "Sage",
+    "scientificName": "Salvia officinalis",
+    "description": "Supports pollinators; drought-tolerant.",
+    "family": "Lamiaceae",
+    "genus": "Salvia",
+    "species": "officinalis",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "cabbage",
+      "lavender"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "spinach",
+    "name": "Spinach",
+    "scientificName": "Spinacia oleracea",
+    "description": "Sensitive to heat; prefers cooler temperatures; fast-growing crop.",
+    "family": "Amaranthaceae",
+    "genus": "Spinacia",
+    "species": "oleracea",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "strawberry",
+      "pea"
+    ],
+    "antagonists": [
+      "cabbage",
+      "fennel"
+    ],
+    "confidence_score": 0.975,
+    "sources": [
+      "royal_horticultural_society",
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "strawberry",
+    "name": "Strawberry",
+    "scientificName": "Fragaria × ananassa",
+    "description": "Mulch to retain moisture and prevent rot.",
+    "family": "Rosaceae",
+    "genus": "Fragaria",
+    "species": "×",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "spinach",
+      "borage"
+    ],
+    "antagonists": [
+      "cabbage",
+      "kale"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "sunflower",
+    "name": "Sunflower",
+    "scientificName": "Helianthus annuus",
+    "description": "Tall plants; provide staking if needed.",
+    "family": "Asteraceae",
+    "genus": "Helianthus",
+    "species": "annuus",
+    "categories": [
+      "flower"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "corn",
+      "cucumber"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.96,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "squash",
+    "name": "Squash",
+    "scientificName": "Cucurbita pepo",
+    "description": "Space plants to prevent disease; mulch to retain moisture.",
+    "family": "Cucurbitaceae",
+    "genus": "Cucurbita",
+    "species": "pepo",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "corn",
+      "cucumber"
+    ],
+    "antagonists": [
+      "potato"
+    ],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "thyme",
+    "name": "Thyme",
+    "scientificName": "Thymus vulgaris",
+    "description": "Drought-tolerant; attracts pollinators.",
+    "family": "Lamiaceae",
+    "genus": "Thymus",
+    "species": "vulgaris",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "cabbage",
+      "carrot"
+    ],
+    "antagonists": [],
+    "confidence_score": 0.97,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "tomato",
+    "name": "Tomato",
+    "scientificName": "Solanum lycopersicum",
+    "description": "Support with stakes or cages; prune suckers for better yield.",
+    "family": "Solanaceae",
+    "genus": "Solanum",
+    "species": "lycopersicum",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "basil",
+      "marigold",
+      "carrot",
+      "parsley",
+      "chives",
+      "garlic"
+    ],
+    "antagonists": [
+      "cabbage",
+      "fennel",
+      "corn"
+    ],
+    "confidence_score": 0.975,
+    "sources": [
+      "uc_davis_vegetable_research",
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "watermelon",
+    "name": "Watermelon",
+    "scientificName": "Citrullus lanatus",
+    "description": "Vine plants; space accordingly.",
+    "family": "Cucurbitaceae",
+    "genus": "Citrullus",
+    "species": "lanatus",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "corn",
+      "squash"
+    ],
+    "antagonists": [
+      "potato"
+    ],
+    "confidence_score": 0.96,
+    "sources": [
+      "uc_davis_vegetable_research"
+    ]
+  },
+  {
+    "id": "asparagus",
+    "name": "Asparagus",
+    "scientificName": "Asparagus officinalis",
+    "description": "Perennial crop; takes 2-3 years to establish before harvesting.",
+    "family": "Asparagaceae",
+    "genus": "Asparagus",
+    "species": "officinalis",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "vegetative",
+        "name": "Crown Development",
+        "durationDays": 45,
+        "waterFrequencyDays": 3,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Fern Development",
+        "durationDays": 30,
+        "waterFrequencyDays": 3,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Establishment",
+        "durationDays": 60,
+        "waterFrequencyDays": 3,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "tomato",
+      "parsley",
+      "basil"
+    ],
+    "antagonists": [
+      "onion",
+      "garlic",
+      "potato"
+    ],
+    "confidence_score": 0.94,
+    "sources": [
+      "university_of_illinois_extension"
+    ]
+  },
+  {
+    "id": "brussels-sprouts",
+    "name": "Brussels Sprouts",
+    "scientificName": "Brassica oleracea var. gemmifera",
+    "description": "Cold-hardy; frost improves flavor; stake tall plants.",
+    "family": "Brassicaceae",
+    "genus": "Brassica",
+    "species": "oleracea",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bud Development",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "nasturtium",
+      "mint",
+      "oregano"
+    ],
+    "antagonists": [
+      "tomato",
+      "strawberry",
+      "grape"
+    ],
+    "confidence_score": 0.95,
+    "sources": [
+      "cornell_university_extension"
+    ]
+  },
+  {
+    "id": "cauliflower",
+    "name": "Cauliflower",
+    "scientificName": "Brassica oleracea var. botrytis",
+    "description": "Sensitive to temperature fluctuations; blanch curds to maintain white color.",
+    "family": "Brassicaceae",
+    "genus": "Brassica",
+    "species": "oleracea",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Curd Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "onion",
+      "beetroot",
+      "nasturtium"
+    ],
+    "antagonists": [
+      "tomato",
+      "strawberry",
+      "grape"
+    ],
+    "confidence_score": 0.93,
+    "sources": [
+      "university_of_california_extension"
+    ]
+  },
+  {
+    "id": "leek",
+    "name": "Leek",
+    "scientificName": "Allium ampeloprasum var. porrum",
+    "description": "Blanch stems by hilling soil; cold-hardy; slow growing.",
+    "family": "Amaryllidaceae",
+    "genus": "Allium",
+    "species": "ampeloprasum",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bulb Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "carrot",
+      "onion",
+      "sage"
+    ],
+    "antagonists": [
+      "pea",
+      "bean"
+    ],
+    "confidence_score": 0.96,
+    "sources": [
+      "royal_horticultural_society"
+    ]
+  },
+  {
+    "id": "pumpkin",
+    "name": "Pumpkin",
+    "scientificName": "Cucurbita pepo",
+    "description": "Needs lots of space; 'Three Sisters' companion planting with corn and beans.",
+    "family": "Cucurbitaceae",
+    "genus": "Cucurbita",
+    "species": "pepo",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vine Development",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "corn",
+      "bean",
+      "nasturtium"
+    ],
+    "antagonists": [
+      "potato",
+      "zucchini"
+    ],
+    "confidence_score": 0.94,
+    "sources": [
+      "university_of_wisconsin_extension"
+    ]
+  },
+  {
+    "id": "artichoke",
+    "name": "Artichoke",
+    "scientificName": "Cynara cardunculus var. scolymus",
+    "description": "Perennial in mild climates; pinch side buds for larger main buds.",
+    "family": "Asteraceae",
+    "genus": "Cynara",
+    "species": "cardunculus",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bud Development",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "bean",
+      "sage",
+      "thyme"
+    ],
+    "antagonists": [
+      "cabbage",
+      "lettuce"
+    ],
+    "confidence_score": 0.95,
+    "sources": [
+      "university_of_california_extension"
+    ]
+  },
+  {
+    "id": "blueberry",
+    "name": "Blueberry",
+    "scientificName": "Vaccinium corymbosum",
+    "description": "Requires acidic soil pH 4.5-5.5; mulch with pine bark; cross-pollination improves yield.",
+    "family": "Ericaceae",
+    "genus": "Vaccinium",
+    "species": "corymbosum",
+    "categories": [
+      "fruit"
+    ],
+    "life_cycle": "perennial",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Winter"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Juvenile",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "azalea",
+      "rhododendron"
+    ],
+    "antagonists": [
+      "onion",
+      "garlic",
+      "fennel"
+    ],
+    "confidence_score": 0.96,
+    "sources": [
+      "university_of_maine_extension"
+    ]
+  },
+  {
+    "id": "eggplant",
+    "name": "Eggplant",
+    "scientificName": "Solanum melongena",
+    "description": "Heat-loving plant; protect from cool temperatures; pinch suckers.",
+    "family": "Solanaceae",
+    "genus": "Solanum",
+    "species": "melongena",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Fruiting",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "bean",
+      "marigold",
+      "basil"
+    ],
+    "antagonists": [
+      "fennel",
+      "onion"
+    ],
+    "confidence_score": 0.94,
+    "sources": [
+      "texas_a_m_extension"
+    ]
+  },
+  {
+    "id": "fennel",
+    "name": "Fennel",
+    "scientificName": "Foeniculum vulgare",
+    "description": "Attracts beneficial insects; avoid near other Apiaceae family plants; self-seeding.",
+    "family": "Apiaceae",
+    "genus": "Foeniculum",
+    "species": "vulgare",
+    "categories": [
+      "herb"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "bushy"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Bulb Development",
+        "durationDays": 25,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "rosemary",
+      "lavender"
+    ],
+    "antagonists": [
+      "tomato",
+      "cabbage",
+      "pepper"
+    ],
+    "confidence_score": 0.93,
+    "sources": [
+      "missouri_botanical_garden"
+    ]
+  },
+  {
+    "id": "okra",
+    "name": "Okra",
+    "scientificName": "Abelmoschus esculentus",
+    "description": "Heat and drought tolerant; harvest pods when young and tender.",
+    "family": "Malvaceae",
+    "genus": "Abelmoschus",
+    "species": "esculentus",
+    "categories": [
+      "vegetable"
+    ],
+    "life_cycle": "annual",
+    "growth_habit": [
+      "upright"
+    ],
+    "photosynthesis_type": "C3",
+    "edible_parts": [
+      "fruit",
+      "leaves"
+    ],
+    "toxic_parts": [],
+    "pollination_type": "insect",
+    "sowingSeason": [
+      "Spring"
+    ],
+    "sowingMethod": "Direct",
+    "stages": [
+      {
+        "id": "germination",
+        "name": "Germination",
+        "durationDays": 7,
+        "waterFrequencyDays": 1,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "seedling",
+        "name": "Seedling",
+        "durationDays": 14,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Vegetative",
+        "durationDays": 30,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "flowering",
+        "name": "Flowering",
+        "durationDays": 20,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "vegetative",
+        "name": "Pod Development",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      },
+      {
+        "id": "harvest",
+        "name": "Harvest",
+        "durationDays": 15,
+        "waterFrequencyDays": 2,
+        "imageAssetId": "sprout_generic"
+      }
+    ],
+    "companions": [
+      "cucumber",
+      "sweet-potato",
+      "basil"
+    ],
+    "antagonists": [
+      "quinoa"
+    ],
+    "confidence_score": 0.92,
+    "sources": [
+      "louisiana_state_university_extension"
+    ]
   }
 ]
