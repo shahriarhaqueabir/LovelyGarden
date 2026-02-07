@@ -1,5 +1,4 @@
 
-import { RxDatabase } from 'rxdb';
 import { getDatabase } from './index';
 
 /**

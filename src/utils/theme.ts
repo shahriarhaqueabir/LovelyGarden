@@ -32,10 +32,7 @@ export const generatePalette = (baseHex: string) => {
 
   const white = { r: 255, g: 255, b: 255 };
   const black = { r: 0, g: 0, b: 0 };
-  const darkTarget = { r: 10, g: 30, b: 20 }; // slight green-black bias for garden theme, or pure black
-  // Let's stick to mixing with pure black for generic support.
-
-  // 500 is base.
+  // 950 is 90% black.
   // 50 is 90% white.
   // 950 is 90% black.
 

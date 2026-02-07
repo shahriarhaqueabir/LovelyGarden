@@ -61,4 +61,7 @@ Thumbs.db
 
 # Project-specific private documentation
 /Guidebook/
-/TODO.md
+
+# Playwright
+/playwright-report/
+/test-results/
