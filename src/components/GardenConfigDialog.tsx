@@ -128,38 +128,42 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({ onClose,
                 </div>
             </div>
             
-            {/* Grid Dimensions */}
+            {/* Grid Dimensions (Square) */}
             <div className="space-y-3 pt-2 border-t border-stone-800/50">
                <div className="flex items-center justify-between">
                  <label className="text-xs font-bold uppercase text-stone-500 tracking-widest flex items-center gap-2">
-                    <LayoutGrid className="w-3 h-3" /> Grid Matrix
+                    <LayoutGrid className="w-3 h-3" /> Grid Matrix (Square)
                  </label>
                  <span className="text-[10px] text-stone-600 italic">1 unit = 20x20cm</span>
                </div>
                
+               {mode === 'edit' && (
+                 <div className="bg-amber-900/10 border border-amber-900/30 rounded p-2 text-[10px] text-amber-500/80 mb-2">
+                   ⚠️ Grid dimensions are fixed after sector initialization.
+                 </div>
+               )}
+
                <div className="flex gap-4 items-center">
                  <div className="flex-1 space-y-1">
-                   <span className="text-[10px] text-stone-500 uppercase font-bold">Width (Cols)</span>
+                   <span className="text-[10px] text-stone-500 uppercase font-bold">Dimension</span>
                    <input 
                       type="number" 
                       min={2} 
                       max={10} 
                       value={width} 
-                      onChange={(e) => setWidth(parseInt(e.target.value))}
-                      className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono"
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setWidth(val);
+                        setHeight(val);
+                      }}
+                      className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={mode === 'edit'}
                    />
                  </div>
-                 <span className="text-stone-600 font-bold">×</span>
-                 <div className="flex-1 space-y-1">
-                   <span className="text-[10px] text-stone-500 uppercase font-bold">Height (Rows)</span>
-                   <input 
-                      type="number" 
-                      min={2} 
-                      max={10} 
-                      value={height} 
-                      onChange={(e) => setHeight(parseInt(e.target.value))}
-                      className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono"
-                   />
+                 <div className="flex-1 flex items-center justify-center pt-5">
+                    <span className="text-[10px] text-stone-600 font-bold uppercase tracking-tighter bg-stone-950 px-3 py-2 rounded-lg border border-stone-900">
+                      {width} × {width} Matrix
+                    </span>
                  </div>
                </div>
             </div>

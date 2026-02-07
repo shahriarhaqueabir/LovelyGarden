@@ -147,7 +147,7 @@ export const plantedSchema: RxJsonSchema<any> = {
 
 export const settingsSchema: RxJsonSchema<any> = {
   title: 'settings',
-  version: 0,
+  version: 1,
   description: 'User settings',
   primaryKey: 'id',
   type: 'object',

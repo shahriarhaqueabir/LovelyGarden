@@ -58,21 +58,8 @@ const AppContent: React.FC = () => {
     const init = async () => {
       await hydrateDatabase();
       const db = await getDatabase();
-      const allCatalog = await db.plant_kb.find().exec();
-      setCatalog(allCatalog.map(doc => {
-        const d = doc.toJSON();
-        return {
-          ...d,
-          id: d.plant_id || d.id,
-          name: d.common_name || d.name,
-          scientificName: d.scientific_name || d.scientificName,
-          description: d.notes || d.description,
-          categories: d.type ? [d.type] : d.categories,
-          companions: d.companion_plants || d.companions,
-          antagonists: d.incompatible_plants || d.antagonists,
-          stages: d.growth_stages || d.stages
-        };
-      }));
+      const allCatalog = await db.catalog.find().exec();
+      setCatalog(allCatalog.map(doc => doc.toJSON()));
 
       // Apply Theme
       const savedTheme = localStorage.getItem('theme-color');

@@ -1,7 +1,11 @@
-import { createRxDatabase, RxDatabase } from 'rxdb';
+import { createRxDatabase, RxDatabase, addRxPlugin } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
+import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema, gardenSchema } from './schemas';
-import { PlantSpeciesSchema, ExpandedPlantKBSchema } from '../schema/zod-schemas';
+import { ExpandedPlantKBSchema } from '../schema/zod-schemas';
+
+// Register RxDB Plugins
+addRxPlugin(RxDBMigrationSchemaPlugin);
 
 /**
  * DATABASE INITIALIZATION
@@ -21,7 +25,17 @@ export const getDatabase = async () => {
         sources: { schema: sourceSchema },
         planted: { schema: plantedSchema },
         inventory: { schema: inventorySchema },
-        settings: { schema: settingsSchema },
+        settings: { 
+          schema: settingsSchema,
+          migrationStrategies: {
+            1: (oldDoc: any) => {
+              return {
+                ...oldDoc,
+                xp: 0 // Initialize xp for existing users
+              };
+            }
+          }
+        },
         plant_kb: { schema: plantKbSchema },
         gardens: { schema: gardenSchema }
       });
@@ -62,17 +76,17 @@ export const hydrateDatabase = async () => {
         id: 'main-garden',
         name: 'The Homestead',
         type: 'In-ground',
-        soilType: 'Loam',
+        soilType: 'Loam', // Balanced
         sunExposure: 'Full Sun',
         gridWidth: 4,
-        gridHeight: 3,
-        createdDate: 1677640000000 // Fixed past date
+        gridHeight: 4,
+        createdDate: 1677640000000
       },
       {
         id: 'moon-greenhouse',
         name: 'Moonlight Glass', 
         type: 'Greenhouse',
-        soilType: 'Custom Mix', // Good for exotic/mystical
+        soilType: 'Custom Mix', // Magic/Exotic
         sunExposure: 'Full Shade',
         gridWidth: 3,
         gridHeight: 3,
@@ -82,11 +96,31 @@ export const hydrateDatabase = async () => {
          id: 'desert-pot',
          name: 'Sunken Sands',
          type: 'Container',
-         soilType: 'Sandy',
+         soilType: 'Sandy', // Xeric
          sunExposure: 'Full Sun',
-         gridWidth: 3,
+         gridWidth: 2,
          gridHeight: 2,
          createdDate: 1677642000000
+      },
+      {
+        id: 'shadow-grove',
+        name: 'Shadow Grove',
+        type: 'In-ground',
+        soilType: 'Silt', // Moisture retention
+        sunExposure: 'Partial Shade',
+        gridWidth: 3,
+        gridHeight: 3,
+        createdDate: 1677643000000
+      },
+      {
+        id: 'vertical-haven',
+        name: 'Vertical Haven',
+        type: 'Vertical',
+        soilType: 'Loam',
+        sunExposure: 'Partial Sun',
+        gridWidth: 3,
+        gridHeight: 3,
+        createdDate: 1677644000000
       }
     ];
 
@@ -119,28 +153,16 @@ export const hydrateDatabase = async () => {
   console.log('Starting data hydration...');
 
   try {
-    const [seedsRes, sourcesRes, plantKbRes] = await Promise.all([
-      fetch('/data/seeds.json'),
+    const [sourcesRes, plantKbRes] = await Promise.all([
       fetch('/data/sources.json'),
       fetch('/data/plants-kb.json')
     ]);
 
-    const seeds = await seedsRes.json();
     const sources = await sourcesRes.json();
     const plantKbJson = await plantKbRes.json();
-    const seedsRaw = seeds; // seeds is already an array from seedsRes.json()
     const plantKbRaw = Array.isArray(plantKbJson) ? plantKbJson : (plantKbJson.plants || []);
 
-    // RUNTIME DATA VALIDATION WITH ZOD
-    const validatedSeeds = seedsRaw.filter((seed: any) => {
-      const result = PlantSpeciesSchema.safeParse(seed);
-      if (!result.success) {
-        console.warn(`Invalid seed data detected for "${seed.name || 'Unknown'}":`, result.error.format());
-        return false;
-      }
-      return true;
-    });
-
+    // 1. Validate KB data
     const validatedPlantKb = plantKbRaw.filter((plant: any) => {
       const result = ExpandedPlantKBSchema.safeParse(plant);
       if (!result.success) {
@@ -150,9 +172,37 @@ export const hydrateDatabase = async () => {
       return true;
     });
 
+    // 2. Map KB data to Catalog structure (for backward compatibility with components)
+    const catalogData = validatedPlantKb.map((kb: any) => ({
+      id: kb.plant_id,
+      name: kb.common_name,
+      scientificName: kb.scientific_name,
+      description: kb.notes || '',
+      family: kb.family || '',
+      genus: '',
+      species: '',
+      categories: [kb.type || 'vegetable'],
+      life_cycle: 'annual',
+      growth_habit: ['bushy'],
+      photosynthesis_type: 'C3',
+      edible_parts: [],
+      toxic_parts: [],
+      pollination_type: 'insect',
+      sowingSeason: kb.sowingSeason || [],
+      sowingMethod: kb.sowingMethod || 'Direct',
+      stages: (kb.stages || []).map((s: any) => ({
+        ...s,
+        imageAssetId: 'sprout_generic' // Ensure required image field is present
+      })),
+      companions: kb.companion_plants || [],
+      antagonists: kb.incompatible_plants || [],
+      confidence_score: 0.95,
+      sources: (kb.source_metadata || []).map((m: any) => m.source_name)
+    }));
+
     // Bulk insert
     await db.sources.bulkInsert(sources);
-    await db.catalog.bulkInsert(validatedSeeds);
+    await db.catalog.bulkInsert(catalogData);
     await db.plant_kb.bulkInsert(validatedPlantKb);
 
     // Initial Garden
@@ -163,7 +213,7 @@ export const hydrateDatabase = async () => {
       soilType: 'Loam', // Default best
       sunExposure: 'Full Sun',
       gridWidth: 4,
-      gridHeight: 3,
+      gridHeight: 4,
       createdDate: Date.now()
     });
 

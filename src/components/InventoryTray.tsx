@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Trash2, Hand, Sparkles, CheckCircle, XCircle, Info, Package, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
@@ -82,7 +82,14 @@ export const InventoryTray: React.FC<{
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
 
-  const getCatalogItem = (id: string) => catalog.find(c => c.id === id);
+  // Optimized O(1) lookup map
+  const catalogMap = useMemo(() => {
+    const map = new Map<string, any>();
+    catalog.forEach(item => map.set(item.id, item));
+    return map;
+  }, [catalog]);
+
+  const getCatalogItem = useCallback((id: string) => catalogMap.get(id), [catalogMap]);
 
   // Delete item from Bag (Inventory)
   const handleDeleteItem = async (inventoryId: string) => {

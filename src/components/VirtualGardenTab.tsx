@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   FastForward,
   RotateCcw,
@@ -15,7 +15,6 @@ import {
   Hourglass,
   Sprout,
   Plus,
-  Minus,
   Edit
 } from 'lucide-react';
 import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
@@ -26,7 +25,7 @@ import { usePlantedCards } from '../hooks/usePlantedCards';
 import { useWeather } from '../hooks/useWeather';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, deleteGarden } from '../db/queries';
+import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden } from '../db/queries';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning'; // Fixed import
 
@@ -76,7 +75,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   // Garden State
   const [gardens, setGardens] = useState<GardenConfig[]>([]);
   const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
-  const activeGarden = gardens.find(g => g.id === activeGardenId);
+  
+  const activeGarden = useMemo(() => 
+    gardens.find(g => g.id === activeGardenId), 
+    [gardens, activeGardenId]
+  );
 
   const plantedCards = usePlantedCards(activeGardenId || undefined);
   const [selectedPlant, setSelectedPlant] = useState<any | null>(null);
@@ -84,37 +87,14 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [scrubDays, setScrubDays] = useState(0);
-  const [plantNowSet, setPlantNowSet] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   
   // Dialog State
   const [showGardenDialog, setShowGardenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
 
-  // Load gardens on mount
-  useEffect(() => {
-    const loadGardens = async () => {
-      const db = await getDatabase();
-        const docs = await db.gardens.find().exec();
-        const gardensData = docs.map(d => d.toJSON());
-        // Sort: Main garden first, then by date
-        gardensData.sort((a, b) => {
-            if (a.id === 'main-garden') return -1;
-            if (b.id === 'main-garden') return 1;
-            return (a.createdDate || 0) - (b.createdDate || 0);
-        });
-        setGardens(gardensData);
-      
-      // Default to first garden if none active
-      if (!activeGardenId && gardensData.length > 0) {
-        setActiveGardenId(gardensData[0].id);
-      }
-    };
-    loadGardens();
-  }, []); // Run once on mount
-
   // Sync garden list periodically or subscribe? For now, fetch on updates.
-  const refreshGardens = async () => {
+  const refreshGardens = useCallback(async () => {
       const db = await getDatabase();
       const docs = await db.gardens.find().exec();
       const gardensData = docs.map(d => d.toJSON());
@@ -124,7 +104,18 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           return (a.createdDate || 0) - (b.createdDate || 0);
       });
       setGardens(gardensData);
-  };
+      
+      // Default to first garden if none active
+      if (!activeGardenId && gardensData.length > 0) {
+        setActiveGardenId(gardensData[0].id);
+      }
+      return gardensData;
+  }, [activeGardenId]);
+
+  // Load gardens on mount
+  useEffect(() => {
+    refreshGardens();
+  }, [refreshGardens]); // Run once on mount and sync on refreshGardens change
 
   // Weather data
   const { weather, loading } = useWeather(currentDay);
@@ -211,36 +202,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
   };
 
-  const handleDeleteGarden = async () => {
-      if (!activeGardenId) return;
-      
-      // Prevent deleting the main garden (default sector)
-      if (activeGardenId === 'main-garden') {
-          setToast({ message: 'Primary garden sector cannot be decommissioned', type: 'error' });
-          return;
-      }
-      
-      if (confirm('Delete this garden sector and all plants within it? This action cannot be undone.')) {
-          await deleteGarden(activeGardenId);
-          await refreshGardens();
-          // Switch to another garden (likely main-garden)
-          const db = await getDatabase();
-          const remaining = await db.gardens.find().exec();
-          
-          // Re-sort to find best candidate
-          const gardensData = remaining.map(d => d.toJSON());
-          gardensData.sort((a, b) => {
-              if (a.id === 'main-garden') return -1;
-              if (b.id === 'main-garden') return 1;
-              return (a.createdDate || 0) - (b.createdDate || 0);
-          });
-          
-          if (gardensData.length > 0) setActiveGardenId(gardensData[0].id);
-          else setActiveGardenId(null); // Should not happen if main exists
-          
-          setToast({ message: 'Garden sector decommissioned', type: 'info' });
-      }
-  };
+
 
   const handleAdvanceDay = async () => {
     const newDay = await advanceGlobalDay();
@@ -259,15 +221,14 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   // --- Sprint 2: "Plant Now" filter ---
   const currentMonth = Math.floor(((currentDay - 1) % 365) / 30.42);
 
-  useEffect(() => {
-    if (plantNowMode) {
-      const newPlantNowSet = new Set<string>();
-      for (const c of catalog) {
-        const res = isSowingSeason(c, { hemisphere: 'North', region: 'DE-SN' } as any, currentMonth);
-        if (res.eligible) newPlantNowSet.add(c.id);
-      }
-      setPlantNowSet(newPlantNowSet);
+  const plantNowSet = useMemo(() => {
+    if (!plantNowMode) return new Set<string>();
+    const newSet = new Set<string>();
+    for (const c of catalog) {
+      const res = isSowingSeason(c, { hemisphere: 'North', region: 'DE-SN' } as any, currentMonth);
+      if (res.eligible) newSet.add(c.id);
     }
+    return newSet;
   }, [plantNowMode, catalog, currentMonth]);
 
   // Calculate grid capacity
@@ -369,6 +330,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <button
                 onClick={() => {}} // Settings would open in its own tab
                 className="p-2.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all"
+                title="Settings"
+                aria-label="Open Settings"
               >
                 <SettingsIcon className="w-4 h-4" />
               </button>
@@ -472,15 +435,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                           >
                               <Edit className="w-3 h-3" />
                           </button>
-                          {gardens.length > 1 && (
-                              <button
-                                  onClick={handleDeleteGarden}
-                                  className="p-1.5 hover:bg-red-900/20 rounded-lg text-stone-500 hover:text-red-400 transition-colors"
-                                  title="Decommission Garden"
-                              >
-                                  <Minus className="w-3 h-3" />
-                              </button>
-                          )}
+{/* Delete button removed to enforce fixed 5-garden structure */}
                       </div>
                   </div>
               )}
@@ -489,11 +444,12 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <main className="flex-1 flex justify-center items-center overflow-auto p-12">
                 {activeGarden ? (
                     <GardenField
-                      items={plantedCards.map((p: any) => ({
+                      key={activeGarden.id} // Force remount on garden switch to clear grid state
+                      items={useMemo(() => plantedCards.map((p: any) => ({
                         ...p,
                         hydration: Math.max(0, Math.round((p.hydration ?? 100) * Math.pow(0.85, scrubDays))),
                         stressLevel: Math.min(100, Math.round((p.stressLevel ?? 0) + (scrubDays > 0 && (p.hydration ?? 100) * Math.pow(0.85, scrubDays) < 20 ? scrubDays * 5 : 0)))
-                      }))}
+                      })), [plantedCards, scrubDays])}
                       onSelect={setSelectedPlant}
                       layer={spectralLayer}
                       activeSeedCatalogId={activeSeedCatalogId}
@@ -501,13 +457,13 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
                       onEdit={(item: any) => console.log('Edit plant:', item)}
-                      onDelete={async (item: any) => {
+                      onDelete={useCallback(async (item: any) => {
                         if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
                           const db = await getDatabase();
                           await db.planted.findOne(item.id).remove();
                           setToast({ message: 'Plant removed from garden', type: 'info' });
                         }
-                      }}
+                      }, [])}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
@@ -533,10 +489,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               {selectedPlant && (
                 <PlantInspector
                   plant={selectedPlant}
-                  catalogItem={catalog.find(c => c.id === selectedPlant.catalogId)}
+                  catalogItem={useMemo(() => catalog.find(c => c.id === selectedPlant.catalogId), [catalog, selectedPlant.catalogId])}
                   companionScore={1}
                   currentDay={currentDay + scrubDays}
-                  onClose={() => setSelectedPlant(null)}
+                  onClose={useCallback(() => setSelectedPlant(null), [])}
                   docked
                 />
               )}

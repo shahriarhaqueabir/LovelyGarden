@@ -68,17 +68,38 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
           </div>
         </div>
 
-        <div className="bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Search className="w-4 h-4 text-stone-500" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Search ${catalog.length} species...`}
-              className="w-full bg-stone-900/50 border border-stone-800 rounded-lg px-3 py-2 text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none focus:ring-1 focus:ring-garden-500"
-            />
+        {/* Search Panel */}
+        <div className="bg-stone-900/30 rounded-2xl border border-stone-800 p-6 z-10 relative">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="sow-search" className="text-xs font-bold text-stone-500 uppercase tracking-widest">Filter Library</label>
+            <div className="flex items-center gap-2 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-garden-500/50 transition-all">
+              <Search className="w-4 h-4 text-stone-500" />
+              <input
+                id="sow-search"
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by name, category, or scientific name..."
+                className="flex-1 bg-transparent border-none text-sm text-stone-200 placeholder:text-stone-700 focus:outline-none"
+                autoComplete="off"
+                autoFocus
+              />
+              {query && (
+                <button 
+                  onClick={() => setQuery('')}
+                  className="p-1 hover:bg-stone-800 rounded-full text-stone-600 hover:text-stone-400 transition-colors"
+                >
+                  <span className="sr-only">Clear</span>
+                  {/* Close icon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              )}
+            </div>
+            <div className="flex justify-between items-center text-[10px] text-stone-600 mt-1">
+              <span>Looking for specific crops?</span>
+              <span>{filtered.length} found</span>
+            </div>
           </div>
-          <div className="text-xs text-stone-500">Showing {filtered.length}/{catalog.length} species</div>
         </div>
       </div>
 
