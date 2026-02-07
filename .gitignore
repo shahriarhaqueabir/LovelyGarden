@@ -65,4 +65,12 @@ Thumbs.db
 # Playwright
 /playwright-report/
 /test-results/
+
+# Test Outputs
 test_results.txt
+
+# Vite / ESLint / Temporary
+.eslintcache
+vite.config.ts.timestamp-*
+*.tmp
+*.bak

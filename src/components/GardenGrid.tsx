@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { getDatabase } from '../db';
 import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
@@ -200,7 +199,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
         setShowObservationMenu(false);
       }}
       className={`
-        relative w-44 h-44 border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer
+        relative w-40 h-40 border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer
         ${getBorderColor()}
         ${item ? 'glass' : 'bg-stone-900/20'}
         ${synergyClass}
@@ -209,7 +208,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
       `}
     >
       {item ? (
-        <div className="w-full h-full p-4 flex flex-col items-center justify-between relative overflow-hidden">
+        <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden">
           {/* Layer Specific Overlays */}
           {layer !== 'normal' && !isDead && (
             <div className={`
@@ -227,11 +226,11 @@ export const GridSlot: React.FC<GridSlotProps> = ({
           ) : (
             <>
               <div className="z-10 w-full flex justify-between items-start">
-                <span className="text-[8px] font-black uppercase text-stone-500 tracking-tighter line-clamp-1">{item.catalogId}</span>
+                <span className="text-[11px] font-black uppercase text-stone-500">{item.catalogId}</span>
                 <div className="flex gap-1">
-                  {stressLevel > 70 && <span className="text-[10px] animate-pulse"><AlertTriangle className="w-3 h-3 text-red-500" /></span>}
-                  {hydration > 90 && stressLevel < 10 && <span className="text-[10px]"><Sparkles className="w-3 h-3 text-garden-400" /></span>}
-                  {isPestInfested && <span className="text-[10px] animate-bounce"><Bug className="w-3 h-3 text-amber-500" /></span>}
+                  {stressLevel > 70 && <span className="text-[13px] animate-pulse"><AlertTriangle className="w-4 h-4 text-red-500" /></span>}
+                  {hydration > 90 && stressLevel < 10 && <span className="text-[13px]"><Sparkles className="w-4 h-4 text-garden-400" /></span>}
+                  {isPestInfested && <span className="text-[13px] animate-bounce"><Bug className="w-4 h-4 text-amber-500" /></span>}
                 </div>
               </div>
 
@@ -243,7 +242,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
                 {/* Spectral Metric Label */}
                 {getOverlayLabel() && (
                   <div className="flex justify-center">
-                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded border flex items-center gap-1 ${
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border flex items-center gap-1 ${
                        isDead ? 'bg-stone-800 border-stone-600 text-stone-400' :
                        isPestInfested ? 'bg-amber-900/30 border-amber-500 text-amber-400' :
                        layer === 'hydration' ? 'bg-blue-900/30 border-blue-500 text-blue-400' :
@@ -258,7 +257,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
                 {/* Synergy Buff Indicator */}
                 {synergy > 0 && activeSeedCatalogId && (
                   <div className="flex justify-center">
-                    <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-garden-900/30 border border-garden-500 text-garden-400">
+                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-garden-900/30 border border-garden-500 text-garden-400">
                       +10% Growth
                     </span>
                   </div>
@@ -267,7 +266,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
                 {/* Contagion Risk Warning */}
                 {contagionRisk && !isPestInfested && (
                   <div className="flex justify-center">
-                    <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-amber-900/30 border border-amber-500 text-amber-400 animate-pulse">
+                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-900/30 border border-amber-500 text-amber-400 animate-pulse">
                       Disease Risk
                     </span>
                   </div>
@@ -275,7 +274,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
 
                 {/* Bars for Quick View */}
                 <div className="space-y-1">
-                  <div className="h-1 w-full bg-stone-800/50 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-stone-800/50 rounded-full overflow-hidden">
                      <div
                        className={`h-full opacity-60 ${hydration < 30 ? 'bg-amber-500' : 'bg-blue-500'}`}
                        style={{ width: `${hydration}%` }}
@@ -294,21 +293,21 @@ export const GridSlot: React.FC<GridSlotProps> = ({
                 className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-amber-400 transition-colors"
                 title="Update Status"
               >
-                <Bug className="w-3 h-3" />
+                <Bug className="w-4 h-4" />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); handleEdit(); }}
                 className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-garden-400 transition-colors"
                 title="Edit Plant"
               >
-                <Edit className="w-3 h-3" />
+                <Edit className="w-4 h-4" />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                 className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-red-400 transition-colors"
                 title="Remove Plant"
               >
-                <Trash2 className="w-3 h-3" />
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -325,9 +324,9 @@ export const GridSlot: React.FC<GridSlotProps> = ({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2 opacity-20 group-hover:opacity-60 transition-opacity">
-           <Zap className="w-6 h-6 text-stone-700" />
-           <Plus className="w-8 h-8 text-stone-500" />
-           <span className="text-[8px] font-black tracking-widest uppercase">{x},{y}</span>
+           <Zap className="w-8 h-8 text-stone-700" />
+           <Plus className="w-10 h-10 text-stone-500" />
+           <span className="text-[11px] font-black tracking-widest uppercase">{x},{y}</span>
         </div>
       )}
     </div>
@@ -345,24 +344,15 @@ export const GardenField: React.FC<{
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
 }> = ({ items, onSelect, layer, activeSeedCatalogId, catalog, rows = 3, cols = 4, onEdit, onDelete }) => {
-  // Create a lookup map for better performance O(1) instead of O(N) find
-  const itemMap = useMemo(() => {
-    const map = new Map<string, any>();
-    items.forEach(item => {
-      map.set(`${item.gridX}-${item.gridY}`, item);
-    });
-    return map;
-  }, [items]);
+  const getItemAt = (x: number, y: number) => {
+    return items.find(item => item.gridX === x && item.gridY === y);
+  };
 
-  const getItemAt = useCallback((x: number, y: number) => {
-    return itemMap.get(`${x}-${y}`);
-  }, [itemMap]);
-
-  const relationships = useMemo(() => (catalog || []).flatMap((c: any) => c.relationships || []), [catalog]);
+  const relationships = (catalog || []).flatMap((c: any) => c.relationships || []);
 
   // Handle status changes with simulation pause logic
   const handleStatusChange = async (item: any, status: PlantStatus) => {
-    const db = await getDatabase();
+    const db = await import('../db').then(m => m.getDatabase());
     const doc = await db.planted.findOne(item.id).exec();
     
     if (doc) {
@@ -398,7 +388,7 @@ export const GardenField: React.FC<{
         {Array.from({ length: rows * cols }).map((_, i) => {
           const x = i % cols;
           const y = Math.floor(i / cols);
-          const item = itemMap.get(`${x}-${y}`);
+          const item = items.find(p => p.gridX === x && p.gridY === y); // Explicit find
           
           return (
             <GridSlot

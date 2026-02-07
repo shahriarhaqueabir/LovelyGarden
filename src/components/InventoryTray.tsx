@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Trash2, Hand, Sparkles, CheckCircle, XCircle, Info, Package, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
@@ -43,7 +43,7 @@ export const SeedCard: React.FC<{
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
       className={`
-        relative w-28 h-40 rounded-lg shadow-lg border p-2 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:translate-y-[-4px] transition-all
+        relative w-[80px] h-[100px] rounded-3xl shadow-lg border p-2 flex flex-col items-center justify-between cursor-grab active:cursor-grabbing hover:translate-y-[-4px] transition-all
         ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
         ${plantNowMode ? (plantNowEligible ? 'bg-garden-800 border-garden-400 shadow-[0_0_20px_rgba(34,197,94,0.25)]' : 'bg-stone-900/60 border-stone-800 opacity-40') : 'bg-garden-800 border-garden-600'}
       `}
@@ -59,12 +59,12 @@ export const SeedCard: React.FC<{
         </button>
       )}
       
-      <div className="text-[9px] uppercase font-bold text-garden-200 opacity-60">Seed Packet</div>
-      <div className="text-white font-semibold text-xs leading-tight">{name}</div>
-      <div className="h-14 bg-garden-900/50 rounded-md flex items-center justify-center text-2xl">
-        <Sprout className="w-8 h-8 text-garden-200/50" />
+
+      <div className="text-white font-semibold text-[13px] mb-1 break-words text-center w-full">{name}</div>
+      <div className="h-10 w-full bg-garden-900/50 rounded-md flex items-center justify-center text-xl">
+        <Sprout className="w-4 h-4 text-garden-200/50" />
       </div>
-      <div className="text-[8px] italic text-garden-300">{type}</div>
+      <div className="text-[11px] italic text-garden-300 mt-1 break-words leading-tight text-center w-full">{type.replace('_', ' ')}</div>
     </div>
   );
 };
@@ -82,14 +82,7 @@ export const InventoryTray: React.FC<{
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
 
-  // Optimized O(1) lookup map
-  const catalogMap = useMemo(() => {
-    const map = new Map<string, any>();
-    catalog.forEach(item => map.set(item.id, item));
-    return map;
-  }, [catalog]);
-
-  const getCatalogItem = useCallback((id: string) => catalogMap.get(id), [catalogMap]);
+  const getCatalogItem = (id: string) => catalog.find(c => c.id === id);
 
   // Delete item from Bag (Inventory)
   const handleDeleteItem = async (inventoryId: string) => {
@@ -119,32 +112,44 @@ export const InventoryTray: React.FC<{
 
   return (
     <div className={`${wrapperClass} ${isVertical ? '' : containerClass}`}>
-      {/* Sidebar Toggle */}
+      {/* Sidebar Toggle Handle */}
       {isVertical && (
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-1/2 -translate-y-1/2 bg-stone-800 border border-stone-700 text-stone-400 p-1 rounded-full hover:text-white transition-colors z-20"
+          className={`
+            absolute -right-4 top-1/2 -translate-y-1/2 
+            w-8 h-16 bg-stone-800 border-2 border-stone-700 
+            flex items-center justify-center rounded-xl
+            text-stone-400 hover:text-white hover:bg-stone-700/50 
+            hover:border-garden-500/50 transition-all z-40 shadow-2xl
+            group cursor-pointer
+          `}
+          title={collapsed ? "Expand Intelligence Node" : "Collapse Intelligence Node"}
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+            <div className="w-0.5 h-4 bg-stone-500 rounded-full" />
+            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            <div className="w-0.5 h-4 bg-stone-500 rounded-full" />
+          </div>
         </button>
       )}
 
       {/* Header / Hand / Tools */}
       <div className={`${isVertical ? 'p-4 border-b border-stone-800 flex flex-col items-center gap-4' : 'flex flex-col items-center gap-1 min-w-[60px]'}`}>
         <div className={`flex flex-col items-center gap-1 text-stone-500 ${collapsed ? 'scale-75' : ''} transition-transform`}>
-          <Hand className="w-6 h-6 text-stone-600" />
-          {!collapsed && <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400">Hand</span>}
+          <div className="text-2xl">🧺</div>
+          {!collapsed && <span className="text-[13px] uppercase font-bold tracking-widest text-stone-400">Bag</span>}
         </div>
         
         {onTogglePlantNow && !collapsed && (
           <button
             onClick={onTogglePlantNow}
-            className={`px-3 py-2 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 w-full justify-center
+            className={`px-3 py-2 rounded-lg border text-[12px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 w-full justify-center
               ${plantNowMode ? 'bg-garden-500/10 border-garden-500/30 text-garden-400 shadow-inner' : 'bg-stone-900/30 border-stone-800 text-stone-500 hover:text-stone-300'}
             `}
             title="Highlight seeds that are in-season"
           >
-           <Sparkles className="w-3.5 h-3.5" /> Plant Now
+           ✨ Plant Now
           </button>
         )}
       </div>
@@ -166,7 +171,7 @@ export const InventoryTray: React.FC<{
 
       <div className={`${isVertical ? containerClass : 'flex gap-4'}`}>
         {!collapsed && inventory.length === 0 && (
-          <div className="text-center py-8 opacity-30 text-xs uppercase tracking-widest font-bold">
+          <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold">
             Bag Empty
           </div>
         )}
@@ -204,12 +209,12 @@ export const InventoryTray: React.FC<{
           className={`
             ${isVertical 
               ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
-              : 'w-28 h-40 bg-stone-800/20 rounded-lg border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
+              : 'w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
           `}
           title="Open Seed Store"
         >
-          <Package className={`${isVertical && collapsed ? 'w-5 h-5' : 'w-8 h-8'} text-stone-700 group-hover:scale-125 transition-transform duration-300 group-hover:text-garden-500`} />
-          {!collapsed && <span className="text-[10px] font-bold uppercase tracking-widest">Add Seeds</span>}
+          <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
+          {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
         </button>
       </div>
     </div>

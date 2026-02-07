@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FastForward,
   RotateCcw,
@@ -15,6 +15,7 @@ import {
   Hourglass,
   Sprout,
   Plus,
+  Minus,
   Edit
 } from 'lucide-react';
 import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
@@ -25,7 +26,7 @@ import { usePlantedCards } from '../hooks/usePlantedCards';
 import { useWeather } from '../hooks/useWeather';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden } from '../db/queries';
+import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, deleteGarden } from '../db/queries';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning'; // Fixed import
 
@@ -75,11 +76,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   // Garden State
   const [gardens, setGardens] = useState<GardenConfig[]>([]);
   const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
-  
-  const activeGarden = useMemo(() => 
-    gardens.find(g => g.id === activeGardenId), 
-    [gardens, activeGardenId]
-  );
+  const activeGarden = gardens.find(g => g.id === activeGardenId);
 
   const plantedCards = usePlantedCards(activeGardenId || undefined);
   const [selectedPlant, setSelectedPlant] = useState<any | null>(null);
@@ -87,14 +84,42 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [scrubDays, setScrubDays] = useState(0);
+  const [plantNowSet, setPlantNowSet] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   
   // Dialog State
   const [showGardenDialog, setShowGardenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
 
+  // Reactive subscription for gardens
+  useEffect(() => {
+    let sub: any;
+    const initSub = async () => {
+      const db = await getDatabase();
+      sub = db.gardens.find().$.subscribe(docs => {
+        const gardensData = docs.map(d => d.toJSON());
+        gardensData.sort((a, b) => {
+            if (a.id === 'main-garden') return -1;
+            if (b.id === 'main-garden') return 1;
+            return (a.createdDate || 0) - (b.createdDate || 0);
+        });
+        setGardens(gardensData);
+        
+        // Auto-select first garden if none selected
+        if (gardensData.length > 0) {
+            setActiveGardenId(prev => {
+                if (prev) return prev;
+                return gardensData[0].id;
+            });
+        }
+      });
+    };
+    initSub();
+    return () => sub && sub.unsubscribe();
+  }, []); // Run once to setup subscription
+
   // Sync garden list periodically or subscribe? For now, fetch on updates.
-  const refreshGardens = useCallback(async () => {
+  const refreshGardens = async () => {
       const db = await getDatabase();
       const docs = await db.gardens.find().exec();
       const gardensData = docs.map(d => d.toJSON());
@@ -104,18 +129,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           return (a.createdDate || 0) - (b.createdDate || 0);
       });
       setGardens(gardensData);
-      
-      // Default to first garden if none active
-      if (!activeGardenId && gardensData.length > 0) {
-        setActiveGardenId(gardensData[0].id);
-      }
-      return gardensData;
-  }, [activeGardenId]);
-
-  // Load gardens on mount
-  useEffect(() => {
-    refreshGardens();
-  }, [refreshGardens]); // Run once on mount and sync on refreshGardens change
+  };
 
   // Weather data
   const { weather, loading } = useWeather(currentDay);
@@ -202,7 +216,36 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
   };
 
-
+  const handleDeleteGarden = async () => {
+      if (!activeGardenId) return;
+      
+      // Prevent deleting the main garden (default sector)
+      if (activeGardenId === 'main-garden') {
+          setToast({ message: 'Primary garden sector cannot be decommissioned', type: 'error' });
+          return;
+      }
+      
+      if (confirm('Delete this garden sector and all plants within it? This action cannot be undone.')) {
+          await deleteGarden(activeGardenId);
+          await refreshGardens();
+          // Switch to another garden (likely main-garden)
+          const db = await getDatabase();
+          const remaining = await db.gardens.find().exec();
+          
+          // Re-sort to find best candidate
+          const gardensData = remaining.map(d => d.toJSON());
+          gardensData.sort((a, b) => {
+              if (a.id === 'main-garden') return -1;
+              if (b.id === 'main-garden') return 1;
+              return (a.createdDate || 0) - (b.createdDate || 0);
+          });
+          
+          if (gardensData.length > 0) setActiveGardenId(gardensData[0].id);
+          else setActiveGardenId(null); // Should not happen if main exists
+          
+          setToast({ message: 'Garden sector decommissioned', type: 'info' });
+      }
+  };
 
   const handleAdvanceDay = async () => {
     const newDay = await advanceGlobalDay();
@@ -221,14 +264,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   // --- Sprint 2: "Plant Now" filter ---
   const currentMonth = Math.floor(((currentDay - 1) % 365) / 30.42);
 
-  const plantNowSet = useMemo(() => {
-    if (!plantNowMode) return new Set<string>();
-    const newSet = new Set<string>();
-    for (const c of catalog) {
-      const res = isSowingSeason(c, { hemisphere: 'North', region: 'DE-SN' } as any, currentMonth);
-      if (res.eligible) newSet.add(c.id);
+  useEffect(() => {
+    if (plantNowMode) {
+      const newPlantNowSet = new Set<string>();
+      for (const c of catalog) {
+        const res = isSowingSeason(c, { hemisphere: 'North', region: 'DE-SN' } as any, currentMonth);
+        if (res.eligible) newPlantNowSet.add(c.id);
+      }
+      setPlantNowSet(newPlantNowSet);
     }
-    return newSet;
   }, [plantNowMode, catalog, currentMonth]);
 
   // Calculate grid capacity
@@ -316,6 +360,39 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
 
             <div className="flex gap-3">
+              {/* Temporal Axis */}
+              <div className="flex items-center gap-4 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 shrink-0 flex items-center gap-2">
+                  ⏳ Axis
+                </span>
+                <div className="w-32">
+                  <input
+                    type="range"
+                    min={0}
+                    max={30}
+                    value={scrubDays}
+                    onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
+                    className="w-full accent-garden-500 h-1"
+                    aria-label="Temporal scrub slider"
+                    title="Scrub through time"
+                  />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 shrink-0">+{scrubDays}d</span>
+              </div>
+
+              {/* Intervention Console */}
+              <div className="flex items-center gap-2 bg-stone-900 p-1 rounded-xl border border-stone-800">
+                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all active:scale-90" title="Water">
+                  <Droplets className="w-3.5 h-3.5" />
+                </button>
+                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all active:scale-90" title="Fertilize">
+                  <Activity className="w-3.5 h-3.5" />
+                </button>
+                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all active:scale-90" title="Remedy">
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
               <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner">
                 <button onClick={() => setSpectralLayer('normal')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
                   <Eye className="w-3 h-3" /> Visual
@@ -329,37 +406,35 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               </div>
               <button
                 onClick={() => {}} // Settings would open in its own tab
-                className="p-2.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all"
-                title="Settings"
-                aria-label="Open Settings"
+                className="p-2 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all"
               >
                 <SettingsIcon className="w-4 h-4" />
               </button>
                 <button
                   onClick={handleRewindDay}
                   disabled={currentDay <= 1}
-                  className={`flex items-center gap-2 px-3 py-2 font-black rounded-xl text-[10px] uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
+                  className={`flex items-center gap-2 px-3 py-2 font-black rounded-xl text-[13px] uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
                     currentDay <= 1 
                       ? 'bg-stone-700 text-stone-500 cursor-not-allowed' 
                       : 'bg-amber-600 text-stone-950 hover:bg-amber-400 shadow-amber-500/20'
                   }`}
                   title="Rewind Axis"
                 >
-                  ⏪ <RotateCcw className="w-4 h-4" />
+                  ↩️
                 </button>
                 <button
                   onClick={handleAdvanceDay}
-                  className="flex items-center gap-2 px-3 py-2 bg-garden-600 text-stone-950 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20"
+                  className="flex items-center gap-2 px-3 py-2 bg-garden-600 text-stone-950 font-black rounded-xl text-[13px] uppercase tracking-widest hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20"
                   title="Advance Axis"
                 >
-                  ⏩ <FastForward className="w-4 h-4" />
+                  ↪️
                 </button>
             </div>
           </div>
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* LEFT SIDEBAR: INVENTORY */}
+          {/* LEFT SIDEBAR: BAG */}
           <InventoryTray
             catalog={catalog}
             onOpenStore={onOpenSeedStore || (() => {})}
@@ -389,7 +464,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                                 }
                             }}
                             className={`
-                                relative h-full px-4 flex items-center justify-center text-[10px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 min-w-[140px]
+                                relative h-full px-6 flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 whitespace-nowrap
                                 ${i === 0 ? 'border-l' : ''}
                                 ${isActive
                                     ? 'bg-[#0c0a09] text-garden-400 border-b-[#0c0a09] translate-y-[1px] z-10'
@@ -399,7 +474,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                             `}
                         >
                             {garden ? (
-                                <span className="truncate max-w-[120px]">{garden.name}</span>
+                                <span className="">{garden.name}</span>
                             ) : (
                                 <span className="flex items-center gap-2 opacity-60">
                                     <Plus className="w-3 h-3" /> Space {i + 1}
@@ -419,21 +494,21 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               {activeGarden && (
                   <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
                       <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-800 rounded-xl p-2 shadow-lg backdrop-blur-sm">
-                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
                               {activeGarden.type}
                           </div>
-                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
-                             <Sun className="w-3 h-3 inline mr-1" />{activeGarden.sunExposure}
+                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                             ☀️ {activeGarden.sunExposure}
                           </div>
-                          <div className="text-[10px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
-                             <Droplets className="w-3 h-3 inline mr-1" />{activeGarden.soilType}
+                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                             💧 {activeGarden.soilType}
                           </div>
                           <button
                               onClick={() => { setDialogMode('edit'); setShowGardenDialog(true); }}
                               className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
                               title="Configure Garden"
                           >
-                              <Edit className="w-3 h-3" />
+                              <Edit className="w-4 h-4" />
                           </button>
 {/* Delete button removed to enforce fixed 5-garden structure */}
                       </div>
@@ -445,11 +520,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
-                      items={useMemo(() => plantedCards.map((p: any) => ({
+                      items={plantedCards.map((p: any) => ({
                         ...p,
                         hydration: Math.max(0, Math.round((p.hydration ?? 100) * Math.pow(0.85, scrubDays))),
                         stressLevel: Math.min(100, Math.round((p.stressLevel ?? 0) + (scrubDays > 0 && (p.hydration ?? 100) * Math.pow(0.85, scrubDays) < 20 ? scrubDays * 5 : 0)))
-                      })), [plantedCards, scrubDays])}
+                      }))}
                       onSelect={setSelectedPlant}
                       layer={spectralLayer}
                       activeSeedCatalogId={activeSeedCatalogId}
@@ -457,19 +532,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
                       onEdit={(item: any) => console.log('Edit plant:', item)}
-                      onDelete={useCallback(async (item: any) => {
+                      onDelete={async (item: any) => {
                         if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
                           const db = await getDatabase();
                           await db.planted.findOne(item.id).remove();
                           setToast({ message: 'Plant removed from garden', type: 'info' });
                         }
-                      }, [])}
+                      }}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
                         <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
-                        <h3 className="text-lg font-bold text-stone-400 uppercase tracking-widest">No Sector Online</h3>
-                        <p className="text-stone-500 text-xs mt-2">Initialize a garden sector to begin operations.</p>
+                        <h3 className="text-[21px] font-bold text-stone-400 uppercase tracking-widest">No Sector Online</h3>
+                        <p className="text-stone-500 text-[15px] mt-2">Initialize a garden sector to begin operations.</p>
                         <button
                             onClick={() => { setDialogMode('create'); setShowGardenDialog(true); }}
                             className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
@@ -489,69 +564,32 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               {selectedPlant && (
                 <PlantInspector
                   plant={selectedPlant}
-                  catalogItem={useMemo(() => catalog.find(c => c.id === selectedPlant.catalogId), [catalog, selectedPlant.catalogId])}
+                  catalogItem={catalog.find(c => c.id === selectedPlant.catalogId)}
                   companionScore={1}
                   currentDay={currentDay + scrubDays}
-                  onClose={useCallback(() => setSelectedPlant(null), [])}
+                  onClose={() => setSelectedPlant(null)}
                   docked
                 />
               )}
               {!selectedPlant && (
                 <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-20">
-                  <Info className="w-8 h-8 text-stone-600" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500">Intelligence Node Inactive</p>
-                  <p className="text-[9px] text-stone-600 italic">Select a plant unit from the tactical field to initialize link...</p>
+                  <span className="text-2xl">ℹ️</span>
+                  <p className="text-[13px] font-bold uppercase tracking-widest text-stone-500">Intelligence Node Inactive</p>
+                  <p className="text-[12px] text-stone-600 italic">Select a plant unit from the tactical field to initialize link...</p>
                 </div>
               )}
             </aside>
             </div>
 
-          {/* COMMAND DOCK */}
-          <div className="h-16 glass border-t border-stone-800 px-8 flex items-center justify-between z-20 flex-shrink-0">
-            <div className="flex items-center gap-6">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-stone-500 flex items-center gap-2">
-                 <AlertCircle className="w-3 h-3" /> Systems
-              </div>
-              <div className="h-4 w-[1px] bg-stone-800" />
-              <div className="flex items-center gap-3">
-                <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-blue-400 transition-all active:scale-90" title="Water">
-                  <Droplets className="w-4 h-4" />
-                </button>
-                <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-green-400 transition-all active:scale-90" title="Fertilize">
-                  <Activity className="w-4 h-4" />
-                </button>
-                <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-red-400 transition-all active:scale-90" title="Remedy">
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 w-full max-w-2xl justify-end">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 shrink-0 flex items-center gap-2">
-                <Hourglass className="w-3 h-3" /> Temporal Axis
-              </span>
-              <div className="flex-1 max-w-xs">
-                <input
-                  type="range"
-                  min={0}
-                  max={30}
-                  value={scrubDays}
-                  onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
-                  className="w-full accent-garden-500"
-                  aria-label="Temporal scrub slider"
-                  title="Scrub through time"
-                />
-              </div>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 shrink-0">Future: +{scrubDays} Days</span>
-            </div>
-          </div>
+
           </div>
         </div>
 
 
         <DragOverlay dropAnimation={null}>
-          <div className="w-28 h-40 bg-garden-800 rounded-xl border border-garden-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
+          <div className="w-40 h-40 bg-garden-800 rounded-3xl border border-garden-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
             <Sprout className="w-16 h-16 text-garden-300" />
-            <div className="mt-4 text-[10px] font-black uppercase text-garden-400">Deploying...</div>
+            <div className="mt-4 text-[13px] font-black uppercase text-garden-400">Deploying...</div>
           </div>
         </DragOverlay>
       </div>

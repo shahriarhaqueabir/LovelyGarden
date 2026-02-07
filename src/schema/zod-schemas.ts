@@ -76,8 +76,6 @@ export const ExpandedPlantKBSchema = z.object({
   common_diseases: z.array(z.string()).optional(),
   nutrient_preferences: z.array(z.string()).optional(),
   notes: z.string().optional(),
-  sowingSeason: z.array(SeasonSchema).optional(),
-  sowingMethod: z.string().optional(),
   source_metadata: z.array(z.object({
     source_name: z.string(),
     url: z.string(),

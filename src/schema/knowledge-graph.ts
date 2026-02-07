@@ -63,6 +63,22 @@ export interface PlantSpecies {
   antagonists: string[]; // IDs of incompatible plants
   confidence_score: ConfidenceScore;
   sources: string[];
+  // Expanded Fields for Command Center UI
+  seasonality?: {
+    sowing: { start_month: string; end_month: string };
+    harvest: { start_month: string; end_month: string };
+  };
+  sunlight?: string;
+  water_requirements?: string;
+  soil_type?: string[];
+  common_pests?: string[];
+  common_diseases?: string[];
+  nutrient_preferences?: string[];
+  source_metadata?: Array<{
+    source_name: string;
+    url?: string;
+    confidence_score: number;
+  }>;
 }
 
 // --- 3. CLIMATE & LOCATION ---
