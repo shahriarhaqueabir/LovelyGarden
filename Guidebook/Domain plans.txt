@@ -1,0 +1,917 @@
+DOMAIN 1 — TIME & CALENDAR (FOUNDATIONAL)
+
+This domain does not contain plant advice.
+It defines how time is represented so advice can later be attached with evidence and constraints.
+
+No guessing. No regional assumptions.
+
+1. Calendar System (Explicit, Neutral)
+
+We must anchor seasonality to calendar months, because “spring” is meaningless without geography.
+
+{
+  "calendar": {
+    "system": "gregorian",
+    "months": [
+      { "id": "jan", "order": 1 },
+      { "id": "feb", "order": 2 },
+      { "id": "mar", "order": 3 },
+      { "id": "apr", "order": 4 },
+      { "id": "may", "order": 5 },
+      { "id": "jun", "order": 6 },
+      { "id": "jul", "order": 7 },
+      { "id": "aug", "order": 8 },
+      { "id": "sep", "order": 9 },
+      { "id": "oct", "order": 10 },
+      { "id": "nov", "order": 11 },
+      { "id": "dec", "order": 12 }
+    ]
+  }
+}
+
+
+This is boring. That’s good. Boring systems scale.
+
+2. Seasons (Abstract Layer, Not Advice)
+
+Seasons are labels, not instructions.
+
+{
+  "seasons": [
+    {
+      "id": "spring",
+      "definition": "Period between winter and summer; exact months vary by hemisphere and climate"
+    },
+    {
+      "id": "summer",
+      "definition": "Warmest period of the year; varies by region"
+    },
+    {
+      "id": "fall",
+      "definition": "Cooling period between summer and winter"
+    },
+    {
+      "id": "winter",
+      "definition": "Coldest period of the year"
+    }
+  ]
+}
+
+
+No months mapped yet. That comes later via climate zones.
+
+3. Growth Stages (Biological, Universal)
+
+These stages are botanical abstractions, not crop-specific timing.
+
+{
+  "growth_stages": [
+    {
+      "id": "seed",
+      "description": "Dormant or pre-germination state"
+    },
+    {
+      "id": "germination",
+      "description": "Seed activation and emergence"
+    },
+    {
+      "id": "seedling",
+      "description": "Early growth with first true leaves"
+    },
+    {
+      "id": "vegetative",
+      "description": "Leaf and stem growth phase"
+    },
+    {
+      "id": "flowering",
+      "description": "Reproductive flowering phase"
+    },
+    {
+      "id": "fruiting",
+      "description": "Fruit or seed development phase"
+    },
+    {
+      "id": "senescence",
+      "description": "Aging and decline phase"
+    },
+    {
+      "id": "dormant",
+      "description": "Minimal metabolic activity"
+    }
+  ]
+}
+
+
+These are graph nodes, reusable by all plants.
+
+4. Time Windows (Key Normalization)
+
+Instead of “plant in spring”, we define windows that can later be mapped to plants with justification.
+
+{
+  "time_windows": [
+    {
+      "id": "early_spring",
+      "relative_to": "season",
+      "season": "spring",
+      "description": "Beginning portion of spring; exact dates depend on climate"
+    },
+    {
+      "id": "late_spring",
+      "relative_to": "season",
+      "season": "spring",
+      "description": "End portion of spring"
+    },
+    {
+      "id": "early_fall",
+      "relative_to": "season",
+      "season": "fall",
+      "description": "Beginning portion of fall"
+    }
+  ]
+}
+
+
+No months. No temperatures. No assumptions.
+
+5. Action Types (Critical Separation)
+
+We never attach seasons directly to plants.
+We attach seasons to actions.
+
+{
+  "plant_actions": [
+    {
+      "id": "sow_direct",
+      "description": "Sowing seeds directly into final growing location"
+    },
+    {
+      "id": "start_indoors",
+      "description": "Starting seeds indoors under controlled conditions"
+    },
+    {
+      "id": "transplant",
+      "description": "Moving plant from one location to another"
+    },
+    {
+      "id": "harvest",
+      "description": "Collecting edible or usable plant parts"
+    },
+    {
+      "id": "prune",
+      "description": "Selective removal of plant parts"
+    }
+  ]
+}
+
+
+This is the backbone of calendar-based recommendations.
+
+6. Action Timing Rules (Still Plant-Agnostic)
+
+This is where future “suggested crops in season” logic comes from — without guessing.
+
+{
+  "action_time_rules": [
+    {
+      "id": "cool_season_sowing",
+      "action": "sow_direct",
+      "constraints": {
+        "soil_temperature_c_min": 5,
+        "soil_temperature_c_max": 18
+      },
+      "notes": "Used for crops tolerant of cool soil; exact applicability depends on plant species"
+    },
+    {
+      "id": "warm_season_sowing",
+      "action": "sow_direct",
+      "constraints": {
+        "soil_temperature_c_min": 18
+      },
+      "notes": "Used for frost-sensitive crops"
+    }
+  ]
+}
+
+
+Notice:
+
+No plant names
+
+No months
+
+No promises
+
+Only conditions.
+
+7. Calendar Suggestion Engine (Declarative, Safe)
+
+This defines how suggestions will be generated — not what they are.
+
+{
+  "calendar_suggestion_model": {
+    "inputs": [
+      "user_location",
+      "current_date",
+      "climate_zone",
+      "soil_temperature",
+      "plant_action_rules"
+    ],
+    "outputs": [
+      "recommended_actions",
+      "eligible_plants",
+      "confidence_level"
+    ],
+    "safety_rules": [
+      "Do not suggest planting if frost risk is unknown",
+      "Do not suggest sowing without matching soil temperature constraints",
+      "Always include confidence level"
+    ]
+  }
+}
+
+
+This is how you avoid lying to users.
+
+DOMAIN 2 — PLANT SPECIES (CANONICAL, NORMALIZED)
+Rules applied
+
+Species-level (not varieties)
+
+Scientific names included where stable and uncontested
+
+Categories are horticultural, not botanical taxonomy
+
+No claims about when/how to plant
+
+No climate assumptions
+
+1. Plant Categories
+{
+  "plant_categories": [
+    "vegetable",
+    "fruit",
+    "herb",
+    "flower",
+    "ornamental",
+    "tree",
+    "shrub",
+    "vine",
+    "groundcover",
+    "root_crop",
+    "legume",
+    "grain"
+  ]
+}
+
+
+Categories are labels, not biology.
+
+2. Plant Species Catalog
+Vegetables & Root Crops
+{
+  "plants": [
+    {
+      "id": "tomato",
+      "common_name": "Tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "categories": ["vegetable", "fruiting_crop"]
+    },
+    {
+      "id": "potato",
+      "common_name": "Potato",
+      "scientific_name": "Solanum tuberosum",
+      "categories": ["root_crop"]
+    },
+    {
+      "id": "carrot",
+      "common_name": "Carrot",
+      "scientific_name": "Daucus carota subsp. sativus",
+      "categories": ["root_crop"]
+    },
+    {
+      "id": "onion",
+      "common_name": "Onion",
+      "scientific_name": "Allium cepa",
+      "categories": ["vegetable"]
+    },
+    {
+      "id": "garlic",
+      "common_name": "Garlic",
+      "scientific_name": "Allium sativum",
+      "categories": ["vegetable"]
+    },
+    {
+      "id": "lettuce",
+      "common_name": "Lettuce",
+      "scientific_name": "Lactuca sativa",
+      "categories": ["leafy_green"]
+    },
+    {
+      "id": "spinach",
+      "common_name": "Spinach",
+      "scientific_name": "Spinacia oleracea",
+      "categories": ["leafy_green"]
+    },
+    {
+      "id": "cabbage",
+      "common_name": "Cabbage",
+      "scientific_name": "Brassica oleracea var. capitata",
+      "categories": ["vegetable"]
+    },
+    {
+      "id": "broccoli",
+      "common_name": "Broccoli",
+      "scientific_name": "Brassica oleracea var. italica",
+      "categories": ["vegetable"]
+    },
+    {
+      "id": "cucumber",
+      "common_name": "Cucumber",
+      "scientific_name": "Cucumis sativus",
+      "categories": ["vegetable", "vine"]
+    },
+    {
+      "id": "zucchini",
+      "common_name": "Zucchini",
+      "scientific_name": "Cucurbita pepo",
+      "categories": ["vegetable"]
+    },
+    {
+      "id": "pepper",
+      "common_name": "Pepper",
+      "scientific_name": "Capsicum annuum",
+      "categories": ["vegetable"]
+    }
+  ]
+}
+
+Herbs
+{
+  "plants": [
+    {
+      "id": "basil",
+      "common_name": "Basil",
+      "scientific_name": "Ocimum basilicum",
+      "categories": ["herb"]
+    },
+    {
+      "id": "parsley",
+      "common_name": "Parsley",
+      "scientific_name": "Petroselinum crispum",
+      "categories": ["herb"]
+    },
+    {
+      "id": "cilantro",
+      "common_name": "Cilantro",
+      "scientific_name": "Coriandrum sativum",
+      "categories": ["herb"]
+    },
+    {
+      "id": "rosemary",
+      "common_name": "Rosemary",
+      "scientific_name": "Salvia rosmarinus",
+      "categories": ["herb", "shrub"]
+    },
+    {
+      "id": "thyme",
+      "common_name": "Thyme",
+      "scientific_name": "Thymus vulgaris",
+      "categories": ["herb"]
+    },
+    {
+      "id": "mint",
+      "common_name": "Mint",
+      "scientific_name": "Mentha spp.",
+      "categories": ["herb", "groundcover"]
+    }
+  ]
+}
+
+
+Note: Mentha spp. is intentionally plural — exact species vary and are often hybridized.
+
+Fruits (Garden-Scale)
+{
+  "plants": [
+    {
+      "id": "strawberry",
+      "common_name": "Strawberry",
+      "scientific_name": "Fragaria × ananassa",
+      "categories": ["fruit", "groundcover"]
+    },
+    {
+      "id": "blueberry",
+      "common_name": "Blueberry",
+      "scientific_name": "Vaccinium spp.",
+      "categories": ["fruit", "shrub"]
+    },
+    {
+      "id": "apple",
+      "common_name": "Apple",
+      "scientific_name": "Malus domestica",
+      "categories": ["fruit", "tree"]
+    },
+    {
+      "id": "pear",
+      "common_name": "Pear",
+      "scientific_name": "Pyrus communis",
+      "categories": ["fruit", "tree"]
+    },
+    {
+      "id": "grape",
+      "common_name": "Grape",
+      "scientific_name": "Vitis vinifera",
+      "categories": ["fruit", "vine"]
+    },
+    {
+      "id": "fig",
+      "common_name": "Fig",
+      "scientific_name": "Ficus carica",
+      "categories": ["fruit", "tree"]
+    }
+  ]
+}
+
+Flowers & Ornamentals
+{
+  "plants": [
+    {
+      "id": "rose",
+      "common_name": "Rose",
+      "scientific_name": "Rosa spp.",
+      "categories": ["flower", "shrub"]
+    },
+    {
+      "id": "tulip",
+      "common_name": "Tulip",
+      "scientific_name": "Tulipa spp.",
+      "categories": ["flower"]
+    },
+    {
+      "id": "sunflower",
+      "common_name": "Sunflower",
+      "scientific_name": "Helianthus annuus",
+      "categories": ["flower"]
+    },
+    {
+      "id": "marigold",
+      "common_name": "Marigold",
+      "scientific_name": "Tagetes spp.",
+      "categories": ["flower"]
+    },
+    {
+      "id": "lavender",
+      "common_name": "Lavender",
+      "scientific_name": "Lavandula angustifolia",
+      "categories": ["flower", "herb", "shrub"]
+    },
+    {
+      "id": "daisy",
+      "common_name": "Daisy",
+      "scientific_name": "Bellis perennis",
+      "categories": ["flower"]
+    }
+  ]
+}
+
+3. Explicit Scope Declaration (Non-Negotiable)
+{
+  "catalog_scope": {
+    "coverage": "Commonly cultivated garden plants",
+    "exclusions": [
+      "wild native species",
+      "rare ornamentals",
+      "commercial monoculture crops",
+      "region-specific cultivars"
+    ],
+    "extension_method": "Add species as new nodes without modifying existing ones"
+  }
+}
+
+
+This is how you stay honest.
+
+DOMAIN 3 — CLIMATE & LOCATION (NORMALIZED, NON-ADVISORY)
+
+This domain answers only one question:
+
+“What environmental context is this garden operating in?”
+
+Nothing more.
+
+1. Hemispheres (Primary Temporal Modifier)
+
+Seasons invert by hemisphere. This must be explicit.
+
+{
+  "hemispheres": [
+    {
+      "id": "northern",
+      "description": "Northern Hemisphere"
+    },
+    {
+      "id": "southern",
+      "description": "Southern Hemisphere"
+    }
+  ]
+}
+
+
+No assumptions. Later logic will shift calendars based on this.
+
+2. Climate Zone Systems (Declared, Not Merged)
+
+Multiple systems exist. We do not collapse them.
+
+{
+  "climate_zone_systems": [
+    {
+      "id": "usda_hardiness",
+      "authority": "United States Department of Agriculture",
+      "basis": "Average annual minimum winter temperature",
+      "scope": "Cold tolerance only"
+    },
+    {
+      "id": "koppen_geiger",
+      "authority": "Wladimir Köppen / Rudolf Geiger",
+      "basis": "Temperature and precipitation patterns",
+      "scope": "General climate classification"
+    }
+  ]
+}
+
+
+Important:
+USDA ≠ growing calendar. This avoids a common lie.
+
+3. USDA Hardiness Zones (Exact, Verifiable)
+
+These values are defined ranges, not advice.
+
+{
+  "usda_hardiness_zones": [
+    { "id": "zone_3", "min_temp_c": -40, "max_temp_c": -34 },
+    { "id": "zone_4", "min_temp_c": -34, "max_temp_c": -29 },
+    { "id": "zone_5", "min_temp_c": -29, "max_temp_c": -23 },
+    { "id": "zone_6", "min_temp_c": -23, "max_temp_c": -18 },
+    { "id": "zone_7", "min_temp_c": -18, "max_temp_c": -12 },
+    { "id": "zone_8", "min_temp_c": -12, "max_temp_c": -7 },
+    { "id": "zone_9", "min_temp_c": -7, "max_temp_c": -1 },
+    { "id": "zone_10", "min_temp_c": -1, "max_temp_c": 4 }
+  ]
+}
+
+
+These ranges are USDA-published and static.
+
+4. Köppen–Geiger Climate Classes (High-Level)
+
+No microclimates. Only major classes.
+
+{
+  "koppen_climates": [
+    { "id": "Csa", "description": "Mediterranean, hot summer" },
+    { "id": "Cfb", "description": "Temperate oceanic" },
+    { "id": "Dfb", "description": "Cold continental" },
+    { "id": "BWh", "description": "Hot desert" },
+    { "id": "Aw", "description": "Tropical savanna" }
+  ]
+}
+
+
+These are classification labels, not predictions.
+
+5. Frost Metrics (Critical for Planting Safety)
+
+Frost is measurable and defensible.
+
+{
+  "frost_metrics": [
+    {
+      "id": "last_spring_frost",
+      "description": "Average date of last frost in spring"
+    },
+    {
+      "id": "first_fall_frost",
+      "description": "Average date of first frost in fall"
+    },
+    {
+      "id": "frost_free_days",
+      "description": "Number of days between last spring frost and first fall frost"
+    }
+  ]
+}
+
+
+We do not store dates here — only definitions.
+
+6. Temperature Metrics (Used Later by Rules)
+{
+  "temperature_metrics": [
+    {
+      "id": "soil_temperature",
+      "unit": "celsius",
+      "description": "Temperature of soil at planting depth"
+    },
+    {
+      "id": "air_temperature",
+      "unit": "celsius",
+      "description": "Ambient air temperature"
+    }
+  ]
+}
+
+
+No thresholds attached yet.
+
+7. Precipitation & Moisture (Non-Prescriptive)
+{
+  "moisture_metrics": [
+    {
+      "id": "annual_precipitation",
+      "unit": "mm",
+      "description": "Total yearly precipitation"
+    },
+    {
+      "id": "relative_humidity",
+      "unit": "percent",
+      "description": "Average atmospheric humidity"
+    }
+  ]
+}
+
+8. Location Entity (User Context Node)
+
+This is how everything connects later.
+
+{
+  "locations": [
+    {
+      "id": "user_location",
+      "properties": {
+        "latitude": null,
+        "longitude": null,
+        "hemisphere": null,
+        "usda_zone": null,
+        "koppen_climate": null,
+        "frost_data": {
+          "last_spring_frost": null,
+          "first_fall_frost": null,
+          "frost_free_days": null
+        }
+      },
+      "notes": "All values optional; absence must reduce confidence of recommendations"
+    }
+  ]
+}
+
+
+Nullability is intentional and honest.
+
+9. Climate Confidence Rules (Safety Layer)
+{
+  "climate_confidence_rules": [
+    {
+      "condition": "missing_frost_data",
+      "impact": "reduce_recommendation_confidence"
+    },
+    {
+      "condition": "unknown_hemisphere",
+      "impact": "disable_calendar_suggestions"
+    },
+    {
+      "condition": "unknown_soil_temperature",
+      "impact": "block_direct_sowing_recommendations"
+    }
+  ]
+}
+
+
+This prevents dangerous advice.
+
+DOMAIN 4 — PLANT ↔ ACTION ↔ TIME (EVIDENCE-BOUND)
+
+This is where “what to plant now” eventually comes from — without guessing.
+
+4.1 Action Timing Relationships
+{
+  "plant_action_time_rules": [
+    {
+      "id": "tomato_direct_sow_warm_soil",
+      "plant_id": "tomato",
+      "action": "sow_direct",
+      "constraints": {
+        "soil_temperature_c_min": 18,
+        "frost_risk": "none"
+      },
+      "time_window": "after_last_spring_frost",
+      "evidence_basis": "widely accepted horticultural practice",
+      "confidence_level": "high"
+    },
+    {
+      "id": "lettuce_direct_sow_cool_soil",
+      "plant_id": "lettuce",
+      "action": "sow_direct",
+      "constraints": {
+        "soil_temperature_c_min": 4,
+        "soil_temperature_c_max": 18
+      },
+      "time_window": "early_spring",
+      "evidence_basis": "agronomic field studies and extension services",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+
+No months.
+No regions.
+Only conditions + evidence.
+
+DOMAIN 5 — SOIL (MEASURABLE, NON-MYTHICAL)
+5.1 Soil Properties
+{
+  "soil_properties": [
+    {
+      "id": "ph",
+      "unit": "pH",
+      "description": "Acidity or alkalinity of soil"
+    },
+    {
+      "id": "texture",
+      "values": ["sand", "silt", "clay", "loam"]
+    },
+    {
+      "id": "organic_matter",
+      "unit": "percent"
+    },
+    {
+      "id": "drainage",
+      "values": ["poor", "moderate", "well"]
+    }
+  ]
+}
+
+5.2 Plant–Soil Preferences (Not Guarantees)
+{
+  "plant_soil_preferences": [
+    {
+      "plant_id": "blueberry",
+      "preferred_ph_range": [4.5, 5.5],
+      "evidence_basis": "peer-reviewed soil chemistry research",
+      "confidence_level": "high"
+    },
+    {
+      "plant_id": "lavender",
+      "preferred_drainage": "well",
+      "evidence_basis": "Mediterranean climate cultivation studies",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+
+No claims of success — only preference correlation.
+
+DOMAIN 6 — PESTS (ORGANISMS, NOT SYMPTOMS)
+6.1 Pest Entities
+{
+  "pests": [
+    {
+      "id": "aphid",
+      "scientific_group": "Aphidoidea",
+      "type": "insect"
+    },
+    {
+      "id": "tomato_hornworm",
+      "scientific_name": "Manduca quinquemaculata",
+      "type": "insect"
+    }
+  ]
+}
+
+6.2 Pest–Plant Relationships
+{
+  "plant_pest_relationships": [
+    {
+      "plant_id": "tomato",
+      "pest_id": "aphid",
+      "likelihood": "high",
+      "growth_stage_sensitive": ["seedling", "vegetative"],
+      "evidence_basis": "field observations across multiple regions",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+DOMAIN 7 — DISEASES (PATHOGEN-CENTRIC)
+7.1 Disease Entities
+{
+  "diseases": [
+    {
+      "id": "early_blight",
+      "pathogen": "Alternaria solani",
+      "pathogen_type": "fungal"
+    },
+    {
+      "id": "powdery_mildew",
+      "pathogen_type": "fungal"
+    }
+  ]
+}
+
+7.2 Disease–Plant Relationships
+{
+  "plant_disease_relationships": [
+    {
+      "plant_id": "tomato",
+      "disease_id": "early_blight",
+      "risk_factors": ["high_humidity", "warm_temperatures"],
+      "evidence_basis": "plant pathology research",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+DOMAIN 8 — TREATMENTS (CONSTRAINED, NOT PROMOTIONAL)
+8.1 Treatment Methods
+{
+  "treatments": [
+    {
+      "id": "neem_oil",
+      "type": "organic",
+      "mechanism": "insect growth regulation"
+    },
+    {
+      "id": "bt",
+      "type": "biological",
+      "mechanism": "bacterial toxin"
+    }
+  ]
+}
+
+8.2 Treatment Constraints
+{
+  "treatment_constraints": [
+    {
+      "treatment_id": "neem_oil",
+      "restrictions": ["not_a_fungicide", "avoid_pollinators"]
+    }
+  ]
+}
+
+DOMAIN 9 — COMPANION & INTERACTION GRAPH (CAUSAL, NOT FOLKLORE)
+9.1 Interaction Types
+{
+  "interaction_types": [
+    "pest_deterrence",
+    "nutrient_competition",
+    "allelopathy",
+    "structural_support"
+  ]
+}
+
+9.2 Plant–Plant Interactions
+{
+  "plant_interactions": [
+    {
+      "plant_a": "tomato",
+      "plant_b": "basil",
+      "interaction_type": "pest_deterrence",
+      "evidence_basis": "observational studies; limited controlled trials",
+      "confidence_level": "medium"
+    }
+  ]
+}
+
+
+Note the explicit confidence downgrade.
+
+DOMAIN 10 — OBSERVATIONS & DIAGNOSTICS (USER INPUT)
+{
+  "observations": [
+    {
+      "id": "leaf_yellowing",
+      "category": "visual_symptom"
+    },
+    {
+      "id": "leaf_spots",
+      "category": "visual_symptom"
+    }
+  ]
+}
+
+DOMAIN 11 — INFERENCE SAFETY & CONFIDENCE
+{
+  "inference_rules": [
+    {
+      "condition": "multiple_possible_causes",
+      "action": "present_differential_diagnosis"
+    },
+    {
+      "condition": "low_confidence",
+      "action": "recommend_observation_not_action"
+    }
+  ]
+}

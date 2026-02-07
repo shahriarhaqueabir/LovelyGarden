@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Garden Deck | Full System Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0c0a09; color: #e7e5e4; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .grid-dot { background-image: radial-gradient(#292524 1.5px, transparent 1.5px); background-size: 24px 24px; }
+        .glass { background: rgba(28, 25, 23, 0.7); backdrop-filter: blur(8px); border: 1px solid rgba(68, 64, 60, 0.5); }
+        .pulse-red { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0%, 100% { border-color: rgba(239, 68, 68, 0.3); } 50% { border-color: rgba(239, 68, 68, 1); } }
+        .modal-bg { background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <nav class="h-16 flex items-center justify-between px-8 glass z-30">
+        <div class="flex items-center gap-6">
+            <h1 class="font-black text-2xl tracking-tighter text-emerald-500 italic">GARDEN DECK</h1>
+            <div id="day-counter" class="bg-stone-900 px-4 py-1.5 rounded-full border border-stone-800 text-xs font-bold text-emerald-400">Day: 1</div>
+            <div class="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Region: Northern Hemisphere</div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="toggleCalendar()" class="px-4 py-2 bg-stone-800 text-white rounded-full text-xs hover:bg-stone-700 transition-all">
+                <i class="fa-solid fa-calendar-days mr-2"></i> SOWING CALENDAR
+            </button>
+            <button onclick="advanceTime()" class="px-6 py-2 bg-emerald-600 text-stone-950 font-black rounded-full text-xs hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-500/20">
+                NEXT DAY <i class="fa-solid fa-forward ml-2"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        <aside class="w-20 border-r border-stone-800 glass flex flex-col items-center py-8 gap-8">
+            <button onclick="initGrid()" class="text-emerald-500 text-xl"><i class="fa-solid fa-table-cells"></i></button>
+            <button onclick="toggleCalendar()" class="text-stone-600 hover:text-stone-300 text-xl"><i class="fa-solid fa-book-open"></i></button>
+        </aside>
+
+        <main class="flex-1 p-12 grid-dot overflow-auto">
+            <div id="garden-grid" class="max-w-4xl mx-auto grid grid-cols-4 gap-6"></div>
+        </main>
+
+        <aside id="inspector" class="w-80 border-l border-stone-800 glass p-6 hidden">
+            <div id="inspector-content" class="space-y-6"></div>
+        </aside>
+    </div>
+
+    <footer class="h-32 bg-stone-950 border-t border-stone-800 flex items-center px-12 gap-8">
+        <div id="inventory" class="flex gap-4">
+            <div class="w-24 h-24 bg-stone-900 border border-stone-800 rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-500 group" onclick="selectSeed('tomato', '🍅', 'Tomato')">
+                <div class="text-3xl group-hover:scale-110 transition-transform">🍅</div>
+                <p class="text-[10px] mt-2 font-bold uppercase text-stone-500 group-hover:text-emerald-500">Tomato</p>
+            </div>
+            <div class="w-24 h-24 bg-stone-900 border border-stone-800 rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-500 group" onclick="selectSeed('carrot', '🥕', 'Carrot')">
+                <div class="text-3xl group-hover:scale-110 transition-transform">🥕</div>
+                <p class="text-[10px] mt-2 font-bold uppercase text-stone-500 group-hover:text-orange-500">Carrot</p>
+            </div>
+        </div>
+        <p id="selection-msg" class="text-xs text-stone-500 italic ml-auto">Select a card from your hand...</p>
+    </footer>
+
+    <div id="calendar-modal" class="fixed inset-0 z-50 modal-bg flex items-center justify-center hidden">
+        <div class="w-full max-w-2xl bg-stone-900 border border-stone-800 rounded-3xl p-8 shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold">Horticultural Calendar</h2>
+                <button onclick="toggleCalendar()" class="text-stone-500 hover:text-white text-xl">&times;</button>
+            </div>
+            <table class="w-full text-left text-sm">
+                <thead class="text-stone-500 uppercase text-[10px] tracking-widest border-b border-stone-800">
+                    <tr>
+                        <th class="pb-4">Plant Type</th>
+                        <th class="pb-4">Best Sowing Window</th>
+                        <th class="pb-4">Confidence</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-800">
+                    <tr>
+                        <td class="py-4 flex items-center gap-3"><span>🍅</span> Beefsteak Tomato</td>
+                        <td class="py-4 text-emerald-400 font-semibold">March - May</td>
+                        <td class="py-4 text-stone-500">98% (High)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-4 flex items-center gap-3"><span>🥕</span> Danvers Carrot</td>
+                        <td class="py-4 text-emerald-400 font-semibold">March - July</td>
+                        <td class="py-4 text-stone-500">95% (High)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mt-8 text-[10px] text-stone-600 italic">Data synthesized from Northern Hemisphere climate models.</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedSeed = null;
+        let day = 1;
+        const gardenState = Array(8).fill(null);
+
+        function selectSeed(id, icon, label) {
+            selectedSeed = { id, icon, label };
+            document.getElementById('selection-msg').innerText = `READY TO PLANT: ${label.toUpperCase()}`;
+            document.getElementById('selection-msg').className = "text-xs text-emerald-400 font-black ml-auto animate-pulse";
+        }
+
+        function toggleCalendar() {
+            document.getElementById('calendar-modal').classList.toggle('hidden');
+        }
+
+        function advanceTime() {
+            day++;
+            document.getElementById('day-counter').innerText = `Day: ${day}`;
+            gardenState.forEach(p => {
+                if (p) {
+                    p.age++;
+                    // Growth Logic
+                    if (p.age > 2 && p.stage === 'Sown') { p.stage = 'Seedling'; p.currentIcon = '🌱'; }
+                    if (p.age > 6 && p.stage === 'Seedling') { p.stage = 'Mature'; p.currentIcon = p.icon; }
+                    
+                    // Stressor Logic (10% chance)
+                    if (!p.stressor && p.stage !== 'Sown' && Math.random() < 0.10) {
+                        p.stressor = { id: 'aphids', label: 'Aphid Infestation', icon: '🐜' };
+                        p.status = 'Stressed';
+                    }
+                }
+            });
+            initGrid();
+        }
+
+        function plant(idx) {
+            if (!selectedSeed) return;
+            gardenState[idx] = { ...selectedSeed, age: 0, stage: 'Sown', currentIcon: '🕳️', status: 'Healthy', stressor: null };
+            selectedSeed = null;
+            document.getElementById('selection-msg').innerText = "Select a card from your hand...";
+            document.getElementById('selection-msg').className = "text-xs text-stone-500 italic ml-auto";
+            initGrid();
+        }
+
+        function treat(idx) {
+            gardenState[idx].stressor = null;
+            gardenState[idx].status = 'Healthy';
+            inspect(idx);
+            initGrid();
+        }
+
+        function initGrid() {
+            const grid = document.getElementById('garden-grid');
+            grid.innerHTML = gardenState.map((p, i) => `
+                <div onclick="${p ? `inspect(${i})` : `plant(${i})`}" class="aspect-[3/4] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all border-2 
+                    ${p ? (p.stressor ? 'glass pulse-red border-red-500' : 'glass border-emerald-500/30 shadow-lg shadow-emerald-500/5') : 'border-dashed border-stone-800 hover:border-stone-600'}">
+                    ${p ? `
+                        <div class="relative">
+                            <div class="text-5xl drop-shadow-lg">${p.currentIcon}</div>
+                            ${p.stressor ? `<div class="absolute -top-3 -right-3 text-xl bg-stone-900 rounded-full p-1 border border-red-500/50">${p.stressor.icon}</div>` : ''}
+                        </div>
+                        <div class="text-[9px] font-black mt-6 ${p.stressor ? 'text-red-400' : 'text-emerald-500'} tracking-widest">${p.status.toUpperCase()}</div>
+                    ` : `<i class="fa-solid fa-plus text-stone-800 text-xl"></i>`}
+                </div>
+            `).join('');
+        }
+
+        function inspect(i) {
+            const p = gardenState[i];
+            const ins = document.getElementById('inspector');
+            ins.classList.remove('hidden');
+            document.getElementById('inspector-content').innerHTML = `
+                <div class="p-5 bg-stone-900 rounded-2xl border border-stone-800">
+                    <p class="text-[10px] text-stone-500 uppercase font-black mb-3">Biological Unit</p>
+                    <h3 class="font-bold text-xl">${p.label}</h3>
+                    <div class="flex gap-4 mt-2">
+                        <span class="text-xs text-stone-400 font-mono">Age: ${p.age}d</span>
+                        <span class="text-xs text-emerald-500 font-mono uppercase">${p.stage}</span>
+                    </div>
+                </div>
+                ${p.stressor ? `
+                    <div class="p-5 bg-red-950/20 border border-red-500/40 rounded-2xl">
+                        <p class="text-[10px] text-red-400 font-black mb-2 tracking-widest">DIAGNOSTIC</p>
+                        <p class="text-sm font-bold text-white mb-3 underline decoration-red-500/50">${p.stressor.label}</p>
+                        <button onclick="treat(${i})" class="w-full py-3 bg-red-600 text-white text-xs font-black rounded-xl hover:bg-red-500 transition-all active:scale-95 shadow-lg shadow-red-900/40">APPLY REMEDY</button>
+                    </div>
+                ` : `
+                    <div class="p-5 bg-emerald-950/20 border border-emerald-900/40 rounded-2xl">
+                        <p class="text-[10px] text-emerald-400 font-black mb-2 tracking-widest">SYSTEM REASONING</p>
+                        <p class="text-xs leading-relaxed text-stone-300">Environment check: Optimal. <b>98% Confidence</b> that growth will continue uninhibited.</p>
+                    </div>
+                `}
+            `;
+        }
+        initGrid();
+    </script>
+</body>
+</html>

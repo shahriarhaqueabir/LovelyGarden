@@ -1,0 +1,85 @@
+🤖 ACTIVATING AGENT D: Content Curator
+Objective: Populate the library with high-fidelity seed data. This dataset isn't just a list; it’s a simulation engine matrix that defines how plants interact, when they grow, and how often they need care.
+
+I have curated a starter set of 8 core plants that demonstrate all the mechanics we've built: Adjacency Buffs (Companions), Seasonal Constraints, and Multi-stage Lifecycles.
+
+1. The seeds.json Dataset
+This file should be placed in your public/data/ folder for the app to fetch on the first load.
+
+JSON
+[
+  {
+    "id": "tomato-beefsteak",
+    "name": "Beefsteak Tomato",
+    "scientificName": "Solanum lycopersicum",
+    "description": "Large, meaty heirloom tomatoes. Requires staking and heavy sun.",
+    "sowingSeason": ["Spring"],
+    "sowingMethod": "Transplant",
+    "stages": [
+      { "name": "Germination", "durationDays": 7, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
+      { "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2, "imageAssetId": "tomato_seedling" },
+      { "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2, "imageAssetId": "tomato_bush" },
+      { "name": "Flowering", "durationDays": 20, "waterFrequencyDays": 1, "imageAssetId": "tomato_flower" },
+      { "name": "Harvest", "durationDays": 15, "waterFrequencyDays": 2, "imageAssetId": "tomato_fruit" }
+    ],
+    "companions": ["basil-genovese", "marigold-french", "onion-yellow", "carrot-danvers"],
+    "antagonists": ["broccoli-calabrese", "potato-russet", "corn-sweet"]
+  },
+  {
+    "id": "basil-genovese",
+    "name": "Genovese Basil",
+    "scientificName": "Ocimum basilicum",
+    "description": "The classic Italian basil. Repels pests and improves tomato flavor.",
+    "sowingSeason": ["Spring", "Summer"],
+    "sowingMethod": "Direct",
+    "stages": [
+      { "name": "Germination", "durationDays": 5, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
+      { "name": "Young Herb", "durationDays": 15, "waterFrequencyDays": 2, "imageAssetId": "basil_small" },
+      { "name": "Harvest", "durationDays": 40, "waterFrequencyDays": 2, "imageAssetId": "basil_large" }
+    ],
+    "companions": ["tomato-beefsteak", "pepper-bell"],
+    "antagonists": []
+  },
+  {
+    "id": "carrot-danvers",
+    "name": "Danvers Carrot",
+    "scientificName": "Daucus carota",
+    "description": "Reliable orange root vegetable. Loves loose soil.",
+    "sowingSeason": ["Spring", "Summer", "Autumn"],
+    "sowingMethod": "Direct",
+    "stages": [
+      { "name": "Germination", "durationDays": 14, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
+      { "name": "Top Growth", "durationDays": 30, "waterFrequencyDays": 3, "imageAssetId": "carrot_greens" },
+      { "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 4, "imageAssetId": "carrot_root" }
+    ],
+    "companions": ["onion-yellow", "tomato-beefsteak", "lettuce-butterhead"],
+    "antagonists": ["dill-mammoth"]
+  },
+  {
+    "id": "marigold-french",
+    "name": "French Marigold",
+    "scientificName": "Tagetes patula",
+    "description": "The 'Garden Guardian'. Protects neighbors from soil nematodes.",
+    "sowingSeason": ["Spring", "Summer"],
+    "sowingMethod": "Direct",
+    "stages": [
+      { "name": "Germination", "durationDays": 5, "waterFrequencyDays": 1, "imageAssetId": "sprout_generic" },
+      { "name": "Leafing", "durationDays": 20, "waterFrequencyDays": 2, "imageAssetId": "flower_leaf" },
+      { "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 3, "imageAssetId": "marigold_bloom" }
+    ],
+    "companions": ["tomato-beefsteak", "cucumber-marketmore", "squash-zucchini"],
+    "antagonists": []
+  }
+]
+2. Content Strategy Rationale
+The "Three Sisters" Trio: I recommend adding Sweet Corn, Pole Beans, and Zucchini Squash next. These represent the ultimate mechanical synergy:
+
+Corn provides the trellis (Visual/Mechanical).
+
+Beans provide nitrogen (Logic Buff).
+
+Squash provides ground cover to prevent weeds (Logic Buff/Visual).
+
+Water Frequency Logic: Notice that Germination stages always have a 1 day water frequency. This creates a "Newbie" gameplay loop where the user must check their fresh seeds daily, but can relax as the plants mature.
+
+Asset Management: I’ve used generic imageAssetId tags like sprout_generic. This allows you to reuse one sprout image for 50 different plants, saving on total app size for the offline GitHub Pages deployment.

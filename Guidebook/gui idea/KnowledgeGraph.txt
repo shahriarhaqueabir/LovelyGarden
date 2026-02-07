@@ -1,0 +1,58 @@
+🧬 Knowledge Graph Schema (seeds.json)This JSON structure is designed to be hydrated into RxDB. It covers the first 4 major domains: Taxonomy, Growth, Companion Logic, and Evidence.JSON{
+  "version": "1.0.0",
+  "last_updated": "2026-02-07",
+  "entities": [
+    {
+      "id": "solanum-lycopersicum-001",
+      "domain": "Taxonomy",
+      "common_name": "Beefsteak Tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "family": "Solanaceae",
+      "variety": "Beefsteak",
+      "attributes": {
+        "growth_habit": "Indeterminate",
+        "sun_requirement": "Full Sun",
+        "water_needs": "Consistent / High"
+      },
+      "lifecycle": {
+        "germination_days": [6, 11],
+        "seedling_days": [14, 21],
+        "maturity_days": 85,
+        "optimal_temp_range": [18, 29]
+      },
+      "companionship": {
+        "buffs": ["basil", "marigold", "garlic"],
+        "debuffs": ["potato", "fennel", "walnut"],
+        "reasoning": "Basil repels thrips and improves flavor; Potatoes share similar blight vulnerabilities."
+      },
+      "governance": {
+        "confidence_score": 0.98,
+        "source": "RHS Encyclopedia of Gardening",
+        "evidence_type": "Peer Reviewed / Institutional"
+      }
+    },
+    {
+      "id": "ocimum-basilicum-001",
+      "domain": "Taxonomy",
+      "common_name": "Genovese Basil",
+      "scientific_name": "Ocimum basilicum",
+      "family": "Lamiaceae",
+      "lifecycle": {
+        "germination_days": [5, 10],
+        "maturity_days": 60,
+        "optimal_temp_range": [21, 32]
+      },
+      "companionship": {
+        "buffs": ["tomato", "pepper"],
+        "debuffs": ["rue", "sage"],
+        "reasoning": "Strong aromatic oils act as a natural pest deterrent for soft-skinned fruits."
+      },
+      "governance": {
+        "confidence_score": 0.95,
+        "source": "USDA Plant Database",
+        "evidence_type": "Institutional"
+      }
+    }
+  ]
+}
+🗺️ The 16 Domain RoadmapTo complete the full graph, we will expand the entities array to include specialized entries for these remaining domains:CategoryDomainDescriptionFoundation1. TaxonomyScientific naming, family, and variety identification.2. Growth LifecycleDays to germinate, sprout, flower, and harvest.3. HardinessFrost tolerance and USDA Zone compatibility.Logic4. CompanionshipSymbiotic buffs and competitive debuffs.5. Soil ChemistryOptimal pH range and N-P-K nutrient needs.6. Pest EcologyVulnerabilities to specific insects and fungi.Simulation7. HydrationEvapotranspiration rates based on temperature.8. Light ExposurePhotoperiod requirements (Short-day vs. Long-day).9. SpacingCritical root volume and canopy spread math.Governance10. EvidenceSource citations and academic verification.11. ConfidenceProbability scores for AI-generated advice.12. LocationRegional sowing windows (Northern vs. Southern).System13. UI AssetsIconography and card art references.14. Audio CuesNative sound triggers for growth/stress events.15. Market Data(Optional) Seed rarity and catalog tiers.16. Audit LogImmutable history of plant status changes.

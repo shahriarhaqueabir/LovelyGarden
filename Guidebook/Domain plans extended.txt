@@ -1,0 +1,566 @@
+1.1 Plant Entity (Expanded)
+{
+  "plants": [
+    {
+      "id": "tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "taxonomic_rank": {
+        "family": "Solanaceae",
+        "genus": "Solanum",
+        "species": "lycopersicum"
+      },
+      "plant_type": ["vegetable", "fruiting_crop"],
+      "life_cycle": "annual",
+      "growth_habit": ["herbaceous"],
+      "photosynthesis_type": "C3",
+      "origin_region": "western_south_america",
+      "domestication_status": "domesticated",
+      "edible_parts": ["fruit"],
+      "toxic_parts": ["leaves", "stems"],
+      "pollination_type": "self_pollinating",
+      "evidence_basis": "botanical taxonomy and agronomic literature",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+Why this matters
+
+Photosynthesis type affects heat tolerance
+
+Growth habit affects spacing & support
+
+Edible vs toxic parts prevents dangerous UX errors
+
+Origin region informs climate inference later
+
+1.2 Plant Classification (Reusable Dimension)
+{
+  "plant_types": [
+    "leafy_vegetable",
+    "root_vegetable",
+    "fruiting_crop",
+    "legume",
+    "grain",
+    "herb",
+    "ornamental_flower",
+    "ornamental_foliage",
+    "tree_fruit",
+    "vine_fruit",
+    "groundcover"
+  ]
+}
+
+1.3 Life Cycle Definitions (Non-Negotiable Biology)
+{
+  "life_cycles": [
+    {
+      "id": "annual",
+      "definition": "completes its life cycle in one growing season"
+    },
+    {
+      "id": "biennial",
+      "definition": "vegetative growth first year, reproduction second year"
+    },
+    {
+      "id": "perennial",
+      "definition": "lives multiple years and may flower repeatedly"
+    }
+  ]
+}
+
+1.4 Growth Habit (Architectural Reality)
+{
+  "growth_habits": [
+    "upright",
+    "bushy",
+    "vining",
+    "trailing",
+    "climbing",
+    "rosette",
+    "spreading"
+  ]
+}
+
+1.5 Edibility & Use Safety Layer
+{
+  "plant_use_profiles": [
+    {
+      "plant_id": "tomato",
+      "uses": ["fresh_consumption", "cooking", "processing"],
+      "known_toxicity_notes": "green tissues contain glycoalkaloids",
+      "evidence_basis": "food safety and plant chemistry studies",
+      "confidence_level": "high"
+    }
+  ]
+}
+
+1.6 Reproductive Biology (Crucial for Yield Logic)
+{
+  "reproductive_traits": [
+    {
+      "plant_id": "tomato",
+      "flower_type": "perfect_flower",
+      "pollination_agents": ["wind", "insects"],
+      "requires_cross_pollination": false,
+      "confidence_level": "high"
+    }
+  ]
+}
+
+
+DOMAIN 1 — CLIMATE & HARDINESS
+
+Purpose:
+Enable where a plant can survive and why.
+Backs location-based recommendations and climate adaptation logic.
+
+{
+  "climate_zones": [
+    {
+      "id": "climate_zone_usda_6b",
+      "system": "USDA",
+      "min_temp_c": -20.6,
+      "max_temp_c": -17.8,
+      "description": "Cold winters, moderate summers",
+      "common_regions": ["Central Europe", "Northern USA"]
+    }
+  ],
+  "koppen_climates": [
+    {
+      "id": "koppen_cfb",
+      "name": "Temperate Oceanic",
+      "characteristics": {
+        "summer": "cool",
+        "winter": "mild",
+        "precipitation": "year-round"
+      }
+    }
+  ],
+  "plant_climate_requirements": [
+    {
+      "plant_id": "plant_tomato",
+      "min_temp_c": 10,
+      "optimal_temp_range_c": [18, 29],
+      "frost_tolerant": false,
+      "heat_tolerant": true,
+      "humidity_preference": "moderate"
+    }
+  ]
+}
+
+DOMAIN 2 — SOIL & GROWING MEDIUM
+
+Purpose:
+Explain what roots experience, not just “loamy / sandy”.
+
+{
+  "soil_types": [
+    {
+      "id": "soil_loam",
+      "texture": "balanced",
+      "water_retention": "moderate",
+      "drainage": "good",
+      "nutrient_capacity": "high"
+    }
+  ],
+  "soil_chemistry": [
+    {
+      "id": "soil_ph_range_6_5",
+      "ph_min": 6.0,
+      "ph_max": 6.8,
+      "availability_notes": "Optimal nutrient uptake for most vegetables"
+    }
+  ],
+  "plant_soil_preferences": [
+    {
+      "plant_id": "plant_carrot",
+      "preferred_soil": ["soil_sandy_loam"],
+      "ph_range": [6.0, 6.8],
+      "soil_depth_cm": 30,
+      "compaction_tolerance": "low"
+    }
+  ],
+  "soil_amendments": [
+    {
+      "id": "amendment_compost",
+      "effect": ["improves_structure", "adds_nutrients", "increases_biological_activity"],
+      "application_rate": "2-5 cm top dressing"
+    }
+  ]
+}
+
+DOMAIN 3 — WATERING & IRRIGATION
+
+Purpose:
+Prevent both root rot and drought stress with logic instead of guesswork.
+
+{
+  "watering_patterns": [
+    {
+      "id": "watering_deep_infrequent",
+      "description": "Encourages deep root growth",
+      "recommended_for": ["fruiting_vegetables", "perennials"]
+    }
+  ],
+  "plant_water_requirements": [
+    {
+      "plant_id": "plant_lettuce",
+      "water_need": "high",
+      "root_depth_cm": 15,
+      "drought_tolerance": "low",
+      "overwatering_risk": "moderate"
+    }
+  ],
+  "irrigation_methods": [
+    {
+      "id": "irrigation_drip",
+      "efficiency": "high",
+      "leaf_wetting": false,
+      "disease_risk": "low"
+    }
+  ]
+}
+
+DOMAIN 4 — SUNLIGHT & MICROCLIMATE
+
+Purpose:
+Let the app reason about shade, walls, balconies, heat traps.
+
+{
+  "sun_exposure_levels": [
+    {
+      "id": "sun_full",
+      "hours_per_day": [6, 8],
+      "notes": "Direct sunlight"
+    }
+  ],
+  "plant_light_requirements": [
+    {
+      "plant_id": "plant_basil",
+      "sun_requirement": "sun_full",
+      "shade_tolerance": "low"
+    }
+  ],
+  "microclimate_effects": [
+    {
+      "id": "microclimate_south_wall",
+      "effects": ["heat_retention", "frost_protection"],
+      "risk": ["overheating"]
+    }
+  ]
+}
+
+DOMAIN 5 — PLANT LIFECYCLE & GROWTH STAGES
+
+Purpose:
+Enable reminders, interventions, and diagnostics by stage.
+
+{
+  "growth_stages": [
+    {
+      "id": "stage_germination",
+      "description": "Seed sprouting",
+      "sensitivity": ["drying_out", "cold"]
+    },
+    {
+      "id": "stage_fruiting",
+      "description": "Flower to fruit development",
+      "nutrient_demand": "high"
+    }
+  ],
+  "plant_lifecycle": [
+    {
+      "plant_id": "plant_pepper",
+      "stages": [
+        {"stage_id": "stage_germination", "duration_days": 7},
+        {"stage_id": "stage_vegetative", "duration_days": 35},
+        {"stage_id": "stage_fruiting", "duration_days": 60}
+      ]
+    }
+  ]
+}
+
+DOMAIN 6 — PESTS, DISEASES & TREATMENTS
+
+Purpose:
+Accurate diagnosis + evidence-based responses only.
+
+{
+  "pests": [
+    {
+      "id": "pest_aphid",
+      "type": "insect",
+      "affected_plants": ["plant_tomato", "plant_rose"],
+      "damage": ["sap_sucking", "virus_transmission"]
+    }
+  ],
+  "diseases": [
+    {
+      "id": "disease_powdery_mildew",
+      "pathogen_type": "fungal",
+      "conditions": ["high_humidity", "poor_airflow"]
+    }
+  ],
+  "treatments": [
+    {
+      "id": "treatment_neem_oil",
+      "type": "organic",
+      "targets": ["pest_aphid"],
+      "application_notes": "Apply in evening to avoid leaf burn"
+    }
+  ]
+}
+
+DOMAIN 7 — COMPANION & ANTAGONISTIC RELATIONSHIPS
+
+Purpose:
+Explain why plants help or harm each other.
+
+{
+  "plant_relationships": [
+    {
+      "source_plant_id": "plant_basil",
+      "target_plant_id": "plant_tomato",
+      "relationship": "beneficial",
+      "mechanism": ["pest_deterrence", "microclimate_improvement"]
+    },
+    {
+      "source_plant_id": "plant_fennel",
+      "target_plant_id": "plant_beans",
+      "relationship": "antagonistic",
+      "mechanism": ["allelopathy"]
+    }
+  ]
+}
+
+DOMAIN 8 — CALENDAR & SEASONAL INTELLIGENCE
+
+Purpose:
+Tell users what to plant now, not just what exists.
+
+{
+  "sowing_calendar": [
+    {
+      "plant_id": "plant_spinach",
+      "climate_zone_id": "climate_zone_usda_6b",
+      "sowing_window": {
+        "start": "March",
+        "end": "April"
+      },
+      "method": "direct_sow"
+    }
+  ],
+  "harvest_calendar": [
+    {
+      "plant_id": "plant_spinach",
+      "harvest_window_days_after_sowing": [30, 45]
+    }
+  ],
+  "seasonal_recommendations": [
+    {
+      "month": "March",
+      "climate_zone_id": "climate_zone_usda_6b",
+      "recommended_plants": ["plant_peas", "plant_spinach"],
+      "avoid_plants": ["plant_tomato"]
+    }
+  ]
+}
+
+DOMAIN 9 — CONFIDENCE & SOURCE METADATA
+
+Purpose:
+Track why something is believed, how strongly, and under what conditions it may change.
+
+This domain never alters facts. It annotates them.
+
+Design principles
+
+• Multiple sources per claim
+• Confidence is scoped (climate, region, context)
+• Distinguish empirical evidence vs horticultural consensus
+• Support future audits and corrections
+
+JSON
+{
+  "sources": [
+    {
+      "id": "source_rhs",
+      "name": "Royal Horticultural Society",
+      "type": "institution",
+      "url": "https://www.rhs.org",
+      "credibility_tier": "authoritative"
+    },
+    {
+      "id": "source_extension_ucdavis",
+      "name": "UC Davis Cooperative Extension",
+      "type": "academic_extension",
+      "credibility_tier": "authoritative"
+    }
+  ],
+  "evidence_types": [
+    {
+      "id": "evidence_peer_reviewed",
+      "description": "Peer-reviewed scientific literature"
+    },
+    {
+      "id": "evidence_extension_guideline",
+      "description": "Agricultural extension consensus"
+    }
+  ],
+  "confidence_annotations": [
+    {
+      "entity_type": "plant_water_requirement",
+      "entity_id": "plant_tomato",
+      "confidence_score": 0.95,
+      "evidence_type_id": "evidence_extension_guideline",
+      "sources": ["source_extension_ucdavis"],
+      "context_scope": {
+        "climate_zones": ["climate_zone_usda_6b", "climate_zone_usda_7a"],
+        "growth_stage": ["stage_fruiting"]
+      },
+      "notes": "Well-established requirement across temperate climates"
+    }
+  ]
+}
+
+
+This allows your app to say:
+
+“High confidence, supported by UC Davis, applicable to your climate and growth stage.”
+
+That is trustworthy AI.
+
+DOMAIN 10 — AI REASONING RULES
+
+Purpose:
+Turn static knowledge into explainable decisions, not black-box predictions.
+
+No guessing.
+No probabilistic hallucinations.
+Rules are explicit, inspectable, and overridable.
+
+Rule taxonomy
+
+• Eligibility rules (can this plant grow here?)
+• Recommendation rules (should it be planted now?)
+• Diagnostic rules (what’s likely wrong?)
+• Intervention rules (what action helps now?)
+
+JSON
+{
+  "reasoning_rules": [
+    {
+      "id": "rule_sowing_season_match",
+      "type": "recommendation",
+      "description": "Recommend sowing only if current month is within sowing window",
+      "inputs": [
+        "current_month",
+        "plant_id",
+        "climate_zone_id"
+      ],
+      "conditions": [
+        {
+          "fact": "sowing_calendar.sowing_window",
+          "operator": "contains",
+          "value": "current_month"
+        }
+      ],
+      "outputs": {
+        "recommendation": "allow_sow",
+        "confidence_modifier": 1.0
+      },
+      "explanation_template": "This plant is typically sown during this month in your climate zone."
+    },
+    {
+      "id": "rule_frost_sensitive_block",
+      "type": "constraint",
+      "description": "Prevent sowing frost-sensitive plants when frost risk exists",
+      "conditions": [
+        {
+          "fact": "plant_climate_requirements.frost_tolerant",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "environment.frost_risk",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "outputs": {
+        "recommendation": "block_sow"
+      },
+      "explanation_template": "This plant is sensitive to frost, which is still likely in your area."
+    }
+  ]
+}
+
+
+Every recommendation can be traced:
+rule → facts → explanation → sources.
+
+This is critical for user trust and regulatory safety.
+
+DOMAIN 11 — USER BEHAVIOR & FEEDBACK LOOPS
+
+Purpose:
+Let the system learn from users without redefining reality.
+
+User data influences confidence, personalization, and heuristics, never base facts.
+
+Design boundaries
+
+• User feedback never overwrites authoritative data
+• Feedback is contextual (location, soil, setup)
+• Learning adjusts weights, not truths
+
+JSON
+{
+  "user_profiles": [
+    {
+      "id": "user_123",
+      "location": {
+        "climate_zone_id": "climate_zone_usda_7a",
+        "urban": true
+      },
+      "experience_level": "beginner"
+    }
+  ],
+  "user_actions": [
+    {
+      "user_id": "user_123",
+      "action_type": "plant_sown",
+      "plant_id": "plant_tomato",
+      "timestamp": "2026-03-15",
+      "conditions": {
+        "soil_type": "soil_container_mix",
+        "sun_exposure": "sun_full"
+      }
+    }
+  ],
+  "user_feedback": [
+    {
+      "user_id": "user_123",
+      "plant_id": "plant_tomato",
+      "outcome": "poor_growth",
+      "reported_issue": "yellowing_leaves",
+      "growth_stage": "stage_vegetative"
+    }
+  ],
+  "feedback_aggregation": [
+    {
+      "plant_id": "plant_tomato",
+      "context": {
+        "container_grown": true,
+        "climate_zone_id": "climate_zone_usda_7a"
+      },
+      "observed_pattern": "higher_nitrogen_deficiency_reports",
+      "effect": {
+        "confidence_adjustment": -0.05,
+        "rule_hint": "check_nitrogen_earlier"
+      },
+      "note": "User-reported trend; does not override nutrient requirements"
+    }
+  ]
+}

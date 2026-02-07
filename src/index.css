@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-garden-50: #f0fdf4;
+  --color-garden-100: #dcfce7;
+  --color-garden-200: #bbf7d0;
+  --color-garden-300: #86efac;
+  --color-garden-400: #4ade80;
+  --color-garden-500: #22c55e;
+  --color-garden-600: #16a34a;
+  --color-garden-700: #15803d;
+  --color-garden-800: #166534;
+  --color-garden-900: #14532d;
+  --color-garden-950: #052e16;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0c0a09;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0c0a09;
+}
+
+#root {
+  width: 100%;
+}
+
+/* Command Center Utilities */
+.grid-dot {
+  background-image: radial-gradient(#292524 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.glass {
+  background: rgba(28, 25, 23, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(68, 64, 60, 0.4);
+}
+
+.pulse-red {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { border-color: rgba(239, 68, 68, 0.3); }
+  50% { border-color: rgba(239, 68, 68, 1); }
+}
+
+button {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
