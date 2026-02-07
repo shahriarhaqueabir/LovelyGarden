@@ -1,3 +1,4 @@
+import { getMonth, addMonths } from 'date-fns';
 import { PlantSpecies, PlantRelationship, UserLocation, Season } from '../schema/knowledge-graph';
 
 /**
@@ -35,11 +36,16 @@ export const isSowingSeason = (
   location: UserLocation,
   currentMonth: number // 0-11
 ): { eligible: boolean; reason: string } => {
-  // Simplified seasonal mapping for N. Hemisphere
+  // Precise seasonal mapping using date-fns
   const monthsNorth: Season[] = ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter'];
-  const currentSeason = location.hemisphere === 'North' 
-    ? monthsNorth[currentMonth] 
-    : monthsNorth[(currentMonth + 6) % 12]; // Flip for South
+  
+  // Normalize date for hemisphere
+  const referenceDate = new Date(2024, currentMonth, 15);
+  const adjustedDate = location.hemisphere === 'North' 
+    ? referenceDate 
+    : addMonths(referenceDate, 6);
+    
+  const currentSeason = monthsNorth[getMonth(adjustedDate)];
 
   const allowedSeasons = plant.sowingSeason || [];
   

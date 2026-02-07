@@ -2,31 +2,36 @@
 
 This is the simplified, sequential roadmap for executing Project Garden Deck from start to finish.
 
-## ✅ Phase 1: Knowledge & Infrastructure (COMPLETED)
-1.  **Define Domain Schemas**: Established 16 normalized schemas (Time, Species, Climate, etc.).
-2.  **Setup Core Tech Stack**: Initialized React/Vite/TypeScript/RxDB.
-3.  **Knowledge Assembly**: Aggregated `seeds.json` and `sources.json`.
-4.  **Data Hydration**: Built RxDB injection utility for first load.
+## ✅ Phase 1: Knowledge & Foundations (COMPLETED)
 
-## ✅ Phase 2: The Logic Engine (COMPLETED)
-1.  **Build Lifecycle FSM**: Implemented XState growth machine.
-2.  **Develop Reasoning Rules**: Coded companion, seasonal, and confidence logic.
-3.  **Create Explainability Payloads**: Standardized reasoning output for UI transparency.
+1. **Schema Lockdown**: 16 domain models established in `knowledge-graph.ts`.
+2. **Local-First Core**: React + RxDB + IndexedDB pipeline initialized.
+3. **PWA Integration**: Service worker and manifests for offline installability.
 
-## ✅ Phase 4: The Garden Interface (COMPLETED)
-1.  **Design Garden Grid**: Built 2D CSS Grid and Inventory Tray.
-2.  **Implement Drag-and-Drop**: Wired `dnd-kit` for planting mechanics.
-3.  **Reactive Binding**: Connected RxDB observers via custom hooks.
+## ✅ Phase 2: Logic & Simulation (COMPLETED)
 
-## ✅ Phase 4: Governance & Advanced Features (COMPLETED)
-1.  **Implement Diagnostic View**: Created the Plant Inspector with source citations.
-2.  **Build the Store**: Implemented the Seed Vault for inventory management.
-3.  **Dynamic Calendar**: Coded hemisphere-aware seasonal recommendations.
+1. **Lifecycle FSM**: XState-driven growth stages logic.
+2. **Temporal Engine**: Global Day advancement and temporal state persistence.
+3. **Reasoning Subsystem**: Companion scores and seasonal sowing calculation.
 
-## ✅ Phase 5: Reliability & Deployment (COMPLETED)
-1.  **PWA Integration**: Configured offline manifests and service workers via Vite PWA.
-2.  **Documentation**: Created comprehensive Technical Spec, User Guide, and Data Governance docs.
-3.  **Final Build**: Verified production build stability via `npm run build`.
+## ✅ Phase 3: Organization & UX (COMPLETED)
+
+1. **Grid Dynamics**: Interactive slots, drag-and-drop planting, and garden expansion.
+2. **Encyclopedia Search**: Filterable views for the plant catalog.
+3. **Location Aware**: Hemisphere-specific calendars and localized (Dresden) assumptions.
+
+## 🔜 Phase 4: Command Center (IN PROGRESS)
+
+1. **Environmental HUD**: High-density metrics bar in Header.
+2. **Real-Time Synergy**: Visualizing NPK and companion bonuses in real-time.
+3. **Time Scrubbing**: Implementation of the year-long temporal slider.
+
+## 📅 Phase 5: Horticultural Depth (PLANNED)
+
+1. **Ritual Loop**: Water/Fertilize mechanics and nutrient depletion.
+2. **Dynamic Weather**: Integration with real-world forecast APIs.
+3. **Advanced Simulation**: Pest/Disease contagion and diagnostic clinical view.
 
 ---
-*Status: Mission Accomplished. Systems Nominal. All Knowledge Local.*
+*Last Updated: February 2026*
+*Status: Pivoting to Phase 4 Transformation.*

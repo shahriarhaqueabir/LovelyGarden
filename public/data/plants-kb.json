@@ -1,27 +1,38 @@
 {
   "plants": [
     {
-      "plant_id": "plant_apple",
-      "common_name": "Apple",
-      "scientific_name": "Malus domestica",
-      "type": "fruit",
-      "family": "Rosaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "flowering", "fruiting", "harvest"],
+      "plant_id": "plant_tomato",
+      "common_name": "Tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "type": "vegetable",
+      "family": "Solanaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 2},
+        {"id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "fruiting", "name": "Fruiting", "durationDays": 35, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3}
+      ],
       "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "August", "end_month": "October" }
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "July", "end_month": "September"}
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_chives", "plant_garlic"],
-      "incompatible_plants": ["plant_fennel"],
-      "common_pests": ["pest_codling_moth"],
-      "common_diseases": ["disease_apple_scab"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
-      "notes": "Requires pruning and pollinator variety for best yields.",
+      "soil_type": ["loamy", "rich", "well_draining"],
+      "companion_plants": ["plant_basil", "plant_marigold"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_aphids", "pest_whitefly"],
+      "common_diseases": ["disease_blight", "disease_early_blight"],
+      "nutrient_preferences": ["nitrogen_moderate", "potassium_high"],
+      "notes": "Requires staking or caging and consistent watering to prevent blossom end rot.",
       "source_metadata": [
-        { "source_name": "UC Davis Fruit Research", "url": "https://fruitresearch.ucdavis.edu", "confidence_score": 0.96 }
+        {"source_name": "UC ANR Vegetable Research", "url": "https://ucanr.edu", "confidence_score": 0.97},
+        {"source_name": "Cornell Cooperative Extension", "url": "https://cals.cornell.edu", "confidence_score": 0.97}
       ]
     },
     {
@@ -31,95 +42,31 @@
       "type": "herb",
       "family": "Lamiaceae",
       "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 5, "waterFrequencyDays": 1},
+        {"id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 2}
+      ],
       "seasonality": {
-        "sowing_indoor": { "start_month": "February", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "May", "end_month": "June" },
-        "harvest": { "start_month": "June", "end_month": "October" },
-        "sowing": { "start_month": "March", "end_month": "May" }
+        "sowing": {"start_month": "April", "end_month": "May"},
+        "harvest": {"start_month": "June", "end_month": "September"}
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_tomato", "plant_pepper"],
-      "incompatible_plants": ["plant_fennel"],
-      "common_pests": ["pest_aphid", "pest_leaf_hopper"],
-      "common_diseases": ["disease_downy_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Pinch flowers to extend leaf growth; attracts pollinators.",
+      "companion_plants": ["plant_tomato"],
+      "incompatible_plants": ["plant_rue"],
+      "common_pests": ["pest_aphids"],
+      "common_diseases": ["disease_downy_mildew", "disease_fusarium_wilt"],
+      "nutrient_preferences": ["nitrogen_moderate"],
+      "notes": "Pinch flowers regularly to extend leaf production.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_beetroot",
-      "common_name": "Beetroot",
-      "scientific_name": "Beta vulgaris",
-      "type": "vegetable",
-      "family": "Amaranthaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "root_development", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "June" },
-        "harvest": { "start_month": "June", "end_month": "October" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_onion", "plant_lettuce"],
-      "incompatible_plants": ["plant_mustard"],
-      "common_pests": ["pest_leaf_miner"],
-      "common_diseases": ["disease_downy_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_moderate"],
-      "notes": "Thin seedlings to avoid overcrowding; sensitive to frost.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_borage",
-      "common_name": "Borage",
-      "scientific_name": "Borago officinalis",
-      "type": "herb",
-      "family": "Boraginaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "May" },
-        "harvest": { "start_month": "June", "end_month": "September" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_strawberry", "plant_tomato", "plant_peach"],
-      "incompatible_plants": [],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Attracts pollinators and beneficial insects.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.95 }
-      ]
-    },
-    {
-      "plant_id": "plant_cabbage",
-      "common_name": "Cabbage",
-      "scientific_name": "Brassica oleracea var. capitata",
-      "type": "vegetable",
-      "family": "Brassicaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "head_development", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "June", "end_month": "October" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_beetroot", "plant_onion", "plant_mint", "plant_rosemary", "plant_sage", "plant_thyme"],
-      "incompatible_plants": ["plant_tomato", "plant_strawberry"],
-      "common_pests": ["pest_cabbage_worm", "pest_aphid", "pest_cabbage_white"],
-      "common_diseases": ["disease_black_rot", "disease_fusarium_wilt"],
-      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"],
-      "notes": "Ensure crop rotation to prevent disease.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.95},
+        {"source_name": "Missouri Botanical Garden", "url": "https://www.missouribotanicalgarden.org", "confidence_score": 0.95}
       ]
     },
     {
@@ -128,71 +75,678 @@
       "scientific_name": "Daucus carota subsp. sativus",
       "type": "vegetable",
       "family": "Apiaceae",
-      "growth_stage": ["seed", "seedling", "root_development", "vegetative", "harvest"],
+      "growth_stage": ["seed", "seedling", "root_development", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1},
+        {"id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "root_development", "name": "Root Development", "durationDays": 45, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3}
+      ],
       "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "July" },
-        "harvest": { "start_month": "June", "end_month": "October" }
+        "sowing": {"start_month": "March", "end_month": "June"},
+        "harvest": {"start_month": "June", "end_month": "October"}
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
-      "soil_type": ["loamy", "sandy", "well_draining"],
-      "companion_plants": ["plant_tomato", "plant_lettuce", "plant_pea", "plant_parsley", "plant_thyme", "plant_chives"],
+      "soil_type": ["sandy", "loose", "well_draining"],
+      "companion_plants": ["plant_onion", "plant_leek", "plant_lettuce"],
       "incompatible_plants": ["plant_dill"],
-      "common_pests": ["pest_carrot_fly", "pest_carrot_root_fly", "pest_aphid"],
-      "common_diseases": ["disease_cavity_spot", "disease_alternaria_leaf", "disease_alternaria_leaf_blur"],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate", "nitrogen_moderate", "phosphorus_high"],
-      "notes": "Loose soil recommended for straight roots; thin seedlings.",
+      "common_pests": ["pest_carrot_fly"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["phosphorus_moderate"],
+      "notes": "Avoid compacted soil to prevent forked roots.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
+        {"source_name": "Missouri Botanical Garden", "url": "https://www.missouribotanicalgarden.org", "confidence_score": 0.96},
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.96}
       ]
     },
     {
-      "plant_id": "plant_chives",
-      "common_name": "Chives",
-      "scientific_name": "Allium schoenoprasum",
-      "type": "herb",
-      "family": "Amaryllidaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
+      "plant_id": "plant_lavender",
+      "common_name": "Lavender",
+      "scientific_name": "Lavandula angustifolia",
+      "type": "flower",
+      "family": "Lamiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 21, "waterFrequencyDays": 2}
+      ],
       "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "April" },
-        "harvest": { "start_month": "May", "end_month": "October" }
+        "sowing": {"start_month": "February", "end_month": "April"},
+        "harvest": {"start_month": "June", "end_month": "August"}
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["sandy", "well_draining"],
+      "companion_plants": ["plant_roses", "plant_rosemary"],
+      "incompatible_plants": ["plant_mint", "plant_blueberry"],
+      "common_pests": ["pest_spittlebug"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_low"],
+      "notes": "Thrives in dry conditions; overwatering is the most common failure mode.",
+      "source_metadata": [
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.97}
+      ]
+    },
+    {
+      "plant_id": "plant_rose",
+      "common_name": "Rose",
+      "scientific_name": "Rosa spp.",
+      "type": "flower",
+      "family": "Rosaceae",
+      "growth_stage": ["dormant", "vegetative", "flowering"],
+      "stages": [
+        {"id": "dormant", "name": "Dormant", "durationDays": 60, "waterFrequencyDays": 7},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "June", "end_month": "September"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_tomato", "plant_apple", "plant_peach"],
-      "incompatible_plants": ["plant_pea"],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Perennial; cut leaves to encourage growth.",
+      "companion_plants": ["plant_lavender", "plant_garlic"],
+      "incompatible_plants": ["plant_fennel"],
+      "common_pests": ["pest_aphids", "pest_japanese_beetle"],
+      "common_diseases": ["disease_black_spot", "disease_powdery_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "potassium_high"],
+      "notes": "Requires regular pruning and good air circulation.",
       "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.95 }
+        {"source_name": "American Rose Society", "url": "https://www.rose.org", "confidence_score": 0.96}
       ]
     },
     {
-      "plant_id": "plant_corn",
-      "common_name": "Corn",
-      "scientific_name": "Zea mays",
+      "plant_id": "plant_lettuce",
+      "common_name": "Lettuce",
+      "scientific_name": "Lactuca sativa",
       "type": "vegetable",
-      "family": "Poaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "tasseling", "silking", "harvest"],
+      "family": "Asteraceae",
+      "growth_stage": ["seed", "seedling", "leaf_development", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 5, "waterFrequencyDays": 1},
+        {"id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2},
+        {"id": "leaf_development", "name": "Leaf Development", "durationDays": 25, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 2}
+      ],
       "seasonality": {
-        "sowing": { "start_month": "April", "end_month": "June" },
-        "harvest": { "start_month": "August", "end_month": "October" }
+        "sowing": {"start_month": "March", "end_month": "May"},
+        "harvest": {"start_month": "May", "end_month": "July"}
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "partial_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_carrot", "plant_radish"],
+      "incompatible_plants": ["plant_parsley"],
+      "common_pests": ["pest_aphids", "pest_slugs"],
+      "common_diseases": ["disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate"],
+      "notes": "Bolts quickly in heat; prefers cool temperatures.",
+      "source_metadata": [
+        {"source_name": "USDA Cooperative Extension", "url": "https://www.usda.gov", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_spinach",
+      "common_name": "Spinach",
+      "scientific_name": "Spinacia oleracea",
+      "type": "vegetable",
+      "family": "Amaranthaceae",
+      "growth_stage": ["seed", "seedling", "leaf_development", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1},
+        {"id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2},
+        {"id": "leaf_development", "name": "Leaf Development", "durationDays": 20, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "May", "end_month": "June"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "partial_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "rich"],
+      "companion_plants": ["plant_strawberry"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_leafminer"],
+      "common_diseases": ["disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_high"],
+      "notes": "Cold-tolerant and fast-growing; harvest outer leaves first.",
+      "source_metadata": [
+        {"source_name": "Missouri Botanical Garden", "url": "https://www.missouribotanicalgarden.org", "confidence_score": 0.95},
+        {"source_name": "University of Maryland Extension", "url": "https://extension.umd.edu", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_radish",
+      "common_name": "Radish",
+      "scientific_name": "Raphanus sativus",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "root_development", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 3, "waterFrequencyDays": 1},
+        {"id": "seedling", "name": "Seedling", "durationDays": 7, "waterFrequencyDays": 2},
+        {"id": "root_development", "name": "Root Development", "durationDays": 18, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 7, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "May"},
+        "harvest": {"start_month": "April", "end_month": "June"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_squash", "plant_sunflower", "plant_melon", "plant_watermelon", "plant_cucumber"],
-      "incompatible_plants": ["plant_tomato"],
-      "common_pests": ["pest_corn_borer"],
-      "common_diseases": ["disease_rust"],
-      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"],
-      "notes": "Tall plants; avoid shading smaller crops.",
+      "soil_type": ["loose", "well_draining"],
+      "companion_plants": ["plant_lettuce", "plant_carrot"],
+      "incompatible_plants": ["plant_hyssop"],
+      "common_pests": ["pest_flea_beetle"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["phosphorus_moderate"],
+      "notes": "One of the fastest crops; uneven watering causes bitterness.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_strawberry",
+      "common_name": "Strawberry",
+      "scientific_name": "Fragaria × ananassa",
+      "type": "fruit",
+      "family": "Rosaceae",
+      "growth_stage": ["seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        {"id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "fruiting", "name": "Fruiting", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "May", "end_month": "July"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "rich", "well_draining"],
+      "companion_plants": ["plant_spinach", "plant_borage"],
+      "incompatible_plants": ["plant_cabbage"],
+      "common_pests": ["pest_slugs", "pest_spider_mites"],
+      "common_diseases": ["disease_gray_mold", "disease_powdery_mildew"],
+      "nutrient_preferences": ["phosphorus_moderate"],
+      "notes": "Mulching helps prevent fruit rot and conserves moisture.",
+      "source_metadata": [
+        {"source_name": "University of California Agriculture & Natural Resources", "url": "https://ucanr.edu", "confidence_score": 0.97},
+        {"source_name": "University of California Agriculture and Natural Resources", "url": "https://ucanr.edu", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_blueberry",
+      "common_name": "Blueberry",
+      "scientific_name": "Vaccinium corymbosum",
+      "type": "shrub",
+      "family": "Ericaceae",
+      "growth_stage": ["vegetative", "flowering", "fruiting"],
+      "stages": [
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 60, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "fruiting", "name": "Fruiting", "durationDays": 45, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "July", "end_month": "August"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["acidic", "well_draining"],
+      "companion_plants": ["plant_rhododendron"],
+      "incompatible_plants": ["plant_lime", "plant_lavender"],
+      "common_pests": ["pest_birds"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_low"],
+      "notes": "Requires acidic soil (pH 4.5–5.5) to thrive.",
+      "source_metadata": [
+        {"source_name": "USDA Plant Guide", "url": "https://plants.usda.gov", "confidence_score": 0.97},
+        {"source_name": "Oregon State University Extension", "url": "https://extension.oregonstate.edu", "confidence_score": 0.97}
+      ]
+    },
+    {
+      "plant_id": "plant_potato",
+      "common_name": "Potato",
+      "scientific_name": "Solanum tuberosum",
+      "type": "vegetable",
+      "family": "Solanaceae",
+      "growth_stage": ["sprout", "vegetative", "tuber_development", "harvest"],
+      "stages": [
+        {"id": "sprout", "name": "Sprout", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 3},
+        {"id": "tuber_development", "name": "Tuber Development", "durationDays": 45, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "April", "end_month": "May"},
+        "harvest": {"start_month": "July", "end_month": "September"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_beans", "plant_cabbage"],
+      "incompatible_plants": ["plant_tomato"],
+      "common_pests": ["pest_colorado_potato_beetle"],
+      "common_diseases": ["disease_late_blight"],
+      "nutrient_preferences": ["potassium_high"],
+      "notes": "Hilling soil improves yield and prevents greening.",
+      "source_metadata": [
+        {"source_name": "University of Minnesota Extension", "url": "https://extension.umn.edu", "confidence_score": 0.97}
+      ]
+    },
+    {
+      "plant_id": "plant_marigold",
+      "common_name": "Marigold",
+      "scientific_name": "Tagetes erecta",
+      "type": "flower",
+      "family": "Asteraceae",
+      "growth_stage": ["seed", "vegetative", "flowering"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "flowering", "name": "Flowering", "durationDays": 60, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "April", "end_month": "May"},
+        "harvest": {"start_month": "June", "end_month": "October"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_tomato", "plant_beans"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_spider_mites"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_low"],
+      "notes": "Known for suppressing soil nematodes.",
+      "source_metadata": [
+        {"source_name": "Texas A&M AgriLife Extension", "url": "https://agrilifeextension.tamu.edu", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_apple_tree",
+      "common_name": "Apple Tree",
+      "scientific_name": "Malus domestica",
+      "type": "fruit_tree",
+      "family": "Rosaceae",
+      "growth_stage": ["sapling", "vegetative", "flowering", "fruiting", "dormant"],
+      "stages": [
+        {"id": "sapling", "name": "Sapling", "durationDays": 365, "waterFrequencyDays": 3},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 120, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "fruiting", "name": "Fruiting", "durationDays": 90, "waterFrequencyDays": 2},
+        {"id": "dormant", "name": "Dormant", "durationDays": 120, "waterFrequencyDays": 7}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "February", "end_month": "March"},
+        "harvest": {"start_month": "September", "end_month": "October"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_chives", "plant_marigold"],
+      "incompatible_plants": ["plant_walnut"],
+      "common_pests": ["pest_codling_moth"],
+      "common_diseases": ["disease_apple_scab"],
+      "nutrient_preferences": ["potassium_high"],
+      "notes": "Requires winter chill hours for proper fruiting.",
+      "source_metadata": [
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.97}
+      ]
+    },
+    {
+      "plant_id": "plant_pea",
+      "common_name": "Pea",
+      "scientific_name": "Pisum sativum",
+      "type": "vegetable",
+      "family": "Fabaceae",
+      "growth_stage": ["seed", "vegetative", "flowering", "harvest"],
+      "stages": [
+        {"id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 25, "waterFrequencyDays": 2},
+        {"id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2},
+        {"id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "February", "end_month": "April"},
+        "harvest": {"start_month": "May", "end_month": "July"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_carrot", "plant_turnip"],
+      "incompatible_plants": ["plant_onion"],
+      "common_pests": ["pest_pea_moth"],
+      "common_diseases": ["disease_powdery_mildew"],
+      "nutrient_preferences": ["nitrogen_fixing"],
+      "notes": "Improves soil nitrogen availability.",
+      "source_metadata": [
+        {"source_name": "Penn State Extension", "url": "https://extension.psu.edu", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_fern",
+      "common_name": "Fern",
+      "scientific_name": "Dryopteris filix-mas",
+      "type": "ornamental",
+      "family": "Dryopteridaceae",
+      "growth_stage": ["frond_emergence", "vegetative", "dormant"],
+      "stages": [
+        {"id": "frond_emergence", "name": "Frond Emergence", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 150, "waterFrequencyDays": 2},
+        {"id": "dormant", "name": "Dormant", "durationDays": 90, "waterFrequencyDays": 7}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "June", "end_month": "September"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["moist", "rich"],
+      "companion_plants": ["plant_hosta"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_slugs"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["organic_matter_high"],
+      "notes": "Prefers consistently moist soil and shade.",
+      "source_metadata": [
+        {"source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk", "confidence_score": 0.95}
+      ]
+    },
+    {
+      "plant_id": "plant_rosemary",
+      "common_name": "Rosemary",
+      "scientific_name": "Salvia rosmarinus",
+      "type": "herb",
+      "family": "Lamiaceae",
+      "growth_stage": ["vegetative", "flowering"],
+      "stages": [
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 180, "waterFrequencyDays": 7},
+        {"id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 3}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "April", "end_month": "May"},
+        "harvest": {"start_month": "June", "end_month": "October"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["sandy", "well_draining"],
+      "companion_plants": ["plant_lavender"],
+      "incompatible_plants": ["plant_basil"],
+      "common_pests": ["pest_spider_mites"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_low"],
+      "notes": "Prefers dry conditions and good airflow.",
+      "source_metadata": [
+        {"source_name": "Missouri Botanical Garden", "url": "https://www.missouribotanicalgarden.org", "confidence_score": 0.96}
+      ]
+    },
+    {
+      "plant_id": "plant_mint",
+      "common_name": "Mint",
+      "scientific_name": "Mentha spicata",
+      "type": "herb",
+      "family": "Lamiaceae",
+      "growth_stage": ["vegetative", "flowering"],
+      "stages": [
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 120, "waterFrequencyDays": 2},
+        {"id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "May"},
+        "harvest": {"start_month": "June", "end_month": "September"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "partial_shade",
+      "water_requirements": "high",
+      "soil_type": ["moist", "rich"],
+      "companion_plants": ["plant_cabbage"],
+      "incompatible_plants": ["plant_lavender"],
+      "common_pests": ["pest_aphids"],
+      "common_diseases": ["disease_rust"],
+      "nutrient_preferences": ["nitrogen_moderate"],
+      "notes": "Aggressive spreader; best grown in containers.",
+      "source_metadata": [
+        {"source_name": "University of Illinois Extension", "url": "https://extension.illinois.edu", "confidence_score": 0.95}
+      ]
+    },
+    {
+      "plant_id": "plant_spider_plant",
+      "common_name": "Spider Plant",
+      "scientific_name": "Chlorophytum comosum",
+      "type": "indoor_plant",
+      "family": "Asparagaceae",
+      "growth_stage": ["vegetative", "propagation"],
+      "stages": [
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 365, "waterFrequencyDays": 7},
+        {"id": "propagation", "name": "Propagation", "durationDays": 30, "waterFrequencyDays": 3}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "January", "end_month": "December"},
+        "harvest": {"start_month": "January", "end_month": "December"}
+      },
+      "sowingSeason": ["Spring", "Summer", "Fall", "Winter"],
+      "sowingMethod": "Transplant",
+      "sunlight": "indirect_light",
+      "water_requirements": "moderate",
+      "soil_type": ["well_draining"],
+      "companion_plants": [],
+      "incompatible_plants": [],
+      "common_pests": ["pest_spider_mites"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["balanced"],
+      "notes": "Highly tolerant of indoor conditions and low light.",
+      "source_metadata": [
+        {"source_name": "NASA Clean Air Study", "url": "https://ntrs.nasa.gov", "confidence_score": 0.94}
+      ]
+    },
+    {
+      "plant_id": "plant_lemon_tree",
+      "common_name": "Lemon Tree",
+      "scientific_name": "Citrus limon",
+      "type": "fruit_tree",
+      "family": "Rutaceae",
+      "growth_stage": ["sapling", "vegetative", "flowering", "fruiting"],
+      "stages": [
+        {"id": "sapling", "name": "Sapling", "durationDays": 365, "waterFrequencyDays": 3},
+        {"id": "vegetative", "name": "Vegetative", "durationDays": 180, "waterFrequencyDays": 3},
+        {"id": "flowering", "name": "Flowering", "durationDays": 21, "waterFrequencyDays": 2},
+        {"id": "fruiting", "name": "Fruiting", "durationDays": 150, "waterFrequencyDays": 2}
+      ],
+      "seasonality": {
+        "sowing": {"start_month": "March", "end_month": "April"},
+        "harvest": {"start_month": "November", "end_month": "March"}
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_lavender"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_scale_insects"],
+      "common_diseases": ["disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_high"],
+      "notes": "Sensitive to frost; often container-grown in cooler climates.",
+      "source_metadata": [
+        {"source_name": "University of Florida IFAS Extension", "url": "https://edis.ifas.ufl.edu", "confidence_score": 0.97}
+      ]
+    },
+    {
+      "plant_id": "plant_garlic",
+      "common_name": "Garlic",
+      "scientific_name": "Allium sativum",
+      "type": "vegetable",
+      "family": "Amaryllidaceae",
+      "growth_stage": ["clove", "vegetative", "bulb_development", "harvest"],
+      "stages": [
+        { "id": "clove", "name": "Clove", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 90, "waterFrequencyDays": 3 },
+        { "id": "bulb_development", "name": "Bulb Development", "durationDays": 60, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "October", "end_month": "November" },
+        "harvest": { "start_month": "June", "end_month": "July" }
+      },
+      "sowingSeason": ["Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_carrot", "plant_beet"],
+      "incompatible_plants": ["plant_pea"],
+      "common_pests": ["pest_onion_thrips"],
+      "common_diseases": ["disease_white_rot"],
+      "nutrient_preferences": ["phosphorus_moderate"],
+      "notes": "Cold exposure improves bulb formation; avoid excess nitrogen late in growth.",
+      "source_metadata": [
+        {
+          "source_name": "University of California Agriculture and Natural Resources",
+          "url": "https://ucanr.edu",
+          "confidence_score": 0.96
+          }
+      ]
+    },
+    {
+      "plant_id": "plant_ginger",
+      "common_name": "Ginger",
+      "scientific_name": "Zingiber officinale",
+      "type": "medicinal_plant",
+      "family": "Zingiberaceae",
+      "growth_stage": ["rhizome", "vegetative", "harvest"],
+      "stages": [
+        { "id": "rhizome", "name": "Rhizome", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 180, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "May" },
+        "harvest": { "start_month": "October", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "partial_shade",
+      "water_requirements": "high",
+      "soil_type": ["rich", "well_draining"],
+      "companion_plants": ["plant_turmeric"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids"],
+      "common_diseases": ["disease_rhizome_rot"],
+      "nutrient_preferences": ["organic_matter_high"],
+      "notes": "Thrives in warm, humid conditions.",
+      "source_metadata": [
+        {
+          "source_name": "FAO Plant Production Database",
+          "url": "https://www.fao.org",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_kale",
+      "common_name": "Kale",
+      "scientific_name": "Brassica oleracea var. sabellica",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seedling", "leaf_development", "harvest"],
+      "stages": [
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "leaf_development", "name": "Leaf Development", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "June", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "rich"],
+      "companion_plants": ["plant_beet", "plant_onion"],
+      "incompatible_plants": ["plant_strawberry"],
+      "common_pests": ["pest_cabbage_worm"],
+      "common_diseases": ["disease_black_rot"],
+      "nutrient_preferences": ["nitrogen_moderate"],
+      "notes": "Flavor improves after light frost.",
+      "source_metadata": [
+        {
+          "source_name": "University of Minnesota Extension",
+          "url": "https://extension.umn.edu",
+          "confidence_score": 0.97
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_boxwood",
+      "common_name": "Boxwood",
+      "scientific_name": "Buxus sempervirens",
+      "type": "ornamental_shrub",
+      "family": "Buxaceae",
+      "growth_stage": ["vegetative", "dormant"],
+      "stages": [
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 365, "waterFrequencyDays": 7 },
+        { "id": "dormant", "name": "Dormant", "durationDays": 90, "waterFrequencyDays": 14 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "April" },
+        "harvest": { "start_month": "January", "end_month": "December" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "partial_shade",
+      "water_requirements": "low",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_fern"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_boxwood_leafminer"],
+      "common_diseases": ["disease_boxwood_blight"],
+      "nutrient_preferences": ["balanced"],
+      "notes": "Commonly used for hedging and topiary.",
+      "source_metadata": [
+        {
+          "source_name": "Royal Horticultural Society",
+          "url": "https://www.rhs.org.uk",
+          "confidence_score": 0.96
+        }
       ]
     },
     {
@@ -202,171 +756,260 @@
       "type": "vegetable",
       "family": "Cucurbitaceae",
       "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 25, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
-        "sowing_indoor": { "start_month": "March", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "May", "end_month": "June" },
-        "harvest": { "start_month": "July", "end_month": "September" },
-        "sowing": { "start_month": "April", "end_month": "June" }
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "September" }
       },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "high",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_lettuce", "plant_melon", "plant_corn", "plant_sunflower", "plant_squash"],
-      "incompatible_plants": ["plant_potato"],
-      "common_pests": ["pest_cucumber_beetle", "pest_aphid"],
+      "soil_type": ["loamy", "well_draining", "fertile"],
+      "companion_plants": ["plant_bean", "plant_radish", "plant_dill"],
+      "incompatible_plants": ["plant_sage", "plant_melon"],
+      "common_pests": ["pest_cucumber_beetle", "pest_aphids", "pest_spider_mites"],
       "common_diseases": ["disease_powdery_mildew", "disease_downy_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high", "phosphorus_moderate"],
-      "notes": "Provide trellis support for vining varieties.",
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
+      "notes": "Requires consistent moisture and trellising improves air circulation and reduces disease.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
+        {
+          "source_name": "Cornell University CALS",
+          "url": "https://gardening.cals.cornell.edu",
+          "confidence_score": 0.95
+        }
       ]
     },
     {
-      "plant_id": "plant_garlic",
-      "common_name": "Garlic",
-      "scientific_name": "Allium sativum",
+      "plant_id": "plant_zucchini",
+      "common_name": "Zucchini",
+      "scientific_name": "Cucurbita pepo",
       "type": "vegetable",
-      "family": "Amaryllidaceae",
-      "growth_stage": ["clove", "sprout", "vegetative", "bulb_development", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "October", "end_month": "December" },
-        "harvest": { "start_month": "June", "end_month": "July" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_apple", "plant_tomato", "plant_raspberry"],
-      "incompatible_plants": ["plant_pea"],
-      "common_pests": ["pest_onion_fly"],
-      "common_diseases": ["disease_white_rot"],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Plant cloves with pointed side up; frost-hardy.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
-      ]
-    },
-    {
-      "plant_id": "plant_kale",
-      "common_name": "Kale",
-      "scientific_name": "Brassica oleracea var. sabellica",
-      "type": "vegetable",
-      "family": "Brassicaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "July" },
-        "harvest": { "start_month": "May", "end_month": "November" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_beetroot", "plant_onion"],
-      "incompatible_plants": ["plant_strawberry"],
-      "common_pests": ["pest_cabbage_white"],
-      "common_diseases": ["disease_black_rot"],
-      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"],
-      "notes": "Cold-tolerant; harvest outer leaves first.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_lavender",
-      "common_name": "Lavender",
-      "scientific_name": "Lavandula angustifolia",
-      "type": "flower",
-      "family": "Lamiaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "July", "end_month": "August" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "low",
-      "soil_type": ["sandy", "well_draining"],
-      "companion_plants": ["plant_rosemary", "plant_sage"],
-      "incompatible_plants": ["plant_blueberry"],
-      "common_pests": [],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Attracts pollinators; drought-tolerant.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_lettuce",
-      "common_name": "Lettuce",
-      "scientific_name": "Lactuca sativa",
-      "type": "vegetable",
-      "family": "Asteraceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "July" },
-        "harvest": { "start_month": "May", "end_month": "October" },
-        "harvest_early": { "start_month": "April", "end_month": "September" }
-      },
-      "sunlight": "partial_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_radish", "plant_cucumber", "plant_onion", "plant_beetroot", "plant_pea"],
-      "incompatible_plants": ["plant_basil", "plant_parsley"],
-      "common_pests": ["pest_aphid", "pest_leaf_miner"],
-      "common_diseases": ["disease_downy_mildew", "disease_bottom_rot"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Succession sowing extends harvest season; keep soil moist.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.98 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.95 }
-      ]
-    },
-    {
-      "plant_id": "plant_melon",
-      "common_name": "Cantaloupe",
-      "scientific_name": "Cucumis melo",
-      "type": "fruit",
       "family": "Cucurbitaceae",
       "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 25, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
-        "sowing_indoor": { "start_month": "March", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "May", "end_month": "June" },
-        "harvest": { "start_month": "July", "end_month": "September" }
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "September" }
       },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
-      "water_requirements": "high",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_cucumber", "plant_corn"],
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "rich"],
+      "companion_plants": ["plant_bean", "plant_corn", "plant_nasturtium"],
       "incompatible_plants": ["plant_potato"],
-      "common_pests": ["pest_cucumber_beetle"],
-      "common_diseases": ["disease_powdery_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Require space for vines to spread.",
+      "common_pests": ["pest_squash_bug", "pest_vine_borer", "pest_aphids"],
+      "common_diseases": ["disease_powdery_mildew", "disease_bacterial_wilt"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Heavy feeder requiring regular harvesting to encourage continued production.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {
+          "source_name": "USDA Agricultural Research Service",
+          "url": "https://ars.usda.gov",
+          "confidence_score": 0.96
+        }
       ]
     },
     {
-      "plant_id": "plant_mint",
-      "common_name": "Mint",
-      "scientific_name": "Mentha sp.",
-      "type": "herb",
-      "family": "Lamiaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
+      "plant_id": "plant_bell_pepper",
+      "common_name": "Bell Pepper",
+      "scientific_name": "Capsicum annuum",
+      "type": "vegetable",
+      "family": "Solanaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 3 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "May" },
-        "harvest": { "start_month": "May", "end_month": "September" }
+        "sowing": { "start_month": "March", "end_month": "April" },
+        "harvest": { "start_month": "July", "end_month": "October" }
       },
-      "sunlight": "partial_sun",
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_cabbage", "plant_carrot", "plant_orange"],
-      "incompatible_plants": ["plant_pea"],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Invasive; grow in pots to control spread.",
+      "companion_plants": ["plant_basil", "plant_onion", "plant_parsley"],
+      "incompatible_plants": ["plant_fennel", "plant_kohlrabi"],
+      "common_pests": ["pest_aphids", "pest_flea_beetle", "pest_hornworm"],
+      "common_diseases": ["disease_bacterial_spot", "disease_blossom_end_rot"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
+      "notes": "Requires warm soil and protection from wind; benefits from mulching.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {
+          "source_name": "University of Minnesota Extension",
+          "url": "https://extension.umn.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_bean",
+      "common_name": "Green Bean",
+      "scientific_name": "Phaseolus vulgaris",
+      "type": "vegetable",
+      "family": "Fabaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "pod_formation", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 20, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "pod_formation", "name": "Pod Formation", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "July" },
+        "harvest": { "start_month": "June", "end_month": "September" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"],
+      "incompatible_plants": ["plant_onion", "plant_garlic", "plant_fennel"],
+      "common_pests": ["pest_mexican_bean_beetle", "pest_aphids"],
+      "common_diseases": ["disease_rust", "disease_mosaic_virus"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Nitrogen-fixing legume; avoid high nitrogen fertilizers.",
+      "source_metadata": [
+        {
+          "source_name": "Penn State Extension",
+          "url": "https://extension.psu.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_broccoli",
+      "common_name": "Broccoli",
+      "scientific_name": "Brassica oleracea var. italica",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "head_formation", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "head_formation", "name": "Head Formation", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "February", "end_month": "May" },
+        "harvest": { "start_month": "May", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate_to_high",
+      "soil_type": ["loamy", "fertile", "slightly_alkaline"],
+      "companion_plants": ["plant_onion", "plant_celery", "plant_beet"],
+      "incompatible_plants": ["plant_strawberry", "plant_pole_bean"],
+      "common_pests": ["pest_cabbage_worm", "pest_aphids", "pest_flea_beetle"],
+      "common_diseases": ["disease_clubroot", "disease_black_rot"],
+      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Cool-season crop; requires consistent moisture and calcium for head development.",
+      "source_metadata": [
+        {
+          "source_name": "University of California Agriculture & Natural Resources",
+          "url": "https://ucanr.edu",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_cauliflower",
+      "common_name": "Cauliflower",
+      "scientific_name": "Brassica oleracea var. botrytis",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "curd_formation", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 35, "waterFrequencyDays": 2 },
+        { "id": "curd_formation", "name": "Curd Formation", "durationDays": 25, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "high",
+      "soil_type": ["loamy", "well_draining", "fertile"],
+      "companion_plants": ["plant_celery", "plant_onion", "plant_sage"],
+      "incompatible_plants": ["plant_strawberry", "plant_pole_bean"],
+      "common_pests": ["pest_cabbage_worm", "pest_aphids", "pest_flea_beetle"],
+      "common_diseases": ["disease_clubroot", "disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Requires blanching (covering heads) to maintain white color; sensitive to temperature fluctuations.",
+      "source_metadata": [
+        {
+          "source_name": "Oregon State University Extension",
+          "url": "https://extension.oregonstate.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_beet",
+      "common_name": "Beet",
+      "scientific_name": "Beta vulgaris",
+      "type": "vegetable",
+      "family": "Amaranthaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "root_development", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 15, "waterFrequencyDays": 2 },
+        { "id": "root_development", "name": "Root Development", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "July" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "neutral_to_slightly_alkaline"],
+      "companion_plants": ["plant_onion", "plant_lettuce", "plant_broccoli"],
+      "incompatible_plants": ["plant_pole_bean", "plant_mustard"],
+      "common_pests": ["pest_leaf_miner", "pest_aphids"],
+      "common_diseases": ["disease_cercospora_leaf_spot", "disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Requires consistent moisture and thinning; greens are edible.",
+      "source_metadata": [
+        {
+          "source_name": "University of Illinois Extension",
+          "url": "https://extension.illinois.edu",
+          "confidence_score": 0.95
+        }
       ]
     },
     {
@@ -375,317 +1018,35 @@
       "scientific_name": "Allium cepa",
       "type": "vegetable",
       "family": "Amaryllidaceae",
-      "growth_stage": ["seed", "seedling", "bulb_development", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "August", "end_month": "October" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "sandy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_lettuce", "plant_beetroot", "plant_raspberry", "plant_kale"],
-      "incompatible_plants": ["plant_pea"],
-      "common_pests": ["pest_onion_fly", "pest_thrips"],
-      "common_diseases": ["disease_downy_mildew", "disease_basal_rot"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Rotate crops to prevent disease; thin seedlings for bulb development.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_orange",
-      "common_name": "Orange",
-      "scientific_name": "Citrus sinensis",
-      "type": "fruit",
-      "family": "Rutaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "November", "end_month": "March" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["sandy", "loamy", "well_draining"],
-      "companion_plants": ["plant_mint", "plant_basil"],
-      "incompatible_plants": [],
-      "common_pests": ["pest_citrus_leafminer"],
-      "common_diseases": ["disease_citrus_greening"],
-      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"],
-      "notes": "Citrus trees prefer pots in cooler climates; frost sensitive.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_parsley",
-      "common_name": "Parsley",
-      "scientific_name": "Petroselinum crispum",
-      "type": "herb",
-      "family": "Apiaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "May", "end_month": "October" }
-      },
-      "sunlight": "partial_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_tomato", "plant_carrot"],
-      "incompatible_plants": ["plant_lettuce"],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Biennial; can harvest leaves continuously.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.95 }
-      ]
-    },
-    {
-      "plant_id": "plant_pea",
-      "common_name": "Garden Pea",
-      "scientific_name": "Pisum sativum",
-      "type": "vegetable",
-      "family": "Fabaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "pod_development", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "June", "end_month": "August" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_lettuce", "plant_radish"],
-      "incompatible_plants": ["plant_onion", "plant_garlic", "plant_chives"],
-      "common_pests": ["pest_aphid", "pest_pea_weevil", "pest_pea_aphid"],
-      "common_diseases": ["disease_root_rot", "disease_powdery_mildew"],
-      "nutrient_preferences": ["nitrogen_fixing", "nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Supports soil nitrogen levels; trellis for climbing varieties.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.98 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
-      ]
-    },
-    {
-      "plant_id": "plant_peach",
-      "common_name": "Peach",
-      "scientific_name": "Prunus persica",
-      "type": "fruit",
-      "family": "Rosaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "July", "end_month": "September" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_borage", "plant_chives"],
-      "incompatible_plants": ["plant_fennel"],
-      "common_pests": ["pest_peach_borer"],
-      "common_diseases": ["disease_brown_rot"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
-      "notes": "Thin fruits to improve size; prune annually.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_pepper",
-      "common_name": "Bell Pepper",
-      "scientific_name": "Capsicum annuum",
-      "type": "vegetable",
-      "family": "Solanaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing_indoor": { "start_month": "February", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "May", "end_month": "June" },
-        "harvest": { "start_month": "July", "end_month": "October" },
-        "sowing": { "start_month": "February", "end_month": "April" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_basil", "plant_carrot", "plant_tomato"],
-      "incompatible_plants": ["plant_fennel"],
-      "common_pests": ["pest_aphid", "pest_thrips", "pest_whitefly"],
-      "common_diseases": ["disease_blight", "disease_bacterial_spot"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Warm-season crop; protect from frost.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.98 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
-      ]
-    },
-    {
-      "plant_id": "plant_raspberry",
-      "common_name": "Raspberry",
-      "scientific_name": "Rubus idaeus",
-      "type": "fruit",
-      "family": "Rosaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "June", "end_month": "August" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "moderate",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_garlic", "plant_onion"],
-      "incompatible_plants": ["plant_fennel"],
-      "common_pests": ["pest_raspberry_cane_borer"],
-      "common_diseases": ["disease_raspberry_leaf_spot"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Support canes with trellis; prune to encourage fruiting.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_rosemary",
-      "common_name": "Rosemary",
-      "scientific_name": "Salvia rosmarinus",
-      "type": "herb",
-      "family": "Lamiaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "vegetative", "flowering", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "February", "end_month": "April" },
-        "harvest": { "start_month": "June", "end_month": "October" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "low",
-      "soil_type": ["sandy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_cabbage", "plant_lavender"],
-      "incompatible_plants": [],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": ["disease_root_rot"],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Drought-tolerant; prune to maintain shape.",
-      "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.95 }
-      ]
-    },
-    {
-      "plant_id": "plant_sage",
-      "common_name": "Sage",
-      "scientific_name": "Salvia officinalis",
-      "type": "herb",
-      "family": "Lamiaceae",
-      "growth_stage": ["seed", "seedling", "juvenile", "vegetative", "flowering", "harvest"],
+      "growth_stage": ["seed", "seedling", "vegetative", "bulb_formation", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "bulb_formation", "name": "Bulb Formation", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
         "sowing": { "start_month": "March", "end_month": "April" },
-        "harvest": { "start_month": "June", "end_month": "October" }
+        "harvest": { "start_month": "July", "end_month": "September" }
       },
-      "sunlight": "full_sun",
-      "water_requirements": "low",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_carrot", "plant_cabbage", "plant_lavender"],
-      "incompatible_plants": [],
-      "common_pests": ["pest_aphid"],
-      "common_diseases": ["disease_root_rot"],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Supports pollinators; drought-tolerant.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_spinach",
-      "common_name": "Spinach",
-      "scientific_name": "Spinacia oleracea",
-      "type": "vegetable",
-      "family": "Amaranthaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "March", "end_month": "May" },
-        "harvest": { "start_month": "May", "end_month": "July" },
-        "harvest_early": { "start_month": "April", "end_month": "June" }
-      },
-      "sunlight": "partial_sun",
-      "water_requirements": "high",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_strawberry", "plant_pea"],
-      "incompatible_plants": ["plant_cabbage", "plant_fennel"],
-      "common_pests": ["pest_aphid", "pest_leaf_miner"],
-      "common_diseases": ["disease_downy_mildew", "disease_fusarium_wilt"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate", "nitrogen_high"],
-      "notes": "Sensitive to heat; prefers cooler temperatures; fast-growing crop.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 },
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.98 }
-      ]
-    },
-    {
-      "plant_id": "plant_strawberry",
-      "common_name": "Strawberry",
-      "scientific_name": "Fragaria × ananassa",
-      "type": "fruit",
-      "family": "Rosaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing_indoor": { "start_month": "January", "end_month": "March" },
-        "transplant_outdoor": { "start_month": "March", "end_month": "May" },
-        "harvest": { "start_month": "June", "end_month": "August" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "high",
-      "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_spinach", "plant_borage"],
-      "incompatible_plants": ["plant_cabbage", "plant_kale"],
-      "common_pests": ["pest_aphid", "pest_slugs"],
-      "common_diseases": ["disease_gray_mold", "disease_powdery_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Mulch to retain moisture and prevent rot.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
-      ]
-    },
-    {
-      "plant_id": "plant_sunflower",
-      "common_name": "Sunflower",
-      "scientific_name": "Helianthus annuus",
-      "type": "flower",
-      "family": "Asteraceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "April", "end_month": "June" },
-        "harvest": { "start_month": "August", "end_month": "October" }
-      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_corn", "plant_cucumber"],
-      "incompatible_plants": [],
-      "common_pests": ["pest_sunflower_moth"],
-      "common_diseases": ["disease_downy_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
-      "notes": "Tall plants; provide staking if needed.",
+      "soil_type": ["loamy", "well_draining", "slightly_acidic_to_neutral"],
+      "companion_plants": ["plant_carrot", "plant_lettuce", "plant_beet"],
+      "incompatible_plants": ["plant_bean", "plant_pea", "plant_sage"],
+      "common_pests": ["pest_onion_maggot", "pest_thrips"],
+      "common_diseases": ["disease_downy_mildew", "disease_purple_blotch"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Day-length sensitive; requires sulfur-rich soil for pungency.",
       "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
-      ]
-    },
-    {
-      "plant_id": "plant_squash",
-      "common_name": "Squash",
-      "scientific_name": "Cucurbita pepo",
-      "type": "vegetable",
-      "family": "Cucurbitaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
-      "seasonality": {
-        "sowing": { "start_month": "April", "end_month": "June" },
-        "harvest": { "start_month": "July", "end_month": "October" }
-      },
-      "sunlight": "full_sun",
-      "water_requirements": "high",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_corn", "plant_cucumber"],
-      "incompatible_plants": ["plant_potato"],
-      "common_pests": ["pest_squash_bug"],
-      "common_diseases": ["disease_powdery_mildew"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Space plants to prevent disease; mulch to retain moisture.",
-      "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {
+          "source_name": "North Carolina State University Extension",
+          "url": "https://extension.ncsu.edu",
+          "confidence_score": 0.96
+        }
       ]
     },
     {
@@ -695,48 +1056,736 @@
       "type": "herb",
       "family": "Lamiaceae",
       "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 120, "waterFrequencyDays": 7 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 3 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "May", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["sandy", "well_draining", "alkaline"],
+      "companion_plants": ["plant_cabbage", "plant_eggplant", "plant_strawberry"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_spider_mites", "pest_aphids"],
+      "common_diseases": ["disease_root_rot", "disease_gray_mold"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+      "notes": "Drought-tolerant Mediterranean herb; sensitive to overwatering.",
+      "source_metadata": [
+        {
+          "source_name": "Royal Horticultural Society",
+          "url": "https://rhs.org.uk",
+          "confidence_score": 0.97
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_oregano",
+      "common_name": "Oregano",
+      "scientific_name": "Origanum vulgare",
+      "type": "herb",
+      "family": "Lamiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 120, "waterFrequencyDays": 7 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 3 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
         "sowing": { "start_month": "March", "end_month": "May" },
         "harvest": { "start_month": "June", "end_month": "October" }
       },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "low",
-      "soil_type": ["sandy", "well_draining"],
-      "companion_plants": ["plant_cabbage", "plant_carrot"],
+      "soil_type": ["well_draining", "sandy", "neutral_to_alkaline"],
+      "companion_plants": ["plant_cucumber", "plant_squash", "plant_tomato"],
       "incompatible_plants": [],
-      "common_pests": [],
-      "common_diseases": [],
-      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
-      "notes": "Drought-tolerant; attracts pollinators.",
+      "common_pests": ["pest_aphids", "pest_spider_mites"],
+      "common_diseases": ["disease_root_rot", "disease_rust"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+      "notes": "Perennial herb; flavor intensifies when dried; harvest before flowering for best flavor.",
       "source_metadata": [
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {
+          "source_name": "University of Maryland Extension",
+          "url": "https://extension.umd.edu",
+          "confidence_score": 0.95
+        }
       ]
     },
     {
-      "plant_id": "plant_tomato",
-      "common_name": "Tomato",
-      "scientific_name": "Solanum lycopersicum",
-      "type": "vegetable",
-      "family": "Solanaceae",
-      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "plant_id": "plant_cilantro",
+      "common_name": "Cilantro",
+      "scientific_name": "Coriandrum sativum",
+      "type": "herb",
+      "family": "Apiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "seed_production"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "seed_production", "name": "Seed Production", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
       "seasonality": {
-        "sowing_indoor": { "start_month": "February", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "April", "end_month": "June" },
-        "harvest": { "start_month": "July", "end_month": "October" },
-        "sowing": { "start_month": "February", "end_month": "April" }
+        "sowing": { "start_month": "March", "end_month": "September" },
+        "harvest": { "start_month": "April", "end_month": "November" }
       },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_spinach", "plant_tomato", "plant_anise"],
+      "incompatible_plants": ["plant_fennel"],
+      "common_pests": ["pest_aphids", "pest_whitefly"],
+      "common_diseases": ["disease_powdery_mildew", "disease_bacterial_leaf_spot"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_low"],
+      "notes": "Bolts quickly in heat; succession planting recommended; seeds are coriander spice.",
+      "source_metadata": [
+        {
+          "source_name": "Texas A&M AgriLife Extension",
+          "url": "https://agrilifeextension.tamu.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_parsley",
+      "common_name": "Parsley",
+      "scientific_name": "Petroselinum crispum",
+      "type": "herb",
+      "family": "Apiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 21, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 60, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "August" },
+        "harvest": { "start_month": "May", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "partial_shade_to_full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "rich"],
+      "companion_plants": ["plant_tomato", "plant_asparagus", "plant_carrot"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_carrot_fly"],
+      "common_diseases": ["disease_leaf_spot", "disease_crown_rot"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Slow to germinate (2-3 weeks); biennial grown as annual; harvest outer leaves first.",
+      "source_metadata": [
+        {
+          "source_name": "University of California Master Gardener Program",
+          "url": "https://ucanr.edu/sites/uccemg",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_dill",
+      "common_name": "Dill",
+      "scientific_name": "Anethum graveolens",
+      "type": "herb",
+      "family": "Apiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "seed_production"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "seed_production", "name": "Seed Production", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "September" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_type": ["loamy", "well_draining"],
-      "companion_plants": ["plant_basil", "plant_marigold", "plant_carrot", "plant_parsley", "plant_chives", "plant_garlic"],
-      "incompatible_plants": ["plant_cabbage", "plant_fennel", "plant_corn"],
-      "common_pests": ["pest_aphid", "pest_tomato_hornworm"],
-      "common_diseases": ["disease_blight", "disease_fusarium_wilt"],
-      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Support with stakes or cages; prune suckers for better yield.",
+      "companion_plants": ["plant_cucumber", "plant_lettuce", "plant_onion"],
+      "incompatible_plants": ["plant_carrot", "plant_fennel"],
+      "common_pests": ["pest_aphids", "pest_hornworm"],
+      "common_diseases": ["disease_downy_mildew", "disease_leaf_blight"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_low"],
+      "notes": "Attracts beneficial insects; does not transplant well; self-seeds readily.",
       "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.98 },
-        { "source_name": "Royal Horticultural Society", "url": "https://www.rhs.org.uk/plants", "confidence_score": 0.97 }
+        {
+          "source_name": "Iowa State University Extension",
+          "url": "https://extension.iastate.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_sage",
+      "common_name": "Sage",
+      "scientific_name": "Salvia officinalis",
+      "type": "herb",
+      "family": "Lamiaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 60, "waterFrequencyDays": 3 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 30, "waterFrequencyDays": 3 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["sandy", "well_draining", "neutral_to_alkaline"],
+      "companion_plants": ["plant_carrot", "plant_cabbage", "plant_strawberry"],
+      "incompatible_plants": ["plant_cucumber", "plant_onion"],
+      "common_pests": ["pest_spider_mites", "pest_slugs"],
+      "common_diseases": ["disease_powdery_mildew", "disease_root_rot"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+      "notes": "Woody perennial herb; prune regularly to prevent legginess; drought-tolerant once established.",
+      "source_metadata": [
+        {
+          "source_name": "University of Vermont Extension",
+          "url": "https://extension.uvm.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_chive",
+      "common_name": "Chive",
+      "scientific_name": "Allium schoenoprasum",
+      "type": "herb",
+      "family": "Amaryllidaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 15, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "May", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun_to_partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "rich"],
+      "companion_plants": ["plant_carrot", "plant_tomato", "plant_rose"],
+      "incompatible_plants": ["plant_bean", "plant_pea"],
+      "common_pests": ["pest_aphids", "pest_thrips"],
+      "common_diseases": ["disease_downy_mildew", "disease_rust"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Perennial herb; edible flowers; repels aphids and Japanese beetles.",
+      "source_metadata": [
+        {
+          "source_name": "Cornell Cooperative Extension",
+          "url": "https://cce.cornell.edu",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_sunflower",
+      "common_name": "Sunflower",
+      "scientific_name": "Helianthus annuus",
+      "type": "flower",
+      "family": "Asteraceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "bud_formation", "flowering", "seed_production"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "bud_formation", "name": "Bud Formation", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "seed_production", "name": "Seed Production", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "August", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_aphids", "pest_sunflower_moth"],
+      "common_diseases": ["disease_downy_mildew", "disease_rust"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_moderate"],
+      "notes": "Allelopathic properties; attracts pollinators and birds; tall varieties require staking.",
+      "source_metadata": [
+        {
+          "source_name": "University of Georgia Extension",
+          "url": "https://extension.uga.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_zinnia",
+      "common_name": "Zinnia",
+      "scientific_name": "Zinnia elegans",
+      "type": "flower",
+      "family": "Asteraceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "bud_formation", "flowering"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "bud_formation", "name": "Bud Formation", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "neutral"],
+      "companion_plants": ["plant_tomato", "plant_cucumber", "plant_squash"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_japanese_beetle"],
+      "common_diseases": ["disease_powdery_mildew", "disease_leaf_spot"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Excellent cut flower; deadheading promotes continuous blooming; attracts butterflies.",
+      "source_metadata": [
+        {
+          "source_name": "Missouri Botanical Garden",
+          "url": "https://missouribotanicalgarden.org",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_petunia",
+      "common_name": "Petunia",
+      "scientific_name": "Petunia × hybrida",
+      "type": "flower",
+      "family": "Solanaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "bud_formation", "flowering"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "bud_formation", "name": "Bud Formation", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "May", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "slightly_acidic"],
+      "companion_plants": ["plant_tomato", "plant_bean", "plant_squash"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_caterpillars"],
+      "common_diseases": ["disease_botrytis", "disease_tobacco_mosaic_virus"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_moderate"],
+      "notes": "Requires regular deadheading; sensitive to frost; benefits from regular fertilization.",
+      "source_metadata": [
+        {
+          "source_name": "University of Florida IFAS Extension",
+          "url": "https://sfyl.ifas.ufl.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_cosmos",
+      "common_name": "Cosmos",
+      "scientific_name": "Cosmos bipinnatus",
+      "type": "flower",
+      "family": "Asteraceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "bud_formation", "flowering"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "bud_formation", "name": "Bud Formation", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "low",
+      "soil_type": ["well_draining", "poor_to_average"],
+      "companion_plants": ["plant_tomato", "plant_bean", "plant_cucumber"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_thrips"],
+      "common_diseases": ["disease_powdery_mildew", "disease_gray_mold"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Self-seeding annual; excessive nutrients reduce flowering; attracts beneficial insects.",
+      "source_metadata": [
+        {
+          "source_name": "North Carolina State Extension",
+          "url": "https://plants.ces.ncsu.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_nasturtium",
+      "common_name": "Nasturtium",
+      "scientific_name": "Tropaeolum majus",
+      "type": "flower",
+      "family": "Tropaeolaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "June", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun_to_partial_shade",
+      "water_requirements": "low_to_moderate",
+      "soil_type": ["well_draining", "poor_to_average"],
+      "companion_plants": ["plant_cucumber", "plant_radish", "plant_squash"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_whitefly"],
+      "common_diseases": ["disease_bacterial_wilt", "disease_mosaic_virus"],
+      "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+      "notes": "Edible flowers and leaves; acts as trap crop for aphids; poor soil improves flowering.",
+      "source_metadata": [
+        {
+          "source_name": "University of Minnesota Extension",
+          "url": "https://extension.umn.edu",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_geranium",
+      "common_name": "Geranium",
+      "scientific_name": "Pelargonium × hortorum",
+      "type": "flower",
+      "family": "Geraniaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 14, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 90, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "May" },
+        "harvest": { "start_month": "May", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun_to_partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["well_draining", "loamy", "slightly_acidic"],
+      "companion_plants": ["plant_rose", "plant_corn", "plant_grape"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_whitefly", "pest_spider_mites"],
+      "common_diseases": ["disease_botrytis", "disease_rust"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Tender perennial often grown as annual; sensitive to overwatering; deadheading prolongs bloom.",
+      "source_metadata": [
+        {
+          "source_name": "Royal Horticultural Society",
+          "url": "https://rhs.org.uk",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_eggplant",
+      "common_name": "Eggplant",
+      "scientific_name": "Solanum melongena",
+      "type": "vegetable",
+      "family": "Solanaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 21, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "April" },
+        "harvest": { "start_month": "July", "end_month": "October" }
+      },
+      "sowingSeason": ["Spring"],
+      "sowingMethod": "Transplant",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate_to_high",
+      "soil_type": ["loamy", "well_draining", "fertile"],
+      "companion_plants": ["plant_bean", "plant_thyme", "plant_pepper"],
+      "incompatible_plants": ["plant_fennel"],
+      "common_pests": ["pest_flea_beetle", "pest_aphids", "pest_spider_mites"],
+      "common_diseases": ["disease_verticillium_wilt", "disease_phytophthora_blight"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
+      "notes": "Requires warm soil and long growing season; harvest when skin is glossy.",
+      "source_metadata": [
+        {
+          "source_name": "University of California Davis",
+          "url": "https://ucdavis.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_swiss_chard",
+      "common_name": "Swiss Chard",
+      "scientific_name": "Beta vulgaris subsp. vulgaris",
+      "type": "vegetable",
+      "family": "Amaranthaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "July" },
+        "harvest": { "start_month": "May", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun_to_partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "rich"],
+      "companion_plants": ["plant_bean", "plant_onion", "plant_lettuce"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_leaf_miner", "pest_aphids", "pest_slugs"],
+      "common_diseases": ["disease_cercospora_leaf_spot", "disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Tolerates light frost; harvest outer leaves first; highly ornamental.",
+      "source_metadata": [
+        {
+          "source_name": "Penn State Extension",
+          "url": "https://extension.psu.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_arugula",
+      "common_name": "Arugula",
+      "scientific_name": "Eruca vesicaria",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 5, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 7, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "September" },
+        "harvest": { "start_month": "April", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun_to_partial_shade",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining"],
+      "companion_plants": ["plant_carrot", "plant_beet", "plant_onion"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_flea_beetle", "pest_aphids"],
+      "common_diseases": ["disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Cool-season crop; bolts in heat; succession planting recommended for continuous harvest.",
+      "source_metadata": [
+        {
+          "source_name": "Cornell University CALS",
+          "url": "https://gardening.cals.cornell.edu",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_collard_greens",
+      "common_name": "Collard Greens",
+      "scientific_name": "Brassica oleracea var. viridis",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 7, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 60, "waterFrequencyDays": 2 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "August" },
+        "harvest": { "start_month": "June", "end_month": "December" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "fertile"],
+      "companion_plants": ["plant_bean", "plant_onion", "plant_celery"],
+      "incompatible_plants": ["plant_strawberry", "plant_tomato"],
+      "common_pests": ["pest_cabbage_worm", "pest_aphids", "pest_flea_beetle"],
+      "common_diseases": ["disease_clubroot", "disease_black_rot"],
+      "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Cold-hardy; flavor improves after frost; harvest outer leaves first.",
+      "source_metadata": [
+        {
+          "source_name": "University of Georgia Extension",
+          "url": "https://extension.uga.edu",
+          "confidence_score": 0.95
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_turnip",
+      "common_name": "Turnip",
+      "scientific_name": "Brassica rapa subsp. rapa",
+      "type": "vegetable",
+      "family": "Brassicaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "root_development", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 5, "waterFrequencyDays": 1 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "root_development", "name": "Root Development", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 21, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "March", "end_month": "August" },
+        "harvest": { "start_month": "May", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Fall"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "slightly_acidic"],
+      "companion_plants": ["plant_pea", "plant_bean", "plant_nasturtium"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_flea_beetle", "pest_root_maggot"],
+      "common_diseases": ["disease_clubroot", "disease_powdery_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"],
+      "notes": "Cool-season crop; greens are edible; harvest roots when small for best flavor.",
+      "source_metadata": [
+        {
+          "source_name": "Clemson University Extension",
+          "url": "https://clemson.edu/extension",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_squash_butternut",
+      "common_name": "Butternut Squash",
+      "scientific_name": "Cucurbita moschata",
+      "type": "vegetable",
+      "family": "Cucurbitaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 60, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 30, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "September", "end_month": "November" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate",
+      "soil_type": ["loamy", "well_draining", "fertile"],
+      "companion_plants": ["plant_corn", "plant_bean", "plant_nasturtium"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_squash_bug", "pest_vine_borer", "pest_cucumber_beetle"],
+      "common_diseases": ["disease_powdery_mildew", "disease_downy_mildew"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"],
+      "notes": "Long growing season; cure after harvest for storage; vine type requires space.",
+      "source_metadata": [
+        {
+          "source_name": "University of New Hampshire Extension",
+          "url": "https://extension.unh.edu",
+          "confidence_score": 0.96
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_pumpkin",
+      "common_name": "Pumpkin",
+      "scientific_name": "Cucurbita pepo",
+      "type": "vegetable",
+      "family": "Cucurbitaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 60, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "May", "end_month": "June" },
+        "harvest": { "start_month": "September", "end_month": "October" }
+      },
+      "sowingSeason": ["Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate_to_high",
+      "soil_type": ["loamy", "well_draining", "rich"],
+      "companion_plants": ["plant_corn", "plant_bean", "plant_sunflower"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_squash_bug", "pest_vine_borer", "pest_cucumber_beetle"],
+      "common_diseases": ["disease_powdery_mildew", "disease_bacterial_wilt"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
+      "notes": "Requires large growing area; harvest when rind is hard; cure for storage.",
+      "source_metadata": [
+        {
+          "source_name": "Michigan State University Extension",
+          "url": "https://canr.msu.edu/outreach",
+          "confidence_score": 0.95
+        }
       ]
     },
     {
@@ -746,22 +1795,73 @@
       "type": "fruit",
       "family": "Cucurbitaceae",
       "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 80, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 2 }
+      ],
       "seasonality": {
-        "sowing_indoor": { "start_month": "March", "end_month": "April" },
-        "transplant_outdoor": { "start_month": "May", "end_month": "June" },
+        "sowing": { "start_month": "April", "end_month": "June" },
         "harvest": { "start_month": "July", "end_month": "September" }
       },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
       "sunlight": "full_sun",
       "water_requirements": "high",
-      "soil_type": ["loamy", "sandy"],
-      "companion_plants": ["plant_corn", "plant_squash"],
-      "incompatible_plants": ["plant_potato"],
-      "common_pests": ["pest_cucumber_beetle"],
-      "common_diseases": ["disease_powdery_mildew"],
+      "soil_type": ["sandy_loam", "well_draining", "slightly_acidic"],
+      "companion_plants": ["plant_corn", "plant_bean", "plant_nasturtium"],
+      "incompatible_plants": [],
+      "common_pests": ["pest_aphids", "pest_cucumber_beetle", "pest_fruit_fly"],
+      "common_diseases": ["disease_fusarium_wilt", "disease_anthracnose"],
       "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
-      "notes": "Vine plants; space accordingly.",
+      "notes": "Requires long warm season and space; reduce watering as fruit matures for sweetness.",
       "source_metadata": [
-        { "source_name": "UC Davis Vegetable Research", "url": "https://vegetable.ucdavis.edu", "confidence_score": 0.96 }
+        {
+          "source_name": "Texas A&M AgriLife Extension",
+          "url": "https://agrilifeextension.tamu.edu",
+          "confidence_score": 0.94
+        }
+      ]
+    },
+    {
+      "plant_id": "plant_cantaloupe",
+      "common_name": "Cantaloupe",
+      "scientific_name": "Cucumis melo var. cantalupensis",
+      "type": "fruit",
+      "family": "Cucurbitaceae",
+      "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"],
+      "stages": [
+        { "id": "seed", "name": "Seed", "durationDays": 10, "waterFrequencyDays": 2 },
+        { "id": "seedling", "name": "Seedling", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "vegetative", "name": "Vegetative", "durationDays": 30, "waterFrequencyDays": 2 },
+        { "id": "flowering", "name": "Flowering", "durationDays": 14, "waterFrequencyDays": 2 },
+        { "id": "fruiting", "name": "Fruiting", "durationDays": 45, "waterFrequencyDays": 2 },
+        { "id": "harvest", "name": "Harvest", "durationDays": 14, "waterFrequencyDays": 3 }
+      ],
+      "seasonality": {
+        "sowing": { "start_month": "April", "end_month": "June" },
+        "harvest": { "start_month": "July", "end_month": "September" }
+      },
+      "sowingSeason": ["Spring", "Summer"],
+      "sowingMethod": "Direct",
+      "sunlight": "full_sun",
+      "water_requirements": "moderate_to_high",
+      "soil_type": ["sandy_loam", "well_draining", "slightly_acidic"],
+      "companion_plants": ["plant_corn", "plant_bean", "plant_radish"],
+      "incompatible_plants": ["plant_potato"],
+      "common_pests": ["pest_aphids", "pest_cucumber_beetle", "pest_melon_fly"],
+      "common_diseases": ["disease_powdery_mildew", "disease_fusarium_wilt"],
+      "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"],
+      "notes": "Requires warm soil and full sun; reduce watering when fruit ripens; harvest when stem slips easily.",
+      "source_metadata": [
+        {
+          "source_name": "Purdue University Extension",
+          "url": "https://extension.purdue.edu",
+          "confidence_score": 0.95
+        }
       ]
     }
   ]
