@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hydrateDatabase, getDatabase } from './db';
+import { applyTheme } from './utils/theme';
 import { useWeather } from './hooks/useWeather';
 import { PlantSpecies } from './schema/knowledge-graph';
 import { Tabs, TabPanel } from './components/Tabs';
@@ -20,38 +21,69 @@ import { SeedStore } from './components/SeedStore';
 
 const queryClient = new QueryClient();
 
-function App() {
+const AppContent: React.FC = () => {
   const [catalog, setCatalog] = useState<PlantSpecies[]>([]);
   const [currentDay, setCurrentDay] = useState(1);
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
   const alerts = ['Frost Warning: Cover plants tonight!', 'Peak Planting: Tomatoes ready for sowing.'];
 
-  // Weather data
+  // Weather data - now safely inside QueryClientProvider
   const { weather, loading } = useWeather(currentDay);
 
   React.useEffect(() => {
     const init = async () => {
       await hydrateDatabase();
       const db = await getDatabase();
-      const allCatalog = await db.catalog.find().exec();
-      setCatalog(allCatalog.map(doc => doc.toJSON()));
+      const allCatalog = await db.plant_kb.find().exec();
+      setCatalog(allCatalog.map(doc => {
+        const d = doc.toJSON();
+        return {
+          ...d,
+          id: d.plant_id || d.id,
+          name: d.common_name || d.name,
+          scientificName: d.scientific_name || d.scientificName,
+          description: d.notes || d.description,
+          categories: d.type ? [d.type] : d.categories,
+          companions: d.companion_plants || d.companions,
+          antagonists: d.incompatible_plants || d.antagonists
+        };
+      }));
+
+      // Apply Theme
+      const savedTheme = localStorage.getItem('theme-color');
+      if (savedTheme) applyTheme(savedTheme);
 
       const settings = await db.settings.findOne('local-user').exec();
       if (settings) {
         setCurrentDay(settings.currentDay || 1);
+        setXp(settings.xp || 0);
       }
 
       db.settings.findOne('local-user').$.subscribe(s => {
-        if (s) setCurrentDay(s.currentDay || 1);
+        if (s) {
+          setCurrentDay(s.currentDay || 1);
+          setXp(s.xp || 0);
+        }
       });
     };
     init();
   }, []);
 
+  // Persist XP changes
+  React.useEffect(() => {
+    const persistXp = async () => {
+      const db = await getDatabase();
+      const settings = await db.settings.findOne('local-user').exec();
+      if (settings && settings.xp !== xp) {
+        await settings.patch({ xp });
+      }
+    };
+    if (xp > 0) persistXp();
+  }, [xp]);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col h-screen bg-stone-950 text-stone-100 overflow-hidden font-sans selection:bg-garden-500/30">
+    <div className="flex flex-col h-screen bg-stone-950 text-stone-100 overflow-hidden font-sans selection:bg-garden-500/30">
         <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
@@ -130,8 +162,15 @@ function App() {
           />
         )}
       </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
     </QueryClientProvider>
   );
-}
+};
 
 export default App;

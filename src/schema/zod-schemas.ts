@@ -50,5 +50,39 @@ export const PlantSpeciesSchema = z.object({
   sources: z.array(z.string()),
 });
 
+export const ExpandedPlantKBSchema = z.object({
+  plant_id: z.string(),
+  common_name: z.string(),
+  scientific_name: z.string(),
+  type: z.string().optional(),
+  family: z.string().optional(),
+  growth_stage: z.array(z.string()).optional(),
+  stages: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    durationDays: z.number(),
+    waterFrequencyDays: z.number(),
+  })).optional(),
+  seasonality: z.record(z.string(), z.object({
+    start_month: z.string(),
+    end_month: z.string(),
+  })).optional(),
+  sunlight: z.string().optional(),
+  water_requirements: z.string().optional(),
+  soil_type: z.array(z.string()).optional(),
+  companion_plants: z.array(z.string()).optional(),
+  incompatible_plants: z.array(z.string()).optional(),
+  common_pests: z.array(z.string()).optional(),
+  common_diseases: z.array(z.string()).optional(),
+  nutrient_preferences: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+  source_metadata: z.array(z.object({
+    source_name: z.string(),
+    url: z.string(),
+    confidence_score: z.number().optional(),
+  })).optional(),
+});
+
 export type ValidatedPlantSpecies = z.infer<typeof PlantSpeciesSchema>;
 export type ValidatedPlantStage = z.infer<typeof PlantStageSchema>;
+export type ValidatedExpandedPlantKB = z.infer<typeof ExpandedPlantKBSchema>;

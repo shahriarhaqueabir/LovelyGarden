@@ -1,6 +1,7 @@
 import { createRxDatabase, RxDatabase } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema } from './schemas';
+import { PlantSpeciesSchema, ExpandedPlantKBSchema } from '../schema/zod-schemas';
 
 /**
  * DATABASE INITIALIZATION
@@ -55,20 +56,36 @@ export const hydrateDatabase = async () => {
     const seeds = await seedsRes.json();
     const sources = await sourcesRes.json();
     const plantKbJson = await plantKbRes.json();
-    const plantKb = Array.isArray(plantKbJson) ? plantKbJson : (plantKbJson.plants || []);
+    const seedsRaw = seeds; // seeds is already an array from seedsRes.json()
+    const plantKbRaw = Array.isArray(plantKbJson) ? plantKbJson : (plantKbJson.plants || []);
+
+    // RUNTIME DATA VALIDATION WITH ZOD
+    const validatedSeeds = seedsRaw.filter((seed: any) => {
+      const result = PlantSpeciesSchema.safeParse(seed);
+      if (!result.success) {
+        console.warn(`Invalid seed data detected for "${seed.name || 'Unknown'}":`, result.error.format());
+        return false;
+      }
+      return true;
+    });
+
+    const validatedPlantKb = plantKbRaw.filter((plant: any) => {
+      const result = ExpandedPlantKBSchema.safeParse(plant);
+      if (!result.success) {
+        console.warn(`Invalid KB data detected for "${plant.common_name || 'Unknown'}":`, result.error.format());
+        return false;
+      }
+      return true;
+    });
 
     // Bulk insert
     await db.sources.bulkInsert(sources);
-    await db.catalog.bulkInsert(seeds);
-    await db.plant_kb.bulkInsert(plantKb);
+    await db.catalog.bulkInsert(validatedSeeds);
+    await db.plant_kb.bulkInsert(validatedPlantKb);
 
     // Initial Hand (Phase 3 requirement: starting pack)
-    await db.inventory.bulkInsert([
-      { id: 'inv-1', catalogId: 'tomato-beefsteak', acquiredDate: Date.now() },
-      { id: 'inv-2', catalogId: 'basil-genovese', acquiredDate: Date.now() },
-      { id: 'inv-3', catalogId: 'carrot-danvers', acquiredDate: Date.now() },
-      { id: 'inv-4', catalogId: 'marigold-french', acquiredDate: Date.now() }
-    ]);
+    // Initial Hand - CLEARED per user request
+    // await db.inventory.bulkInsert([]);
 
     // Mark as complete
     await db.settings.upsert({

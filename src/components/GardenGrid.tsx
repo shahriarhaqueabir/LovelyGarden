@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { Edit, Trash2, Bug, X, Zap } from 'lucide-react';
+import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
 
@@ -30,11 +30,11 @@ const ObservationMenu: React.FC<{
   if (!isOpen) return null;
 
   const statuses: { value: PlantStatus; label: string; icon: React.ReactNode; color: string }[] = [
-    { value: 'Healthy', label: 'Healthy', icon: <span>✨</span>, color: 'text-green-400' },
-    { value: 'Pest Infestation', label: 'Pest', icon: <span>🐛</span>, color: 'text-amber-400' },
-    { value: 'Dead', label: 'Dead', icon: <span>💀</span>, color: 'text-red-400' },
-    { value: 'Harvested', label: 'Harvested', icon: <span>🧺</span>, color: 'text-blue-400' },
-    { value: 'Overwatered', label: 'Overwatered', icon: <span>🌊</span>, color: 'text-cyan-400' },
+    { value: 'Healthy', label: 'Healthy', icon: <Sparkles className="w-3 h-3" />, color: 'text-green-400' },
+    { value: 'Pest Infestation', label: 'Pest', icon: <Bug className="w-3 h-3" />, color: 'text-amber-400' },
+    { value: 'Dead', label: 'Dead', icon: <Skull className="w-3 h-3" />, color: 'text-red-400' },
+    { value: 'Harvested', label: 'Harvested', icon: <ShoppingBasket className="w-3 h-3" />, color: 'text-blue-400' },
+    { value: 'Overwatered', label: 'Overwatered', icon: <Waves className="w-3 h-3" />, color: 'text-cyan-400' },
   ];
 
   return (
@@ -42,7 +42,7 @@ const ObservationMenu: React.FC<{
       <div className="bg-stone-900 border border-stone-700 rounded-lg shadow-2xl p-2 min-w-[140px]">
         <div className="flex justify-between items-center mb-2 pb-2 border-b border-stone-800">
           <span className="text-[10px] font-bold uppercase text-stone-500">Status</span>
-          <button onClick={onClose} className="text-stone-600 hover:text-stone-400">
+          <button onClick={onClose} className="text-stone-600 hover:text-stone-400" title="Close status selector">
             <X className="w-3 h-3" />
           </button>
         </div>
@@ -141,11 +141,11 @@ export const GridSlot: React.FC<GridSlotProps> = ({
   };
 
   const getOverlayLabel = () => {
-    if (isDead) return '💀 COMPOST';
-    if (isPestInfested) return '🐛 PEST ALERT';
-    if (layer === 'hydration') return `💧 ${Math.round(hydration)}% H2O`;
-    if (layer === 'health') return stressLevel > 70 ? '⚠️ CRITICAL BLIGHT' : `🌡️ ${Math.round(stressLevel)}% STRESS`;
-    if (layer === 'nutrients') return `🧪 NITRO: ${n}%`;
+    if (isDead) return <span className="flex items-center gap-1"><Skull className="w-3 h-3" /> COMPOST</span>;
+    if (isPestInfested) return <span className="flex items-center gap-1"><Bug className="w-3 h-3" /> PEST ALERT</span>;
+    if (layer === 'hydration') return <span className="flex items-center gap-1"><Droplets className="w-3 h-3" /> {Math.round(hydration)}% H2O</span>;
+    if (layer === 'health') return stressLevel > 70 ? <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> CRITICAL BLIGHT</span> : <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> {Math.round(stressLevel)}% STRESS</span>;
+    if (layer === 'nutrients') return <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3" /> NITRO: {n}%</span>;
     return null;
   };
 
@@ -220,7 +220,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
           {/* Death State: Compost Icon */}
           {isDead ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-              <div className="text-4xl mb-2">🍂</div>
+              <Skull className="w-8 h-8 text-stone-600 mb-2" />
               <span className="text-[10px] font-bold text-stone-500 uppercase">Compost</span>
             </div>
           ) : (
@@ -228,9 +228,9 @@ export const GridSlot: React.FC<GridSlotProps> = ({
               <div className="z-10 w-full flex justify-between items-start">
                 <span className="text-[8px] font-black uppercase text-stone-500 tracking-tighter line-clamp-1">{item.catalogId}</span>
                 <div className="flex gap-1">
-                  {stressLevel > 70 && <span className="text-[10px] animate-pulse">⚠️</span>}
-                  {hydration > 90 && stressLevel < 10 && <span className="text-[10px]">🛡️</span>}
-                  {isPestInfested && <span className="text-[10px] animate-bounce">🐛</span>}
+                  {stressLevel > 70 && <span className="text-[10px] animate-pulse"><AlertTriangle className="w-3 h-3 text-red-500" /></span>}
+                  {hydration > 90 && stressLevel < 10 && <span className="text-[10px]"><Sparkles className="w-3 h-3 text-garden-400" /></span>}
+                  {isPestInfested && <span className="text-[10px] animate-bounce"><Bug className="w-3 h-3 text-amber-500" /></span>}
                 </div>
               </div>
 
@@ -242,7 +242,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
                 {/* Spectral Metric Label */}
                 {getOverlayLabel() && (
                   <div className="flex justify-center">
-                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded border ${
+                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded border flex items-center gap-1 ${
                        isDead ? 'bg-stone-800 border-stone-600 text-stone-400' :
                        isPestInfested ? 'bg-amber-900/30 border-amber-500 text-amber-400' :
                        layer === 'hydration' ? 'bg-blue-900/30 border-blue-500 text-blue-400' :
@@ -325,7 +325,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
       ) : (
         <div className="flex flex-col items-center gap-2 opacity-20 group-hover:opacity-60 transition-opacity">
            <Zap className="w-6 h-6 text-stone-700" />
-           <span className="text-xl">➕</span>
+           <Plus className="w-8 h-8 text-stone-500" />
            <span className="text-[8px] font-black tracking-widest uppercase">{x},{y}</span>
         </div>
       )}
