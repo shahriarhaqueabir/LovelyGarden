@@ -1,0 +1,160 @@
+🏛️ Section 1: The Main Deck (Primary Interface)
+
+The Main Deck is the persistent workspace. It is divided into three primary zones.
+
+Tab A: The Tactical Grid (Center View)
+
+This is the "Game Field" where biological simulation occurs.
+
+Sub-Tab: Visual Layers (HUD)
+
+Growth View: Default mode showing plant icons and stage (Seedling, Mature).
+
+Resource View: Overlays N-P-K (Nutrient) and $H_2O$ (Hydration) status bars.
+
+Synergy View: Draws glowing "Connection Lines" between companion plants (e.g., Green for Buffs, Red for Antagonists).
+
+Sub-Tab: The Time Scrubber
+
+Function: A slider to scrub from Day -30 (History) to Day +90 (Projection).
+
+Visuals: Ghosts the future growth of plants using the GDD (Growing Degree Days) calculation.
+
+Tab B: The Strategy Sidebar (Left)
+
+Sub-Tab: Sowing Calendar
+
+Function: A vertical timeline of the 200+ plants.
+
+Logic: Filters by "Plantable in Dresden Now." Uses solid bars for outdoor and dotted for indoor windows.
+
+Sub-Tab: The Seed Vault
+
+Function: The master CRUD interface for your "Deep Storage."
+
+Action: Click to "Withdraw to Pocket" (moves data to the Bottom Dock).
+
+🎒 Section 2: The Command Dock (Bottom Interface)
+
+This area handles the "Physical" transition of assets into the garden.
+
+Tab A: The Pocket (Active Inventory)
+
+Functionality: A horizontal "Hand" of up to 8 seed cards.
+
+Interaction: Drag-and-drop from Pocket to Grid.
+
+Features: Shows "Compatibility Score" as you hover a card over a specific grid slot.
+
+Tab B: The Tool Kit
+
+Action: Water: Resets the evaporation timer.
+
+Action: Fertilize: Modifies the soil N-P-K metadata for that slot.
+
+Action: Remedy: Opens the Diagnostic Wizard if a plant shows a "Stressor" icon.
+
+🔬 Section 3: The Pro-Inspector (Right Panel)
+
+This panel activates only when a plant or empty slot is selected.
+
+Tab A: Biological Profile
+
+Data: Variety name, scientific name, age, and health percentage.
+
+Care Hints: "Mentor Agent" text bubbles providing tips like "Thin these sprouts to 10cm for optimal yield."
+
+Tab B: Environmental Logic
+
+Weather HUD: Current Dresden temp, humidity, and "Real-Feel" for that specific plant.
+
+Risk Assessment: Shows % probability of frost or pest infestation for the next 48 hours.
+
+🧠 Section 4: Implementation Workflow for AI Agents
+
+To maintain a fluent flow, the GUI is powered by a Tri-Agent System:
+
+AgentModule ResponsibilityGUI Sync TaskAgent: ArchivistSeed Vault & CRUDSyncs the "Vault" UI with the local RxDB database.Agent: BotanistSynergy & Care LogicUpdates "Synergy Lines" and "Health Rings" on the Grid.Agent: MeteorWeather & Time TravelAdjusts the "Time Scrubber" projections based on live DWD data.🎨 Section 5: Design Standards
+
+Dresden Precision: All date formats are DD.MM.YYYY.
+
+Sunlight Legibility: High-contrast backgrounds (#F8F9FA) with bold icon weights.
+
+Gamification Feed: A small "XP" notification floats upward from a slot when a care task (Watering/Fertilizing) is completed.
+
+
+GUI Component Map
+
+1. The Primary Deck (Main Screen)
+
+This is the persistent base layer. It is designed for "Glanceability"—the user should know the garden's status in under 3 seconds.
+
+HUD (Top Bar): * Weather Segment: Real-time Dresden DWD feed (Temp, Wind, UV).
+
+XP/Level Tracker: Gamification bar showing "Green Thumb" rank.
+
+Global Alerts: Marquee for Frost Warnings or "Peak Planting" windows.
+
+Tactical Garden Field (Center): * Isometric Grid: 2.5D view of plants.
+
+The X-Ray Toggle: Switches icons to data-driven bars (N-P-K levels, Water, Health).
+
+The Temporal Scrubber (Bottom): * Time-Travel Dial: Scrub forward/backward.
+
+*
+
+2. Tab: The Sowing Calendar (Sidebar A)
+
+This is the "Oracle" component. It cross-references the 200+ plant database with the current date.
+
+Filter Sub-Tabs: * "Plant Now": Only shows seeds optimal for the current week in Dresden.
+
+"Indoor Start": Focused on Feb–Mar Vorkultur.
+
+"Direct Sow": Focused on post-May 15th logic.
+
+Visual Indicators:
+
+Solid Bar: Safe outdoor window.
+
+Dotted Bar: Pre-culture/Indoor period.
+
+Pulsing Alert: Indicates a plant is at the end of its sowing window (Use it or lose it).
+
+3. Tab: The Seed Vault & Inventory (Sidebar B)
+
+The CRUD hub for your assets.
+
+Sub-Tab 1: The Vault (Storage): * Comprehensive list of all owned seeds.
+
+Action: "Withdraw" (Moves seed data from Vault to Pocket).
+
+Sub-Tab 2: The Pocket (Hand): * Max 8 slots. These are the seeds physically "on" the user for planting.
+
+Sub-Tab 3: Add/Edit (CRUD): * Form for manual entry or AI-assisted photo-recognition of seed packets.
+
+4. Tab: The Pro-Inspector (Contextual Panel)
+
+This panel slides out from the right when a plant is selected.
+
+Sub-Tab: Diagnostics: * Symptom Matcher: "Identify Issue" button that triggers the AI agent to analyze health data vs. local pathogens.
+
+Sub-Tab: Synergy: * Companion Score: Explains why a plant is thriving/suffering based on neighbors.
+
+*
+
+Sub-Tab: Care Tips: * Dynamic "Hint" cards (e.g., "Dresden is expecting a heatwave; mulch this Tomato today to save water").
+
+5. Workflow: The "High-Fidelity" Logic Loop
+
+StepUser ActionAI Agent ResponseGUI Feedback1. PlanningOpen Calendar TabChronos Agent pulls DWD forecast.Highlights "Carrots" as 95% success rate today.2. PrepMove Carrot to PocketArchivist Agent verifies seed age.Card moves from Vault to Bottom Dock.3. PlantingDrag Card to GridBotanist Agent checks Companion Synergy.Grid glows Green near existing Leeks.4. MaintenanceUse ScrubberMeteor Agent projects 14 days ahead.Visualizes carrot sprouts; warns of potential thirst.🚀 Implementation Strategy for AI Agents
+
+To maintain "Universal CRUD" and "Time Travel," the implementation will use a State Machine (XState):
+
+State A (The Seed): Entry in the Vault.
+
+State B (The Pocket): Active inventory item.
+
+State C (The Entity): A planted object on the grid with unique ID, timestamp, and biological "health" variable.
+
+State D (The History): Archived "Harvest" data for the Garden Log.
