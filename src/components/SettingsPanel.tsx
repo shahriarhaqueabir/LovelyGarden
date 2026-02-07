@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, X, Globe, MapPin, Palette, Database, Download, Upload, FileJson, FileType } from 'lucide-react';
+import { Settings, X, MapPin, Palette, Database, Upload, FileType, FileJson } from 'lucide-react';
 import { getDatabase } from '../db';
 import { applyTheme } from '../utils/theme';
 import { exportDatabaseToJson, exportCollectionToCsv, importDatabaseFromJson, downloadFile } from '../db/export-import';

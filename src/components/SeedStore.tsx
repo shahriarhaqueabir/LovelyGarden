@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { X, Search, ShoppingBag, Leaf, Droplets, Sun, Wind, MapPin, Calendar, Clock, Info, AlertTriangle, Package, Sprout, Plus, Check } from 'lucide-react';
+import { X, Search, ShoppingBag, Leaf, Droplets, Sun, Clock, Info, AlertTriangle, Package, Sprout, Plus, Check } from 'lucide-react';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
 import { isSowingSeason } from '../logic/reasoning';
