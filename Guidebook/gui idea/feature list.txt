@@ -1,0 +1,133 @@
+To maximize the "high-fidelity simulation" feel, we transition the GUI from a simple app to a Command Center. This involves layering deep data visualizations (the "Tool") over a highly interactive, tactile map (the "Game").
+
+1. Visual Navigation & HUD (The Command Center)
+The Living Map (Isometric/Grid Toggle): A high-fidelity visual representation of your garden. Plants grow in size and change color based on real-time health data.
+
+Time-Scrubbing Timeline: A slider at the bottom of the screen. Dragging it forward "ghosts" the future state of your garden based on current growth rates and the DWD (German Weather Service) forecast.
+
+Environmental HUD: A persistent top-bar showing:
+
+Lichtstunden: Current daily sunlight hours for Dresden.
+
+Bodenfeuchte: A simulated "Soil Moisture" gauge calculated from the last rain vs. current evaporation.
+
+Frost-Countdown: Days remaining until the Eisheiligen (May 15).
+
+2. Pro-Level Planning Features
+Companion Synergy Overlay: When moving a plant card, the grid lights up in Green (Buff) or Red (Debuff).
+
+Example: Hovering a Tomato card near Basil highlights the Basil green (+10% Pest Resistance).
+
+Succession Planting Wizard: The GUI suggests a "Follow-up Crop" for every slot. If your Radishes are 5 days from harvest, the app suggests sowing Spinach in that same space to maximize the 150-day Dresden growing season.
+
+Shadow Mapping: Input your garden’s orientation (e.g., south-facing balcony vs. shaded backyard). The GUI overlays a "Heatmap" showing where the light is strongest throughout the day.
+
+3. Deep Diagnostic & Care Functionalities
+The "Horticultural X-Ray": Click any plant to enter "Scan Mode."
+
+Nutrient Radar: Displays a radar chart of N-P-K (Nitrogen, Phosphorus, Potassium) levels.
+
+Pest Probability Engine: Shows a percentage risk for local threats (e.g., "75% Risk: Slugs after tonight's rain").
+
+Symptom Library (AR-Ready): A visual matching tool. Instead of typing "yellow leaves," the user scrolls through high-res photos of leaf damage (Chlorosis, Necrosis, Blight) specific to Saxon soil.
+
+Intervention Command Bar: Tactical buttons to "Apply Neem Oil," "Add Compost Tea," or "Prune Infected Area," each with a predicted recovery time.
+
+4. Advanced Logging & Automation
+The "Garden Timeline" (History): A vertical "social media feed" of your garden's life. It automatically logs "Day 12: First Sprout," "Day 45: Applied Fertilizer," and "Day 60: 4kg Harvest."
+
+Micro-Climate Personalization: Deep settings for Dresden-specific variables:
+
+Soil Texture: Select between Elbe sand, garden loam, or heavy clay.
+
+Water Source: Log if you use tap water (hard water in Dresden) vs. rainwater to track pH shifts.
+
+Harvest Analytics: Charts showing "Yield per Square Meter" and "Resource Efficiency" (Water used vs. Fruit produced).
+
+5. Social & Comparative Workflows (Simulated or Real)
+Dresden Neighborhood Benchmarking: (Optional/Simulated) See how your tomato growth compares to the average growth in the Dresden-Neustadt or Striesen areas.
+
+Seed Catalog Integration: A digital "Binder" to store photos of your physical seed packets, automatically pulling the correct metadata (Sowing depth, spacing) from the internal database.
+
+
+Core Workflows
+Workflow A: The Planting Loop
+Consult: User opens the Calendar to see what is "Safe to Plant" in Dresden today.
+
+Select: User selects "Tomato - Beefsteak" from the Knowledge Vault.
+
+Validate: The GUI shows a Companion Alert ("Best planted near Basil").
+
+Execute: User taps "Add to Garden." The system sets the Harvest Timer to 85 days.
+
+Workflow B: The Morning Maintenance Loop
+Check Weather: User opens the app; the Weather HUD shows a dry 28°C day.
+
+Review Tasks: The Care Planner generates three tasks: "Watering," "Mulching," and "Check for Aphids."
+
+Perform & Log: User performs the tasks and swipes each card to "Complete." The Hydration Bar in the Active Field resets to 100%.
+
+Workflow C: The Diagnostic Loop
+Alert: The app sends a notification: "High Humidity Alert: Blight Risk Increased."
+
+Inspect: User opens the Diagnostic Solver and confirms dark spots on leaves.
+
+Remedy: User follows the "Organic Remedy" (Copper spray or pruning) and logs the action.
+
+Monitor: The Health Badge on the plant card changes to "Recovering."
+
+
+Phased Progress Bars: Each plant entry displays multi-state bars:
+
+Dotted: Indoor sowing window.
+
+Solid: Safe outdoor planting.
+
+Striped: Risky "Hardening off" periods.
+
+"Plant Now" Engine: A one-tap filter that cross-references the current date and Dresden weather to highlight cards in your hand that are currently at peak planting efficiency.
+
+🪴 The "Active Field" Dashboard (My Garden)
+Living Grid/List View: Toggle between a spatial map of your garden and a list view optimized for quick scanning of care tasks.
+
+Real-Time Status Badges: * Hydration Level: A depleting blue bar based on evapotranspiration math.
+
+Health: A green-to-red gradient reflecting pest/disease stress.
+
+Time-Passing Simulator: A "Advance Day" toggle (for planning) that predicts how your garden will look in 7 days based on the forecast.
+
+🧬 The Knowledge Vault (Encyclopedia)
+Localized Metadata: Profiles for plants specifically vetted for Saxony (Zone 7b/8a).
+
+Companion Logic Visualization: A "Connections" view that draws lines between plants showing symbiotic bonuses (e.g., Nitrogen fixing) or competitive risks.
+
+Growth Phase Gallery: High-res photo sequences of each plant from seed to harvest so users can visually verify if their plant is "on track."
+
+
+1. Dynamic Planting Calendar (Dresden Edition)
+Localized Timeline: A month-by-month interactive schedule (March–October) anchored to Dresden’s historical frost dates (May 15th last frost).
+
+Sowing Toggles: Visual distinction between Vorkultur (indoor sowing) and Direktsaat (outdoor planting).
+
+Current-Window Filter: A "Plant Now" button that instantly filters the database for crops compatible with the current week's weather.
+
+2. Active Garden Dashboard (My Garden)
+Live Status Tracking: Cards for every active plant showing "Days since planting" and "Estimated Harvest Window."
+
+Task Management: Quick-action buttons for irrigation and fertilizing, generated from specific plant requirements.
+
+Archive & Success Metrics: One-tap harvesting to move plants into the Historical Log for yield tracking.
+
+3. Plant Encyclopedia & Database
+Regional Selection: A curated library of plants optimized for the Elbe Valley (Zone 7b/8a) climate.
+
+Companion Matrix: Visual guide showing beneficial pairings (e.g., Tomato + Basil) and antagonistic neighbors (e.g., Tomato + Potato).
+
+Growth Phase Profiles: Detailed info on germination temperatures, spacing requirements, and sun exposure levels.
+
+4. Smart Diagnostics & Problem Solver
+Issue Identification: Step-by-step wizard to identify common Dresden pests (like aphids or slugs) and diseases (like Phytophthora blight).
+
+Actionable Advice: Organic treatment recommendations that prioritize garden health over chemical use.
+
+Risk Heatmap: Alerts triggered by weather patterns (e.g., "High humidity + 20°C: Increase monitoring for fungal growth").

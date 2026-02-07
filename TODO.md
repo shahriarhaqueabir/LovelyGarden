@@ -1,0 +1,1 @@
+- [ ] Restructure App.tsx layout to make footer stick to bottom of viewport

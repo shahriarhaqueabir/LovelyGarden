@@ -1,0 +1,23 @@
+[
+  {
+    "id": "source_rhs",
+    "name": "Royal Horticultural Society",
+    "type": "institution",
+    "url": "https://www.rhs.org",
+    "credibility_tier": "authoritative"
+  },
+  {
+    "id": "source_extension_ucdavis",
+    "name": "UC Davis Cooperative Extension",
+    "type": "academic_extension",
+    "url": "https://extension.ucdavis.edu",
+    "credibility_tier": "authoritative"
+  },
+  {
+    "id": "source_cornell_extension",
+    "name": "Cornell Cooperative Extension",
+    "type": "academic_extension",
+    "url": "https://cce.cornell.edu",
+    "credibility_tier": "authoritative"
+  }
+]

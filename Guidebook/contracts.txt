@@ -1,0 +1,291 @@
+DOMAIN 12 — RULE CONFLICT RESOLUTION
+Why this exists
+
+When multiple rules fire at once, something must decide.
+That decision cannot be arbitrary, silent, or opaque.
+
+Conflict resolution is meta-logic.
+It never invents knowledge. It chooses which rule wins, and why.
+
+12.1 Conflict Types (Explicitly Modeled)
+{
+  "rule_conflict_types": [
+    {
+      "id": "hard_vs_soft",
+      "description": "A constraint rule conflicts with a recommendation rule"
+    },
+    {
+      "id": "safety_vs_optimization",
+      "description": "Safety or biological limit conflicts with yield or convenience"
+    },
+    {
+      "id": "authoritative_vs_experiential",
+      "description": "Authoritative data conflicts with user-derived heuristics"
+    },
+    {
+      "id": "temporal_mismatch",
+      "description": "Rules valid for different growth stages or seasons overlap"
+    }
+  ]
+}
+
+12.2 Rule Priority Model (Deterministic)
+
+This is non-negotiable ordering.
+
+{
+  "rule_priority_levels": [
+    {
+      "level": 1,
+      "label": "hard_constraint",
+      "description": "Biological or safety limits (cannot be overridden)"
+    },
+    {
+      "level": 2,
+      "label": "environmental_constraint",
+      "description": "Climate, frost, soil impossibilities"
+    },
+    {
+      "level": 3,
+      "label": "authoritative_recommendation",
+      "description": "Extension-backed best practices"
+    },
+    {
+      "level": 4,
+      "label": "heuristic_recommendation",
+      "description": "Derived from user patterns or optimizations"
+    },
+    {
+      "level": 5,
+      "label": "preference_hint",
+      "description": "User convenience or aesthetic preferences"
+    }
+  ]
+}
+
+12.3 Conflict Resolution Rules
+{
+  "conflict_resolution_rules": [
+    {
+      "id": "resolve_hard_constraint_first",
+      "applies_to": "hard_vs_soft",
+      "resolution_strategy": "higher_priority_wins",
+      "winning_priority_level": 1,
+      "explanation_template": "This recommendation was blocked due to a biological or safety constraint."
+    },
+    {
+      "id": "authoritative_over_user",
+      "applies_to": "authoritative_vs_experiential",
+      "resolution_strategy": "source_weighting",
+      "winning_source_type": "authoritative",
+      "explanation_template": "This advice is based on established horticultural guidance, which takes precedence over user-reported trends."
+    }
+  ]
+}
+
+12.4 Conflict Outcome Object (Explainable)
+
+Every decision produces one of these.
+
+{
+  "rule_conflict_outcome": {
+    "triggered_rules": [
+      "rule_sowing_season_match",
+      "rule_frost_sensitive_block"
+    ],
+    "winning_rule": "rule_frost_sensitive_block",
+    "resolution_rule": "resolve_hard_constraint_first",
+    "final_action": "block_sow",
+    "confidence_score": 0.97,
+    "user_explanation": "Although this crop is usually sown now, frost risk makes planting unsafe."
+  }
+}
+
+
+Nothing is silent. Nothing is magical.
+
+DOMAIN 13 — EXPLAINABILITY UI CONTRACTS
+Why this exists
+
+The UI is not allowed to improvise explanations.
+It consumes structured explanations produced by the reasoning engine.
+
+This prevents:
+• misleading UX
+• oversimplification
+• hallucinated “friendly” explanations
+
+13.1 Explanation Levels (Progressive Disclosure)
+{
+  "explanation_levels": [
+    {
+      "id": "summary",
+      "intended_user": "beginner",
+      "max_length": 160
+    },
+    {
+      "id": "detailed",
+      "intended_user": "intermediate",
+      "includes": ["rules", "conditions"]
+    },
+    {
+      "id": "technical",
+      "intended_user": "advanced",
+      "includes": ["rule_ids", "facts", "sources", "confidence"]
+    }
+  ]
+}
+
+13.2 Explanation Payload Contract
+
+This is what the AI must emit, and the UI must render verbatim.
+
+{
+  "explanation_payload": {
+    "decision_id": "decision_789",
+    "action": "delay_sowing",
+    "confidence_score": 0.96,
+    "summary": "This plant should not be sown yet due to frost risk.",
+    "detailed": {
+      "reasoning": [
+        "This plant is frost-sensitive",
+        "Frost is still likely in your climate zone"
+      ],
+      "rules_applied": [
+        "rule_frost_sensitive_block"
+      ]
+    },
+    "technical": {
+      "facts_used": [
+        "plant_climate_requirements.frost_tolerant = false",
+        "environment.frost_risk = true"
+      ],
+      "sources": [
+        "source_extension_ucdavis"
+      ]
+    }
+  }
+}
+
+
+UI must not invent phrasing.
+UI chooses which level to show — not what to say.
+
+13.3 UI Obligations (Hard Contract)
+{
+  "ui_contract_rules": [
+    {
+      "rule": "no_unexplained_actions",
+      "description": "Every recommendation or block must include an explanation payload"
+    },
+    {
+      "rule": "confidence_visibility",
+      "description": "Confidence score must be visible for all non-trivial decisions"
+    },
+    {
+      "rule": "override_transparency",
+      "description": "If a user overrides advice, the original reasoning remains accessible"
+    }
+  ]
+}
+
+DOMAIN 14 — SYSTEM WORKFLOWS
+Why this exists
+
+Workflows define how intelligence flows, end-to-end.
+They prevent logic leaks and UX contradictions.
+
+14.1 Core Workflow: Planting Recommendation
+{
+  "workflow": {
+    "id": "workflow_planting_recommendation",
+    "steps": [
+      {
+        "step": 1,
+        "action": "collect_context",
+        "inputs": ["user_location", "current_date", "plant_id"]
+      },
+      {
+        "step": 2,
+        "action": "evaluate_constraints",
+        "ruleset": "constraint_rules"
+      },
+      {
+        "step": 3,
+        "action": "evaluate_recommendations",
+        "ruleset": "recommendation_rules"
+      },
+      {
+        "step": 4,
+        "action": "resolve_conflicts",
+        "ruleset": "conflict_resolution_rules"
+      },
+      {
+        "step": 5,
+        "action": "generate_explanation",
+        "output": "explanation_payload"
+      },
+      {
+        "step": 6,
+        "action": "present_to_user"
+      }
+    ]
+  }
+}
+
+14.2 Feedback Learning Workflow (Safe)
+{
+  "workflow": {
+    "id": "workflow_feedback_learning",
+    "steps": [
+      {
+        "step": 1,
+        "action": "collect_user_feedback"
+      },
+      {
+        "step": 2,
+        "action": "validate_context",
+        "constraints": ["location_known", "plant_confirmed"]
+      },
+      {
+        "step": 3,
+        "action": "aggregate_patterns",
+        "scope": "contextual_only"
+      },
+      {
+        "step": 4,
+        "action": "adjust_confidence_weights",
+        "limits": "non-authoritative"
+      }
+    ]
+  }
+}
+
+14.3 Diagnostic Workflow (Future-Proof)
+{
+  "workflow": {
+    "id": "workflow_issue_diagnosis",
+    "steps": [
+      {
+        "step": 1,
+        "action": "collect_observations",
+        "inputs": ["symptoms", "growth_stage", "recent_actions"]
+      },
+      {
+        "step": 2,
+        "action": "match_known_patterns",
+        "domains": ["pests", "nutrient_deficiencies", "diseases"]
+      },
+      {
+        "step": 3,
+        "action": "rank_possible_causes",
+        "method": "evidence_weighted"
+      },
+      {
+        "step": 4,
+        "action": "present_ranked_hypotheses",
+        "note": "No single diagnosis unless confidence > threshold"
+      }
+    ]
+  }
+}

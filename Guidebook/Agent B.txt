@@ -1,0 +1,166 @@
+🤖 ACTIVATING AGENT B: Logic & Agronomy Engine
+Objective: Implement the simulation rules. This is the "Brain" that decides if a plant is growing, dying, or needs water.
+
+Core Architecture Decision: Lazy Evaluation. Instead of running a background process (Game Loop) that drains battery, we calculate the state of a plant only when the user views it. We compare the currentTimestamp against the plantedDate and lastWateredDate to compute the current status instantly.
+
+1. The Lifecycle Service (Growth Logic)
+This service manages the Finite State Machine (FSM) of the plant.
+
+TypeScript
+// services/LifecycleService.ts
+import { PlantedCard, CatalogPlant, PlantStage } from '../types';
+
+export interface PlantStatus {
+  currentStage: PlantStage;
+  stageIndex: number;
+  daysInCurrentStage: number;
+  totalDaysPlanted: number;
+  isThirsty: boolean;
+  isHarvestReady: boolean;
+  health: number; // 0-100
+}
+
+export const LifecycleService = {
+  
+  /**
+   * Calculates the current state of a plant based on time elapsed.
+   */
+  evaluate: (
+    plant: PlantedCard, 
+    catalog: CatalogPlant, 
+    now: number = Date.now()
+  ): PlantStatus => {
+    
+    const oneDayMs = 86400000;
+    const totalDaysPlanted = Math.floor((now - plant.plantedDate) / oneDayMs);
+    const daysSinceWatered = Math.floor((now - plant.lastWateredDate) / oneDayMs);
+
+    // 1. Determine Growth Stage
+    let dayAccumulator = 0;
+    let currentStageIndex = 0;
+    let daysInCurrentStage = 0;
+
+    for (let i = 0; i < catalog.stages.length; i++) {
+      const stageDuration = catalog.stages[i].durationDays;
+      
+      // If total days exceeds this stage's cumulative time, move to next
+      if (totalDaysPlanted >= dayAccumulator + stageDuration) {
+        dayAccumulator += stageDuration;
+        currentStageIndex = i;
+      } else {
+        // We are inside this stage
+        currentStageIndex = i;
+        daysInCurrentStage = totalDaysPlanted - dayAccumulator;
+        break;
+      }
+    }
+    
+    // Cap at the last stage (e.g., Harvest or Dead)
+    if (currentStageIndex >= catalog.stages.length) {
+      currentStageIndex = catalog.stages.length - 1;
+    }
+
+    const currentStage = catalog.stages[currentStageIndex];
+
+    // 2. Determine Water Needs
+    const isThirsty = daysSinceWatered >= currentStage.waterFrequencyDays;
+
+    // 3. Health Logic (Simplified for MVP)
+    // Lose 10 HP for every day ignored past water frequency
+    let healthPenalty = 0;
+    if (isThirsty) {
+        const overdueDays = daysSinceWatered - currentStage.waterFrequencyDays;
+        healthPenalty = overdueDays * 10;
+    }
+    const health = Math.max(0, 100 - healthPenalty);
+
+    return {
+      currentStage,
+      stageIndex: currentStageIndex,
+      daysInCurrentStage,
+      totalDaysPlanted,
+      isThirsty,
+      isHarvestReady: currentStage.name === 'Harvest', // Simple string check for now
+      health
+    };
+  }
+};
+2. The Companion Service (Game Mechanics)
+This logic powers the "Card Game" aspect. It analyzes the grid to apply buffs or debuffs based on neighboring plants.
+
+TypeScript
+// services/CompanionService.ts
+import { PlantedCard, CatalogPlant } from '../types';
+
+export const CompanionService = {
+
+  /**
+   * Returns a score modifier for a specific plant based on its neighbors.
+   * Score > 0: Good (Buff)
+   * Score < 0: Bad (Debuff)
+   */
+  calculateAdjacencyBonus: (
+    targetCard: PlantedCard,
+    allCardsInBed: PlantedCard[],
+    catalogMap: Map<string, CatalogPlant> // Quick lookup
+  ): number => {
+    
+    let score = 0;
+    const targetCatalogItem = catalogMap.get(targetCard.catalogId);
+    if (!targetCatalogItem) return 0;
+
+    // Filter for immediate neighbors (Up, Down, Left, Right)
+    const neighbors = allCardsInBed.filter(card => {
+      const isSameCard = card.id === targetCard.id;
+      const dx = Math.abs(card.gridX - targetCard.gridX);
+      const dy = Math.abs(card.gridY - targetCard.gridY);
+      // Check for orthogonal adjacency (distance of 1)
+      return !isSameCard && ((dx === 1 && dy === 0) || (dx === 0 && dy === 1));
+    });
+
+    neighbors.forEach(neighbor => {
+        const neighborCatalog = catalogMap.get(neighbor.catalogId);
+        if (!neighborCatalog) return;
+
+        // Check Companions
+        if (targetCatalogItem.companions.includes(neighborCatalog.id)) {
+            score += 1; // Buff!
+        }
+
+        // Check Antagonists
+        if (targetCatalogItem.antagonists.includes(neighborCatalog.id)) {
+            score -= 1; // Debuff!
+        }
+    });
+
+    return score;
+  }
+};
+3. The Calendar Service (Location Awareness)
+Ensures the user can't play a card in the wrong season.
+
+TypeScript
+// services/SeasonService.ts
+import { Season } from '../types';
+
+const MONTHS_NORTH = ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter'];
+// Simplified Hemisphere mapping
+
+export const SeasonService = {
+  getCurrentSeason: (hemisphere: 'North' | 'South'): Season => {
+    const monthIndex = new Date().getMonth(); // 0-11
+    // Logic to flip array if South
+    // ... implementation details
+    return MONTHS_NORTH[monthIndex] as Season;
+  },
+
+  canPlant: (plantSeasons: Season[], currentSeason: Season): boolean => {
+    return plantSeasons.includes(currentSeason);
+  }
+};
+⚠️ Architect's Notes on Logic
+State Recovery: Because we calculate state on-read, if a user closes the app for 3 months and opens it, the evaluate function will instantly calculate that the plant is dead and withered. No background sync needed.
+
+Performance: The CompanionService loops through neighbors. On a massive grid (100+ plants), this runs every render.
+
+Optimization Plan: Memoize this calculation. Only recalculate when a new card is dropped into the bed.

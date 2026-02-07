@@ -1,0 +1,139 @@
+2. Architecture & Tech Stack
+Based on "Browser-First," "Offline-First," and "Card Game Mechanics," here is the proposed stack prioritizing reliability and local state management.
+
+Core Philosophy: Local-First
+The app behaves like a desktop application. The server is only used for backup or multiplayer features (if any).
+
+Language: TypeScript.
+
+Why: Essential for maintaining strict contracts between the Game Logic, Data Models, and UI. Prevents an entire class of runtime errors.
+
+Runtime/Framework: React (via Vite).
+
+Why: The "Card" metaphor maps 1:1 to React Components. The ecosystem for Drag-and-Drop (planting cards) and virtualized lists (inventory) is mature.
+
+State & Database (The Critical Piece): RxDB (Reactive Database) sitting on top of IndexedDB.
+
+Why: Standard Redux/Context is insufficient for offline persistence. RxDB allows us to treat the local database as the "Store." It supports real-time UI updates when data changes and handles replication to a backend (if added later) seamlessly.
+
+PWA (Progressive Web App): Vite PWA Plugin.
+
+Why: Handles the Service Worker caching strategies required to load the app shell and static assets without an internet connection.
+
+Logic Engine: XState.
+
+Why: Managing plant lifecycles (Seed → Sprout → Veg → Flower → Harvest) is a Finite State Machine. XState visualizes and enforces these logic flows to prevent bugs (e.g., harvesting a plant that hasn't grown).
+
+3. The "Garden Codex": AI Orchestration Plan
+This is the Master Design Plan. You will use these definitions to initialize your AI session or sub-agents.
+
+Phase 1: Project definition & Guardrails
+Mission: Build "Garden Deck" (working title), a local-first PWA that gamifies gardening through card-based interactions while providing agronomic accuracy. Vision: To make gardening accessible and engaging by visualizing plant biology as game mechanics.
+
+Global Guardrails (For all Agents):
+
+No Internet Assumption: All features must function 100% without a network connection after the initial load.
+
+Mobile Ergonomics: All distinct UI touch targets must be at least 44x44px. Bottom-navigation preferred for one-handed use.
+
+Strict Typing: No any types in TypeScript. All Data Transfer Objects (DTOs) must be defined in shared interfaces.
+
+Optimistic UI: Interactions (planting, watering) happen instantly in the UI; the database persists them asynchronously.
+
+Phase 2: Domain Segmentation & Prompt Scaffolding
+Copy and paste these prompts to specific sub-agents to execute the work.
+
+Agent A: System Architect & Data Modeler
+Goal: Define the Schema, Relationships, and Offline Storage strategy.
+
+Prompt: You are the Data Architect. We are building an offline-first gardening PWA using RxDB (IndexedDB).
+
+Task: Design the JSON Schema and TypeScript interfaces for the following entities:
+
+PlantLibraryItem: Immutable reference data (Name, N-P-K reqs, Companions, GrowthStages[]).
+
+InventoryCard: A user-owned instance of a seed (connects to PlantLibraryItem, Quantity).
+
+GardenBed: A container representing a physical location.
+
+PlantedEntity: An instance of a card played in a bed. Must track: plantedDate, currentStage, lastWatered, healthStatus.
+
+Requirements:
+
+Define a relationship where PlantedEntity references PlantLibraryItem by ID.
+
+Create a specialized Type for GrowthStage (duration, water needs, graphic asset ID).
+
+Design the schema to support querying "All plants needing water today."
+
+output strictly in TypeScript interfaces and RxDB schema JSON.
+
+Agent B: Game Logic & Agronomy Engine
+Goal: Implement the rules of the simulation (Growth, Calendar, Compatibility).
+
+Prompt: You are the Logic Engine Developer. We are using XState and TypeScript.
+
+Task 1 (Lifecycle): Create a Finite State Machine (FSM) for a generic plant lifecycle.
+
+States: SeedStorage -> Planted -> Germinating -> Vegetative -> Flowering -> Fruiting -> Harvested / Dead.
+
+Transitions: Based on time_elapsed AND conditions_met (water/temp).
+
+Task 2 (Companion Logic): Write a pure function calculateCompanionScore(targetPlant, nearbyPlants[]).
+
+Input: A target plant type and an array of existing plant types in the Bed.
+
+Logic: Return a score (-1 to +1) based on a hardcoded adjacency matrix of companion plants.
+
+Task 3 (Calendar): Write a utility that accepts a User Location (Lat/Long) and a Plant Type, and returns a boolean isSowingSeason().
+
+Use a simplified lookup table for Northern/Southern hemispheres initially.
+
+Agent C: UI/UX & Component Designer
+Goal: Build the Visual Language and React Components.
+
+Prompt: You are the Frontend Lead. We are building a Mobile-First PWA in React + TailwindCSS.
+
+Task: Design the Component Hierarchy for the "Garden Field" view.
+
+Visual Metaphor: Users view a grid (Garden Bed). They open a "Hand" (Inventory) of cards at the bottom. They drag a card to a grid slot.
+
+Deliverables:
+
+CardComponent: Displays plant stats. Needs Expanded (Modal) and Collapsed (Thumbnail) states.
+
+GridSlot: A droppable target. Visualizes soil state (Dry/Wet) and Plant Stage.
+
+HUD: Navigation bar (Garden, Store, Library, Calendar).
+
+Constraint: Use CSS Grid for the Garden Bed to handle responsive resizing. Ensure touch events work for Drag-and-Drop on mobile.
+
+Agent D: content & Library Curator
+Goal: Populate the static data (The Seeds).
+
+Prompt: You are the Content Specialist.
+
+Task: Generate a JSON dataset for the "Starter Pack" of seeds (Tomato, Basil, Carrot, Lettuce, Marigold).
+
+Include accurate agronomic data:
+
+germinationDays: (Min/Max)
+
+waterFreq: (Days)
+
+companions: (List of IDs)
+
+antagonists: (List of IDs)
+
+sowingMonths: (Array of months 0-11 for N. Hemisphere)
+
+Format this strictly according to the schema provided by the Data Architect.
+
+Phase 3: Self-Correction & Review Loops (The "Check" Protocol)
+Before merging code from any agent, run this checklist:
+
+The "Airplane Mode" Test: If I turn off Wi-Fi, does the PlantedEntity still update its state from "Germinating" to "Vegetative" after the time passes? (Logic must be local).
+
+The "Thumb" Test: Can I drag a seed card from the inventory to the bed using only my thumb while holding the phone?
+
+The "Reality" Test: Does the isSowingSeason function correctly block me from planting Tomatoes in December (assuming Northern Hemisphere)?
