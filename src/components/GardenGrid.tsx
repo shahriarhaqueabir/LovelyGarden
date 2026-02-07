@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
+import { getDatabase } from '../db';
 import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
@@ -199,7 +200,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
         setShowObservationMenu(false);
       }}
       className={`
-        relative w-36 h-48 border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer
+        relative w-44 h-44 border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer
         ${getBorderColor()}
         ${item ? 'glass' : 'bg-stone-900/20'}
         ${synergyClass}
@@ -208,7 +209,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
       `}
     >
       {item ? (
-        <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden">
+        <div className="w-full h-full p-4 flex flex-col items-center justify-between relative overflow-hidden">
           {/* Layer Specific Overlays */}
           {layer !== 'normal' && !isDead && (
             <div className={`
@@ -344,15 +345,24 @@ export const GardenField: React.FC<{
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
 }> = ({ items, onSelect, layer, activeSeedCatalogId, catalog, rows = 3, cols = 4, onEdit, onDelete }) => {
-  const getItemAt = (x: number, y: number) => {
-    return items.find(item => item.gridX === x && item.gridY === y);
-  };
+  // Create a lookup map for better performance O(1) instead of O(N) find
+  const itemMap = useMemo(() => {
+    const map = new Map<string, any>();
+    items.forEach(item => {
+      map.set(`${item.gridX}-${item.gridY}`, item);
+    });
+    return map;
+  }, [items]);
 
-  const relationships = (catalog || []).flatMap((c: any) => c.relationships || []);
+  const getItemAt = useCallback((x: number, y: number) => {
+    return itemMap.get(`${x}-${y}`);
+  }, [itemMap]);
+
+  const relationships = useMemo(() => (catalog || []).flatMap((c: any) => c.relationships || []), [catalog]);
 
   // Handle status changes with simulation pause logic
   const handleStatusChange = async (item: any, status: PlantStatus) => {
-    const db = await import('../db').then(m => m.getDatabase());
+    const db = await getDatabase();
     const doc = await db.planted.findOne(item.id).exec();
     
     if (doc) {
@@ -388,12 +398,14 @@ export const GardenField: React.FC<{
         {Array.from({ length: rows * cols }).map((_, i) => {
           const x = i % cols;
           const y = Math.floor(i / cols);
+          const item = itemMap.get(`${x}-${y}`);
+          
           return (
             <GridSlot
-              key={i}
+              key={`${x}-${y}`}
               x={x}
               y={y}
-              item={getItemAt(x, y)}
+              item={item}
               onSelect={onSelect}
               layer={layer}
               activeSeedCatalogId={activeSeedCatalogId}

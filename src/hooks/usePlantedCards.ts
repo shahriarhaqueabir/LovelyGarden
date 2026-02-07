@@ -10,14 +10,21 @@ export const usePlantedCards = (gardenId?: string) => {
   const [cards, setCards] = useState<any[]>([]);
 
   useEffect(() => {
+    // Clear cards immediately when switching gardens to prevent stale data
+    setCards([]); 
+
     let sub: Subscription;
 
     const init = async () => {
       const db = await getDatabase();
-      // If gardenId is provided, filter by it. Otherwise show all (or handle as main)
-      const query = gardenId 
-        ? db.planted.find({ selector: { bedId: gardenId } })
-        : db.planted.find();
+      
+      // If no gardenId, do not fetch anything (prevents loading all plants initially)
+      if (!gardenId) {
+        setCards([]);
+        return;
+      }
+
+      const query = db.planted.find({ selector: { bedId: gardenId } });
       
       sub = query.$.subscribe(results => {
         setCards(results.map(doc => doc.toJSON()));
