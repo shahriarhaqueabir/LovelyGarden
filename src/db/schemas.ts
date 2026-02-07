@@ -55,6 +55,18 @@ export const plantKbSchema: RxJsonSchema<any> = {
     common_diseases: { type: 'array', items: { type: 'string' } },
     nutrient_preferences: { type: 'array', items: { type: 'string' } },
     notes: { type: 'string' },
+    stages: { 
+      type: 'array', 
+      items: { 
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          name: { type: 'string' },
+          durationDays: { type: 'number' },
+          waterFrequencyDays: { type: 'number' }
+        }
+      } 
+    },
     source_metadata: {
       type: 'array',
       items: {
@@ -144,7 +156,8 @@ export const settingsSchema: RxJsonSchema<any> = {
     firstLoadComplete: { type: 'boolean' },
     hemisphere: { type: 'string' },
     city: { type: 'string' },
-    currentDay: { type: 'number' }
+    currentDay: { type: 'number' },
+    xp: { type: 'number' }
   },
   required: ['id', 'firstLoadComplete']
 };

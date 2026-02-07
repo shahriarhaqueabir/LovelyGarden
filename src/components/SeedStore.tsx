@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { X, Plus, Droplets, Sun, Leaf, Info, Sprout, Clock, Check } from 'lucide-react';
+import { X, Search, ShoppingBag, Leaf, Droplets, Sun, Wind, MapPin, Calendar, Clock, Info, AlertTriangle, Package, Sprout, Plus, Check } from 'lucide-react';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
 import { isSowingSeason } from '../logic/reasoning';
@@ -26,7 +26,7 @@ const DetailModal: React.FC<{
         {/* Header */}
         <div className="p-6 border-b border-stone-800 flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-bold text-stone-100">🌿 {plant.name}</h2>
+            <h2 className="text-xl font-bold text-stone-100 flex items-center gap-2"><Leaf className="w-5 h-5 text-garden-500" /> {plant.name}</h2>
             <p className="text-sm text-stone-500 italic">{plant.scientificName}</p>
           </div>
           <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
@@ -39,7 +39,7 @@ const DetailModal: React.FC<{
           {/* Risk Warning */}
           {isRisky && (
             <div className="flex items-center gap-3 p-3 bg-amber-900/20 border border-amber-700/50 rounded-lg">
-              <span className="text-xl">⚠️</span>
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
               <div>
                 <p className="text-sm font-bold text-amber-400">Risky Timing</p>
                 <p className="text-xs text-amber-300/70">Current date is outside optimal sowing window for Dresden (Zone 7b)</p>
@@ -53,7 +53,7 @@ const DetailModal: React.FC<{
           {/* Growth Stages */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2">
-              <Sprout className="w-4 h-4" /> 🌱 Growth Stages
+              <Sprout className="w-4 h-4" /> Growth Stages
             </h3>
             <div className="flex flex-wrap gap-2">
               {plant.stages?.map((stage, idx) => (
@@ -126,13 +126,13 @@ const DetailModal: React.FC<{
             onClick={onClose}
             className="flex-1 py-3 bg-stone-800 text-stone-300 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-stone-700 transition-all flex items-center justify-center gap-2"
           >
-            ❌ Cancel
+            <X className="w-4 h-4" /> Cancel
           </button>
           <button
             onClick={() => { onBuy(); onClose(); }}
             className="flex-1 py-3 bg-garden-600 text-stone-950 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-garden-500 transition-all flex items-center justify-center gap-2"
           >
-            🪴 Add to Bag
+            <ShoppingBag className="w-4 h-4" /> Add to Bag
           </button>
         </div>
       </div>
@@ -142,7 +142,7 @@ const DetailModal: React.FC<{
 
 const WarningBadge: React.FC = () => (
   <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-900/40 border border-amber-700/50 rounded text-[9px] font-bold text-amber-400">
-    ⚠️ Risky
+    <AlertTriangle className="w-3 h-3" /> Risky
   </span>
 );
 
@@ -180,9 +180,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
     const bagItem = {
       id: `inv-${catalogId}-${Date.now()}`,
       catalogId,
-      acquiredDate: Date.now(),
-      // Deep copy of plant data for Bag state
-      plantData: JSON.parse(JSON.stringify(plant))
+      acquiredDate: Date.now()
     };
 
     await db.inventory.insert(bagItem);
@@ -197,7 +195,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-stone-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <span className="text-xl">🏺</span>
+              <Package className="w-6 h-6 text-stone-500" />
               <h2 className="text-xl font-bold text-stone-100">Seed Vault</h2>
             </div>
             <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
@@ -208,7 +206,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
           {/* Search */}
           <div className="p-4 border-b border-stone-800">
             <div className="flex items-center gap-2 w-full bg-stone-950/50 border border-stone-800 rounded-lg px-3 py-2">
-              <span className="text-xs">🔍</span>
+              <Search className="w-3 h-3 text-stone-500" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}

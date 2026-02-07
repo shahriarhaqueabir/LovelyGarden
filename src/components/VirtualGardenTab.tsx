@@ -7,7 +7,15 @@ import {
   Thermometer,
   Settings as SettingsIcon,
   Info,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  LayoutGrid,
+  Eye,
+  Activity,
+  Hourglass,
+  Sprout,
+  Plus,
+  Minus
 } from 'lucide-react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { GardenField } from './GardenGrid';
@@ -173,6 +181,24 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     }
   };
 
+  const removeRow = () => {
+    if (gridRows > 2) {
+      setGridRows(prev => prev - 1);
+      setToast({ message: 'Grid reduced: Row removed', type: 'info' });
+    } else {
+      setToast({ message: 'Minimum grid size reached', type: 'error' });
+    }
+  };
+
+  const removeColumn = () => {
+    if (gridCols > 2) {
+      setGridCols(prev => prev - 1);
+      setToast({ message: 'Grid reduced: Column removed', type: 'info' });
+    } else {
+      setToast({ message: 'Minimum grid size reached', type: 'error' });
+    }
+  };
+
   // Calculate grid capacity
   const totalCells = gridRows * gridCols;
   const occupiedCells = plantedCards.length;
@@ -195,26 +221,26 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             <div className="h-4 w-[1px] bg-stone-800" />
             <div className="flex items-center gap-6">
               <div className="bg-stone-900 px-4 py-1 rounded-full border border-stone-800 text-[10px] font-black text-garden-400 uppercase tracking-widest shadow-inner">
-                📅 Cycle Day: {currentDay}
+                <Calendar className="w-3.5 h-3.5 text-garden-500" /> Cycle Day: {currentDay}
               </div>
               <div className="flex items-center gap-4 text-stone-500">
                 {weather ? (
                   <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.sunlightHours}h</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplets className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.moisturePercentage}%</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">{weather.temperatureCelsius}°C</span></div>
+                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-amber-500" /><span className="text-[10px] font-bold">{weather.sunlightHours}h</span></div>
+                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-blue-500" /><span className="text-[10px] font-bold">{weather.moisturePercentage}%</span></div>
+                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold">{weather.temperatureCelsius}°C</span></div>
                   </>
                 ) : loading ? (
                   <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--h</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplets className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--%</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold">--°C</span></div>
+                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--h</span></div>
+                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--%</span></div>
+                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--°C</span></div>
                   </>
                 ) : (
                   <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours">☀️ <Sun className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture">💧 <Droplets className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp">🌡️ <Thermometer className="w-3.5 h-3.5" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
+                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
+                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
+                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
                   </>
                 )}
               </div>
@@ -226,7 +252,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest shadow-inner ${
               isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
             }`}>
-              <span>📐 Grid: {occupiedCells}/{totalCells}</span>
+              <LayoutGrid className="w-3 h-3" />
+              <span>Grid: {occupiedCells}/{totalCells}</span>
               {isGridFull && <AlertCircle className="w-3 h-3" />}
             </div>
 
@@ -248,9 +275,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
             <div className="flex gap-3">
               <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner">
-                <button onClick={() => setSpectralLayer('normal')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>👁️ Visual</button>
-                <button onClick={() => setSpectralLayer('hydration')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>💧 Hydration</button>
-                <button onClick={() => setSpectralLayer('health')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>🩹 Blight</button>
+                <button onClick={() => setSpectralLayer('normal')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
+                  <Eye className="w-3 h-3" /> Visual
+                </button>
+                <button onClick={() => setSpectralLayer('hydration')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
+                  <Droplets className="w-3 h-3" /> Hydration
+                </button>
+                <button onClick={() => setSpectralLayer('health')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
+                  <Activity className="w-3 h-3" /> Blight
+                </button>
               </div>
               <button
                 onClick={() => {}} // Settings would open in its own tab
@@ -281,27 +314,68 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col">
-          <div className="flex flex-1">
+        <div className="flex flex-1 overflow-hidden">
+          {/* LEFT SIDEBAR: INVENTORY */}
+          <InventoryTray
+            catalog={catalog}
+            onOpenStore={onOpenSeedStore || (() => {})}
+            isVertical={true}
+            plantNowMode={plantNowMode}
+            onTogglePlantNow={() => setPlantNowMode(v => !v)}
+            plantNowSet={plantNowSet}
+          />
+
+          {/* MAIN CONTENT COLUMN */}
+          <div className="flex-1 flex flex-col relative overflow-hidden">
+            <div className="flex flex-1 relative overflow-hidden">
 
             {/* CENTER PANE: TACTICAL FIELD */}
             <div className="flex-1 flex flex-col relative overflow-hidden grid-dot">
               {/* Grid Controls */}
-              <div className="absolute top-4 left-4 z-20 flex gap-2">
-                <button
-                  onClick={addRow}
-                  disabled={gridRows >= 10}
-                  className="flex items-center gap-2 px-3 py-2 bg-stone-900/80 border border-stone-700 rounded-lg text-[10px] font-bold text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-50"
-                >
-                  ➕ Add Row
-                </button>
-                <button
-                  onClick={addColumn}
-                  disabled={gridCols >= 10}
-                  className="flex items-center gap-2 px-3 py-2 bg-stone-900/80 border border-stone-700 rounded-lg text-[10px] font-bold text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-50"
-                >
-                  ➕ Add Column
-                </button>
+              <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                {/* Row Controls */}
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-bold uppercase text-stone-500 w-8">Rows</span>
+                  <button
+                    onClick={() => removeRow()}
+                    disabled={gridRows <= 2}
+                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-red-400 hover:border-red-600 transition-all disabled:opacity-30"
+                    title="Remove Row"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <span className="text-xs font-mono text-stone-300 w-4 text-center">{gridRows}</span>
+                  <button
+                    onClick={addRow}
+                    disabled={gridRows >= 10}
+                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-30"
+                    title="Add Row"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
+
+                {/* Col Controls */}
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-bold uppercase text-stone-500 w-8">Cols</span>
+                  <button
+                    onClick={() => removeColumn()}
+                    disabled={gridCols <= 2}
+                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-red-400 hover:border-red-600 transition-all disabled:opacity-30"
+                    title="Remove Column"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <span className="text-xs font-mono text-stone-300 w-4 text-center">{gridCols}</span>
+                  <button
+                    onClick={addColumn}
+                    disabled={gridCols >= 10}
+                    className="p-1.5 bg-stone-900/80 border border-stone-700 rounded-lg text-stone-400 hover:text-garden-400 hover:border-garden-600 transition-all disabled:opacity-30"
+                     title="Add Column"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
 
               {/* THE FIELD */}
@@ -352,34 +426,31 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 </div>
               )}
             </aside>
-          </div>
+            </div>
 
           {/* COMMAND DOCK */}
-          <div className="h-20 glass border-t border-stone-800 px-8 flex items-center justify-between z-20 flex-shrink-0">
+          <div className="h-16 glass border-t border-stone-800 px-8 flex items-center justify-between z-20 flex-shrink-0">
             <div className="flex items-center gap-6">
-              <InventoryTray
-                catalog={catalog}
-                onOpenStore={onOpenSeedStore || (() => {})}
-                isVertical={false}
-                plantNowMode={plantNowMode}
-                onTogglePlantNow={() => setPlantNowMode(v => !v)}
-                plantNowSet={plantNowSet}
-              />
+              <div className="text-[10px] font-bold uppercase tracking-widest text-stone-500 flex items-center gap-2">
+                 <AlertCircle className="w-3 h-3" /> Systems
+              </div>
               <div className="h-4 w-[1px] bg-stone-800" />
               <div className="flex items-center gap-3">
                 <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-blue-400 transition-all active:scale-90" title="Water">
-                  💧
+                  <Droplets className="w-4 h-4" />
                 </button>
                 <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-green-400 transition-all active:scale-90" title="Fertilize">
-                  🧪
+                  <Activity className="w-4 h-4" />
                 </button>
                 <button className="p-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-500 hover:text-red-400 transition-all active:scale-90" title="Remedy">
-                  🩹
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
             <div className="flex items-center gap-4 w-full max-w-2xl justify-end">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 shrink-0">⏳ Temporal Axis</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 shrink-0 flex items-center gap-2">
+                <Hourglass className="w-3 h-3" /> Temporal Axis
+              </span>
               <div className="flex-1 max-w-xs">
                 <input
                   type="range"
@@ -388,16 +459,20 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   value={scrubDays}
                   onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
                   className="w-full accent-garden-500"
+                  aria-label="Temporal scrub slider"
+                  title="Scrub through time"
                 />
               </div>
               <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 shrink-0">Future: +{scrubDays} Days</span>
             </div>
           </div>
+          </div>
         </div>
+
 
         <DragOverlay dropAnimation={null}>
           <div className="w-28 h-40 bg-garden-800 rounded-xl border border-garden-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
-            <div className="text-4xl">🌱</div>
+            <Sprout className="w-16 h-16 text-garden-300" />
             <div className="mt-4 text-[10px] font-black uppercase text-garden-400">Deploying...</div>
           </div>
         </DragOverlay>
