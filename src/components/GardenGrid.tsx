@@ -114,7 +114,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     if (isOver) return 'border-garden-400';
     if (!item) return 'border-stone-800 hover:border-stone-700';
 
-    if (isDead) return 'border-stone-600 bg-stone-900/50';
+    if (isDead) return 'border-stone-600 bg-[#090c0a]/50';
     if (isPestInfested) return 'border-amber-500 shadow-[inset_0_0_15px_rgba(245,158,11,0.3)]';
 
     if (layer === 'hydration') {
@@ -135,9 +135,17 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     }
 
     // Default "Visual" mode
-    if (stressLevel > 80) return 'border-red-500/50 pulse-red';
+    if (stressLevel > 80) return 'border-red-500/50';
     if (stressLevel > 40) return 'border-amber-500/40';
     return 'border-garden-900/40 shadow-xl';
+  };
+
+  const getAnimationClass = () => {
+    if (!item || isDead) return '';
+    if (isPestInfested) return 'animate-pest';
+    if (stressLevel > 70) return 'animate-stressed';
+    if (stressLevel < 20 && hydration > 70) return 'animate-healthy';
+    return '';
   };
 
   const getOverlayLabel = () => {
@@ -199,20 +207,21 @@ export const GridSlot: React.FC<GridSlotProps> = ({
         setShowObservationMenu(false);
       }}
       className={`
-        relative w-40 h-40 border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer
+        relative w-full aspect-square max-w-[160px] border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
-        ${item ? 'glass' : 'bg-stone-900/20'}
+        ${item ? 'glass-panel' : 'bg-[#090c0a]/40'}
         ${synergyClass}
-        ${contagionRisk && !isPestInfested ? 'animate-pulse border-amber-500/30' : ''}
+        ${contagionRisk && !isPestInfested ? 'pulse-red border-amber-500/30' : ''}
+        ${getAnimationClass()}
         group
       `}
     >
       {item ? (
-        <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden">
+        <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden shimmer-bg rounded-3xl">
           {/* Layer Specific Overlays */}
           {layer !== 'normal' && !isDead && (
             <div className={`
-              absolute inset-0 z-0 opacity-20 pointer-events-none transition-all
+              absolute inset-0 z-0 opacity-10 pointer-events-none transition-all
               ${layer === 'hydration' ? 'bg-blue-500' : layer === 'health' ? 'bg-red-500' : 'bg-purple-500'}
             `} />
           )}
@@ -378,11 +387,10 @@ export const GardenField: React.FC<{
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
 
       <div
-        className="grid gap-8 relative z-10"
+        className="grid gap-4 md:gap-8 relative z-10 w-full max-w-5xl"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-          width: 'max-content'
         }}
       >
         {Array.from({ length: rows * cols }).map((_, i) => {

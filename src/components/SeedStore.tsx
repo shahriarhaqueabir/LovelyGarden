@@ -300,7 +300,7 @@ export const DetailModal: React.FC<{
                 onClick={() => { onBuy(); onClose(); }}
                 className="flex-1 sm:flex-none px-8 py-3 bg-garden-600 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-garden-400 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
               >
-                <ShoppingBag className="w-4 h-4" /> Deploy to Hand
+                <ShoppingBag className="w-4 h-4" /> Add to Bag
               </button>
             )}
           </div>
@@ -366,7 +366,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
           <div className="p-6 border-b border-stone-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Package className="w-6 h-6 text-stone-500" />
-              <h2 className="text-xl font-bold text-stone-100">Seed Vault</h2>
+              <h2 className="text-xl font-bold text-stone-100">Seed Store</h2>
             </div>
             <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
               <X className="w-5 h-5" />

@@ -174,7 +174,7 @@ export const settingsSchema: RxJsonSchema<any> = {
 
 export const gardenSchema: RxJsonSchema<any> = {
   title: 'gardens',
-  version: 0,
+  version: 1,
   description: 'User defined garden beds',
   primaryKey: 'id',
   type: 'object',
@@ -186,7 +186,9 @@ export const gardenSchema: RxJsonSchema<any> = {
     sunExposure: { type: 'string' }, // Full Sun, Partial Shade, Full Shade
     gridWidth: { type: 'number' },
     gridHeight: { type: 'number' },
-    createdDate: { type: 'number' }
+    createdDate: { type: 'number' },
+    backgroundColor: { type: 'string' },
+    theme: { type: 'string' }
   },
   required: ['id', 'name', 'type', 'gridWidth', 'gridHeight']
 };

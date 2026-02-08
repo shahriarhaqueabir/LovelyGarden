@@ -7,7 +7,9 @@ interface GardenConfigDialogProps {
   onSave: (config: GardenConfig) => void;
   initialConfig?: GardenConfig | null;
   mode: 'create' | 'edit';
+  isGardenEmpty?: boolean;
 }
+
 
 export interface GardenConfig {
   id?: string;
@@ -17,19 +19,31 @@ export interface GardenConfig {
   sunExposure: string;
   gridWidth: number;
   gridHeight: number;
+  backgroundColor?: string;
+  theme?: string;
 }
 
 const GARDEN_TYPES = ['In-ground', 'Raised Bed', 'Container', 'Greenhouse'];
 const SOIL_TYPES = ['Loam', 'Clay', 'Sandy', 'Custom Mix'];
 const SUN_EXPOSURE = ['Full Sun', 'Partial Shade', 'Full Shade'];
 
-export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({ onClose, onSave, initialConfig, mode }) => {
+const BIOMES = [
+  { id: 'forest', name: 'Forest', color: '#14532d' },
+  { id: 'midnight', name: 'Midnight', color: '#1e1b4b' },
+  { id: 'moss_manor', name: 'Moss Manor', color: '#1a3c22' },
+  { id: 'sky_haven', name: 'Sky Haven', color: '#0c2e4d' },
+  { id: 'twilight_cabin', name: 'Twilight Cabin', color: '#2d334a' },
+  { id: 'autumn_villa', name: 'Autumn Villa', color: '#4d0a0a' },
+  { id: 'oasis', name: 'Oasis', color: '#064e3b' },
+];
+
+export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({ onClose, onSave, initialConfig, mode, isGardenEmpty }) => {
   const [name, setName] = useState(initialConfig?.name || '');
   const [type, setType] = useState(initialConfig?.type || GARDEN_TYPES[0]);
   const [soilType, setSoilType] = useState(initialConfig?.soilType || SOIL_TYPES[0]);
   const [sunExposure, setSunExposure] = useState(initialConfig?.sunExposure || SUN_EXPOSURE[0]);
   const [width, setWidth] = useState(initialConfig?.gridWidth || 4);
-  const [height, setHeight] = useState(initialConfig?.gridHeight || 3);
+  const [height, setHeight] = useState(initialConfig?.gridHeight || 4);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +56,9 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({ onClose,
       soilType,
       sunExposure,
       gridWidth: width,
-      gridHeight: height
+      gridHeight: height,
+      backgroundColor: BIOMES[0].color,
+      theme: BIOMES[0].id
     });
     onClose();
   };
@@ -137,37 +153,37 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({ onClose,
                  <span className="text-[10px] text-stone-600 italic">1 unit = 20x20cm</span>
                </div>
                
-               {mode === 'edit' && (
+               {(mode === 'edit' && !isGardenEmpty) && (
                  <div className="bg-amber-900/10 border border-amber-900/30 rounded p-2 text-[10px] text-amber-500/80 mb-2">
-                   ⚠️ Grid dimensions are fixed after sector initialization to preserve plant coordinates.
+                   ⚠️ Grid dimensions are fixed while plants are present to preserve spatial coordinates.
                  </div>
                )}
 
                <div className="flex gap-4 items-center">
                  <div className="flex-1 space-y-1">
                    <span className="text-[10px] text-stone-500 uppercase font-bold">Width (Cols)</span>
-                   <input 
-                      type="number" 
-                      min={2} 
-                      max={10} 
-                      value={width} 
-                      onChange={(e) => setWidth(parseInt(e.target.value))}
-                      className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={mode === 'edit'}
-                   />
+                    <input 
+                       type="number" 
+                       min={1}
+                       max={10}
+                       value={width} 
+                       onChange={(e) => setWidth(parseInt(e.target.value, 10) || 1)}
+                       disabled={mode === 'edit' && !isGardenEmpty}
+                       className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
                  </div>
                  <span className="text-stone-600 font-bold">×</span>
                  <div className="flex-1 space-y-1">
                    <span className="text-[10px] text-stone-500 uppercase font-bold">Height (Rows)</span>
-                   <input 
-                      type="number" 
-                      min={2} 
-                      max={10} 
-                      value={height} 
-                      onChange={(e) => setHeight(parseInt(e.target.value))}
-                      className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={mode === 'edit'}
-                   />
+                    <input 
+                       type="number" 
+                       min={1}
+                       max={10}
+                       value={height} 
+                       onChange={(e) => setHeight(parseInt(e.target.value, 10) || 1)}
+                       disabled={mode === 'edit' && !isGardenEmpty}
+                       className="w-full bg-stone-950 border border-stone-800 rounded-lg py-2 px-3 text-center text-stone-200 font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
                  </div>
                </div>
             </div>

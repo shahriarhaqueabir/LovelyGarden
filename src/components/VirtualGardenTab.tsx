@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  FastForward,
-  RotateCcw,
-  Sun,
   Droplets,
-  Thermometer,
   Settings as SettingsIcon,
-  Info,
   AlertCircle,
   Calendar,
   LayoutGrid,
-  Eye,
   Activity,
-  Hourglass,
   Sprout,
   Plus,
-  Minus,
   Edit
 } from 'lucide-react';
 import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
@@ -23,10 +15,9 @@ import { GardenField } from './GardenGrid';
 import { InventoryTray } from './InventoryTray';
 import { PlantInspector } from './PlantInspector';
 import { usePlantedCards } from '../hooks/usePlantedCards';
-import { useWeather } from '../hooks/useWeather';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, deleteGarden } from '../db/queries';
+import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden } from '../db/queries';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning'; // Fixed import
 
@@ -131,8 +122,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       setGardens(gardensData);
   };
 
-  // Weather data
-  const { weather, loading } = useWeather(currentDay);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -205,7 +195,9 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                  soilType: config.soilType,
                  sunExposure: config.sunExposure,
                  gridWidth: config.gridWidth,
-                 gridHeight: config.gridHeight
+                 gridHeight: config.gridHeight,
+                 backgroundColor: config.backgroundColor,
+                 theme: config.theme
               });
               await refreshGardens();
               setToast({ message: 'Garden specs updated', type: 'success' });
@@ -216,36 +208,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
   };
 
-  const handleDeleteGarden = async () => {
-      if (!activeGardenId) return;
-      
-      // Prevent deleting the main garden (default sector)
-      if (activeGardenId === 'main-garden') {
-          setToast({ message: 'Primary garden sector cannot be decommissioned', type: 'error' });
-          return;
-      }
-      
-      if (confirm('Delete this garden sector and all plants within it? This action cannot be undone.')) {
-          await deleteGarden(activeGardenId);
-          await refreshGardens();
-          // Switch to another garden (likely main-garden)
-          const db = await getDatabase();
-          const remaining = await db.gardens.find().exec();
-          
-          // Re-sort to find best candidate
-          const gardensData = remaining.map(d => d.toJSON());
-          gardensData.sort((a, b) => {
-              if (a.id === 'main-garden') return -1;
-              if (b.id === 'main-garden') return 1;
-              return (a.createdDate || 0) - (b.createdDate || 0);
-          });
-          
-          if (gardensData.length > 0) setActiveGardenId(gardensData[0].id);
-          else setActiveGardenId(null); // Should not happen if main exists
-          
-          setToast({ message: 'Garden sector decommissioned', type: 'info' });
-      }
-  };
 
   const handleAdvanceDay = async () => {
     const newDay = await advanceGlobalDay();
@@ -282,7 +244,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col h-full bg-[#0c0a09] text-stone-100 overflow-hidden font-sans">
+      <div className="flex flex-col h-full bg-[#090c0a] text-stone-100 overflow-hidden font-sans">
         
         {/* Toast Notification */}
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -294,142 +256,95 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 initialConfig={dialogMode === 'edit' ? activeGarden : null}
                 onClose={() => setShowGardenDialog(false)}
                 onSave={handleSaveGarden}
+                isGardenEmpty={plantedCards.length === 0}
             />
         )}
 
         {/* HUD OVERLAY */}
-        <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
-              <h1 className="font-black text-xs uppercase tracking-tighter text-garden-500">Garden Deck Command</h1>
-            </div>
-            <div className="h-4 w-[1px] bg-stone-800" />
-            <div className="flex items-center gap-6">
-              <div className="bg-stone-900 px-4 py-1 rounded-full border border-stone-800 text-[10px] font-black text-garden-400 uppercase tracking-widest shadow-inner">
-                <Calendar className="w-3.5 h-3.5 text-garden-500" /> Cycle Day: {currentDay}
-              </div>
-              <div className="flex items-center gap-4 text-stone-500">
-                {weather ? (
-                  <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-amber-500" /><span className="text-[10px] font-bold">{weather.sunlightHours}h</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-blue-500" /><span className="text-[10px] font-bold">{weather.moisturePercentage}%</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold">{weather.temperatureCelsius}°C</span></div>
-                  </>
-                ) : loading ? (
-                  <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--h</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--%</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-stone-700" /><span className="text-[10px] font-bold">--°C</span></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-1.5" title="Sunlight hours"><Sun className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                    <div className="flex items-center gap-1.5" title="Moisture"><Droplets className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                    <div className="flex items-center gap-1.5" title="Temp"><Thermometer className="w-3.5 h-3.5 text-red-500" /><span className="text-[10px] font-bold text-red-400">Err</span></div>
-                  </>
-                )}
-              </div>
+        <header className="h-12 flex items-center justify-between px-6 glass z-30 border-b border-stone-800">
+          {/* 1. Cycle Day */}
+          <div className="bg-stone-900 px-3 py-1 rounded-full border border-stone-800 text-[10px] font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-2 shrink-0">
+            <Calendar className="w-3.5 h-3.5 text-garden-500" /> Day: {currentDay}
+          </div>
+
+          {/* 2. Grid Capacity */}
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest shadow-inner shrink-0 ${
+            isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
+          }`}>
+            <LayoutGrid className="w-3 h-3" />
+            <span>Grid: {occupiedCells}/{totalCells}</span>
+          </div>
+
+          {/* 3. Temporal Axis */}
+          <div className="flex items-center gap-3 bg-stone-900 px-3 py-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1">
+              ⏳ Axis
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={30}
+              value={scrubDays}
+              onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
+              className="w-24 accent-garden-500 h-1"
+              aria-label="Temporal scrub slider"
+            />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">+{scrubDays}d</span>
+          </div>
+
+          {/* 4. Global Alerts Marquee */}
+          <div className="max-w-[200px] overflow-hidden hidden xl:block">
+            <div className="animate-marquee whitespace-nowrap text-[9px] text-stone-500 uppercase tracking-widest">
+              {alerts.join(' • ')}
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            {/* Grid Capacity Indicator */}
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest shadow-inner ${
-              isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
-            }`}>
-              <LayoutGrid className="w-3 h-3" />
-              <span>Grid: {occupiedCells}/{totalCells}</span>
-              {isGridFull && <AlertCircle className="w-3 h-3" />}
+          {/* 5. Intervention Console */}
+          <div className="flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
+            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all hover:scale-110 active:scale-90" title="Water">
+              <Droplets className="w-3.5 h-3.5" />
+            </button>
+            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all hover:scale-110 active:scale-90" title="Fertilize">
+              <Activity className="w-3.5 h-3.5" />
+            </button>
+            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all hover:scale-110 active:scale-90" title="Remedy">
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* 6. Spectral Layer Toggle */}
+          <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 xxl:scale-100">
+            <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
+              Visual
+            </button>
+            <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
+              Hydration
+            </button>
+            <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
+              Blight
+            </button>
+          </div>
+
+          {/* 7. XP/Level Tracker */}
+          <div className="flex items-center gap-2 bg-stone-900 px-3 py-1 rounded-full border border-stone-800 shrink-0">
+            <span className="text-[9px] font-bold text-garden-400">XP: {xp}</span>
+            <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
+              <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
             </div>
+          </div>
 
-            {/* Global Alerts Marquee */}
-            <div className="flex-1 max-w-md overflow-hidden">
-              <div className="animate-marquee whitespace-nowrap text-[9px] text-stone-400 uppercase tracking-widest">
-                {alerts.join(' • ')}
-              </div>
-            </div>
-
-            {/* XP/Level Tracker */}
-            <div className="flex items-center gap-2 bg-stone-900 px-3 py-1 rounded-full border border-stone-800">
-              <span className="text-[9px] font-bold text-garden-400">XP: {xp}</span>
-              <div className="h-2 w-16 bg-stone-800 rounded-full overflow-hidden">
-                <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
-              </div>
-              <span className="text-[9px] font-bold text-stone-500">Lv.{Math.floor(xp / 100) + 1}</span>
-            </div>
-
-            <div className="flex gap-3">
-              {/* Temporal Axis */}
-              <div className="flex items-center gap-4 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 shrink-0 flex items-center gap-2">
-                  ⏳ Axis
-                </span>
-                <div className="w-32">
-                  <input
-                    type="range"
-                    min={0}
-                    max={30}
-                    value={scrubDays}
-                    onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
-                    className="w-full accent-garden-500 h-1"
-                    aria-label="Temporal scrub slider"
-                    title="Scrub through time"
-                  />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 shrink-0">+{scrubDays}d</span>
-              </div>
-
-              {/* Intervention Console */}
-              <div className="flex items-center gap-2 bg-stone-900 p-1 rounded-xl border border-stone-800">
-                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all active:scale-90" title="Water">
-                  <Droplets className="w-3.5 h-3.5" />
-                </button>
-                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all active:scale-90" title="Fertilize">
-                  <Activity className="w-3.5 h-3.5" />
-                </button>
-                <button className="p-1.5 bg-stone-950 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all active:scale-90" title="Remedy">
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner">
-                <button onClick={() => setSpectralLayer('normal')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
-                  <Eye className="w-3 h-3" /> Visual
-                </button>
-                <button onClick={() => setSpectralLayer('hydration')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
-                  <Droplets className="w-3 h-3" /> Hydration
-                </button>
-                <button onClick={() => setSpectralLayer('health')} className={`px-3 py-1 text-[9px] font-bold rounded-lg transition-all flex items-center gap-1 ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
-                  <Activity className="w-3 h-3" /> Blight
-                </button>
-              </div>
-              <button
-                onClick={() => {}} // Settings would open in its own tab
-                className="p-2 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all"
-              >
-                <SettingsIcon className="w-4 h-4" />
-              </button>
-                <button
-                  onClick={handleRewindDay}
-                  disabled={currentDay <= 1}
-                  className={`flex items-center gap-2 px-3 py-2 font-black rounded-xl text-[13px] uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
-                    currentDay <= 1 
-                      ? 'bg-stone-700 text-stone-500 cursor-not-allowed' 
-                      : 'bg-amber-600 text-stone-950 hover:bg-amber-400 shadow-amber-500/20'
-                  }`}
-                  title="Rewind Axis"
-                >
-                  ↩️
-                </button>
-                <button
-                  onClick={handleAdvanceDay}
-                  className="flex items-center gap-2 px-3 py-2 bg-garden-600 text-stone-950 font-black rounded-xl text-[13px] uppercase tracking-widest hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20"
-                  title="Advance Axis"
-                >
-                  ↪️
-                </button>
-            </div>
+          {/* 8. Action Block */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => {}} className="p-1.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all">
+              <SettingsIcon className="w-3.5 h-3.5" />
+            </button>
+            <div className="h-6 w-[1px] bg-stone-800 mx-1" />
+            <button onClick={handleRewindDay} disabled={currentDay <= 1} className={`p-1.5 font-black rounded-lg text-xs transition-all active:scale-95 shadow-lg ${currentDay <= 1 ? 'bg-stone-700 text-stone-500 opacity-50' : 'bg-amber-600 text-stone-950 hover:bg-amber-400'}`}>
+              ↩️
+            </button>
+            <button onClick={handleAdvanceDay} className="p-1.5 bg-garden-600 text-stone-950 font-black rounded-lg text-xs hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20">
+              ↪️
+            </button>
           </div>
         </header>
 
@@ -445,10 +360,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           />
 
           {/* MAIN CONTENT COLUMN */}
-          <div className="flex-1 flex flex-col relative overflow-hidden bg-stone-950/50">
+          <div className="flex-1 flex flex-col relative overflow-hidden bg-bg-primary/20">
             {/* Garden Tabs Bar */}
-            {/* Garden Tabs Bar (5 Fixed Slots) */}
-            <div className="h-12 bg-stone-900/80 border-b border-stone-800 flex items-center px-4 gap-2 overflow-x-auto no-scrollbar">
+            <div className="h-12 glass-panel border-b border-stone-800 flex items-center px-4 gap-2 overflow-x-auto no-scrollbar shadow-lg relative">
+              <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
                 {Array.from({ length: 5 }).map((_, i) => {
                     const garden = gardens[i];
                     const isActive = garden && activeGardenId === garden.id;
@@ -464,20 +379,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                                 }
                             }}
                             className={`
-                                relative h-full px-6 flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 whitespace-nowrap
+                                relative h-full px-6 flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 whitespace-nowrap z-10
                                 ${i === 0 ? 'border-l' : ''}
                                 ${isActive
-                                    ? 'bg-[#0c0a09] text-garden-400 border-b-[#0c0a09] translate-y-[1px] z-10'
+                                    ? 'bg-bg-primary text-garden-400 border-b-bg-primary translate-y-[1px]'
                                     : garden 
-                                        ? 'bg-stone-900 text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-stone-800'
-                                        : 'bg-stone-950/30 text-stone-700 hover:text-stone-500 hover:bg-stone-900/50 border-b-stone-800'}
-                            `}
+                                        ? 'bg-[#090c0a] text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-border-primary'
+                                        : 'bg-[#090c0a]/30 text-stone-700 hover:text-stone-500 hover:bg-[#090c0a]/50 border-b-border-primary'}`}
                         >
                             {garden ? (
                                 <span className="">{garden.name}</span>
                             ) : (
                                 <span className="flex items-center gap-2 opacity-60">
-                                    <Plus className="w-3 h-3" /> Space {i + 1}
+                                    <Plus className="w-3 h-3" /> Garden {i + 1}
                                 </span>
                             )}
                             {i === 0 && garden && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]" title="Primary Axis" />}
@@ -489,7 +403,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             <div className="flex flex-1 relative overflow-hidden">
 
             {/* CENTER PANE: TACTICAL FIELD */}
-            <div className="flex-1 flex flex-col relative overflow-hidden grid-dot">
+          <div className="flex-1 flex flex-col relative overflow-hidden terrain-texture">
               {/* Garden Config Controls (Edit/Delete Active) */}
               {activeGarden && (
                   <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
@@ -559,7 +473,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             {/* RIGHT PANE: INTELLIGENCE (Inspector stays docked if plant selected) */}
             <aside className={`
               ${selectedPlant ? 'w-[26rem]' : 'w-0'}
-              glass border-l border-stone-800 transition-all duration-500 overflow-hidden flex flex-col z-30
+              glass border-l border-border-primary transition-all duration-500 overflow-hidden flex flex-col z-30
             `}>
               {selectedPlant && (
                 <PlantInspector
