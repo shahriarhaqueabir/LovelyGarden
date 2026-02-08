@@ -15,11 +15,14 @@ export const PlantedCardView: React.FC<PlantedCardViewProps> = ({ catalogId, sta
       <div className="w-6 h-6 bg-garden-900/50 rounded-full flex items-center justify-center text-base shadow-inner border border-garden-500/20 group-hover/card:scale-110 transition-transform duration-300">
         {stage === 'germination' ? '🌱' : stage === 'seedling' ? '🌿' : '🌳'}
       </div>
-      <div className="text-[9px] font-bold text-garden-400 uppercase leading-tight group-hover/card:text-garden-300 transition-colors">
+      <div className="text-[10px] font-bold text-garden-400 uppercase leading-tight group-hover/card:text-garden-300 transition-colors">
         {stage}
       </div>
-      <div className="text-[8px] text-stone-500 font-medium text-center px-0.5 leading-tight group-hover/card:text-stone-400 truncate w-full">
-        {catalogId.replace('-', ' ')}
+      <div 
+        className="text-[10px] text-stone-500 font-medium text-center px-0.5 leading-tight group-hover/card:text-stone-400 truncate w-full"
+        title={catalogId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+      >
+        {catalogId.replace(/-/g, ' ')}
       </div>
     </div>
   );

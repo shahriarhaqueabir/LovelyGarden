@@ -1,29 +1,62 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Search, Sun, Droplets } from 'lucide-react';
 
+// Define a unified PlantKB interface that combines both structures
 interface PlantKB {
-  plant_id: string;
-  common_name: string;
-  scientific_name: string;
-  type: string;
-  family: string;
-  growth_stage: string[];
-  seasonality: {
+  id: string;
+  name: string;
+  scientificName: string;
+  description: string;
+  family?: string;
+  genus?: string;
+  species?: string;
+  categories: ('vegetable' | 'fruit' | 'herb' | 'flower' | 'root_crop' | 'leafy_green')[];
+  life_cycle: 'annual' | 'biennial' | 'perennial';
+  growth_habit: ('upright' | 'bushy' | 'vining' | 'trailing' | 'climbing')[];
+  photosynthesis_type?: 'C3' | 'C4' | 'CAM';
+  edible_parts: string[];
+  toxic_parts: string[];
+  pollination_type: 'self_pollinating' | 'cross_pollinating' | 'wind' | 'insect';
+  sowingSeason: ('Spring' | 'Summer' | 'Autumn' | 'Winter')[];
+  sowingMethod: 'Direct' | 'Transplant';
+  stages: Array<{
+    id: 'seed' | 'germination' | 'seedling' | 'vegetative' | 'flowering' | 'fruiting' | 'harvest' | 'dormant' | string;
+    name: string;
+    durationDays: number;
+    waterFrequencyDays: number;
+    imageAssetId: string;
+  }>;
+  companions: string[];
+  antagonists: string[];
+  confidence_score: number;
+  sources: string[];
+  seasonality?: {
     sowing?: { start_month: string; end_month: string };
+    harvest?: { start_month: string; end_month: string };
     sowing_indoor?: { start_month: string; end_month: string };
     transplant_outdoor?: { start_month: string; end_month: string };
-    harvest?: { start_month: string; end_month: string };
     harvest_early?: { start_month: string; end_month: string };
   };
-  sunlight: string;
-  water_requirements: string;
-  soil_type: string[];
-  companion_plants: string[];
-  incompatible_plants: string[];
-  common_pests: string[];
-  common_diseases: string[];
-  nutrient_preferences: string[];
-  notes: string;
+  sunlight?: string;
+  water_requirements?: string;
+  soil_type?: string[];
+  common_pests?: string[];
+  common_diseases?: string[];
+  nutrient_preferences?: string[];
+  source_metadata?: Array<{
+    source_name: string;
+    url?: string;
+    confidence_score: number;
+  }>;
+  // Fields from the expanded knowledge base
+  plant_id?: string;
+  common_name?: string;
+  scientific_name?: string;
+  type?: string;
+  growth_stage?: string[];
+  companion_plants?: string[];
+  incompatible_plants?: string[];
+  notes?: string;
 }
 
 export const PlantKnowledgebaseTab: React.FC = () => {
@@ -37,7 +70,63 @@ export const PlantKnowledgebaseTab: React.FC = () => {
       try {
         const response = await fetch('/data/plants-kb.json');
         const data = await response.json();
-        setPlants(data.plants || []);
+        const plantsArray = Array.isArray(data) ? data : (data.plants || []);
+        
+        // Transform the data to match the PlantKB interface
+        const transformedPlants = plantsArray.map((plant: any) => ({
+          // Map common fields
+          id: plant.plant_id,
+          name: plant.common_name,
+          scientificName: plant.scientific_name,
+          description: plant.notes || '',
+          
+          // Map fields from both structures
+          family: plant.family || '',
+          type: plant.type || 'unknown',
+          categories: [plant.type || 'vegetable'] as ('vegetable' | 'fruit' | 'herb' | 'flower' | 'root_crop' | 'leafy_green')[],
+          life_cycle: 'annual' as 'annual' | 'biennial' | 'perennial',
+          growth_habit: ['bushy'] as ('upright' | 'bushy' | 'vining' | 'trailing' | 'climbing')[],
+          photosynthesis_type: 'C3' as 'C3' | 'C4' | 'CAM',
+          edible_parts: plant.edible_parts || [],
+          toxic_parts: plant.toxic_parts || [],
+          pollination_type: (plant.pollination_type || 'insect') as 'self_pollinating' | 'cross_pollinating' | 'wind' | 'insect',
+          sowingSeason: plant.sowingSeason || [],
+          sowingMethod: (plant.sowingMethod || 'Direct') as 'Direct' | 'Transplant',
+          companions: plant.companion_plants || [],
+          antagonists: plant.incompatible_plants || [],
+          confidence_score: 0.95,
+          sources: (plant.source_metadata || []).map((m: any) => m.source_name),
+          
+          // Map the expanded fields
+          plant_id: plant.plant_id,
+          common_name: plant.common_name,
+          scientific_name: plant.scientific_name,
+          growth_stage: plant.growth_stage || [],
+          stages: plant.stages?.map((stage: any) => ({
+            id: stage.id,
+            name: stage.name,
+            durationDays: stage.durationDays,
+            waterFrequencyDays: stage.waterFrequencyDays,
+            imageAssetId: 'generic_image'
+          })) || [],
+          seasonality: plant.seasonality,
+          sunlight: plant.sunlight,
+          water_requirements: plant.water_requirements,
+          soil_type: plant.soil_type || [],
+          companion_plants: plant.companion_plants || [],
+          incompatible_plants: plant.incompatible_plants || [],
+          common_pests: plant.common_pests || [],
+          common_diseases: plant.common_diseases || [],
+          nutrient_preferences: plant.nutrient_preferences || [],
+          notes: plant.notes || '',
+          source_metadata: plant.source_metadata || [],
+          
+          // Additional fields from PlantSpecies
+          genus: plant.genus || '',
+          species: plant.species || '',
+        }));
+        
+        setPlants(transformedPlants);
       } catch (error) {
         console.error('Failed to load plant knowledge base:', error);
       } finally {
@@ -60,7 +149,9 @@ export const PlantKnowledgebaseTab: React.FC = () => {
   const getSunlightIcon = (sunlight: string) => {
     switch (sunlight) {
       case 'full_sun': return <Sun className="w-4 h-4 text-amber-400" />;
-      case 'partial_sun': return <Sun className="w-4 h-4 text-yellow-300" />;
+      case 'partial_sun': 
+      case 'partial_shade': 
+        return <Sun className="w-4 h-4 text-yellow-300 opacity-70" />;
       default: return <Sun className="w-4 h-4 text-stone-500" />;
     }
   };
@@ -82,7 +173,7 @@ export const PlantKnowledgebaseTab: React.FC = () => {
             <BookOpen className="w-6 h-6 text-garden-400" />
             <h1 className="text-xl font-bold text-stone-100">Plant Knowledgebase</h1>
           </div>
-          <button 
+          <button
             onClick={() => setSelectedPlant(null)}
             className="px-4 py-2 bg-stone-800 hover:bg-stone-700 rounded-lg text-sm transition-colors"
           >
@@ -92,139 +183,285 @@ export const PlantKnowledgebaseTab: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto">
           <div className="bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
+            {/* Header Section */}
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-stone-100">{selectedPlant.common_name}</h2>
-              <p className="text-sm text-stone-500 italic">{selectedPlant.scientific_name}</p>
-              <div className="mt-3 flex gap-2">
-                <span className="text-xs px-2 py-1 bg-garden-900/30 text-garden-400 rounded border border-garden-700/30">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-2xl font-bold text-stone-100">{selectedPlant.common_name}</h2>
+                <span className="text-xs px-2 py-1 bg-garden-900/30 text-garden-400 rounded border border-garden-700/30 uppercase tracking-widest">
                   {selectedPlant.type}
                 </span>
-                <span className="text-xs px-2 py-1 bg-stone-800 text-stone-400 rounded border border-stone-700">
+              </div>
+              <p className="text-sm text-stone-500 italic">{selectedPlant.scientific_name}</p>
+              <div className="mt-2">
+                <span className="text-xs px-2 py-1 bg-stone-800 text-stone-400 rounded border border-stone-800">
                   {selectedPlant.family}
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="p-4 bg-stone-800/30 rounded-xl border border-stone-700/30">
-                <div className="flex items-center gap-2 mb-2">
-                  {getSunlightIcon(selectedPlant.sunlight)}
-                  <span className="text-xs uppercase tracking-wider text-stone-500">Sunlight</span>
-                </div>
-                <p className="text-sm text-stone-300 capitalize">{selectedPlant.sunlight.replace('_', ' ')}</p>
-              </div>
-              <div className="p-4 bg-stone-800/30 rounded-xl border border-stone-700/30">
-                <div className="flex items-center gap-2 mb-2">
-                  {getWaterIcon(selectedPlant.water_requirements)}
-                  <span className="text-xs uppercase tracking-wider text-stone-500">Water</span>
-                </div>
-                <p className="text-sm text-stone-300 capitalize">{selectedPlant.water_requirements}</p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Growing Season</h4>
-              <div className="space-y-2">
-                {selectedPlant.seasonality.sowing && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Sowing:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.sowing.start_month} - {selectedPlant.seasonality.sowing.end_month}</span>
+            {/* Expanded Information Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* Left Column: Core Identity */}
+              <div className="space-y-6">
+                {/* Taxonomy */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    🧬 Taxonomy
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Family</span>
+                      <span className="text-stone-300">{selectedPlant.family || "—"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Genus</span>
+                      <span className="text-stone-300">—</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Species</span>
+                      <span className="text-stone-300">—</span>
+                    </div>
                   </div>
-                )}
-                {selectedPlant.seasonality.sowing_indoor && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Indoor Sowing:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.sowing_indoor.start_month} - {selectedPlant.seasonality.sowing_indoor.end_month}</span>
+                </section>
+
+                {/* Biology */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    🌿 Biology
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Life Cycle</span>
+                      <span className="text-stone-300 capitalize">{selectedPlant.life_cycle || "annual"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Habit</span>
+                      <span className="text-stone-300 capitalize">{selectedPlant.growth_habit?.join(', ') || "bushy"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Photo</span>
+                      <span className="text-stone-300">{selectedPlant.photosynthesis_type || "C3"}</span>
+                    </div>
                   </div>
-                )}
-                {selectedPlant.seasonality.transplant_outdoor && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Transplant Outdoors:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.transplant_outdoor.start_month} - {selectedPlant.seasonality.transplant_outdoor.end_month}</span>
+                </section>
+
+                {/* Edibility */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    🍴 Edibility
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Edible</span>
+                      <span className="text-garden-400 font-bold">{selectedPlant.edible_parts?.join(', ') || "—"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Toxic</span>
+                      <span className="text-red-400 font-bold font-mono text-[10px]">{selectedPlant.toxic_parts?.join(', ') || "—"}</span>
+                    </div>
                   </div>
-                )}
-                {selectedPlant.seasonality.harvest && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Harvest:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.harvest.start_month} - {selectedPlant.seasonality.harvest.end_month}</span>
+                </section>
+              </div>
+
+              {/* Middle Column: Operational Parameters */}
+              <div className="space-y-6">
+                {/* SOWING */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    🧪 Sowing
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Method</span>
+                      <span className="text-amber-500 font-bold">{selectedPlant.sowingMethod || "Direct"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Seasons</span>
+                      <span className="text-stone-300">{selectedPlant.sowingSeason?.join(', ') || "—"}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-stone-600 font-bold uppercase tracking-tighter">Pollination</span>
+                      <span className="text-stone-300 capitalize">{selectedPlant.pollination_type || "insect"}</span>
+                    </div>
                   </div>
-                )}
+                </section>
+
+                {/* RELATIONSHIPS */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    👯 Relationships
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Companions</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPlant.companion_plants?.length ? selectedPlant.companion_plants.map(c => (
+                          <span key={c} className="px-2 py-0.5 bg-garden-900/30 text-garden-400 border border-garden-800 rounded text-[10px]">{c.replace('plant_', '').replace('_', ' ')}</span>
+                        )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Antagonists</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPlant.incompatible_plants?.length ? selectedPlant.incompatible_plants.map(c => (
+                          <span key={c} className="px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-800 rounded text-[10px]">{c.replace('plant_', '').replace('_', ' ')}</span>
+                        )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* STAGES */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    📊 Growth Graph
+                  </h4>
+                  <div className="space-y-2">
+                    {selectedPlant.stages?.map((stage, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-2 bg-stone-950 border border-stone-800 rounded-lg group hover:border-stone-700 transition-colors">
+                        <div className="w-8 h-8 rounded bg-stone-900 border border-stone-800 flex items-center justify-center text-xs group-hover:text-garden-400">
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[11px] font-bold uppercase text-stone-400">{stage.id}</span>
+                            <span className="text-[10px] font-mono text-stone-600">{stage.durationDays}d</span>
+                          </div>
+                          <div className="h-1 w-full bg-stone-900 rounded-full mt-1 overflow-hidden">
+                            <div className="h-full bg-stone-700 rounded-full" style={{ width: `${(stage.durationDays / 60) * 100}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {!selectedPlant.stages || selectedPlant.stages.length === 0 ? (
+                      <div className="text-center py-4 text-stone-600 text-sm">
+                        No growth stage data available
+                      </div>
+                    ) : null}
+                  </div>
+                </section>
+              </div>
+
+              {/* Right Column: Environmental Intelligence */}
+              <div className="space-y-6">
+                {/* SEASONALITY */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    📅 Diagnostics Intel
+                  </h4>
+                  {selectedPlant.seasonality && (
+                    <div className="space-y-4">
+                      <div className="relative pl-6 border-l-2 border-amber-600/30">
+                        <div className="absolute -left-1.5 top-0 w-3 h-3 bg-amber-600 rounded-full ring-4 ring-stone-900" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Sowing Window</span>
+                        <p className="text-xs text-stone-300 font-bold mt-1">
+                          {selectedPlant.seasonality.sowing?.start_month || "February"} — {selectedPlant.seasonality.sowing?.end_month || "March"}
+                        </p>
+                      </div>
+                      <div className="relative pl-6 border-l-2 border-garden-600/30">
+                        <div className="absolute -left-1.5 top-0 w-3 h-3 bg-garden-600 rounded-full ring-4 ring-stone-900" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-garden-500">Optimal Harvest</span>
+                        <p className="text-xs text-stone-300 font-bold mt-1">
+                          {selectedPlant.seasonality.harvest?.start_month || "September"} — {selectedPlant.seasonality.harvest?.end_month || "October"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </section>
+
+                {/* PESTS & DISEASES */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
+                    🛑 Threat Assessment
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Common Pests</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPlant.common_pests?.length ? selectedPlant.common_pests.map(p => (
+                          <span key={p} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{p.replace('pest_', '').replace('_', ' ')}</span>
+                        )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Known Diseases</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPlant.common_diseases?.length ? selectedPlant.common_diseases.map(d => (
+                          <span key={d} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{d.replace('disease_', '').replace('_', ' ')}</span>
+                        )) : <span className="text-[10px] text-stone-700 italic">None logged</span>}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* ENVIRONMENT */}
+                <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 border-b border-stone-700 pb-2">
+                    🌍 Environment
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-[9px] font-bold text-stone-600 uppercase">Sunlight</span>
+                      <div className="flex items-center gap-1">
+                        {getSunlightIcon(selectedPlant.sunlight || 'unknown')}
+                        <p className="text-xs text-stone-300 capitalize">{selectedPlant.sunlight?.replace('_', ' ') || "full sun"}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-stone-600 uppercase">Water</span>
+                      <div className="flex items-center gap-1">
+                        {getWaterIcon(selectedPlant.water_requirements || 'unknown')}
+                        <p className="text-xs text-stone-300 capitalize">{selectedPlant.water_requirements || "moderate"}</p>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-[9px] font-bold text-stone-600 uppercase">Soil Preferences</span>
+                      <p className="text-xs text-stone-300 capitalize">{selectedPlant.soil_type?.join(', ') || "loamy, well_draining"}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-stone-700">
+                    <span className="text-[9px] font-bold text-stone-600 uppercase">Nutrient Needs</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedPlant.nutrient_preferences?.map(n => (
+                        <span key={n} className="px-1.5 py-0.5 bg-stone-950 text-[10px] text-blue-400 border border-stone-700 rounded">{n.replace('_', ' ')}</span>
+                      ))}
+                      {(!selectedPlant.nutrient_preferences || selectedPlant.nutrient_preferences.length === 0) && (
+                        <span className="px-1.5 py-0.5 bg-stone-950 text-[10px] text-blue-400 border border-stone-700 rounded">potassium high</span>
+                      )}
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
 
-            <div className="mb-6">
-              <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Soil Type</h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedPlant.soil_type.map(soil => (
-                  <span key={soil} className="text-xs px-2 py-1 bg-stone-800 text-stone-400 rounded">
-                    {soil.replace('_', ' ')}
-                  </span>
-                ))}
-              </div>
-            </div>
+            {/* Footer: Sources & Notes */}
+            <div className="border-t border-stone-700 pt-6">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <h5 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-2">KB Intelligence Sources</h5>
+                  <div className="flex gap-4 flex-wrap">
+                    {selectedPlant.source_metadata?.map((s, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="text-[11px] font-bold text-stone-300">{s.source_name}</div>
+                        <div className="px-1.5 py-0.5 bg-green-900/40 text-green-400 rounded text-[9px] font-mono border border-green-800/50">
+                          {Math.round(s.confidence_score * 100)}%
+                        </div>
+                      </div>
+                    ))}
+                    {(!selectedPlant.source_metadata || selectedPlant.source_metadata.length === 0) && (
+                      <div className="text-sm text-stone-600 italic">
+                        No source metadata available
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Companion Plants</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlant.companion_plants.map(plant => (
-                    <span key={plant} className="text-xs px-2 py-1 bg-garden-900/20 text-garden-400 rounded border border-garden-700/20">
-                      {plant.replace('plant_', '').replace('_', ' ')}
-                    </span>
-                  ))}
+                <div className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30">
+                  <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-2">Notes</h4>
+                  <p className="text-sm text-stone-400 leading-relaxed">{selectedPlant.notes}</p>
                 </div>
               </div>
-
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Incompatible With</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlant.incompatible_plants.map(plant => (
-                    <span key={plant} className="text-xs px-2 py-1 bg-red-900/20 text-red-400 rounded border border-red-700/20">
-                      {plant.replace('plant_', '').replace('_', ' ')}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Common Pests</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlant.common_pests.map(pest => (
-                    <span key={pest} className="text-xs px-2 py-1 bg-amber-900/20 text-amber-400 rounded border border-amber-700/20">
-                      {pest.replace('pest_', '').replace('_', ' ')}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Common Diseases</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlant.common_diseases.map(disease => (
-                    <span key={disease} className="text-xs px-2 py-1 bg-red-900/20 text-red-400 rounded border border-red-700/20">
-                      {disease.replace('disease_', '').replace('_', ' ')}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Nutrient Preferences</h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedPlant.nutrient_preferences.map(nutrient => (
-                  <span key={nutrient} className="text-xs px-2 py-1 bg-purple-900/20 text-purple-400 rounded border border-purple-700/20">
-                    {nutrient.replace('_', ' ')}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30">
-              <h4 className="text-xs uppercase tracking-widest text-stone-500 font-bold mb-3">Notes</h4>
-              <p className="text-sm text-stone-400 leading-relaxed">{selectedPlant.notes}</p>
             </div>
           </div>
         </div>
@@ -273,8 +510,8 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                   <p className="text-xs text-stone-500 italic">{plant.scientific_name}</p>
                 </div>
                 <div className="flex gap-1">
-                  {getSunlightIcon(plant.sunlight)}
-                  {getWaterIcon(plant.water_requirements)}
+                  {getSunlightIcon(plant.sunlight || 'unknown')}
+                  {getWaterIcon(plant.water_requirements || 'unknown')}
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-1">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Trash2, CheckCircle, XCircle, Info, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
@@ -81,8 +81,33 @@ export const InventoryTray: React.FC<{
   const inventory = useInventory();
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  
+  // Scroll indicators state for horizontal layout
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftIndicator, setShowLeftIndicator] = useState(false);
+  const [showRightIndicator, setShowRightIndicator] = useState(false);
 
   const getCatalogItem = (id: string) => catalog.find(c => c.id === id);
+
+  // Scroll handler for horizontal layout
+  const handleScroll = () => {
+    if (!scrollRef.current || isVertical) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeftIndicator(scrollLeft > 10);
+    setShowRightIndicator(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  // Effect to update scroll indicators when inventory changes or component mounts
+  useEffect(() => {
+    if (!isVertical && scrollRef.current) {
+      // Wait for DOM to update before calculating scroll position
+      const timer = setTimeout(() => {
+        handleScroll();
+      }, 0);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [inventory, isVertical]);
 
   // Delete item from Bag (Inventory)
   const handleDeleteItem = async (inventoryId: string) => {
@@ -169,53 +194,110 @@ export const InventoryTray: React.FC<{
         </div>
       )}
 
-      <div className={`${isVertical ? containerClass : 'flex gap-4'}`}>
-        {!collapsed && inventory.length === 0 && (
-          <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold col-span-3">
-            Bag Empty
+      {/* Container for scroll indicators - only for horizontal layout */}
+      <div className={`${isVertical ? containerClass : 'relative flex gap-4'}`}>
+        {/* Left scroll indicator for horizontal layout */}
+        {!isVertical && showLeftIndicator && (
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-stone-900 to-transparent pointer-events-none z-10" />
+        )}
+        
+        {/* Scrollable content - only wrap in scroll container for horizontal layout */}
+        {isVertical ? (
+          <>
+            {!collapsed && inventory.length === 0 && (
+              <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold col-span-3">
+                Bag Empty
+              </div>
+            )}
+
+            {inventory.map((item) => {
+              const plant = getCatalogItem(item.catalogId);
+              if (!plant) return null;
+
+              if (collapsed && isVertical) {
+                 // Mini view for collapsed sidebar
+                 return (
+                   <div key={item.id} className="w-10 h-10 bg-garden-900/30 rounded-full flex items-center justify-center border border-garden-500/30 mx-auto" title={plant.name}>
+                     <Sprout className="w-5 h-5 text-garden-400" />
+                   </div>
+                 );
+              }
+
+              return (
+                <SeedCard
+                  key={item.id}
+                  id={item.id}
+                  catalogId={item.catalogId}
+                  name={plant.name}
+                  type={plant.categories?.[0] || 'Unknown'}
+                  plantNowMode={plantNowMode}
+                  plantNowEligible={plantNowSet ? plantNowSet.has(item.catalogId) : false}
+                  onDelete={handleDeleteItem}
+                />
+              );
+            })}
+
+            {/* Store Toggle */}
+            <button
+              onClick={onOpenStore}
+              className={`
+                ${isVertical
+                  ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24 col-span-3'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
+                  : 'w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
+              `}
+              title="Open Seed Store"
+            >
+              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
+              {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
+            </button>
+          </>
+        ) : (
+          // Horizontal layout with scroll container
+          <div 
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="overflow-x-auto flex gap-4 pb-2"
+          >
+            {!collapsed && inventory.length === 0 && (
+              <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold col-span-3">
+                Bag Empty
+              </div>
+            )}
+
+            {inventory.map((item) => {
+              const plant = getCatalogItem(item.catalogId);
+              if (!plant) return null;
+
+              return (
+                <SeedCard
+                  key={item.id}
+                  id={item.id}
+                  catalogId={item.catalogId}
+                  name={plant.name}
+                  type={plant.categories?.[0] || 'Unknown'}
+                  plantNowMode={plantNowMode}
+                  plantNowEligible={plantNowSet ? plantNowSet.has(item.catalogId) : false}
+                  onDelete={handleDeleteItem}
+                />
+              );
+            })}
+
+            {/* Store Toggle */}
+            <button
+              onClick={onOpenStore}
+              className='w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'
+              title="Open Seed Store"
+            >
+              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
+              {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
+            </button>
           </div>
         )}
-
-        {inventory.map((item) => {
-          const plant = getCatalogItem(item.catalogId);
-          if (!plant) return null;
-          
-          if (collapsed && isVertical) {
-             // Mini view for collapsed sidebar
-             return (
-               <div key={item.id} className="w-10 h-10 bg-garden-900/30 rounded-full flex items-center justify-center border border-garden-500/30 mx-auto" title={plant.name}>
-                 <Sprout className="w-5 h-5 text-garden-400" />
-               </div>
-             );
-          }
-
-          return (
-            <SeedCard
-              key={item.id}
-              id={item.id}
-              catalogId={item.catalogId}
-              name={plant.name}
-              type={plant.categories?.[0] || 'Unknown'}
-              plantNowMode={plantNowMode}
-              plantNowEligible={plantNowSet ? plantNowSet.has(item.catalogId) : false}
-              onDelete={handleDeleteItem}
-            />
-          );
-        })}
-
-        {/* Store Toggle */}
-        <button
-          onClick={onOpenStore}
-          className={`
-            ${isVertical 
-              ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24 col-span-3'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
-              : 'w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
-          `}
-          title="Open Seed Store"
-        >
-          <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
-          {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
-        </button>
+        
+        {/* Right scroll indicator for horizontal layout */}
+        {!isVertical && showRightIndicator && (
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-stone-900 to-transparent pointer-events-none z-10" />
+        )}
       </div>
     </div>
   );

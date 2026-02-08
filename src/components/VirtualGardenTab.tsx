@@ -261,24 +261,24 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         )}
 
         {/* HUD OVERLAY */}
-        <header className="h-12 flex items-center justify-between px-6 glass z-30 border-b border-stone-800">
+        <header className="min-h-12 flex flex-wrap items-center justify-between px-2 sm:px-4 lg:px-6 gap-1 sm:gap-2 glass z-30 border-b border-stone-800">
           {/* 1. Cycle Day */}
-          <div className="bg-stone-900 px-3 py-1 rounded-full border border-stone-800 text-[10px] font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-2 shrink-0">
-            <Calendar className="w-3.5 h-3.5 text-garden-500" /> Day: {currentDay}
+          <div className="bg-stone-900 px-2 sm:px-3 py-1 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
+            <Calendar className="w-3.5 h-3.5 text-garden-500" /> <span className="hidden xs:inline">Day:</span> {currentDay}
           </div>
 
           {/* 2. Grid Capacity */}
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest shadow-inner shrink-0 ${
+          <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
             isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
           }`}>
             <LayoutGrid className="w-3 h-3" />
-            <span>Grid: {occupiedCells}/{totalCells}</span>
+            <span>{occupiedCells}/{totalCells}</span>
           </div>
 
-          {/* 3. Temporal Axis */}
-          <div className="flex items-center gap-3 bg-stone-900 px-3 py-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1">
-              ⏳ Axis
+          {/* 3. Temporal Axis - Hidden below md */}
+          <div className="hidden md:flex items-center gap-2 sm:gap-3 bg-stone-900 px-2 sm:px-3 py-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
+            <span className="text-xs font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1">
+              ⏳ <span className="hidden lg:inline">Axis</span>
             </span>
             <input
               type="range"
@@ -286,21 +286,21 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               max={30}
               value={scrubDays}
               onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
-              className="w-24 accent-garden-500 h-1"
+              className="w-16 sm:w-24 accent-garden-500 h-1"
               aria-label="Temporal scrub slider"
             />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">+{scrubDays}d</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-stone-400">+{scrubDays}d</span>
           </div>
 
-          {/* 4. Global Alerts Marquee */}
+          {/* 4. Global Alerts Marquee - Hidden below xl */}
           <div className="max-w-[200px] overflow-hidden hidden xl:block">
-            <div className="animate-marquee whitespace-nowrap text-[9px] text-stone-500 uppercase tracking-widest">
+            <div className="animate-marquee whitespace-nowrap text-[10px] text-stone-500 uppercase tracking-widest">
               {alerts.join(' • ')}
             </div>
           </div>
 
-          {/* 5. Intervention Console */}
-          <div className="flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
+          {/* 5. Intervention Console - Hidden below sm */}
+          <div className="hidden sm:flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
             <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all hover:scale-110 active:scale-90" title="Water">
               <Droplets className="w-3.5 h-3.5" />
             </button>
@@ -312,37 +312,37 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </button>
           </div>
 
-          {/* 6. Spectral Layer Toggle */}
-          <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 xxl:scale-100">
-            <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
+          {/* 6. Spectral Layer Toggle - Hidden below lg */}
+          <div className="hidden lg:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
+            <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
               Visual
             </button>
-            <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
+            <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
               Hydration
             </button>
-            <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[9px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
+            <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
               Blight
             </button>
           </div>
 
-          {/* 7. XP/Level Tracker */}
-          <div className="flex items-center gap-2 bg-stone-900 px-3 py-1 rounded-full border border-stone-800 shrink-0">
-            <span className="text-[9px] font-bold text-garden-400">XP: {xp}</span>
+          {/* 7. XP/Level Tracker - Hidden below sm */}
+          <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1 rounded-full border border-stone-800 shrink-0">
+            <span className="text-[10px] font-bold text-garden-400">XP: {xp}</span>
             <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
               <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
             </div>
           </div>
 
           {/* 8. Action Block */}
-          <div className="flex items-center gap-2 shrink-0">
-            <button onClick={() => {}} className="p-1.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={() => {}} className="p-1.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all" title="Settings" aria-label="Settings">
               <SettingsIcon className="w-3.5 h-3.5" />
             </button>
-            <div className="h-6 w-[1px] bg-stone-800 mx-1" />
-            <button onClick={handleRewindDay} disabled={currentDay <= 1} className={`p-1.5 font-black rounded-lg text-xs transition-all active:scale-95 shadow-lg ${currentDay <= 1 ? 'bg-stone-700 text-stone-500 opacity-50' : 'bg-amber-600 text-stone-950 hover:bg-amber-400'}`}>
+            <div className="h-6 w-[1px] bg-stone-800 mx-0.5 sm:mx-1" />
+            <button onClick={handleRewindDay} disabled={currentDay <= 1} className={`p-1.5 font-black rounded-lg text-xs transition-all active:scale-95 shadow-lg ${currentDay <= 1 ? 'bg-stone-700 text-stone-500 opacity-50' : 'bg-amber-600 text-stone-950 hover:bg-amber-400'}`} title="Rewind Day" aria-label="Rewind Day">
               ↩️
             </button>
-            <button onClick={handleAdvanceDay} className="p-1.5 bg-garden-600 text-stone-950 font-black rounded-lg text-xs hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20">
+            <button onClick={handleAdvanceDay} className="p-1.5 bg-garden-600 text-stone-950 font-black rounded-lg text-xs hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20" title="Advance Day" aria-label="Advance Day">
               ↪️
             </button>
           </div>
@@ -379,19 +379,20 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                                 }
                             }}
                             className={`
-                                relative h-full px-6 flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 whitespace-nowrap z-10
+                                relative h-full px-4 sm:px-6 flex items-center justify-center text-xs sm:text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 max-w-[100px] sm:max-w-[120px] md:max-w-[150px] z-10
                                 ${i === 0 ? 'border-l' : ''}
                                 ${isActive
                                     ? 'bg-bg-primary text-garden-400 border-b-bg-primary translate-y-[1px]'
                                     : garden 
                                         ? 'bg-[#090c0a] text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-border-primary'
                                         : 'bg-[#090c0a]/30 text-stone-700 hover:text-stone-500 hover:bg-[#090c0a]/50 border-b-border-primary'}`}
+                            title={garden ? garden.name : `Create Garden ${i + 1}`}
                         >
                             {garden ? (
-                                <span className="">{garden.name}</span>
+                                <span className="truncate block w-full text-center">{garden.name}</span>
                             ) : (
                                 <span className="flex items-center gap-2 opacity-60">
-                                    <Plus className="w-3 h-3" /> Garden {i + 1}
+                                    <Plus className="w-3 h-3" /> <span className="hidden sm:inline">Garden {i + 1}</span>
                                 </span>
                             )}
                             {i === 0 && garden && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]" title="Primary Axis" />}
