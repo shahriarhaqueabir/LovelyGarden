@@ -4,33 +4,28 @@ import {
   Wrench, 
   Database, 
   Globe, 
-  Moon, 
-  Sun, 
   Bug, 
   Terminal,
   Download,
   Upload,
-  RotateCcw,
   Sparkles,
   Trash2,
-  AlertTriangle,
   RefreshCw
 } from 'lucide-react';
 import { getDatabase } from '../db';
 import { exportDatabaseToJson, importDatabaseFromJson, downloadFile } from '../db/export-import';
-import { applyTheme, toggleThemeMode } from '../utils/theme';
+import { applyTheme } from '../utils/theme';
 
 export const SettingsTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'general' | 'developer'>('general');
   const [config, setConfig] = useState<any>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [accentColor, setAccentColor] = useState('#22c55e');
   const [language, setLanguage] = useState('en');
   const [notifications, setNotifications] = useState(true);
-  const [autoSave, setAutoSave] = useState(true);
   const [locationCity, setLocationCity] = useState('Dresden');
   const [hemisphere, setHemisphere] = useState('North');
   
-  const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logs, setLogs] = useState<{ type: string; msg: string }[]>([]);
 
@@ -48,11 +43,18 @@ export const SettingsTab: React.FC = () => {
         setLocationCity(data.city || 'Dresden');
         setHemisphere(data.hemisphere || 'North');
         
-        const savedTheme = localStorage.getItem('theme-mode') as 'light' | 'dark';
-        if (savedTheme) {
-          setTheme(savedTheme);
-          toggleThemeMode(savedTheme);
+        /* 
+        const savedMode = localStorage.getItem('theme-mode') as 'light' | 'dark';
+        if (savedMode) {
+          setTheme(savedMode);
+          toggleThemeMode(savedMode);
         }
+
+        const savedAccent = localStorage.getItem('theme-color');
+        if (savedAccent) {
+          setAccentColor(savedAccent);
+        }
+        */
         addLog('INFO', 'User configuration synchronized.');
       }
     };
@@ -71,7 +73,8 @@ export const SettingsTab: React.FC = () => {
         firstLoadComplete: true
       });
       
-      localStorage.setItem('theme-mode', theme);
+      localStorage.setItem('theme-color', accentColor);
+      applyTheme(accentColor);
       // Logic for autoSave/notifications would go here in a real app
       
       addLog('SUCCESS', 'Configuration persisted to disk.');
@@ -180,6 +183,7 @@ export const SettingsTab: React.FC = () => {
                <Palette className="w-3 h-3 text-garden-500" /> Preferences
             </h2>
             <div className="space-y-6">
+              {/* 
               <div>
                 <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Theme Protocol</label>
                 <div className="flex gap-2">
@@ -215,6 +219,41 @@ export const SettingsTab: React.FC = () => {
                       DARK
                     </div>
                   </button>
+                </div>
+              </div> 
+              */}
+
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Botanical Accent</label>
+                <div className="flex flex-wrap gap-3">
+                  {['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#ec4899'].map(color => (
+                    <button
+                      key={color}
+                      onClick={() => {
+                        setAccentColor(color);
+                        applyTheme(color);
+                      }}
+                      className={`w-8 h-8 rounded-full border-2 transition-all ${
+                        accentColor === color ? 'border-stone-100 scale-110 shadow-lg' : 'border-transparent hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: color }}
+                      title={`Select ${color} accent`}
+                    />
+                  ))}
+                  <div className="relative group">
+                    <input
+                      type="color"
+                      value={accentColor}
+                      onChange={(e) => {
+                        setAccentColor(e.target.value);
+                        applyTheme(e.target.value);
+                      }}
+                      className="w-8 h-8 rounded-full border-2 border-transparent bg-stone-900 cursor-pointer overflow-hidden p-0"
+                    />
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-stone-900 text-[10px] font-bold px-2 py-1 rounded border border-stone-800 pointer-events-none">
+                      CUSTOM
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -408,5 +447,5 @@ export const SettingsTab: React.FC = () => {
 };
 
 // Internal palette wrapper because it's used in the code but not defined
-const Palette = ({ className }: { className?: string }) => <div className={className} />;
+const Palette = ({ className }: { className?: string }) => <Sparkles className={className} />;
 const MapPin = ({ className }: { className?: string }) => <div className={className} />;

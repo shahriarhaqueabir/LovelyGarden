@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+output*.log
 
 # Dependencies
 node_modules/
@@ -74,3 +75,6 @@ test_results.txt
 vite.config.ts.timestamp-*
 *.tmp
 *.bak
+
+# Task tracking
+/tasks/

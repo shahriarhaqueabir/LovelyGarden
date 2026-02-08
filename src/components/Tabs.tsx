@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
-import { 
-  Sprout, 
-  Calendar, 
-  BookOpen, 
-  Package, 
-  CloudSun, 
-  Settings
-} from 'lucide-react';
 
 export type TabType = 
   | 'virtual-garden'
@@ -26,12 +18,11 @@ interface TabsProps {
 interface TabButtonProps {
   id: TabType;
   label: string;
-  icon: React.ReactNode;
   isActive: boolean;
   onClick: () => void;
 }
 
-export const TabButton: React.FC<TabButtonProps> = ({ label, icon, isActive, onClick }) => {
+export const TabButton: React.FC<TabButtonProps> = ({ label, isActive, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -58,13 +49,13 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<TabType>('virtual-garden');
 
   const tabs = [
-    { id: 'virtual-garden' as TabType, label: '🏡 Virtual Garden', icon: null },
-    { id: 'sowing-calendar' as TabType, label: '📅 Sowing Calendar', icon: null },
-    { id: 'plant-knowledgebase' as TabType, label: '📖 Knowledgebase', icon: null },
-    { id: 'seed-inventory' as TabType, label: '📦 Seed Vault', icon: null },
-    { id: 'seeds-in-hand' as TabType, label: '🧺 Bag', icon: null },
-    { id: 'weather-forecast' as TabType, label: '🌈 Weather', icon: null },
-    { id: 'settings' as TabType, label: '⚙️ Settings', icon: null },
+    { id: 'virtual-garden' as TabType, label: '🏡 Virtual Garden' },
+    { id: 'sowing-calendar' as TabType, label: '📅 Sowing Calendar' },
+    { id: 'plant-knowledgebase' as TabType, label: '📖 Knowledgebase' },
+    { id: 'seed-inventory' as TabType, label: '📦 Seed Vault' },
+    { id: 'seeds-in-hand' as TabType, label: '🧺 Bag' },
+    { id: 'weather-forecast' as TabType, label: '🌈 Weather' },
+    { id: 'settings' as TabType, label: '⚙️ Settings' },
   ];
 
   return (
@@ -74,9 +65,8 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
         {tabs.map(tab => (
           <TabButton
             key={tab.id}
-            id={tab.id}
+            id={tab.id as TabType}
             label={tab.label}
-            icon={tab.icon}
             isActive={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id as TabType)}
           />

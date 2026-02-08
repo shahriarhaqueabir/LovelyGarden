@@ -75,6 +75,8 @@ export const createGarden = async (config: any) => {
     sunExposure: config.sunExposure,
     gridWidth: Number(config.gridWidth),
     gridHeight: Number(config.gridHeight),
+    backgroundColor: config.backgroundColor,
+    theme: config.theme,
     createdDate: Date.now()
   };
 

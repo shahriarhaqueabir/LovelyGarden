@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Hand, Sparkles, CheckCircle, XCircle, Info, Package, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, Info, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
 import { getDatabase } from '../db';
@@ -43,9 +43,9 @@ export const SeedCard: React.FC<{
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
       className={`
-        relative w-[80px] h-[100px] rounded-3xl shadow-lg border p-2 flex flex-col items-center justify-between cursor-grab active:cursor-grabbing hover:translate-y-[-4px] transition-all
+        relative w-[80px] h-[100px] rounded-3xl border p-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing depth-3d transition-all
         ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
-        ${plantNowMode ? (plantNowEligible ? 'bg-garden-800 border-garden-400 shadow-[0_0_20px_rgba(34,197,94,0.25)]' : 'bg-stone-900/60 border-stone-800 opacity-40') : 'bg-garden-800 border-garden-600'}
+        ${plantNowMode ? (plantNowEligible ? 'bg-garden-800 border-garden-400 animate-healthy shadow-[0_0_20px_rgba(34,197,94,0.25)]' : 'bg-stone-900/60 border-stone-800 opacity-40 glass-panel') : 'bg-stone-900/40 glass-panel border-stone-800'}
       `}
     >
       {/* Delete Button */}
@@ -103,12 +103,12 @@ export const InventoryTray: React.FC<{
 
 
   const wrapperClass = isVertical
-    ? `h-full transition-all duration-300 ${collapsed ? 'w-20' : 'w-80'} border-r border-stone-800 bg-stone-900/60 backdrop-blur-xl flex flex-col relative`
+    ? `h-full transition-all duration-300 ${collapsed ? 'w-20' : 'w-80'} border-r border-stone-800 glass-panel flex flex-col relative z-40`
     : 'fixed bottom-0 left-0 right-0';
 
   const containerClass = isVertical
-    ? 'flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 scrollbar-hide'
-    : 'p-6 bg-stone-900/80 backdrop-blur-md border-t border-stone-800 flex items-center gap-6 overflow-x-auto';
+    ? 'flex-1 overflow-y-auto overflow-x-hidden p-4 grid grid-cols-3 gap-3 auto-rows-max scrollbar-hide'
+    : 'p-6 glass-panel border-t border-stone-800 flex items-center gap-6 overflow-x-auto';
 
   return (
     <div className={`${wrapperClass} ${isVertical ? '' : containerClass}`}>
@@ -149,7 +149,7 @@ export const InventoryTray: React.FC<{
             `}
             title="Highlight seeds that are in-season"
           >
-           ✨ Plant Now
+           ✨ In Season
           </button>
         )}
       </div>
@@ -171,7 +171,7 @@ export const InventoryTray: React.FC<{
 
       <div className={`${isVertical ? containerClass : 'flex gap-4'}`}>
         {!collapsed && inventory.length === 0 && (
-          <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold">
+          <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold col-span-3">
             Bag Empty
           </div>
         )}
@@ -208,7 +208,7 @@ export const InventoryTray: React.FC<{
           onClick={onOpenStore}
           className={`
             ${isVertical 
-              ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
+              ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24 col-span-3'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
               : 'w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
           `}
           title="Open Seed Store"

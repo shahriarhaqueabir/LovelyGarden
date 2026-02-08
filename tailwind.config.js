@@ -20,6 +20,13 @@ export default {
           900: 'var(--color-garden-900)',
           950: 'var(--color-garden-950)',
         },
+        // Semantic Theme Extensions
+        'bg-primary': 'var(--bg-primary)',
+        'bg-secondary': 'var(--bg-secondary)',
+        'bg-tertiary': 'var(--bg-tertiary)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'border-primary': 'var(--border-primary)',
       },
     },
   },

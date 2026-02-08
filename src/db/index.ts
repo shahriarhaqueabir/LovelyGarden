@@ -18,6 +18,7 @@ export const getDatabase = async () => {
       const db = await createRxDatabase({
         name: 'raidas_garden_db',
         storage: getRxStorageDexie(),
+        ignoreDuplicate: true,
       });
 
       await db.addCollections({
@@ -53,7 +54,18 @@ export const getDatabase = async () => {
             1: (oldDoc: any) => oldDoc
           }
         },
-        gardens: { schema: gardenSchema }
+        gardens: { 
+          schema: gardenSchema,
+          migrationStrategies: {
+            1: (oldDoc: any) => {
+              return {
+                ...oldDoc,
+                backgroundColor: '#14532d', // Default forest green
+                theme: 'forest'
+              };
+            }
+          }
+        }
       });
 
       return db;
@@ -82,53 +94,63 @@ export const hydrateDatabase = async () => {
     const demoGardens = [
       {
         id: 'main-garden',
-        name: 'The Homestead',
+        name: 'Garden 1',
         type: 'In-ground',
-        soilType: 'Loam', // Balanced
+        soilType: 'Loam', 
         sunExposure: 'Full Sun',
         gridWidth: 4,
-        gridHeight: 3,
-        createdDate: 1677640000000
+        gridHeight: 4,
+        createdDate: 1677640000000,
+        backgroundColor: '#14532d',
+        theme: 'forest'
       },
       {
         id: 'moon-greenhouse',
-        name: 'Moonlight Glass', 
+        name: 'Garden 2', 
         type: 'Greenhouse',
-        soilType: 'Custom Mix', // Magic/Exotic
+        soilType: 'Custom Mix',
         sunExposure: 'Full Shade',
-        gridWidth: 3,
-        gridHeight: 3,
-        createdDate: 1677641000000
+        gridWidth: 4,
+        gridHeight: 4,
+        createdDate: 1677641000000,
+        backgroundColor: '#1e1b4b',
+        theme: 'midnight'
       },
       {
-         id: 'desert-pot',
-         name: 'Sunken Sands',
-         type: 'Container',
-         soilType: 'Sandy', // Xeric
-         sunExposure: 'Full Sun',
-         gridWidth: 3,
-         gridHeight: 2,
-         createdDate: 1677642000000
+        id: 'desert-pot',
+        name: 'Garden 3',
+        type: 'Container',
+        soilType: 'Sandy',
+        sunExposure: 'Full Sun',
+        gridWidth: 4,
+        gridHeight: 4,
+        createdDate: 1677642000000,
+        backgroundColor: '#451a03',
+        theme: 'desert'
       },
       {
         id: 'shadow-grove',
-        name: 'Shadow Grove',
+        name: 'Garden 4',
         type: 'In-ground',
-        soilType: 'Silt', // Moisture retention
+        soilType: 'Silt',
         sunExposure: 'Partial Shade',
         gridWidth: 4,
-        gridHeight: 2,
-        createdDate: 1677643000000
+        gridHeight: 4,
+        createdDate: 1677643000000,
+        backgroundColor: '#14532d',
+        theme: 'forest'
       },
       {
         id: 'vertical-haven',
-        name: 'Vertical Haven',
+        name: 'Garden 5',
         type: 'Vertical',
         soilType: 'Loam',
         sunExposure: 'Partial Sun',
-        gridWidth: 2,
+        gridWidth: 4,
         gridHeight: 4,
-        createdDate: 1677644000000
+        createdDate: 1677644000000,
+        backgroundColor: '#14532d',
+        theme: 'forest'
       }
     ];
 
@@ -225,21 +247,29 @@ export const hydrateDatabase = async () => {
       source_metadata: kb.source_metadata || []
     }));
 
-    // Bulk insert
-    await db.sources.bulkInsert(sources);
-    await db.catalog.bulkInsert(catalogData);
-    await db.plant_kb.bulkInsert(validatedPlantKb);
+    // Bulk upsert logic (using individual upserts for safety or bulkUpsert if available)
+    for (const source of sources) {
+      await db.sources.upsert(source);
+    }
+    for (const item of catalogData) {
+      await db.catalog.upsert(item);
+    }
+    for (const kbItem of validatedPlantKb) {
+      await db.plant_kb.upsert(kbItem);
+    }
 
     // Initial Garden
-    await db.gardens.insert({
+    await db.gardens.upsert({
       id: 'main-garden',
-      name: 'Main Garden',
+      name: 'Garden 1',
       type: 'In-ground',
       soilType: 'Loam', // Default best
       sunExposure: 'Full Sun',
       gridWidth: 4,
-      gridHeight: 3,
-      createdDate: Date.now()
+      gridHeight: 4,
+      createdDate: Date.now(),
+      backgroundColor: '#14532d',
+      theme: 'forest'
     });
 
     // Initial Hand (Phase 3 requirement: starting pack)

@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import {
-  Sun,
-  Droplet,
-  Thermometer
-} from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hydrateDatabase, getDatabase } from './db';
-import { applyTheme, toggleThemeMode } from './utils/theme';
+import { applyTheme } from './utils/theme';
 import { useWeather } from './hooks/useWeather';
 import { PlantSpecies } from './schema/knowledge-graph';
 import { Tabs, TabPanel } from './components/Tabs';
@@ -65,8 +60,10 @@ const AppContent: React.FC = () => {
       const savedTheme = localStorage.getItem('theme-color');
       if (savedTheme) applyTheme(savedTheme);
 
+      /* 
       const savedMode = localStorage.getItem('theme-mode');
       if (savedMode === 'light') toggleThemeMode('light');
+      */
 
       const settings = await db.settings.findOne('local-user').exec();
       if (settings) {
@@ -97,7 +94,7 @@ const AppContent: React.FC = () => {
   }, [xp]);
 
   return (
-    <div className="flex flex-col h-screen bg-stone-950 text-stone-100 overflow-hidden font-sans selection:bg-garden-500/30">
+    <div className="flex flex-col h-screen bg-[#090c0a] text-text-primary overflow-hidden font-sans selection:bg-garden-500/30">
         <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
