@@ -15,6 +15,7 @@ import { PlantSpecies, PlantStage, UserLocation } from '../schema/knowledge-grap
 import { calculateCurrentStage } from '../logic/lifecycle';
 import { getConfidenceThreshold, isSowingSeason } from '../logic/reasoning';
 import { getDatabase } from '../db';
+import { GrowthGraph, getStageColor } from './GrowthGraph';
 import { GrowthTelemetry } from './GrowthTelemetry';
 import type { PlantedDocument, SourceDocument, PlantKbDocument } from '../db/types';
 
@@ -185,24 +186,36 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
           {/* Lifecycle Progress */}
           <section className="space-y-4">
-            <div className="flex justify-between items-end">
-              <h3 className="text-xs uppercase font-bold tracking-widest text-stone-500">🌱 Lifecycle: {currentStage.name}</h3>
-              <span className="text-[10px] text-stone-600 font-mono">
-                Stage {catalogItem.stages.indexOf(currentStage) + 1}/{catalogItem.stages.length}
-              </span>
+            {(() => {
+              const colors = getStageColor(currentStage.id);
+              return (
+                <>
+                  <div className="flex justify-between items-end">
+                    <h3 className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}>🌱 Lifecycle: {currentStage.name}</h3>
+                    <span className="text-[10px] text-stone-600 font-mono">
+                      Stage {catalogItem.stages.indexOf(currentStage) + 1}/{catalogItem.stages.length}
+                    </span>
+                  </div>
+                  <div className="h-2 w-full bg-stone-800 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${colors.bar} shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000`}
+                      style={{
+                        width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-stone-400 leading-relaxed">
+                    Currently in the <span className={colors.text}>{currentStage.name}</span> stage. Requires watering 💧 every{' '}
+                    <span className={colors.text}>{currentStage.waterFrequencyDays} days</span>.
+                  </p>
+                </>
+              );
+            })()}
+            
+            <div className="pt-4 border-t border-stone-800">
+               <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Growth Graph</h4>
+               <GrowthGraph stages={catalogItem.stages} />
             </div>
-            <div className="h-2 w-full bg-stone-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-garden-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000"
-                style={{
-                  width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`
-                }}
-              />
-            </div>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Currently in the <span className="text-garden-400">{currentStage.name}</span> stage. Requires watering 💧 every{' '}
-              <span className="text-garden-400">{currentStage.waterFrequencyDays} days</span>.
-            </p>
           </section>
 
           {/* Knowledge Base (surfacing seed fields) */}

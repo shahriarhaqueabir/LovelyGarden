@@ -53,20 +53,26 @@ export const PlantSpeciesSchema = z.object({
 export const ExpandedPlantKBSchema = z.object({
   plant_id: z.string(),
   common_name: z.string(),
-  scientific_name: z.string(),
+  scientific_name: z.string().optional(),
   type: z.string().optional(),
   family: z.string().optional(),
   growth_stage: z.array(z.string()).optional(),
   stages: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    durationDays: z.number(),
-    waterFrequencyDays: z.number(),
+    id: z.string().optional(),
+    name: z.string().optional(),
+    durationDays: z.number().optional(),
+    waterFrequencyDays: z.number().optional(),
   })).optional(),
-  seasonality: z.record(z.string(), z.object({
-    start_month: z.string(),
-    end_month: z.string(),
-  })).optional(),
+  seasonality: z.record(z.string(), z.union([
+    z.object({
+      start_month: z.union([z.string(), z.number()]),
+      end_month: z.union([z.string(), z.number()]),
+    }),
+    z.array(z.object({
+      start_month: z.union([z.string(), z.number()]),
+      end_month: z.union([z.string(), z.number()]),
+    }))
+  ])).optional(),
   sunlight: z.string().optional(),
   water_requirements: z.string().optional(),
   soil_type: z.array(z.string()).optional(),
@@ -76,9 +82,10 @@ export const ExpandedPlantKBSchema = z.object({
   common_diseases: z.array(z.string()).optional(),
   nutrient_preferences: z.array(z.string()).optional(),
   notes: z.string().optional(),
+  sowingSeason: z.array(z.string()).optional(),
   source_metadata: z.array(z.object({
-    source_name: z.string(),
-    url: z.string(),
+    source_name: z.string().optional(),
+    url: z.string().optional(),
     confidence_score: z.number().optional(),
   })).optional(),
 });

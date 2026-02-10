@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useDroppable } from '@dnd-kit/core';
+import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
@@ -62,6 +62,30 @@ const ObservationMenu: React.FC<{
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+const DraggablePlant: React.FC<{ item: PlantedDocument; children: React.ReactNode }> = ({ item, children }) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `planted-${item.id}`,
+    data: { item }
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    zIndex: 1000
+  } : undefined;
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...listeners} 
+      {...attributes}
+      className={`w-full h-full relative cursor-grab active:cursor-grabbing transition-transform ${isDragging ? 'opacity-30 scale-90' : ''}`}
+    >
+      {children}
     </div>
   );
 };
@@ -195,7 +219,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
   };
 
   const handleDelete = async () => {
-    if (item && window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
+    if (item && globalThis.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
       onDelete?.(item);
     }
   };
@@ -220,6 +244,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
       `}
     >
       {item ? (
+        <DraggablePlant item={item}>
         <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden shimmer-bg rounded-3xl">
           {/* Layer Specific Overlays */}
           {layer !== 'normal' && !isDead && (
@@ -334,6 +359,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
             />
           )}
         </div>
+        </DraggablePlant>
       ) : (
         <div className="flex flex-col items-center gap-2 opacity-20 group-hover:opacity-60 transition-opacity">
            <Zap className="w-8 h-8 text-stone-700" />

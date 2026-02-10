@@ -27,6 +27,19 @@ export default defineConfig({
           }
         ]
       }
-    })
+    }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-db': ['rxdb', 'dexie'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-logic': ['zod', 'axios', 'zustand', '@tanstack/react-query'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 });

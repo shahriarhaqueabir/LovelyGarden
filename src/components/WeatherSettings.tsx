@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useWeatherStore } from '../stores/weatherStore';
 import { reverseGeocode, debounce, MAX_SUGGESTIONS } from '../utils/geocoding';
+import { toast } from '../lib/toast';
 
 // Constants
 const DEFAULT_LATITUDE = 52.52; // Berlin coordinates as default
@@ -17,24 +18,7 @@ interface LocationState {
   isCitySelected: boolean;
 }
 
-// Predefined list of popular cities with coordinates
-const POPULAR_CITIES = [
-  { name: 'New York', country: 'USA', lat: 40.7128, lng: -74.0060 },
-  { name: 'London', country: 'UK', lat: 51.5074, lng: -0.1278 },
-  { name: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503 },
-  { name: 'Sydney', country: 'Australia', lat: -33.8688, lng: 151.2093 },
-  { name: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522 },
-  { name: 'Berlin', country: 'Germany', lat: 52.5200, lng: 13.4050 },
-  { name: 'Moscow', country: 'Russia', lat: 55.7558, lng: 37.6173 },
-  { name: 'Beijing', country: 'China', lat: 39.9042, lng: 116.4074 },
-  { name: 'Rio de Janeiro', country: 'Brazil', lat: -22.9068, lng: -43.1729 },
-  { name: 'Cairo', country: 'Egypt', lat: 30.0444, lng: 31.2357 },
-  { name: 'Cape Town', country: 'South Africa', lat: -33.9249, lng: 18.4241 },
-  { name: 'Dresden', country: 'Germany', lat: 51.0504, lng: 13.7373 },
-  { name: 'Stockholm', country: 'Sweden', lat: 59.3293, lng: 18.0686 },
-  { name: 'Oslo', country: 'Norway', lat: 59.9139, lng: 10.7522 },
-  { name: 'Helsinki', country: 'Finland', lat: 60.1699, lng: 24.9384 },
-];
+import { POPULAR_CITIES } from '../constants/locations';
 
 const schema = z.object({
   city: z.string().min(1, 'City name is required'),
@@ -43,7 +27,12 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export const WeatherSettings: React.FC = () => {
-  const { latitude: storeLatitude, longitude: storeLongitude, setLocation } = useWeatherStore();
+  const { 
+    latitude: storeLatitude, 
+    longitude: storeLongitude, 
+    setLocation,
+    fetchWeatherData
+  } = useWeatherStore();
 
   const [locationState, setLocationState] = useState<LocationState>({
     cityName: 'Select',
@@ -136,7 +125,9 @@ export const WeatherSettings: React.FC = () => {
     // Use the location state which is always up to date
     if (locationState.cityName && locationState.cityName !== 'Select') {
       // Use the coordinates from the selected city
-      setLocation(locationState.latitude, locationState.longitude);
+      setLocation(locationState.latitude, locationState.longitude, locationState.cityName);
+      await fetchWeatherData(true);
+      toast.success(`Location set to ${locationState.cityName}`);
     }
   };
 
@@ -150,9 +141,11 @@ export const WeatherSettings: React.FC = () => {
       isCitySelected: true, // Mark that user explicitly selected a city
     });
     // Automatically save the location when a city is selected
-    setLocation(city.lat, city.lng);
+    setLocation(city.lat, city.lng, cityName);
+    fetchWeatherData(true);
     setFilteredCities([]);
     setShowSuggestions(false);
+    toast.success(`Location updated to ${cityName}`);
   };
 
   return (
@@ -211,7 +204,8 @@ export const WeatherSettings: React.FC = () => {
 
           {(storeLatitude !== null || locationState.latitude) && (storeLongitude !== null || locationState.longitude) && (
             <div className="text-sm text-stone-400">
-              Current: {locationState.cityName !== 'Select' ? locationState.cityName : 'No location selected'}
+              Current: {locationState.latitude.toFixed(2)}, {locationState.longitude.toFixed(2)}
+              {locationState.cityName !== 'Select' && locationState.cityName !== 'Unknown Location' && `. ${locationState.cityName}.`}
             </div>
           )}
         </div>

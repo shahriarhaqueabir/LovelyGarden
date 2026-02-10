@@ -42,7 +42,7 @@ export interface PlantKbDocument {
   growth_stage?: string[];
   sowingSeason?: string[];
   sowingMethod?: string;
-  seasonality?: Record<string, unknown>;
+  seasonality?: Record<string, { start_month: string | number; end_month: string | number } | Array<{ start_month: string | number; end_month: string | number }>>;
   sunlight?: string;
   water_requirements?: string;
   soil_type?: string[];
@@ -52,6 +52,14 @@ export interface PlantKbDocument {
   common_diseases?: string[];
   nutrient_preferences?: string[];
   notes?: string;
+
+  // Added missing fields for UI compatibility
+  life_cycle?: string;
+  growth_habit?: string[];
+  photosynthesis_type?: string;
+  edible_parts?: string[];
+  toxic_parts?: string[];
+  pollination_type?: string;
 
   stages?: Array<{
     id?: string;

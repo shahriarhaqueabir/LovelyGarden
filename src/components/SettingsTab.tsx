@@ -16,10 +16,7 @@ import { getDatabase } from '../db';
 import { exportDatabaseToJson, importDatabaseFromJson, downloadFile } from '../db/export-import';
 import { applyTheme, applyBackgroundColor } from '../utils/theme';
 import { WeatherSettings } from './WeatherSettings';
-import { useWeatherStore } from '../stores/weatherStore';
-
 export const SettingsTab: React.FC = () => {
-  const { latitude, longitude } = useWeatherStore();
   const [activeSubTab, setActiveSubTab] = useState<'general' | 'developer'>('general');
   const [config, setConfig] = useState<Record<string, unknown> | null>(null);
   const [accentColor, setAccentColor] = useState('#22c55e');
@@ -80,31 +77,7 @@ export const SettingsTab: React.FC = () => {
     }, 0);
   }, []);
 
-  // Update location city when weather coordinates change
-  useEffect(() => {
-    if (latitude !== null && longitude !== null) {
-      // Reverse geocode the coordinates to get city name
-      const reverseGeocode = async () => {
-        try {
-          const response = await fetch(
-            `https://geocoding-api.open-meteo.com/v1/search?latitude=${latitude}&longitude=${longitude}&format=json`
-          );
-          const data = await response.json();
-          if (data.results && data.results.length > 0) {
-            const result = data.results[0];
-            const cityName = result.name || result.admin1 || 'Unknown Location';
-            const countryName = result.country || '';
-            const fullLocation = countryName ? `${cityName}, ${countryName}` : cityName;
-            setLocationCity(fullLocation);
-          }
-        } catch (error) {
-          console.error('Reverse geocoding failed:', error);
-        }
-      };
 
-      reverseGeocode();
-    }
-  }, [latitude, longitude]);
 
   const handleSave = async () => {
     try {

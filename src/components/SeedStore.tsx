@@ -2,7 +2,9 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { X, Search, ShoppingBag, Info, AlertTriangle, Plus, Check, BookOpen, Package, Sun } from 'lucide-react';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { getDatabase } from '../db';
+import { logSeedPurchase } from '../db/queries';
 import { isSowingSeason } from '../logic/reasoning';
+import { GrowthGraph } from './GrowthGraph';
 
 interface SeedStoreProps {
   catalog: PlantSpecies[];
@@ -114,7 +116,7 @@ export const DetailModal: React.FC<{
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-stone-600 font-bold uppercase tracking-tighter">Family</span>
-                  <span className="text-stone-300">{plant.family || plant.family || "—"}</span>
+                  <span className="text-stone-300">{plant.family || "—"}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-stone-600 font-bold uppercase tracking-tighter">Genus</span>
@@ -176,11 +178,11 @@ export const DetailModal: React.FC<{
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-stone-600 font-bold uppercase tracking-tighter">Method</span>
-                  <span className="text-amber-500 font-bold">{plant.sowingMethod || plant.sowingMethod || "Direct"}</span>
+                  <span className="text-amber-500 font-bold">{plant.sowingMethod || "Direct"}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-stone-600 font-bold uppercase tracking-tighter">Seasons</span>
-                  <span className="text-stone-300">{plant.sowingSeason?.join(', ') || plant.sowingSeason?.join(', ') || "—"}</span>
+                  <span className="text-stone-300">{plant.sowingSeason?.join(', ') || "—"}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-stone-600 font-bold uppercase tracking-tighter">Pollination</span>
@@ -225,24 +227,7 @@ export const DetailModal: React.FC<{
               <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2 border-b border-stone-800 pb-2">
                 📊 Growth Graph
               </h4>
-              <div className="space-y-2">
-                {(plant.stages || plant.stages)?.map((stage, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-2 bg-stone-950 border border-stone-800 rounded-lg group hover:border-stone-700 transition-colors">
-                    <div className="w-8 h-8 rounded bg-stone-900 border border-stone-800 flex items-center justify-center text-xs group-hover:text-garden-400">
-                      {idx + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[11px] font-bold uppercase text-stone-400">{stage.id}</span>
-                        <span className="text-[10px] font-mono text-stone-600">{stage.durationDays}d</span>
-                      </div>
-                      <div className="h-1 w-full bg-stone-900 rounded-full mt-1 overflow-hidden">
-                        <div className="h-full bg-stone-700 rounded-full" style={{ width: `${(stage.durationDays / 60) * 100}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <GrowthGraph stages={plant.stages} />
             </section>
           </div>
 
@@ -253,23 +238,23 @@ export const DetailModal: React.FC<{
               <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
                 📅 Diagnostics Intel
               </h4>
-              {(plant.seasonality || plant.seasonality) && (
+              {plant.seasonality && (
                 <div className="space-y-6">
-                  {(plant.seasonality?.sowing || plant.seasonality?.sowing) && (
+                  {plant.seasonality.sowing && (
                     <div className="relative pl-6 border-l-2 border-amber-600/30">
                       <div className="absolute -left-1.5 top-0 w-3 h-3 bg-amber-600 rounded-full ring-4 ring-stone-900" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Sowing Window</span>
                       <p className="text-xs text-stone-300 font-bold mt-1">
-                        {(plant.seasonality?.sowing?.start_month || plant.seasonality?.sowing?.start_month)} — {(plant.seasonality?.sowing?.end_month || plant.seasonality?.sowing?.end_month)}
+                        {plant.seasonality.sowing.start_month} — {plant.seasonality.sowing.end_month}
                       </p>
                     </div>
                   )}
-                  {(plant.seasonality?.harvest || plant.seasonality?.harvest) && (
+                  {plant.seasonality.harvest && (
                     <div className="relative pl-6 border-l-2 border-garden-600/30">
                       <div className="absolute -left-1.5 top-0 w-3 h-3 bg-garden-600 rounded-full ring-4 ring-stone-900" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-garden-500">Optimal Harvest</span>
                       <p className="text-xs text-stone-300 font-bold mt-1">
-                        {(plant.seasonality?.harvest?.start_month || plant.seasonality?.harvest?.start_month)} — {(plant.seasonality?.harvest?.end_month || plant.seasonality?.harvest?.end_month)}
+                        {plant.seasonality.harvest.start_month} — {plant.seasonality.harvest.end_month}
                       </p>
                     </div>
                   )}
@@ -286,8 +271,8 @@ export const DetailModal: React.FC<{
                 <div>
                   <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Common Pests</span>
                   <div className="flex flex-wrap gap-1">
-                    {(plant.common_pests || plant.common_pests)?.length ? 
-                      (plant.common_pests || plant.common_pests)?.map(p => (
+                    {plant.common_pests?.length ? 
+                      plant.common_pests.map(p => (
                         <span key={p} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{p.replace('pest_', '').replace('pest-', '').replace('_', ' ')}</span>
                       )) : 
                       <span className="text-[10px] text-stone-700 italic">No threats logged</span>
@@ -297,8 +282,8 @@ export const DetailModal: React.FC<{
                 <div>
                   <span className="text-[9px] font-bold uppercase text-stone-600 block mb-1">Known Diseases</span>
                   <div className="flex flex-wrap gap-1">
-                    {(plant.common_diseases || plant.common_diseases)?.length ? 
-                      (plant.common_diseases || plant.common_diseases)?.map(d => (
+                    {plant.common_diseases?.length ? 
+                      plant.common_diseases.map(d => (
                         <span key={d} className="px-2 py-0.5 bg-stone-900 text-stone-500 rounded text-[9px] border border-stone-800 hover:text-red-400 transition-colors">{d.replace('disease_', '').replace('disease-', '').replace('_', ' ')}</span>
                       )) : 
                       <span className="text-[10px] text-stone-700 italic">No threats logged</span>
@@ -317,24 +302,24 @@ export const DetailModal: React.FC<{
                 <div>
                   <span className="text-[9px] font-bold text-stone-600 uppercase">Sunlight</span>
                   <div className="flex items-center gap-1">
-                    {getSunlightIcon((plant.sunlight || plant.sunlight || 'unknown'))}
-                    <p className="text-xs text-stone-300 capitalize">{(plant.sunlight || plant.sunlight)?.replace('_', ' ') || "—"}</p>
+                    {getSunlightIcon(plant.sunlight || 'unknown')}
+                    <p className="text-xs text-stone-300 capitalize">{plant.sunlight?.replace('_', ' ') || "—"}</p>
                   </div>
                 </div>
                 <div>
                   <span className="text-[9px] font-bold text-stone-600 uppercase">Water</span>
-                  <p className="text-xs text-stone-300 capitalize">{(plant.water_requirements || plant.water_requirements) || "—"}</p>
+                  <p className="text-xs text-stone-300 capitalize">{plant.water_requirements || "—"}</p>
                 </div>
                 <div className="col-span-2">
                   <span className="text-[9px] font-bold text-stone-600 uppercase">Soil Preferences</span>
-                  <p className="text-xs text-stone-300 capitalize">{(plant.soil_type || plant.soil_type)?.join(', ') || "—"}</p>
+                  <p className="text-xs text-stone-300 capitalize">{plant.soil_type?.join(', ') || "—"}</p>
                 </div>
               </div>
 
                <div className="mt-4 pt-4 border-t border-stone-800">
                   <span className="text-[9px] font-bold text-stone-600 uppercase">Nutrient Needs</span>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {(plant.nutrient_preferences || plant.nutrient_preferences)?.map(n => (
+                    {plant.nutrient_preferences?.map(n => (
                       <span key={n} className="px-1.5 py-0.5 bg-stone-950 text-[10px] text-blue-400 border border-stone-800 rounded">{n.replace('_', ' ')}</span>
                     ))}
                   </div>
@@ -348,11 +333,11 @@ export const DetailModal: React.FC<{
           <div className="flex flex-col gap-2">
             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600">KB Intelligence Sources</h5>
             <div className="flex gap-4">
-              {(plant.source_metadata || plant.source_metadata)?.map((s, i) => (
+              {plant.source_metadata?.map((s, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <div className="text-[11px] font-bold text-stone-300">{s.source_name}</div>
                   <div className="px-1.5 py-0.5 bg-green-900/40 text-green-400 rounded text-[9px] font-mono border border-green-800/50">
-                    {Math.round((s.confidence_score || s.confidence_score || 0) * 100)}%
+                    {Math.round((s.confidence_score || 0) * 100)}%
                   </div>
                 </div>
               ))}
@@ -475,17 +460,18 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
     if (!plant) return;
 
     // Generate unique ID using a combination of catalogId and timestamp
-    const timestamp = Date.now();
+    const now = Date.now();
     const bagItem = {
-      id: `inv-${catalogId}-${timestamp}`,
+      id: `inv-${catalogId}-${now}`,
       catalogId,
-      acquiredDate: timestamp
+      acquiredDate: now
     };
 
     await db.inventory.insert(bagItem);
+    await logSeedPurchase(catalogId, plant.name);
 
     setJustAdded(catalogId);
-    window.setTimeout(() => setJustAdded(null), 900);
+    setTimeout(() => setJustAdded(null), 900);
   };
 
   return (

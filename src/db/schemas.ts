@@ -1,9 +1,9 @@
 import { RxJsonSchema } from 'rxdb';
-import type { CatalogDocument, PlantKbDocument, SourceDocument, InventoryDocument, PlantedDocument, SettingsDocument, GardenDocument } from './types';
+import type { CatalogDocument, PlantKbDocument, SourceDocument, InventoryDocument, PlantedDocument, SettingsDocument, GardenDocument, LogbookDocument } from './types';
 
 export const catalogSchema: RxJsonSchema<CatalogDocument> = {
   title: 'catalog',
-  version: 1,
+  version: 2,
   description: 'Master library of plants',
   primaryKey: 'id',
   type: 'object',
@@ -44,7 +44,7 @@ export const catalogSchema: RxJsonSchema<CatalogDocument> = {
 
 export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
   title: 'plant_kb',
-  version: 3,
+  version: 4,
   description: 'Expanded plant knowledge base (seasonality, pests, diseases, nutrients, sources) hydrated from plants-kb.json',
   primaryKey: 'plant_id',
   type: 'object',
@@ -67,6 +67,12 @@ export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
     common_diseases: { type: 'array', items: { type: 'string' } },
     nutrient_preferences: { type: 'array', items: { type: 'string' } },
     notes: { type: 'string' },
+    life_cycle: { type: 'string' },
+    growth_habit: { type: 'array', items: { type: 'string' } },
+    photosynthesis_type: { type: 'string' },
+    edible_parts: { type: 'array', items: { type: 'string' } },
+    toxic_parts: { type: 'array', items: { type: 'string' } },
+    pollination_type: { type: 'string' },
     stages: { 
       type: 'array', 
       items: { 
@@ -194,4 +200,26 @@ export const gardenSchema: RxJsonSchema<GardenDocument> = {
     theme: { type: 'string' }
   },
   required: ['id', 'name', 'type', 'gridWidth', 'gridHeight']
+};
+
+export const logbookSchema: RxJsonSchema<LogbookDocument> = {
+  title: 'logbook',
+  version: 0,
+  description: 'Log of garden activities and purchases',
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    type: { type: 'string' },
+    itemName: { type: 'string' },
+    category: { type: 'string' },
+    quantity: { type: 'number' },
+    price: { type: 'number' },
+    currency: { type: 'string' },
+    vendor: { type: 'string' },
+    date: { type: 'number' },
+    notes: { type: 'string' },
+    catalogId: { type: 'string' }
+  },
+  required: ['id', 'type', 'itemName', 'date']
 };

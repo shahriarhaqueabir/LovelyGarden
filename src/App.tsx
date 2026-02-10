@@ -4,14 +4,15 @@ import { hydrateDatabase, getDatabase } from './db';
 import { applyTheme, applyBackgroundColor } from './utils/theme';
 import { PlantSpecies } from './schema/knowledge-graph';
 import { Tabs, TabPanel } from './components/Tabs';
-import { VirtualGardenTab } from './components/VirtualGardenTab';
-import { SowingCalendarTab } from './components/SowingCalendarTab';
-import { PlantKnowledgebaseTab } from './components/PlantKnowledgebaseTab';
-import { SeedInventoryTab } from './components/SeedInventoryTab';
-
-import { WeatherForecastTab } from './components/WeatherForecastTab';
-import { SettingsTab } from './components/SettingsTab';
-import { SeedStore } from './components/SeedStore';
+// Lazy load tabs to improve initial load speed
+const VirtualGardenTab = React.lazy(() => import('./components/VirtualGardenTab').then(m => ({ default: m.VirtualGardenTab })));
+const SowingCalendarTab = React.lazy(() => import('./components/SowingCalendarTab').then(m => ({ default: m.SowingCalendarTab })));
+const PlantKnowledgebaseTab = React.lazy(() => import('./components/PlantKnowledgebaseTab').then(m => ({ default: m.PlantKnowledgebaseTab })));
+const SeedInventoryTab = React.lazy(() => import('./components/SeedInventoryTab').then(m => ({ default: m.SeedInventoryTab })));
+const WeatherForecastTab = React.lazy(() => import('./components/WeatherForecastTab').then(m => ({ default: m.WeatherForecastTab })));
+const SettingsTab = React.lazy(() => import('./components/SettingsTab').then(m => ({ default: m.SettingsTab })));
+const SeedStore = React.lazy(() => import('./components/SeedStore').then(m => ({ default: m.SeedStore })));
+const LogbookTab = React.lazy(() => import('./components/LogbookTab').then(m => ({ default: m.LogbookTab })));
 import { useWeatherStore } from './stores/weatherStore';
 import { getUserLocation } from './services/geolocationService';
 
@@ -22,9 +23,16 @@ const AppContent: React.FC = () => {
   const [currentDay, setCurrentDay] = useState(1);
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
+  const [hemisphere, setHemisphere] = useState<'North' | 'South'>('North');
   
   // New weather store
-  const { data: weather, isLoading: loading, setLocation, fetchWeatherData } = useWeatherStore();
+  const { 
+    data: weather, 
+    isLoading: loading, 
+    locationName,
+    setLocation, 
+    fetchWeatherData 
+  } = useWeatherStore();
 
   const alerts = React.useMemo(() => {
     if (!weather) return [];
@@ -60,8 +68,13 @@ const AppContent: React.FC = () => {
     const init = async () => {
       await hydrateDatabase();
       const db = await getDatabase();
-      const allCatalog = await db.catalog.find().exec();
-      setCatalog(allCatalog.map(doc => doc.toJSON()));
+      
+      // Subscribe to catalog for real-time updates (especially during hydration)
+      db.catalog.find().$.subscribe(docs => {
+        if (docs) {
+          setCatalog(docs.map(doc => doc.toJSON()));
+        }
+      });
 
       // Apply Theme
       const savedTheme = localStorage.getItem('theme-color');
@@ -80,23 +93,31 @@ const AppContent: React.FC = () => {
       if (settings) {
         setCurrentDay(settings.currentDay || 1);
         setXp(settings.xp || 0);
+        setHemisphere((settings.hemisphere as any) || 'North');
       }
 
       db.settings.findOne('local-user').$.subscribe(s => {
         if (s) {
           setCurrentDay(s.currentDay || 1);
           setXp(s.xp || 0);
+          setHemisphere((s.hemisphere as any) || 'North');
         }
       });
       
-      // Request geolocation and fetch weather
+      // Request geolocation if not already set, then fetch weather
       try {
-        const coords = await getUserLocation();
-        setLocation(coords.latitude, coords.longitude);
-        await fetchWeatherData();
+        const { latitude, longitude } = useWeatherStore.getState();
+        if (latitude === null || longitude === null) {
+          const coords = await getUserLocation();
+          setLocation(coords.latitude, coords.longitude);
+          await fetchWeatherData(true);
+        } else {
+          await fetchWeatherData();
+        }
       } catch (err) {
-        console.warn('Geolocation denied:', err);
-        // User can set location manually in settings
+        console.error('Location/Weather initialization failed:', err);
+        // Fallback or handle error - store already handles error states
+        fetchWeatherData();
       }
     };
     init();
@@ -132,6 +153,12 @@ const AppContent: React.FC = () => {
             <div className="flex items-center gap-4 text-stone-500">
               {weather ? (
                 <>
+                  {locationName && (
+                    <div className="hidden sm:flex items-center gap-1.5 border-r border-stone-800 pr-4 mr-2" title="Location">
+                      <span className="text-sm">📍</span> 
+                      <span className="text-[13px] font-black uppercase tracking-tight text-stone-300">{locationName}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5" title="Weather condition"><span className="text-sm">🌤️</span> <span className="text-[13px] font-bold">{weather.current.weather_code < 3 ? 'Sunny' : weather.current.weather_code < 50 ? 'Cloudy' : 'Rainy'}</span></div>
                   <div className="flex items-center gap-1.5" title="Moisture"><span className="text-sm">💧</span> <span className="text-[13px] font-bold">{weather.current.relative_humidity_2m}%</span></div>
                   <div className="flex items-center gap-1.5" title="Temp"><span className="text-sm">🌡️</span> <span className="text-[13px] font-bold">{weather.current.temperature_2m}°C</span></div>
@@ -160,43 +187,59 @@ const AppContent: React.FC = () => {
           </div>
         </header>
 
-        <Tabs>
-          <TabPanel id="virtual-garden">
-            <VirtualGardenTab
-              catalog={catalog}
-              currentDay={currentDay}
-              setCurrentDay={setCurrentDay}
-              xp={xp}
-              setXp={setXp}
-              alerts={alerts}
-              onOpenSeedStore={() => setShowSeedStore(true)}
-            />
-          </TabPanel>
-          <TabPanel id="sowing-calendar">
-            <SowingCalendarTab catalog={catalog} currentDay={currentDay} />
-          </TabPanel>
-          <TabPanel id="plant-knowledgebase">
-            <PlantKnowledgebaseTab />
-          </TabPanel>
-          <TabPanel id="seed-inventory">
-            <SeedInventoryTab catalog={catalog} />
-          </TabPanel>
-          <TabPanel id="weather-forecast">
-            <WeatherForecastTab />
-          </TabPanel>
-          <TabPanel id="settings">
-            <SettingsTab />
-          </TabPanel>
-        </Tabs>
+        <React.Suspense fallback={
+          <div className="flex-1 flex items-center justify-center p-20">
+            <div className="glass-panel p-8 rounded-3xl border border-stone-800 flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-garden-500/20 border-t-garden-500 rounded-full animate-spin" />
+              <p className="text-xs font-black uppercase tracking-[0.3em] text-stone-500 animate-pulse">Initializing Interface...</p>
+            </div>
+          </div>
+        }>
+          <Tabs>
+            <TabPanel id="virtual-garden">
+              <VirtualGardenTab
+                catalog={catalog}
+                currentDay={currentDay}
+                setCurrentDay={setCurrentDay}
+                xp={xp}
+                setXp={setXp}
+                alerts={alerts}
+                onOpenSeedStore={() => setShowSeedStore(true)}
+              />
+            </TabPanel>
+            <TabPanel id="sowing-calendar">
+              <SowingCalendarTab 
+                catalog={catalog} 
+                currentDay={currentDay} 
+                hemisphere={hemisphere}
+              />
+            </TabPanel>
+            <TabPanel id="plant-knowledgebase">
+              <PlantKnowledgebaseTab />
+            </TabPanel>
+            <TabPanel id="seed-inventory">
+              <SeedInventoryTab catalog={catalog} />
+            </TabPanel>
+            <TabPanel id="weather-forecast">
+              <WeatherForecastTab />
+            </TabPanel>
+            <TabPanel id="logbook">
+              <LogbookTab />
+            </TabPanel>
+            <TabPanel id="settings">
+              <SettingsTab />
+            </TabPanel>
+          </Tabs>
 
-        {/* Seed Store Modal */}
-        {showSeedStore && (
-          <SeedStore
-            catalog={catalog}
-            onClose={() => setShowSeedStore(false)}
-            currentDay={currentDay}
-          />
-        )}
+          {/* Seed Store Modal */}
+          {showSeedStore && (
+            <SeedStore
+              catalog={catalog}
+              onClose={() => setShowSeedStore(false)}
+              currentDay={currentDay}
+            />
+          )}
+        </React.Suspense>
       </div>
   );
 };

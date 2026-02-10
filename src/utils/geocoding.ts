@@ -20,7 +20,9 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
   };
 }
 
-// Simple reverse geocoding function using Open-Meteo's geocoding API
+import { POPULAR_CITIES } from '../constants/locations';
+
+// Simple reverse geocoding function using Open-Meteo's geocoding API or local database
 export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`;
   const cached = reverseGeocodingCache.get(cacheKey);
@@ -29,24 +31,23 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<string> 
     return cached.cityName;
   }
 
-  try {
-    const response = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?latitude=${lat}&longitude=${lng}&format=json`
-    );
-    const data = await response.json();
-    if (data.results && data.results.length > 0) {
-      const result = data.results[0];
-      const cityName = result.name || `${result.admin1 || ''}${result.country ? `, ${result.country}` : ''}`.trim() || 'Unknown Location';
+  // 1. Check local database for matches (within 0.1 degree tolerance ~11km)
+  const match = POPULAR_CITIES.find(city => 
+    Math.abs(city.lat - lat) < 0.1 && Math.abs(city.lng - lng) < 0.1
+  );
 
-      reverseGeocodingCache.set(cacheKey, { cityName, timestamp: Date.now() });
-      return cityName;
-    }
-    return 'Unknown Location';
-  } catch (error) {
-    console.error('Reverse geocoding failed:', error);
-    showError('Failed to lookup location name. Please check your connection.');
-    return 'Location Lookup Failed';
+  if (match) {
+    const cityName = `${match.name}, ${match.country}`;
+    reverseGeocodingCache.set(cacheKey, { cityName, timestamp: Date.now() });
+    return cityName;
   }
+
+  // 2. Open-Meteo search endpoint does not natively support lat/lng reverse lookups
+  // For a production app, we would use a real reverse geocoding service here.
+  // Using 'Unknown Location' so the UI can decide how to handle it.
+  const cityName = 'Unknown Location';
+  reverseGeocodingCache.set(cacheKey, { cityName, timestamp: Date.now() });
+  return cityName;
 };
 
 // Simple geocoding function using Open-Meteo's geocoding API
