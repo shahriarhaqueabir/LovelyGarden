@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Package, Search, Droplets, Sun, Leaf, Info, Calendar, Wrench } from 'lucide-react';
 import { useInventory } from '../hooks/useInventory';
 import { PlantSpecies, Season, GrowthStageId } from '../schema/knowledge-graph';
@@ -108,8 +109,8 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
   const filteredItems = inventoryWithDetails.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(query.toLowerCase()) ||
                          item.scientificName.toLowerCase().includes(query.toLowerCase());
-    const matchesFilter = filter === 'all' || 
-                         item.categories?.includes(filter) || 
+    const matchesFilter = filter === 'all' ||
+                         (item.categories && item.categories.some(cat => cat.includes(filter))) ||
                          item.type?.toLowerCase().includes(filter.toLowerCase());
     return matchesSearch && matchesFilter;
   });
@@ -124,6 +125,15 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
       return b.acquiredDate - a.acquiredDate;
     }
     return 0;
+  });
+
+  // Virtualization setup
+  const parentRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: sortedItems.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 180, // Estimated height of each card
+    overscan: 5,
   });
 
   // Get unique categories for filter dropdown
@@ -173,15 +183,15 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
         <div className="lg:col-span-1 bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
-          <h2 className="text-lg font-bold text-stone-100 mb-4">Inventory Stats</h2>
+          <h2 className="text-lg font-bold text-stone-100 mb-4">Current Collection</h2>
           <div className="space-y-3">
             <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
               <span className="text-stone-300">Total Seeds</span>
               <span className="font-bold text-garden-400">{inventory.length}</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-stone-300">Unique Species</span>
-              <span className="font-bold text-garden-400">{new Set(inventory.map(i => i.catalogId)).size}</span>
+              <span className="text-stone-300">Ready to Plant</span>
+              <span className="font-bold text-garden-400">{inventory.length}</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
               <span className="text-stone-300">Vegetables</span>
@@ -240,91 +250,116 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedItems.map((item) => {
-              const catalogItem = catalog.find(c => c.id === item.catalogId);
+          <div 
+            ref={parentRef}
+            className="overflow-auto max-h-[600px]"
+          >
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const item = sortedItems[virtualItem.index];
+                const catalogItem = catalog.find(c => c.id === item.catalogId);
 
-              return (
-                <div
-                  key={item.id}
-                  className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30 hover:border-garden-700/50 cursor-pointer transition-all group"
-                  onClick={() => {
-                    if (catalogItem && expandedPlantKB[item.catalogId]) {
-                      const expanded = expandedPlantKB[item.catalogId];
-                      setSelectedPlant({
-                        ...catalogItem,
-                        sowingSeason: (expanded.sowingSeason as Season[]) || catalogItem.sowingSeason,
-                        sowingMethod: (expanded.sowingMethod as "Direct" | "Transplant") || catalogItem.sowingMethod,
-                        stages: expanded.stages?.map(stage => ({
-                          id: stage.id as GrowthStageId,
-                          name: stage.name,
-                          durationDays: stage.durationDays,
-                          waterFrequencyDays: stage.waterFrequencyDays,
-                          imageAssetId: stage.imageAssetId || 'generic_image'
-                        })) || catalogItem.stages
-                      });
-                    }
-                  }}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-stone-100 group-hover:text-garden-400 transition-colors">{item.name}</h3>
-                      <p className="text-xs text-stone-500 italic">{item.scientificName}</p>
-                    </div>
-                    <div className="flex gap-1">
-                      <div className="p-1.5 bg-stone-900 border border-stone-800 rounded-lg text-stone-600 group-hover:text-garden-400 transition-colors">
-                        <Info className="w-3.5 h-3.5" />
+                return (
+                  <div
+                    key={item.id}
+                    data-index={virtualItem.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualItem.start}px)`,
+                    }}
+                    className="p-2"
+                  >
+                    <div
+                      className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30 hover:border-garden-700/50 cursor-pointer transition-all group h-full"
+                      onClick={() => {
+                        if (catalogItem && expandedPlantKB[item.catalogId]) {
+                          const expanded = expandedPlantKB[item.catalogId];
+                          setSelectedPlant({
+                            ...catalogItem,
+                            sowingSeason: (expanded.sowingSeason as Season[]) || catalogItem.sowingSeason,
+                            sowingMethod: (expanded.sowingMethod as "Direct" | "Transplant") || catalogItem.sowingMethod,
+                            stages: expanded.stages?.map(stage => ({
+                              id: stage.id as GrowthStageId,
+                              name: stage.name,
+                              durationDays: stage.durationDays,
+                              waterFrequencyDays: stage.waterFrequencyDays,
+                              imageAssetId: stage.imageAssetId || 'generic_image'
+                            })) || catalogItem.stages
+                          });
+                        }
+                      }}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-bold text-stone-100 group-hover:text-garden-400 transition-colors">{item.name}</h3>
+                          <p className="text-xs text-stone-500 italic">{item.scientificName}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <div className="p-1.5 bg-stone-900 border border-stone-800 rounded-lg text-stone-600 group-hover:text-garden-400 transition-colors">
+                            <Info className="w-3.5 h-3.5" />
+                          </div>
+                          {((item.categories || []) as string[]).concat(item.type ? [item.type] : []).map((cat, index) => (
+                            <span key={`${cat}-${index}`} className="text-[9px] px-1.5 py-0.5 rounded border border-stone-800 bg-stone-900/50 text-stone-400">
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                      {((item.categories || []) as string[]).concat(item.type ? [item.type] : []).map((cat, index) => (
-                        <span key={`${cat}-${index}`} className="text-[9px] px-1.5 py-0.5 rounded border border-stone-800 bg-stone-900/50 text-stone-400">
-                          {cat}
-                        </span>
-                      ))}
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <div className="flex items-center gap-1 text-xs text-stone-400">
+                          {getSunlightIcon(item.sunlight)}
+                          <span className="capitalize">{item.sunlight?.replace('_', ' ') || 'Unknown'}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-stone-400">
+                          {getWaterIcon(item.water_requirements)}
+                          <span className="capitalize">{item.water_requirements || 'Unknown'}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-stone-400">
+                          <Leaf className="w-3 h-3" />
+                          <span>{item.life_cycle || 'Annual'}</span>
+                        </div>
+                      </div>
+
+                      {/* Show sowing season if available */}
+                      {item.seasonality?.sowing && (
+                        <div className="mt-2 flex items-center gap-1 text-xs text-stone-500">
+                          <Calendar className="w-3 h-3" />
+                          <span>Sow: {item.seasonality.sowing.start_month} - {item.seasonality.sowing.end_month}</span>
+                        </div>
+                      )}
+
+                      {/* Show soil type if available */}
+                      {item.soil_type && item.soil_type.length > 0 && (
+                        <div className="mt-2 text-xs text-stone-500 truncate">
+                          <span className="inline-flex items-center gap-1">
+                            <Wrench className="w-3 h-3" />
+                            <span>Soil: {item.soil_type.slice(0, 2).join(', ')}</span>
+                            {item.soil_type.length > 2 && <span>+{item.soil_type.length - 2}</span>}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="mt-3 pt-3 border-t border-stone-800">
+                        <p className="text-xs text-stone-500">
+                          Acquired: {new Date(item.acquiredDate).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <div className="flex items-center gap-1 text-xs text-stone-400">
-                      {getSunlightIcon(item.sunlight)}
-                      <span className="capitalize">{item.sunlight?.replace('_', ' ') || 'Unknown'}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-stone-400">
-                      {getWaterIcon(item.water_requirements)}
-                      <span className="capitalize">{item.water_requirements || 'Unknown'}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-stone-400">
-                      <Leaf className="w-3 h-3" />
-                      <span>{item.life_cycle || 'Annual'}</span>
-                    </div>
-                  </div>
-
-                  {/* Show sowing season if available */}
-                  {item.seasonality?.sowing && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-stone-500">
-                      <Calendar className="w-3 h-3" />
-                      <span>Sow: {item.seasonality.sowing.start_month} - {item.seasonality.sowing.end_month}</span>
-                    </div>
-                  )}
-
-                  {/* Show soil type if available */}
-                  {item.soil_type && item.soil_type.length > 0 && (
-                    <div className="mt-2 text-xs text-stone-500 truncate">
-                      <span className="inline-flex items-center gap-1">
-                        <Wrench className="w-3 h-3" />
-                        <span>Soil: {item.soil_type.slice(0, 2).join(', ')}</span>
-                        {item.soil_type.length > 2 && <span>+{item.soil_type.length - 2}</span>}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mt-3 pt-3 border-t border-stone-800">
-                    <p className="text-xs text-stone-500">
-                      Acquired: {new Date(item.acquiredDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           {sortedItems.length === 0 && (

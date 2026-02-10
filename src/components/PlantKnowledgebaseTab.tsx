@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { BookOpen, Search, Sun, Droplets } from 'lucide-react';
 
 // Define a unified PlantKB interface that combines both structures
@@ -73,13 +74,57 @@ export const PlantKnowledgebaseTab: React.FC = () => {
         const plantsArray = Array.isArray(data) ? data : (data.plants || []);
         
         // Transform the data to match the PlantKB interface
-        const transformedPlants = plantsArray.map((plant: any) => ({
+        // Define the expected structure of the raw plant data from the JSON file
+        interface RawPlantData {
+          plant_id: string;
+          common_name: string;
+          scientific_name: string;
+          type: string;
+          family: string;
+          notes: string;
+          edible_parts: string[];
+          toxic_parts: string[];
+          pollination_type: string;
+          sowingSeason: string[];
+          sowingMethod: string;
+          companion_plants: string[];
+          incompatible_plants: string[];
+          growth_stage?: string[];
+          stages?: Array<{
+            id: string;
+            name: string;
+            durationDays: number;
+            waterFrequencyDays: number;
+          }>;
+          seasonality?: {
+            sowing?: { start_month: string; end_month: string };
+            harvest?: { start_month: string; end_month: string };
+            sowing_indoor?: { start_month: string; end_month: string };
+            transplant_outdoor?: { start_month: string; end_month: string };
+            harvest_early?: { start_month: string; end_month: string };
+          };
+          sunlight?: string;
+          water_requirements?: string;
+          soil_type?: string[];
+          common_pests?: string[];
+          common_diseases?: string[];
+          nutrient_preferences?: string[];
+          source_metadata?: Array<{
+            source_name: string;
+            url?: string;
+            confidence_score: number;
+          }>;
+          genus?: string;
+          species?: string;
+        }
+
+        const transformedPlants = plantsArray.map((plant: RawPlantData) => ({
           // Map common fields
           id: plant.plant_id,
           name: plant.common_name,
           scientificName: plant.scientific_name,
           description: plant.notes || '',
-          
+
           // Map fields from both structures
           family: plant.family || '',
           type: plant.type || 'unknown',
@@ -95,14 +140,14 @@ export const PlantKnowledgebaseTab: React.FC = () => {
           companions: plant.companion_plants || [],
           antagonists: plant.incompatible_plants || [],
           confidence_score: 0.95,
-          sources: (plant.source_metadata || []).map((m: any) => m.source_name),
-          
+          sources: (plant.source_metadata || []).map((m) => m.source_name),
+
           // Map the expanded fields
           plant_id: plant.plant_id,
           common_name: plant.common_name,
           scientific_name: plant.scientific_name,
           growth_stage: plant.growth_stage || [],
-          stages: plant.stages?.map((stage: any) => ({
+          stages: plant.stages?.map((stage) => ({
             id: stage.id,
             name: stage.name,
             durationDays: stage.durationDays,
@@ -120,7 +165,7 @@ export const PlantKnowledgebaseTab: React.FC = () => {
           nutrient_preferences: plant.nutrient_preferences || [],
           notes: plant.notes || '',
           source_metadata: plant.source_metadata || [],
-          
+
           // Additional fields from PlantSpecies
           genus: plant.genus || '',
           species: plant.species || '',
@@ -145,6 +190,15 @@ export const PlantKnowledgebaseTab: React.FC = () => {
       return haystack.includes(q);
     });
   }, [plants, query]);
+
+  // Virtualization setup
+  const parentRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: filtered.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 140, // Estimated height of each card
+    overscan: 5,
+  });
 
   const getSunlightIcon = (sunlight: string) => {
     switch (sunlight) {
@@ -497,34 +551,57 @@ export const PlantKnowledgebaseTab: React.FC = () => {
           <p className="text-stone-500">Loading plant knowledge base...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 overflow-y-auto">
-          {filtered.map((plant) => (
-            <div
-              key={plant.plant_id}
-              onClick={() => setSelectedPlant(plant)}
-              className="p-4 bg-stone-800/20 rounded-2xl border border-stone-700/30 hover:border-garden-700/50 transition-all group cursor-pointer"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-bold text-stone-200">{plant.common_name}</h3>
-                  <p className="text-xs text-stone-500 italic">{plant.scientific_name}</p>
-                </div>
-                <div className="flex gap-1">
-                  {getSunlightIcon(plant.sunlight || 'unknown')}
-                  {getWaterIcon(plant.water_requirements || 'unknown')}
-                </div>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1">
-                <span className="text-xs px-1.5 py-0.5 bg-garden-900/20 text-garden-400 rounded border border-garden-700/20">
-                  {plant.type}
-                </span>
-                <span className="text-xs px-1.5 py-0.5 bg-stone-900 text-stone-500 rounded border border-stone-800">
-                  {plant.family}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-stone-600 line-clamp-2">{plant.notes}</p>
+        <div 
+          ref={parentRef}
+          className="flex-1 overflow-auto"
+        >
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const plant = filtered[virtualItem.index];
+                
+                return (
+                  <div
+                    key={plant.plant_id}
+                    data-index={virtualItem.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      gridRow: Math.floor(virtualItem.index / 4) + 1,
+                      gridColumn: (virtualItem.index % 4) + 1,
+                    }}
+                    onClick={() => setSelectedPlant(plant)}
+                    className="p-4 bg-stone-800/20 rounded-2xl border border-stone-700/30 hover:border-garden-700/50 transition-all group cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-stone-200">{plant.common_name}</h3>
+                        <p className="text-xs text-stone-500 italic">{plant.scientific_name}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        {getSunlightIcon(plant.sunlight || 'unknown')}
+                        {getWaterIcon(plant.water_requirements || 'unknown')}
+                      </div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      <span className="text-xs px-1.5 py-0.5 bg-garden-900/20 text-garden-400 rounded border border-garden-700/20">
+                        {plant.type}
+                      </span>
+                      <span className="text-xs px-1.5 py-0.5 bg-stone-900 text-stone-500 rounded border border-stone-800">
+                        {plant.family}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-stone-600 line-clamp-2">{plant.notes}</p>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
       )}
 

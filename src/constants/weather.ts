@@ -1,0 +1,67 @@
+// API configuration
+export const WEATHER_API = {
+  BASE_URL: 'https://api.open-meteo.com/v1/forecast',
+  CACHE_DURATION: 3600000, // 1 hour in milliseconds
+  FORECAST_DAYS: 7,
+  TIMEOUT: 10000, // 10 seconds
+};
+
+// Watering score thresholds
+export const WATERING_SCORE_THRESHOLDS = {
+  URGENT: 80,
+  HIGH: 60,
+  MODERATE: 40,
+  LOW: 20,
+};
+
+// Temperature thresholds
+export const TEMPERATURE_THRESHOLDS = {
+  FROST: 0, // °C
+  HEAT_STRESS: 25, // °C
+  SEVERE_HEAT: 30, // °C
+};
+
+// Watering calculation factors
+export const WATERING_CALCULATION_FACTORS = {
+  ET_MULTIPLIER: 15,
+  WIND_DIVISOR: 20,
+  TEMP_HIGH_MULTIPLIER: 1.2,
+  TEMP_SEVERE_MULTIPLIER: 1.5,
+};
+
+// UI constants
+export const UI_CONSTANTS = {
+  MAX_FROST_TIMES_DISPLAY: 3,
+  ICON_SIZE: 48, // px
+};
+
+// WMO Weather Codes mapping
+export const WEATHER_CODES = {
+  CLEAR_SKY: 0,
+  MAINLY_CLEAR: 1,
+  PARTLY_CLOUDY: 2,
+  OVERCAST: 3,
+  FOG: 45,
+  DEPOSING_RIME_FOG: 48,
+  DRIZZLE_LIGHT: 51,
+  DRIZZLE_MODERATE: 53,
+  DRIZZLE_DENSE: 55,
+  FREEZING_DRIZZLE_LIGHT: 56,
+  FREEZING_DRIZZLE_DENSE: 57,
+  RAIN_SLIGHT: 61,
+  RAIN_MODERATE: 63,
+  RAIN_HEAVY: 65,
+  FREEZING_RAIN_LIGHT: 66,
+  FREEZING_RAIN_HEAVY: 67,
+  SNOW_FALL_SLIGHT: 71,
+  SNOW_FALL_MODERATE: 73,
+  SNOW_FALL_HEAVY: 75,
+  RAIN_SHOWERS_SLIGHT: 80,
+  RAIN_SHOWERS_MODERATE: 81,
+  RAIN_SHOWERS_VIOLENT: 82,
+  SNOW_SHOWERS_LIGHT: 85,
+  SNOW_SHOWERS_HEAVY: 86,
+  THUNDERSTORM: 95,
+  THUNDERSTORM_SLIGHT_HAIL: 96,
+  THUNDERSTORM_HEAVY_HAIL: 99,
+};

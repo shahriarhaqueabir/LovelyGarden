@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, Search, Sun } from 'lucide-react';
-import { PlantSpecies, Season } from '../schema/knowledge-graph';
+import { PlantSpecies, Season, UserLocation } from '../schema/knowledge-graph';
 import { isSowingSeason } from '../logic/reasoning';
 
 interface SowingCalendarTabProps {
@@ -27,7 +27,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
     });
   }, [catalog, query]);
 
-  const location = useMemo(() => ({ hemisphere: 'North' } as any), []);
+  const location = useMemo(() => ({ id: 'user_location', hemisphere: 'North', frost_data: {} } as UserLocation), []);
 
   const eligible = filtered.filter(p => isSowingSeason(p, location, currentMonth).eligible);
   const ineligible = filtered.filter(p => !isSowingSeason(p, location, currentMonth).eligible);

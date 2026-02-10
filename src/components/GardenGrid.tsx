@@ -3,33 +3,32 @@ import { useDroppable } from '@dnd-kit/core';
 import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
-
-type PlantStatus = 'Healthy' | 'Pest Infestation' | 'Dead' | 'Harvested' | 'Overwatered';
+import type { PlantedDocument, CatalogDocument, Relationship, GridLayer, PlantHealthStatus } from '../db/types';
 
 interface GridSlotProps {
   x: number;
   y: number;
-  item?: any;
-  onSelect?: (item: any) => void;
-  layer: 'normal' | 'hydration' | 'health' | 'nutrients';
+  item?: PlantedDocument;
+  onSelect?: (item: PlantedDocument) => void;
+  layer: GridLayer;
   activeSeedCatalogId?: string | null;
-  getItemAt?: (x: number, y: number) => any;
-  relationships?: any[];
-  onEdit?: (item: any) => void;
-  onDelete?: (item: any) => void;
-  onStatusChange?: (item: any, status: PlantStatus) => void;
+  getItemAt?: (x: number, y: number) => PlantedDocument | undefined;
+  relationships?: Relationship[];
+  onEdit?: (item: PlantedDocument) => void;
+  onDelete?: (item: PlantedDocument) => void;
+  onStatusChange?: (item: PlantedDocument, status: PlantHealthStatus) => void;
 }
 
 // Observation Menu Component
 const ObservationMenu: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  onStatusSelect: (status: PlantStatus) => void;
+  onStatusSelect: (status: PlantHealthStatus) => void;
   currentStatus?: string;
 }> = ({ isOpen, onClose, onStatusSelect, currentStatus }) => {
   if (!isOpen) return null;
 
-  const statuses: { value: PlantStatus; label: string; icon: React.ReactNode; color: string }[] = [
+  const statuses: { value: PlantHealthStatus; label: string; icon: React.ReactNode; color: string }[] = [
     { value: 'Healthy', label: 'Healthy', icon: <Sparkles className="w-3 h-3" />, color: 'text-green-400' },
     { value: 'Pest Infestation', label: 'Pest', icon: <Bug className="w-3 h-3" />, color: 'text-amber-400' },
     { value: 'Dead', label: 'Dead', icon: <Skull className="w-3 h-3" />, color: 'text-red-400' },
@@ -106,7 +105,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     }
 
     if (neighborIds.length === 0) return 0;
-    return calculateCompanionScore(activeSeedCatalogId, neighborIds, relationships as any);
+    return calculateCompanionScore(activeSeedCatalogId, neighborIds, (relationships || []) as any);
   }, [activeSeedCatalogId, getItemAt, relationships, x, y]);
 
   // Zero-Click Health logic: Use border color to reflect state without clicking
@@ -114,7 +113,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     if (isOver) return 'border-garden-400';
     if (!item) return 'border-stone-800 hover:border-stone-700';
 
-    if (isDead) return 'border-stone-600 bg-[#090c0a]/50';
+    if (isDead) return 'border-stone-600 bg-app-background/50';
     if (isPestInfested) return 'border-amber-500 shadow-[inset_0_0_15px_rgba(245,158,11,0.3)]';
 
     if (layer === 'hydration') {
@@ -183,16 +182,20 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     return false;
   }, [getItemAt, x, y]);
 
-  const handleStatusChange = (status: PlantStatus) => {
-    onStatusChange?.(item, status);
+  const handleStatusChange = (status: PlantHealthStatus) => {
+    if (item) {
+      onStatusChange?.(item, status);
+    }
   };
 
   const handleEdit = () => {
-    onEdit?.(item);
+    if (item) {
+      onEdit?.(item);
+    }
   };
 
   const handleDelete = async () => {
-    if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
+    if (item && window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
       onDelete?.(item);
     }
   };
@@ -209,7 +212,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
       className={`
         relative w-full aspect-square max-w-[160px] border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
-        ${item ? 'glass-panel' : 'bg-[#090c0a]/40'}
+        ${item ? 'glass-panel' : 'bg-app-background/40'}
         ${synergyClass}
         ${contagionRisk && !isPestInfested ? 'pulse-red border-amber-500/30' : ''}
         ${getAnimationClass()}
@@ -343,24 +346,30 @@ export const GridSlot: React.FC<GridSlotProps> = ({
 };
 
 export const GardenField: React.FC<{
-  items: any[];
-  onSelect?: (item: any) => void;
-  layer: any;
+  items: PlantedDocument[];
+  onSelect?: (item: PlantedDocument) => void;
+  layer: GridLayer;
   activeSeedCatalogId?: string | null;
-  catalog?: any[];
+  catalog?: CatalogDocument[];
   rows?: number;
   cols?: number;
-  onEdit?: (item: any) => void;
-  onDelete?: (item: any) => void;
+  onEdit?: (item: PlantedDocument) => void;
+  onDelete?: (item: PlantedDocument) => void;
 }> = ({ items, onSelect, layer, activeSeedCatalogId, catalog, rows = 3, cols = 4, onEdit, onDelete }) => {
   const getItemAt = (x: number, y: number) => {
     return items.find(item => item.gridX === x && item.gridY === y);
   };
 
-  const relationships = (catalog || []).flatMap((c: any) => c.relationships || []);
+  const relationships = (catalog || []).flatMap((c: CatalogDocument) => 
+    (c.companions || []).map((targetId: string): Relationship => ({
+      targetPlantId: targetId,
+      type: 'companion',
+      strength: 1,
+    }))
+  );
 
   // Handle status changes with simulation pause logic
-  const handleStatusChange = async (item: any, status: PlantStatus) => {
+  const handleStatusChange = async (item: PlantedDocument, status: PlantHealthStatus) => {
     const db = await import('../db').then(m => m.getDatabase());
     const doc = await db.planted.findOne(item.id).exec();
     

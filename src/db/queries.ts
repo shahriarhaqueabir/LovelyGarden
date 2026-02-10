@@ -1,4 +1,17 @@
 import { getDatabase } from './index';
+import type { GardenDocument } from './types';
+
+// Type for garden configuration
+interface GardenConfig {
+  name: string;
+  type: string;
+  soilType?: string;
+  sunExposure?: string;
+  gridWidth: number;
+  gridHeight: number;
+  backgroundColor?: string;
+  theme?: string;
+}
 
 /**
  * PLANTING LOGIC
@@ -57,7 +70,7 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
 
 // --- GARDEN MANAGEMENT ---
 
-export const createGarden = async (config: any) => {
+export const createGarden = async (config: GardenConfig) => {
   console.log('Creating garden with config:', config);
   const db = await getDatabase();
   
@@ -90,7 +103,7 @@ export const createGarden = async (config: any) => {
   }
 };
 
-export const updateGarden = async (id: string, updates: any) => {
+export const updateGarden = async (id: string, updates: Partial<GardenDocument>) => {
   const db = await getDatabase();
   const doc = await db.gardens.findOne(id).exec();
   if (doc) {
@@ -143,7 +156,7 @@ export const advanceGlobalDay = async () => {
       // - Hydration drops by 15% each day
       // - If hydration < 20, stress increases by 10
       // - Health status changes based on stress
-      let newHydration = Math.max(0, (data.hydration || 100) - 15);
+      const newHydration = Math.max(0, (data.hydration || 100) - 15);
       let newStress = data.stressLevel || 0;
 
       if (newHydration < 20) {
@@ -206,7 +219,7 @@ export const rewindGlobalDay = async () => {
       // - Hydration increases by 15% (undoing the decrease)
       // - Stress decreases by 20 (undoing the increase when hydration < 20)
       // - Stress increases by 5 (undoing the decrease when hydration > 80)
-      let newHydration = Math.min(100, (data.hydration || 85) + 15);
+      const newHydration = Math.min(100, (data.hydration || 85) + 15);
       let newStress = data.stressLevel || 0;
 
       // Reverse stress changes based on previous hydration state

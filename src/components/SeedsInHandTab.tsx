@@ -24,18 +24,18 @@ export const SeedsInHandTab: React.FC<SeedsInHandTabProps> = ({ catalog }) => {
 
   // Filter and search
   const filteredItems = inventoryWithDetails.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(query.toLowerCase()) ||
-                         item.scientificName.toLowerCase().includes(query.toLowerCase());
-    const matchesFilter = filter === 'all' || item.categories.includes(filter);
+    const matchesSearch = (item.name || '').toLowerCase().includes(query.toLowerCase()) ||
+                         (item.scientificName || '').toLowerCase().includes(query.toLowerCase());
+    const matchesFilter = filter === 'all' || (item.categories && item.categories.includes(filter as any));
     return matchesSearch && matchesFilter;
   });
 
   // Sort items
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
+      return (a.name || '').localeCompare(b.name || '');
     } else if (sortBy === 'type') {
-      return a.life_cycle.localeCompare(b.life_cycle);
+      return (a.life_cycle || '').localeCompare(b.life_cycle || '');
     } else if (sortBy === 'date') {
       return b.acquiredDate - a.acquiredDate;
     }
@@ -56,39 +56,7 @@ export const SeedsInHandTab: React.FC<SeedsInHandTabProps> = ({ catalog }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        <div className="lg:col-span-1 bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
-          <h2 className="text-lg font-bold text-stone-100 mb-4">Current Collection</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-stone-300">Total Seeds</span>
-              <span className="font-bold text-garden-400">{inventory.length}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-stone-300">Ready to Plant</span>
-              <span className="font-bold text-garden-400">{inventory.length}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-stone-300">Vegetables</span>
-              <span className="font-bold text-garden-400">
-                {inventory.filter(i => {
-                  const cat = catalog.find(c => c.id === i.catalogId);
-                  return cat && cat.categories.includes('vegetable');
-                }).length}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-stone-300">Herbs</span>
-              <span className="font-bold text-garden-400">
-                {inventory.filter(i => {
-                  const cat = catalog.find(c => c.id === i.catalogId);
-                  return cat && cat.categories.includes('herb');
-                }).length}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:col-span-3 bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
+        <div className="lg:col-span-4 bg-stone-900/30 rounded-2xl border border-stone-800 p-6">
           <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-stone-500" />
