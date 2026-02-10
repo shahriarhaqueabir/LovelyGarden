@@ -17,10 +17,11 @@ interface WeatherState {
   // User location
   latitude: number | null;
   longitude: number | null;
+  locationName: string | null;
 
   // Actions
-  setLocation: (lat: number, lng: number) => void;
-  fetchWeatherData: () => Promise<void>;
+  setLocation: (lat: number, lng: number, name?: string) => void;
+  fetchWeatherData: (force?: boolean) => Promise<void>;
   clearError: () => void;
 }
 
@@ -36,17 +37,18 @@ export const useWeatherStore = create<WeatherState>()(
       lastFetch: null,
       latitude: null,
       longitude: null,
+      locationName: null,
 
       // Actions
-      setLocation: (lat: number, lng: number) => {
-        set({ latitude: lat, longitude: lng, error: null });
+      setLocation: (lat: number, lng: number, name?: string) => {
+        set({ latitude: lat, longitude: lng, locationName: name || null, error: null });
       },
 
-      fetchWeatherData: async () => {
-        const { latitude, longitude, lastFetch } = get();
+      fetchWeatherData: async (force = false) => {
+        const { latitude, longitude, lastFetch, locationName } = get();
         
-        // Don't fetch more than once per hour
-        if (lastFetch && Date.now() - lastFetch < WEATHER_API.CACHE_DURATION) {
+        // Don't fetch more than once per hour unless forced
+        if (!force && lastFetch && Date.now() - lastFetch < WEATHER_API.CACHE_DURATION && locationName) {
           return;
         }
 
@@ -58,22 +60,27 @@ export const useWeatherStore = create<WeatherState>()(
         set({ isLoading: true, error: null });
 
         try {
-          const weatherData = await fetchWeather(latitude, longitude);
+          const { reverseGeocode } = await import('../utils/geocoding');
+          const [weatherData, cityName] = await Promise.all([
+            fetchWeather(latitude, longitude),
+            locationName ? Promise.resolve(locationName) : reverseGeocode(latitude, longitude)
+          ]);
           
           const wateringScore = calculateWateringScore(weatherData);
           const hasFrost = hasFrostRisk(weatherData);
           
           set({
             data: weatherData,
+            locationName: cityName !== 'Unknown Location' ? cityName : null,
             wateringScore,
             hasFrost,
             lastFetch: Date.now(),
             isLoading: false,
             error: null,
           });
-        } catch (error) {
+        } catch (err) {
           set({
-            error: error instanceof Error ? error.message : 'Failed to fetch weather data',
+            error: err instanceof Error ? err.message : 'Failed to fetch weather data',
             isLoading: false,
           });
         }
@@ -88,6 +95,7 @@ export const useWeatherStore = create<WeatherState>()(
       partialize: (state) => ({
         latitude: state.latitude,
         longitude: state.longitude,
+        locationName: state.locationName,
         data: state.data,
         wateringScore: state.wateringScore,
         hasFrost: state.hasFrost,

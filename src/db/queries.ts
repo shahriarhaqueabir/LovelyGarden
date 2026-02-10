@@ -1,5 +1,5 @@
 import { getDatabase } from './index';
-import type { GardenDocument } from './types';
+import type { GardenDocument, LogbookDocument } from './types';
 
 // Type for garden configuration
 interface GardenConfig {
@@ -60,11 +60,69 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
     // 2. Remove from inventory
     await inventoryItem.remove();
 
+    // 3. Log planting activity
+    const catalogItem = await db.catalog.findOne(catalogId).exec();
+    const plantName = catalogItem?.name || 'Unknown Seed';
+    await logPlanting(catalogId, plantName);
+
     return id;
   } catch (error) {
     console.error('Error planting seed:', error);
     throw error;
   }
+};
+
+/**
+ * RELOCATION LOGIC
+ * Moves a plant between grid slots. Stats remain unchanged.
+ */
+export const relocatePlant = async (plantId: string, newX: number, newY: number, gardenId: string) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  
+  if (!plant) throw new Error("Plant unit not found");
+  
+  // Check if target slot is occupied
+  const existing = await db.planted.findOne({
+    selector: { 
+      gridX: newX, 
+      gridY: newY, 
+      bedId: gardenId,
+      id: { $ne: plantId } 
+    }
+  }).exec();
+
+  if (existing) throw new Error("Target coordinates occupied");
+
+  await plant.patch({
+    gridX: newX,
+    gridY: newY,
+    bedId: gardenId
+  });
+};
+
+/**
+ * UNPLANTING LOGIC
+ * Reclaims a plant unit back into the bag.
+ */
+export const unplantSeed = async (plantId: string) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  
+  if (!plant) throw new Error("Plant unit not found");
+
+  const catalogId = plant.catalogId;
+  const timestamp = Date.now();
+
+  // 1. Re-insert into inventory
+  await db.inventory.insert({
+    id: `inv-${catalogId}-${timestamp}`,
+    catalogId,
+    acquiredDate: timestamp
+  });
+
+  // 2. Remove from planted
+  await plant.remove();
 };
 
 
@@ -246,6 +304,77 @@ export const rewindGlobalDay = async () => {
   } catch (error) {
     console.error('Error rewinding global day:', error);
     throw error;
+  }
+};
+
+/**
+ * LOGBOOK LOGIC
+ */
+
+export const logSeedPurchase = async (catalogId: string, itemName: string) => {
+  const db = await getDatabase();
+  const id = `log-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  const timestamp = Date.now();
+
+  await db.logbook.insert({
+    id,
+    type: 'seed_purchase',
+    itemName,
+    category: 'seeds',
+    date: timestamp,
+    catalogId,
+    notes: 'Purchased from Seed Store'
+  });
+};
+
+export const logUserPurchase = async (itemName: string, category: string, date: number, notes?: string) => {
+  const db = await getDatabase();
+  const id = `log-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+  await db.logbook.insert({
+    id,
+    type: 'user_purchase',
+    itemName,
+    category,
+    date,
+    notes
+  });
+};
+
+export const logPlanting = async (catalogId: string, itemName: string) => {
+  const db = await getDatabase();
+  const id = `log-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  const timestamp = Date.now();
+
+  await db.logbook.insert({
+    id,
+    type: 'planting',
+    itemName,
+    category: 'plants',
+    date: timestamp,
+    catalogId,
+    notes: 'Planted in Main Garden'
+  });
+};
+
+export const getLogbookEntries = async () => {
+  const db = await getDatabase();
+  return db.logbook.find({ sort: [{ date: 'desc' }] }).exec();
+};
+
+export const updateLogbookEntry = async (id: string, updates: Partial<LogbookDocument>) => {
+  const db = await getDatabase();
+  const doc = await db.logbook.findOne(id).exec();
+  if (doc) {
+    await doc.patch(updates);
+  }
+};
+
+export const deleteLogbookEntry = async (id: string) => {
+  const db = await getDatabase();
+  const doc = await db.logbook.findOne(id).exec();
+  if (doc) {
+    await doc.remove();
   }
 };
 

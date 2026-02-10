@@ -10,6 +10,7 @@ export type TabType =
   | 'seed-inventory'
   | 'seeds-in-hand'
   | 'weather-forecast'
+  | 'logbook'
   | 'settings';
 
 interface TabsProps {
@@ -47,6 +48,7 @@ export const TabButton: React.FC<TabButtonProps> = ({ label, isActive, onClick }
 };
 
 export const Tabs: React.FC<TabsProps> = ({ children }) => {
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
   const tabs = [
     { id: 'virtual-garden' as TabType, label: '🏡 Virtual Garden' },
     { id: 'sowing-calendar' as TabType, label: '📅 Sowing Calendar' },
@@ -54,15 +56,17 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
     { id: 'seed-inventory' as TabType, label: '📦 Seed Vault' },
     // { id: 'seeds-in-hand' as TabType, label: '🧺 Bag' },
     { id: 'weather-forecast' as TabType, label: '🌈 Weather' },
+    { id: 'logbook' as TabType, label: '📜 Logbook' },
     { id: 'settings' as TabType, label: '⚙️ Settings' },
   ];
 
-  // Get tab index from children
+  // Get children array
   const childrenArray = React.Children.toArray(children);
   
   return (
     <Tab.Group 
-      defaultIndex={0}
+      selectedIndex={selectedIndex}
+      onChange={setSelectedIndex}
       className="flex flex-col h-full"
     >
       {/* Tab Navigation */}
@@ -96,19 +100,18 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       {/* Tab Content */}
       <Tab.Panels className="flex-1 overflow-auto relative">
         <AnimatePresence mode="wait">
-          {childrenArray.map((child, index) => (
-            <Tab.Panel
-              key={tabs[index]?.id || index}
-              className="h-full"
-              as={motion.div}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {child}
-            </Tab.Panel>
-          ))}
+          <Tab.Panel
+            key={tabs[selectedIndex]?.id || selectedIndex}
+            static
+            className="h-full"
+            as={motion.div}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {childrenArray[selectedIndex]}
+          </Tab.Panel>
         </AnimatePresence>
       </Tab.Panels>
     </Tab.Group>

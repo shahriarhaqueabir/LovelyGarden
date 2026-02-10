@@ -1,180 +1,51 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { BookOpen, Search, Sun, Droplets } from 'lucide-react';
+import { getDatabase } from '../db';
+import { PlantKbDocument } from '../db/types';
+import { GrowthGraph } from './GrowthGraph';
 
-// Define a unified PlantKB interface that combines both structures
-interface PlantKB {
-  id: string;
-  name: string;
-  scientificName: string;
-  description: string;
-  family?: string;
-  genus?: string;
-  species?: string;
-  categories: ('vegetable' | 'fruit' | 'herb' | 'flower' | 'root_crop' | 'leafy_green')[];
-  life_cycle: 'annual' | 'biennial' | 'perennial';
-  growth_habit: ('upright' | 'bushy' | 'vining' | 'trailing' | 'climbing')[];
-  photosynthesis_type?: 'C3' | 'C4' | 'CAM';
-  edible_parts: string[];
-  toxic_parts: string[];
-  pollination_type: 'self_pollinating' | 'cross_pollinating' | 'wind' | 'insect';
-  sowingSeason: ('Spring' | 'Summer' | 'Autumn' | 'Winter')[];
-  sowingMethod: 'Direct' | 'Transplant';
-  stages: Array<{
-    id: 'seed' | 'germination' | 'seedling' | 'vegetative' | 'flowering' | 'fruiting' | 'harvest' | 'dormant' | string;
-    name: string;
-    durationDays: number;
-    waterFrequencyDays: number;
-    imageAssetId: string;
-  }>;
-  companions: string[];
-  antagonists: string[];
-  confidence_score: number;
-  sources: string[];
-  seasonality?: {
-    sowing?: { start_month: string; end_month: string };
-    harvest?: { start_month: string; end_month: string };
-    sowing_indoor?: { start_month: string; end_month: string };
-    transplant_outdoor?: { start_month: string; end_month: string };
-    harvest_early?: { start_month: string; end_month: string };
-  };
-  sunlight?: string;
-  water_requirements?: string;
-  soil_type?: string[];
-  common_pests?: string[];
-  common_diseases?: string[];
-  nutrient_preferences?: string[];
-  source_metadata?: Array<{
-    source_name: string;
-    url?: string;
-    confidence_score: number;
-  }>;
-  // Fields from the expanded knowledge base
-  plant_id?: string;
-  common_name?: string;
-  scientific_name?: string;
-  type?: string;
-  growth_stage?: string[];
-  companion_plants?: string[];
-  incompatible_plants?: string[];
-  notes?: string;
-}
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const PlantKnowledgebaseTab: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [plants, setPlants] = useState<PlantKB[]>([]);
-  const [selectedPlant, setSelectedPlant] = useState<PlantKB | null>(null);
+  const [plants, setPlants] = useState<PlantKbDocument[]>([]);
+  const [selectedPlant, setSelectedPlant] = useState<PlantKbDocument | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Responsive column count logic
+  const [columns, setColumns] = useState(4);
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!parentRef.current) return;
+      const width = parentRef.current.offsetWidth;
+      if (width < 640) setColumns(1);
+      else if (width < 1024) setColumns(2);
+      else if (width < 1280) setColumns(3);
+      else setColumns(4);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const loadPlants = async () => {
       try {
-        const response = await fetch('/data/plants-kb.json');
-        const data = await response.json();
-        const plantsArray = Array.isArray(data) ? data : (data.plants || []);
-        
-        // Transform the data to match the PlantKB interface
-        // Define the expected structure of the raw plant data from the JSON file
-        interface RawPlantData {
-          plant_id: string;
-          common_name: string;
-          scientific_name: string;
-          type: string;
-          family: string;
-          notes: string;
-          edible_parts: string[];
-          toxic_parts: string[];
-          pollination_type: string;
-          sowingSeason: string[];
-          sowingMethod: string;
-          companion_plants: string[];
-          incompatible_plants: string[];
-          growth_stage?: string[];
-          stages?: Array<{
-            id: string;
-            name: string;
-            durationDays: number;
-            waterFrequencyDays: number;
-          }>;
-          seasonality?: {
-            sowing?: { start_month: string; end_month: string };
-            harvest?: { start_month: string; end_month: string };
-            sowing_indoor?: { start_month: string; end_month: string };
-            transplant_outdoor?: { start_month: string; end_month: string };
-            harvest_early?: { start_month: string; end_month: string };
-          };
-          sunlight?: string;
-          water_requirements?: string;
-          soil_type?: string[];
-          common_pests?: string[];
-          common_diseases?: string[];
-          nutrient_preferences?: string[];
-          source_metadata?: Array<{
-            source_name: string;
-            url?: string;
-            confidence_score: number;
-          }>;
-          genus?: string;
-          species?: string;
-        }
-
-        const transformedPlants = plantsArray.map((plant: RawPlantData) => ({
-          // Map common fields
-          id: plant.plant_id,
-          name: plant.common_name,
-          scientificName: plant.scientific_name,
-          description: plant.notes || '',
-
-          // Map fields from both structures
-          family: plant.family || '',
-          type: plant.type || 'unknown',
-          categories: [plant.type || 'vegetable'] as ('vegetable' | 'fruit' | 'herb' | 'flower' | 'root_crop' | 'leafy_green')[],
-          life_cycle: 'annual' as 'annual' | 'biennial' | 'perennial',
-          growth_habit: ['bushy'] as ('upright' | 'bushy' | 'vining' | 'trailing' | 'climbing')[],
-          photosynthesis_type: 'C3' as 'C3' | 'C4' | 'CAM',
-          edible_parts: plant.edible_parts || [],
-          toxic_parts: plant.toxic_parts || [],
-          pollination_type: (plant.pollination_type || 'insect') as 'self_pollinating' | 'cross_pollinating' | 'wind' | 'insect',
-          sowingSeason: plant.sowingSeason || [],
-          sowingMethod: (plant.sowingMethod || 'Direct') as 'Direct' | 'Transplant',
-          companions: plant.companion_plants || [],
-          antagonists: plant.incompatible_plants || [],
-          confidence_score: 0.95,
-          sources: (plant.source_metadata || []).map((m) => m.source_name),
-
-          // Map the expanded fields
-          plant_id: plant.plant_id,
-          common_name: plant.common_name,
-          scientific_name: plant.scientific_name,
-          growth_stage: plant.growth_stage || [],
-          stages: plant.stages?.map((stage) => ({
-            id: stage.id,
-            name: stage.name,
-            durationDays: stage.durationDays,
-            waterFrequencyDays: stage.waterFrequencyDays,
-            imageAssetId: 'generic_image'
-          })) || [],
-          seasonality: plant.seasonality,
-          sunlight: plant.sunlight,
-          water_requirements: plant.water_requirements,
-          soil_type: plant.soil_type || [],
-          companion_plants: plant.companion_plants || [],
-          incompatible_plants: plant.incompatible_plants || [],
-          common_pests: plant.common_pests || [],
-          common_diseases: plant.common_diseases || [],
-          nutrient_preferences: plant.nutrient_preferences || [],
-          notes: plant.notes || '',
-          source_metadata: plant.source_metadata || [],
-
-          // Additional fields from PlantSpecies
-          genus: plant.genus || '',
-          species: plant.species || '',
-        }));
-        
-        setPlants(transformedPlants);
+        const db = await getDatabase();
+        // Subscribe to real-time updates from RxDB
+        const sub = db.plant_kb.find().$.subscribe(docs => {
+          if (docs) {
+            setPlants(docs.map(doc => doc.toJSON()));
+          }
+          setLoading(false);
+        });
+        return () => sub.unsubscribe();
       } catch (error) {
-        console.error('Failed to load plant knowledge base:', error);
-      } finally {
+        console.error('Failed to load plant knowledge base from DB:', error);
         setLoading(false);
       }
     };
@@ -191,12 +62,19 @@ export const PlantKnowledgebaseTab: React.FC = () => {
     });
   }, [plants, query]);
 
-  // Virtualization setup
-  const parentRef = useRef<HTMLDivElement>(null);
+  // Virtualize ROWS instead of individual items for grid stability
+  const rows = useMemo(() => {
+    const r = [];
+    for (let i = 0; i < filtered.length; i += columns) {
+      r.push(filtered.slice(i, i + columns));
+    }
+    return r;
+  }, [filtered, columns]);
+
   const virtualizer = useVirtualizer({
-    count: filtered.length,
+    count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 140, // Estimated height of each card
+    estimateSize: () => 160,
     overscan: 5,
   });
 
@@ -371,27 +249,7 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                     📊 Growth Graph
                   </h4>
                   <div className="space-y-2">
-                    {selectedPlant.stages?.map((stage, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-2 bg-stone-950 border border-stone-800 rounded-lg group hover:border-stone-700 transition-colors">
-                        <div className="w-8 h-8 rounded bg-stone-900 border border-stone-800 flex items-center justify-center text-xs group-hover:text-garden-400">
-                          {idx + 1}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[11px] font-bold uppercase text-stone-400">{stage.id}</span>
-                            <span className="text-[10px] font-mono text-stone-600">{stage.durationDays}d</span>
-                          </div>
-                          <div className="h-1 w-full bg-stone-900 rounded-full mt-1 overflow-hidden">
-                            <div className="h-full bg-stone-700 rounded-full" style={{ width: `${(stage.durationDays / 60) * 100}%` }} />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {!selectedPlant.stages || selectedPlant.stages.length === 0 ? (
-                      <div className="text-center py-4 text-stone-600 text-sm">
-                        No growth stage data available
-                      </div>
-                    ) : null}
+                  <GrowthGraph stages={selectedPlant.stages} />
                   </div>
                 </section>
               </div>
@@ -409,14 +267,32 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                         <div className="absolute -left-1.5 top-0 w-3 h-3 bg-amber-600 rounded-full ring-4 ring-stone-900" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Sowing Window</span>
                         <p className="text-xs text-stone-300 font-bold mt-1">
-                          {selectedPlant.seasonality.sowing?.start_month || "February"} — {selectedPlant.seasonality.sowing?.end_month || "March"}
+                          {(() => {
+                            const s = selectedPlant.seasonality?.sowing;
+                            const range = Array.isArray(s) ? s[0] : s;
+                            if (range) {
+                              const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                              const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+                              return `${start} — ${end}`;
+                            }
+                            return "Seasonal window not specified";
+                          })()}
                         </p>
                       </div>
                       <div className="relative pl-6 border-l-2 border-garden-600/30">
                         <div className="absolute -left-1.5 top-0 w-3 h-3 bg-garden-600 rounded-full ring-4 ring-stone-900" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-garden-500">Optimal Harvest</span>
                         <p className="text-xs text-stone-300 font-bold mt-1">
-                          {selectedPlant.seasonality.harvest?.start_month || "September"} — {selectedPlant.seasonality.harvest?.end_month || "October"}
+                          {(() => {
+                            const h = selectedPlant.seasonality?.harvest;
+                            const range = Array.isArray(h) ? h[0] : h;
+                            if (range) {
+                              const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                              const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+                              return `${start} — ${end}`;
+                            }
+                            return "Harvest window not specified";
+                          })()}
                         </p>
                       </div>
                     </div>
@@ -499,7 +375,7 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                       <div key={i} className="flex items-center gap-2">
                         <div className="text-[11px] font-bold text-stone-300">{s.source_name}</div>
                         <div className="px-1.5 py-0.5 bg-green-900/40 text-green-400 rounded text-[9px] font-mono border border-green-800/50">
-                          {Math.round(s.confidence_score * 100)}%
+                          {Math.round((Number((s as Record<string, unknown>).confidence_score) || 0.95) * 100)}%
                         </div>
                       </div>
                     ))}
@@ -562,21 +438,25 @@ export const PlantKnowledgebaseTab: React.FC = () => {
               position: 'relative',
             }}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {virtualizer.getVirtualItems().map((virtualItem) => {
-                const plant = filtered[virtualItem.index];
-                
-                return (
+            {virtualizer.getVirtualItems().map((virtualRow) => (
+              <div
+                key={virtualRow.index}
+                style={{
+                   display: 'grid',
+                   gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                   position: 'absolute',
+                   top: 4, // Subtle offset
+                   left: 0,
+                   width: '100%',
+                   transform: `translateY(${virtualRow.start}px)`,
+                   gap: '1rem'
+                }}
+              >
+                {rows[virtualRow.index].map((plant) => (
                   <div
                     key={plant.plant_id}
-                    data-index={virtualItem.index}
-                    ref={virtualizer.measureElement}
-                    style={{
-                      gridRow: Math.floor(virtualItem.index / 4) + 1,
-                      gridColumn: (virtualItem.index % 4) + 1,
-                    }}
                     onClick={() => setSelectedPlant(plant)}
-                    className="p-4 bg-stone-800/20 rounded-2xl border border-stone-700/30 hover:border-garden-700/50 transition-all group cursor-pointer"
+                    className="p-4 bg-stone-800/20 rounded-2xl border border-stone-700/30 hover:border-garden-700/50 transition-all group cursor-pointer h-full"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -596,11 +476,11 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                         {plant.family}
                       </span>
                     </div>
-                    <p className="mt-2 text-xs text-stone-600 line-clamp-2">{plant.notes}</p>
+                    <p className="mt-2 text-xs text-stone-600 line-clamp-1">{plant.notes}</p>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Droplets,
-  Settings as SettingsIcon,
   AlertCircle,
   Calendar,
   LayoutGrid,
@@ -16,13 +15,14 @@ import { InventoryTray } from './InventoryTray';
 import { PlantInspector } from './PlantInspector';
 import { usePlantedCards } from '../hooks/usePlantedCards';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden } from '../db/queries';
+import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed } from '../db/queries';
+import { calculateCurrentStage } from '../logic/lifecycle';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning';
 import { showSuccess, showError, showInfo } from '../lib/toast';
 import type { PlantedDocument } from '../db/types';
 import { PlantSpecies } from '../schema/knowledge-graph';
-import type { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
@@ -54,8 +54,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [scrubDays, setScrubDays] = useState(0);
-  const [plantNowSet, setPlantNowSet] = useState<Set<string>>(new Set());
   
+  // Sprint 2: "Plant Now" filter - derived via useMemo to avoid cascading renders
+  const currentMonth = useMemo(() => Math.floor(((currentDay - 1) % 365) / 30.42), [currentDay]);
+  const plantNowSet = useMemo(() => {
+    if (!plantNowMode) return new Set<string>();
+    const newSet = new Set<string>();
+    for (const c of catalog) {
+      const res = isSowingSeason(c, { id: 'user_location', hemisphere: 'North', frost_data: {} }, currentMonth);
+      if (res.eligible) newSet.add(c.id);
+    }
+    return newSet;
+  }, [plantNowMode, catalog, currentMonth]);
+
   // Dialog State
   const [showGardenDialog, setShowGardenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
@@ -100,8 +111,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       setGardens(gardensData);
   };
 
-
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 }
@@ -110,9 +119,13 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    if (active.id.toString().startsWith('seed-')) {
+    const idStr = active.id.toString();
+    if (idStr.startsWith('seed-')) {
       const catalogId = active.data.current?.id as string | undefined;
       setActiveSeedCatalogId(catalogId || null);
+    } else if (idStr.startsWith('planted-')) {
+      const plant = active.data.current?.item as PlantedDocument;
+      setActiveSeedCatalogId(plant?.catalogId || null);
     }
   };
 
@@ -120,17 +133,22 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     const { active, over } = event;
     setActiveSeedCatalogId(null);
 
-    if (over && active.id.toString().startsWith('seed-')) {
+    if (!over) return;
+
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
+
+    // CASE 1: Planting from Bag to Grid
+    if (activeId.startsWith('seed-') && overId.startsWith('slot-')) {
       if (!activeGarden) {
         showError('No active garden selected');
         return;
       }
 
-      const inventoryId = active.id.toString().replace('seed-', '');
+      const inventoryId = activeId.replace('seed-', '');
       const catalogId = active.data.current?.id;
       const { x, y } = over.data.current as { x: number; y: number };
       
-      // Check grid capacity
       const totalCells = activeGarden.gridWidth * activeGarden.gridHeight;
       const occupiedCells = plantedCards.length;
       
@@ -139,20 +157,62 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         return;
       }
       
-      // Check if slot is already occupied
       const existingPlant = plantedCards.find((p) => p.gridX === x && p.gridY === y);
       if (existingPlant) {
         showError('Slot already occupied');
         return;
       }
       
-      // Import plantSeed function
-      const { plantSeed } = await import('../db/queries');
       try {
         await plantSeed(catalogId, x, y, inventoryId, activeGarden.id);
         showSuccess('Plant added to garden');
       } catch {
         showError('Failed to plant seed');
+      }
+    } 
+    
+    // CASE 2: Relocating within Grid
+    else if (activeId.startsWith('planted-') && overId.startsWith('slot-')) {
+      const plant = active.data.current?.item as PlantedDocument;
+      const { x, y } = over.data.current as { x: number; y: number };
+      
+      if (plant.gridX === x && plant.gridY === y) return; // Same slot
+
+      const existingPlant = plantedCards.find((p) => p.gridX === x && p.gridY === y);
+      if (existingPlant) {
+        showError('Target slot occupied');
+        return;
+      }
+
+      try {
+        await relocatePlant(plant.id, x, y, activeGarden?.id || 'main-garden');
+        showSuccess('Plant unit relocated');
+      } catch {
+        showError('Failed to relocate plant');
+      }
+    }
+
+    // CASE 3: Unplanting back to Bag
+    else if (activeId.startsWith('planted-') && overId === 'inventory-tray') {
+      const plant = active.data.current?.item as PlantedDocument;
+      const catalogItem = catalog.find(c => c.id === plant.catalogId);
+      
+      if (!catalogItem) return;
+
+      // Rule: Only unplant if in first stage
+      const currentStageId = calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay);
+      const isFirstStage = catalogItem.stages.length > 0 && currentStageId === catalogItem.stages[0].id;
+
+      if (!isFirstStage) {
+        showError('Only young plants can be returned to Bag');
+        return;
+      }
+
+      try {
+        await unplantSeed(plant.id);
+        showSuccess('Plant returned to Bag');
+      } catch {
+        showError('Failed to unplant');
       }
     }
   };
@@ -201,20 +261,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     // Don't subtract XP on rewind, just maintain current XP
   };
 
-  // --- Sprint 2: "Plant Now" filter ---
-  const currentMonth = Math.floor(((currentDay - 1) % 365) / 30.42);
-
-  useEffect(() => {
-    if (plantNowMode) {
-      const newPlantNowSet = new Set<string>();
-      for (const c of catalog) {
-        const res = isSowingSeason(c, { id: 'user_location', hemisphere: 'North', frost_data: {} }, currentMonth);
-        if (res.eligible) newPlantNowSet.add(c.id);
-      }
-      setPlantNowSet(newPlantNowSet);
-    }
-  }, [plantNowMode, catalog, currentMonth]);
-
   // Calculate grid capacity
   const totalCells = activeGarden ? activeGarden.gridWidth * activeGarden.gridHeight : 0;
   const occupiedCells = plantedCards.length;
@@ -260,7 +306,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               min={0}
               max={30}
               value={scrubDays}
-              onChange={(e) => setScrubDays(parseInt(e.target.value, 10) || 0)}
+              onChange={(e) => setScrubDays(Number.parseInt(e.target.value, 10) || 0)}
               className="w-16 sm:w-24 accent-garden-500 h-1"
               aria-label="Temporal scrub slider"
             />
@@ -310,10 +356,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
           {/* 8. Action Block */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <button onClick={() => {}} className="p-1.5 bg-stone-900/50 border border-stone-800 rounded-xl text-stone-500 hover:text-stone-300 transition-all" title="Settings" aria-label="Settings">
-              <SettingsIcon className="w-3.5 h-3.5" />
-            </button>
-            <div className="h-6 w-[1px] bg-stone-800 mx-0.5 sm:mx-1" />
             <button onClick={handleRewindDay} disabled={currentDay <= 1} className={`p-1.5 font-black rounded-lg text-xs transition-all active:scale-95 shadow-lg ${currentDay <= 1 ? 'bg-stone-700 text-stone-500 opacity-50' : 'bg-amber-600 text-stone-950 hover:bg-amber-400'}`} title="Rewind Day" aria-label="Rewind Day">
               ↩️
             </button>
@@ -340,7 +382,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
                 {Array.from({ length: 5 }).map((_, i) => {
                     const garden = gardens[i];
-                    const isActive = garden && activeGardenId === garden.id;
+                    const isActive = garden?.id && activeGardenId === garden.id;
                     
                     return (
                         <button
@@ -422,7 +464,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       cols={activeGarden.gridWidth}
                       onEdit={(item: PlantedDocument) => console.log('Edit plant:', item)}
                       onDelete={async (item: PlantedDocument) => {
-                        if (window.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
+                        if (globalThis.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
                           const db = await getDatabase();
                           await db.planted.findOne(item.id).remove();
                           showInfo('Plant removed from garden');
@@ -453,7 +495,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               {selectedPlant && (
                 <PlantInspector
                   plant={selectedPlant}
-                  catalogItem={catalog.find(c => c.id === selectedPlant.catalogId) as PlantSpecies | undefined}
+                  catalogItem={(catalog.find(c => c.id === selectedPlant.catalogId) as PlantSpecies | undefined)}
                   companionScore={1}
                   currentDay={currentDay + scrubDays}
                   onClose={() => setSelectedPlant(null)}
@@ -476,7 +518,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
 
         <DragOverlay dropAnimation={null}>
-          <div className="w-40 h-40 bg-garden-800 rounded-3xl border border-garden-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
+          <div className="w-40 h-40 bg-garden-800 rounded-3xl border-2 border-garden-500 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
             <Sprout className="w-16 h-16 text-garden-300" />
             <div className="mt-4 text-[13px] font-black uppercase text-garden-400">Deploying...</div>
           </div>

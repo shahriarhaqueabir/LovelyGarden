@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Trash2, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useDraggable } from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
 import { getDatabase } from '../db';
 import { showSuccess, showError } from '../lib/toast';
@@ -29,7 +29,7 @@ export const SeedCard: React.FC<{
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Remove ${name} from your Bag?`)) {
+    if (globalThis.confirm(`Remove ${name} from your Bag?`)) {
       onDelete?.(id);
     }
     setShowDelete(false);
@@ -81,6 +81,9 @@ export const InventoryTray: React.FC<{
   onTogglePlantNow?: () => void;
   plantNowSet?: Set<string>;
 }> = ({ catalog, onOpenStore, isVertical, plantNowMode, onTogglePlantNow, plantNowSet }) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: 'inventory-tray',
+  });
   const inventory = useInventory();
   const [collapsed, setCollapsed] = useState(false);
   
@@ -136,7 +139,10 @@ export const InventoryTray: React.FC<{
     : 'p-6 glass-panel border-t border-stone-800 flex items-center gap-6 overflow-x-auto';
 
   return (
-    <div className={`${wrapperClass} ${isVertical ? '' : containerClass}`}>
+    <div 
+      ref={setNodeRef}
+      className={`${wrapperClass} ${isVertical ? '' : containerClass} ${isOver ? 'ring-2 ring-garden-500 ring-inset bg-garden-500/10' : ''}`}
+    >
       {/* Sidebar Toggle Handle */}
       {isVertical && (
         <button
