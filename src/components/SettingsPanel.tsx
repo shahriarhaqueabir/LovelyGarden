@@ -113,13 +113,18 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-stone-900 border border-stone-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-md bg-stone-900 border border-stone-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col max-h-[90vh]">
         <div className="p-6 border-b border-stone-800 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-3">
             <Settings className="w-5 h-5 text-stone-400" />
             <h2 className="text-xl font-bold text-stone-100">Almanac Settings</h2>
           </div>
-          <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
+          <button 
+            onClick={onClose} 
+            className="text-stone-500 hover:text-stone-300"
+            aria-label="Close settings"
+            title="Close"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

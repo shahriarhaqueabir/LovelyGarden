@@ -44,7 +44,7 @@ export const catalogSchema: RxJsonSchema<CatalogDocument> = {
 
 export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
   title: 'plant_kb',
-  version: 2,
+  version: 3,
   description: 'Expanded plant knowledge base (seasonality, pests, diseases, nutrients, sources) hydrated from plants-kb.json',
   primaryKey: 'plant_id',
   type: 'object',

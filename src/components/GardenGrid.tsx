@@ -210,7 +210,7 @@ export const GridSlot: React.FC<GridSlotProps> = ({
         setShowObservationMenu(false);
       }}
       className={`
-        relative w-full aspect-square max-w-[160px] border-2 rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
+        relative w-full aspect-square max-w-[80px] sm:max-w-[100px] md:max-w-[120px] lg:max-w-[140px] xl:max-w-[160px] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
         ${item ? 'glass-panel' : 'bg-app-background/40'}
         ${synergyClass}
@@ -396,7 +396,7 @@ export const GardenField: React.FC<{
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
 
       <div
-        className="grid gap-4 md:gap-8 relative z-10 w-full max-w-5xl"
+        className="grid gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8 relative z-10 w-full max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,

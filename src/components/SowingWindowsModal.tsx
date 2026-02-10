@@ -129,7 +129,12 @@ export const SowingWindowsModal: React.FC<SowingWindowsModalProps> = ({ catalog,
               <div className="text-sm font-bold text-stone-100">Current: {monthNames[currentMonth]} · {currentSeason}</div>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl border border-stone-800 text-stone-500 hover:text-stone-200 hover:bg-stone-800/40 transition-colors">
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-xl border border-stone-800 text-stone-500 hover:text-stone-200 hover:bg-stone-800/40 transition-colors"
+            aria-label="Close sowing windows"
+            title="Close"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

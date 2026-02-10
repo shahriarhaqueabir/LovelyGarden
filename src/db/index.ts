@@ -29,7 +29,7 @@ export const getDatabase = async () => {
         catalog: { 
           schema: catalogSchema,
           migrationStrategies: {
-            1: (oldDoc: MigrationDoc<CatalogDocument>) => oldDoc
+            '1': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; }
           }
         },
         sources: { schema: sourceSchema },
@@ -38,13 +38,13 @@ export const getDatabase = async () => {
         settings: { 
           schema: settingsSchema,
           migrationStrategies: {
-            1: (oldDoc: MigrationDoc<SettingsDocument>) => {
+            '1': (oldDoc: MigrationDoc<SettingsDocument>) => {
               return {
                 ...oldDoc,
                 xp: 0 // Initialize xp for existing users
               };
             },
-            2: (oldDoc: MigrationDoc<SettingsDocument>) => {
+            '2': (oldDoc: MigrationDoc<SettingsDocument>) => {
               return {
                 ...oldDoc,
                 dataVersion: 0 // Initialize dataVersion for existing users
@@ -55,14 +55,15 @@ export const getDatabase = async () => {
         plant_kb: {
           schema: plantKbSchema,
           migrationStrategies: {
-            1: (oldDoc: MigrationDoc<PlantKbDocument>) => oldDoc,
-            2: (oldDoc: MigrationDoc<PlantKbDocument>) => oldDoc
+            '1': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
+            '2': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
+            '3': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; }
           }
         },
         gardens: { 
           schema: gardenSchema,
           migrationStrategies: {
-            1: (oldDoc: MigrationDoc<GardenDocument>) => {
+            '1': (oldDoc: MigrationDoc<GardenDocument>) => {
               return {
                 ...oldDoc,
                 backgroundColor: '#14532d', // Default forest green
@@ -88,7 +89,7 @@ export const hydrateDatabase = async () => {
   
   // Check if already hydrated
   const settings = await db.settings.findOne('local-user').exec();
-  const currentDataVersion = 2; // Increment this when botanical structure changes
+  const currentDataVersion = 3; // Increment this when botanical structure changes
   
   if (settings && settings.firstLoadComplete && (settings.dataVersion || 0) >= currentDataVersion) {
     
