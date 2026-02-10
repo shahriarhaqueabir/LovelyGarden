@@ -1,25 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Settings, 
-  Wrench, 
-  Database, 
-  Globe, 
-  Bug, 
+import {
+  Settings,
+  Wrench,
+  Database,
+  Globe,
   Terminal,
   Download,
   Upload,
   Sparkles,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Palette
 } from 'lucide-react';
 import { getDatabase } from '../db';
 import { exportDatabaseToJson, importDatabaseFromJson, downloadFile } from '../db/export-import';
-import { applyTheme } from '../utils/theme';
+import { applyTheme, applyBackgroundColor } from '../utils/theme';
+import { WeatherSettings } from './WeatherSettings';
+import { useWeatherStore } from '../stores/weatherStore';
 
 export const SettingsTab: React.FC = () => {
+  const { latitude, longitude } = useWeatherStore();
   const [activeSubTab, setActiveSubTab] = useState<'general' | 'developer'>('general');
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<Record<string, unknown> | null>(null);
   const [accentColor, setAccentColor] = useState('#22c55e');
+  const [backgroundColor, setBackgroundColor] = useState('#090c0a');
   const [language, setLanguage] = useState('en');
   const [notifications, setNotifications] = useState(true);
   const [locationCity, setLocationCity] = useState('Dresden');
@@ -33,6 +37,11 @@ export const SettingsTab: React.FC = () => {
     setLogs(prev => [{ type, msg }, ...prev].slice(0, 10));
   };
 
+  // Apply background color when it changes
+  useEffect(() => {
+    applyBackgroundColor(backgroundColor);
+  }, [backgroundColor]);
+
   useEffect(() => {
     const fetchSettings = async () => {
       const db = await getDatabase();
@@ -42,8 +51,15 @@ export const SettingsTab: React.FC = () => {
         setConfig(data);
         setLocationCity(data.city || 'Dresden');
         setHemisphere(data.hemisphere || 'North');
-        
-        /* 
+
+        // Load saved background color from localStorage
+        const savedBgColor = localStorage.getItem('bg-color');
+        if (savedBgColor) {
+          setBackgroundColor(savedBgColor);
+          applyBackgroundColor(savedBgColor);
+        }
+
+        /*
         const savedMode = localStorage.getItem('theme-mode') as 'light' | 'dark';
         if (savedMode) {
           setTheme(savedMode);
@@ -59,8 +75,36 @@ export const SettingsTab: React.FC = () => {
       }
     };
     fetchSettings();
-    addLog('INFO', 'Database initialized successfully.');
+    setTimeout(() => {
+      addLog('INFO', 'Database initialized successfully.');
+    }, 0);
   }, []);
+
+  // Update location city when weather coordinates change
+  useEffect(() => {
+    if (latitude !== null && longitude !== null) {
+      // Reverse geocode the coordinates to get city name
+      const reverseGeocode = async () => {
+        try {
+          const response = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?latitude=${latitude}&longitude=${longitude}&format=json`
+          );
+          const data = await response.json();
+          if (data.results && data.results.length > 0) {
+            const result = data.results[0];
+            const cityName = result.name || result.admin1 || 'Unknown Location';
+            const countryName = result.country || '';
+            const fullLocation = countryName ? `${cityName}, ${countryName}` : cityName;
+            setLocationCity(fullLocation);
+          }
+        } catch (error) {
+          console.error('Reverse geocoding failed:', error);
+        }
+      };
+
+      reverseGeocode();
+    }
+  }, [latitude, longitude]);
 
   const handleSave = async () => {
     try {
@@ -72,11 +116,13 @@ export const SettingsTab: React.FC = () => {
         hemisphere: hemisphere,
         firstLoadComplete: true
       });
-      
+
       localStorage.setItem('theme-color', accentColor);
+      localStorage.setItem('bg-color', backgroundColor);
       applyTheme(accentColor);
+      applyBackgroundColor(backgroundColor);
       // Logic for autoSave/notifications would go here in a real app
-      
+
       addLog('SUCCESS', 'Configuration persisted to disk.');
       alert('Settings saved successfully!');
     } catch (e) {
@@ -183,7 +229,7 @@ export const SettingsTab: React.FC = () => {
                <Palette className="w-3 h-3 text-garden-500" /> Preferences
             </h2>
             <div className="space-y-6">
-              {/* 
+              {/*
               <div>
                 <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Theme Protocol</label>
                 <div className="flex gap-2">
@@ -220,7 +266,7 @@ export const SettingsTab: React.FC = () => {
                     </div>
                   </button>
                 </div>
-              </div> 
+              </div>
               */}
 
               <div>
@@ -247,6 +293,38 @@ export const SettingsTab: React.FC = () => {
                       onChange={(e) => {
                         setAccentColor(e.target.value);
                         applyTheme(e.target.value);
+                      }}
+                      className="w-8 h-8 rounded-full border-2 border-transparent bg-stone-900 cursor-pointer overflow-hidden p-0"
+                    />
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-stone-900 text-[10px] font-bold px-2 py-1 rounded border border-stone-800 pointer-events-none">
+                      CUSTOM
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Background Color</label>
+                <div className="flex flex-wrap gap-3">
+                  {['#090c0a', '#0c0a09', '#1c1917', '#0f172a', '#1e293b', '#000000'].map(color => (
+                    <button
+                      key={color}
+                      onClick={() => {
+                        setBackgroundColor(color);
+                      }}
+                      className={`w-8 h-8 rounded-full border-2 transition-all ${
+                        backgroundColor === color ? 'border-stone-100 scale-110 shadow-lg' : 'border-transparent hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: color }}
+                      title={`Select ${color} background`}
+                    />
+                  ))}
+                  <div className="relative group">
+                    <input
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => {
+                        setBackgroundColor(e.target.value);
                       }}
                       className="w-8 h-8 rounded-full border-2 border-transparent bg-stone-900 cursor-pointer overflow-hidden p-0"
                     />
@@ -289,60 +367,10 @@ export const SettingsTab: React.FC = () => {
 
           <div className="lg:col-span-2 bg-stone-900 shadow-xl rounded-2xl border border-stone-800 p-6">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-6 flex items-center gap-2">
-               <MapPin className="w-3 h-3 text-garden-500" /> Environment Deployment
+               <Palette className="w-3 h-3 text-garden-500" /> Weather Location
             </h2>
             <div className="space-y-6">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Active City</label>
-                    <input
-                      type="text"
-                      value={locationCity}
-                      onChange={(e) => setLocationCity(e.target.value)}
-                      className="w-full p-3 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 text-sm focus:outline-none focus:border-garden-500/50"
-                      placeholder="Enter city..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Hemisphere Alignment</label>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setHemisphere('North')}
-                        className={`flex-1 py-3 px-3 rounded-xl border transition-all text-xs font-bold ${
-                          hemisphere === 'North'
-                            ? 'bg-garden-500 text-stone-950 border-garden-400'
-                            : 'bg-stone-950 border-stone-800 text-stone-500 hover:border-stone-700'
-                        }`}
-                      >
-                        NORTHERN
-                      </button>
-                      <button
-                        onClick={() => setHemisphere('South')}
-                        className={`flex-1 py-3 px-3 rounded-xl border transition-all text-xs font-bold ${
-                          hemisphere === 'South'
-                            ? 'bg-garden-500 text-stone-950 border-garden-400'
-                            : 'bg-stone-950 border-stone-800 text-stone-500 hover:border-stone-700'
-                        }`}
-                      >
-                        SOUTHERN
-                      </button>
-                    </div>
-                  </div>
-               </div>
-
-               <div className="p-4 bg-garden-900/10 border border-garden-900/20 rounded-xl">
-                 <div className="flex items-start gap-4">
-                   <div className="p-2 bg-garden-900/30 rounded-lg">
-                      <Bug className="w-5 h-5 text-garden-500" />
-                   </div>
-                   <div>
-                     <h3 className="text-xs font-black uppercase tracking-widest text-garden-400 mb-1">Environmental Sync</h3>
-                     <p className="text-[11px] text-stone-400 leading-relaxed">
-                       Your location is used to calculate solar irradiation, moisture evaporation rates, and local planting windows (Zone 7b for Dresden).
-                     </p>
-                   </div>
-                 </div>
-               </div>
+              <WeatherSettings />
             </div>
           </div>
         </div>
@@ -446,6 +474,3 @@ export const SettingsTab: React.FC = () => {
   );
 };
 
-// Internal palette wrapper because it's used in the code but not defined
-const Palette = ({ className }: { className?: string }) => <Sparkles className={className} />;
-const MapPin = ({ className }: { className?: string }) => <div className={className} />;

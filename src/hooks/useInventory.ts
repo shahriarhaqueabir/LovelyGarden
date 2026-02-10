@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getDatabase } from '../db';
 import { Subscription } from 'rxjs';
+import type { InventoryDocument } from '../db/types';
 
 /**
  * HOOK: useInventory
@@ -8,7 +9,7 @@ import { Subscription } from 'rxjs';
  * (Note: Although schemas.ts didn't have 'inventory' initially, we should ensure it does).
  */
 export const useInventory = () => {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<InventoryDocument[]>([]);
 
   useEffect(() => {
     let sub: Subscription;

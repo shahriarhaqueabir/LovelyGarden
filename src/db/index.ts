@@ -3,6 +3,10 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema, gardenSchema } from './schemas';
 import { ExpandedPlantKBSchema } from '../schema/zod-schemas';
+import type { CatalogDocument, PlantKbDocument, SourceDocument, SettingsDocument, GardenDocument } from './types';
+
+// Type for migration documents
+type MigrationDoc<T> = T & { _rev?: string; _attachments?: Record<string, unknown> };
 
 // Register RxDB Plugins
 addRxPlugin(RxDBMigrationSchemaPlugin);
@@ -25,7 +29,7 @@ export const getDatabase = async () => {
         catalog: { 
           schema: catalogSchema,
           migrationStrategies: {
-            1: (oldDoc: any) => oldDoc
+            1: (oldDoc: MigrationDoc<CatalogDocument>) => oldDoc
           }
         },
         sources: { schema: sourceSchema },
@@ -34,13 +38,13 @@ export const getDatabase = async () => {
         settings: { 
           schema: settingsSchema,
           migrationStrategies: {
-            1: (oldDoc: any) => {
+            1: (oldDoc: MigrationDoc<SettingsDocument>) => {
               return {
                 ...oldDoc,
                 xp: 0 // Initialize xp for existing users
               };
             },
-            2: (oldDoc: any) => {
+            2: (oldDoc: MigrationDoc<SettingsDocument>) => {
               return {
                 ...oldDoc,
                 dataVersion: 0 // Initialize dataVersion for existing users
@@ -48,16 +52,17 @@ export const getDatabase = async () => {
             }
           }
         },
-        plant_kb: { 
+        plant_kb: {
           schema: plantKbSchema,
           migrationStrategies: {
-            1: (oldDoc: any) => oldDoc
+            1: (oldDoc: MigrationDoc<PlantKbDocument>) => oldDoc,
+            2: (oldDoc: MigrationDoc<PlantKbDocument>) => oldDoc
           }
         },
         gardens: { 
           schema: gardenSchema,
           migrationStrategies: {
-            1: (oldDoc: any) => {
+            1: (oldDoc: MigrationDoc<GardenDocument>) => {
               return {
                 ...oldDoc,
                 backgroundColor: '#14532d', // Default forest green
@@ -201,7 +206,7 @@ export const hydrateDatabase = async () => {
     const plantKbRaw = Array.isArray(plantKbJson) ? plantKbJson : (plantKbJson.plants || []);
 
     // 1. Validate KB data
-    const validatedPlantKb = plantKbRaw.filter((plant: any) => {
+    const validatedPlantKb = plantKbRaw.filter((plant: PlantKbDocument) => {
       const result = ExpandedPlantKBSchema.safeParse(plant);
       if (!result.success) {
         console.warn(`Invalid KB data detected for "${plant.common_name || 'Unknown'}":`, result.error.format());
@@ -211,7 +216,7 @@ export const hydrateDatabase = async () => {
     });
 
     // 2. Map KB data to Catalog structure (for backward compatibility with components)
-    const catalogData = validatedPlantKb.map((kb: any) => ({
+    const catalogData = validatedPlantKb.map((kb: PlantKbDocument) => ({
       id: kb.plant_id,
       name: kb.common_name,
       scientificName: kb.scientific_name,
@@ -228,14 +233,14 @@ export const hydrateDatabase = async () => {
       pollination_type: 'insect',
       sowingSeason: kb.sowingSeason || [],
       sowingMethod: kb.sowingMethod || 'Direct',
-      stages: (kb.stages || []).map((s: any) => ({
+      stages: (kb.stages || []).map((s: { id?: string; name?: string; durationDays?: number; waterFrequencyDays?: number }) => ({
         ...s,
         imageAssetId: 'sprout_generic' // Ensure required image field is present
       })),
       companions: kb.companion_plants || [],
       antagonists: kb.incompatible_plants || [],
       confidence_score: 0.95,
-      sources: (kb.source_metadata || []).map((m: any) => m.source_name),
+      sources: (kb.source_metadata || []).map((m: { source_name?: string }) => m.source_name),
       // Expanded Fields
       seasonality: kb.seasonality,
       sunlight: kb.sunlight,
@@ -248,7 +253,7 @@ export const hydrateDatabase = async () => {
     }));
 
     // Bulk upsert logic (using individual upserts for safety or bulkUpsert if available)
-    for (const source of sources) {
+    for (const source of sources as SourceDocument[]) {
       await db.sources.upsert(source);
     }
     for (const item of catalogData) {

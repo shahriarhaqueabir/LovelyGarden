@@ -1,6 +1,7 @@
 import { RxJsonSchema } from 'rxdb';
+import type { CatalogDocument, PlantKbDocument, SourceDocument, InventoryDocument, PlantedDocument, SettingsDocument, GardenDocument } from './types';
 
-export const catalogSchema: RxJsonSchema<any> = {
+export const catalogSchema: RxJsonSchema<CatalogDocument> = {
   title: 'catalog',
   version: 1,
   description: 'Master library of plants',
@@ -41,9 +42,9 @@ export const catalogSchema: RxJsonSchema<any> = {
   required: ['id', 'name', 'stages']
 };
 
-export const plantKbSchema: RxJsonSchema<any> = {
+export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
   title: 'plant_kb',
-  version: 1,
+  version: 2,
   description: 'Expanded plant knowledge base (seasonality, pests, diseases, nutrients, sources) hydrated from plants-kb.json',
   primaryKey: 'plant_id',
   type: 'object',
@@ -54,6 +55,8 @@ export const plantKbSchema: RxJsonSchema<any> = {
     type: { type: 'string' },
     family: { type: 'string' },
     growth_stage: { type: 'array', items: { type: 'string' } },
+    sowingSeason: { type: 'array', items: { type: 'string' } },
+    sowingMethod: { type: 'string' },
     seasonality: { type: 'object' },
     sunlight: { type: 'string' },
     water_requirements: { type: 'string' },
@@ -91,7 +94,7 @@ export const plantKbSchema: RxJsonSchema<any> = {
   required: ['plant_id', 'common_name']
 };
 
-export const sourceSchema: RxJsonSchema<any> = {
+export const sourceSchema: RxJsonSchema<SourceDocument> = {
   title: 'sources',
   version: 0,
   description: 'Authoritative sources',
@@ -107,7 +110,7 @@ export const sourceSchema: RxJsonSchema<any> = {
   required: ['id', 'name', 'type']
 };
 
-export const inventorySchema: RxJsonSchema<any> = {
+export const inventorySchema: RxJsonSchema<InventoryDocument> = {
   title: 'inventory',
   version: 0,
   description: 'User held seeds',
@@ -122,7 +125,7 @@ export const inventorySchema: RxJsonSchema<any> = {
   required: ['id', 'catalogId', 'acquiredDate']
 };
 
-export const plantedSchema: RxJsonSchema<any> = {
+export const plantedSchema: RxJsonSchema<PlantedDocument> = {
   title: 'planted',
   version: 0,
   description: 'Plants currently in the ground',
@@ -154,7 +157,7 @@ export const plantedSchema: RxJsonSchema<any> = {
   required: ['id', 'bedId', 'catalogId', 'gridX', 'gridY', 'plantedDate']
 };
 
-export const settingsSchema: RxJsonSchema<any> = {
+export const settingsSchema: RxJsonSchema<SettingsDocument> = {
   title: 'settings',
   version: 2,
   description: 'User settings',
@@ -172,7 +175,7 @@ export const settingsSchema: RxJsonSchema<any> = {
   required: ['id', 'firstLoadComplete']
 };
 
-export const gardenSchema: RxJsonSchema<any> = {
+export const gardenSchema: RxJsonSchema<GardenDocument> = {
   title: 'gardens',
   version: 1,
   description: 'User defined garden beds',

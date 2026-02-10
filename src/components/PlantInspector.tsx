@@ -16,9 +16,10 @@ import { calculateCurrentStage } from '../logic/lifecycle';
 import { getConfidenceThreshold, isSowingSeason } from '../logic/reasoning';
 import { getDatabase } from '../db';
 import { GrowthTelemetry } from './GrowthTelemetry';
+import type { PlantedDocument, SourceDocument, PlantKbDocument } from '../db/types';
 
 interface PlantInspectorProps {
-  plant: any; // The planted document
+  plant: PlantedDocument;
   catalogItem: PlantSpecies | undefined;
   companionScore: number;
   currentDay: number;
@@ -39,7 +40,8 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   docked
 }) => {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [sourcesById, setSourcesById] = useState<Record<string, any>>({});
+  const [sourcesById, setSourcesById] = useState<Record<string, SourceDocument>>({});
+  const [kb, setKb] = useState<PlantKbDocument | null>(null);
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -61,12 +63,35 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     const loadSources = async () => {
       const db = await getDatabase();
       const docs = await db.sources.find().exec();
-      const map: Record<string, any> = {};
-      for (const d of docs) map[d.get('id')] = d.toJSON();
+      const map: Record<string, SourceDocument> = {};
+      for (const d of docs) map[d.get('id')] = d.toJSON() as SourceDocument;
       setSourcesById(map);
     };
     loadSources();
   }, []);
+
+  useEffect(() => {
+    const loadKb = async () => {
+      if (!catalogItem) return;
+      const db = await getDatabase();
+      // heuristic mapping: try match by scientific name first, then by common name
+      const sci = catalogItem.scientificName;
+      const common = catalogItem.name;
+
+      let doc = null;
+      if (sci) {
+        doc = await db.plant_kb.findOne({ selector: { scientific_name: sci } }).exec();
+      }
+      if (!doc && common) {
+        doc = await db.plant_kb.findOne({ selector: { common_name: common } }).exec();
+      }
+      setKb(doc ? (doc.toJSON() as PlantKbDocument) : null);
+    };
+    loadKb();
+  }, [catalogItem]);
+
+  const companions = useMemo(() => catalogItem?.companions ? [...catalogItem.companions] : [], [catalogItem?.companions]);
+  const antagonists = useMemo(() => catalogItem?.antagonists ? [...catalogItem.antagonists] : [], [catalogItem?.antagonists]);
 
   const containerClass = docked
     ? 'h-full w-full bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300'
@@ -81,33 +106,8 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   const currentMonth = new Date().getMonth();
   const seasonalAdvice = userLocation ? isSowingSeason(catalogItem, userLocation, currentMonth) : null;
 
-  const companions = useMemo(() => (catalogItem.companions || []).slice(), [catalogItem.companions]);
-  const antagonists = useMemo(() => (catalogItem.antagonists || []).slice(), [catalogItem.antagonists]);
-
-  const edibleParts = ((catalogItem as any).edible_parts || []) as string[];
-  const toxicParts = ((catalogItem as any).toxic_parts || []) as string[];
-
-  // Extended KB (pests/diseases/nutrients/seasonality windows)
-  const [kb, setKb] = useState<any | null>(null);
-
-  useEffect(() => {
-    const loadKb = async () => {
-      const db = await getDatabase();
-      // heuristic mapping: try match by scientific name first, then by common name
-      const sci = (catalogItem as any).scientificName;
-      const common = (catalogItem as any).name;
-
-      let doc = null;
-      if (sci) {
-        doc = await db.plant_kb.findOne({ selector: { scientific_name: sci } }).exec();
-      }
-      if (!doc && common) {
-        doc = await db.plant_kb.findOne({ selector: { common_name: common } }).exec();
-      }
-      setKb(doc ? doc.toJSON() : null);
-    };
-    loadKb();
-  }, [catalogItem]);
+  const edibleParts = (catalogItem.edible_parts || []) as string[];
+  const toxicParts = (catalogItem.toxic_parts || []) as string[];
 
   return (
     <div className={containerClass}>
@@ -216,37 +216,38 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <p className="text-xs text-stone-300 leading-relaxed">{catalogItem.description}</p>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧬 Taxonomy</div>
-                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                  <div><span className="text-stone-500">Family:</span> {(catalogItem as any).family || '—'}</div>
-                  <div><span className="text-stone-500">Genus:</span> {(catalogItem as any).genus || '—'}</div>
-                  <div><span className="text-stone-500">Species:</span> {(catalogItem as any).species || '—'}</div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧬 Taxonomy</div>
+                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                    <div><span className="text-stone-500">Family:</span> {catalogItem.family || '—'}</div>
+                    <div><span className="text-stone-500">Genus:</span> {catalogItem.genus || '—'}</div>
+                    <div><span className="text-stone-500">Species:</span> {catalogItem.species || '—'}</div>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🌿 Biology</div>
+                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                    <div><span className="text-stone-500">Life cycle:</span> {catalogItem.life_cycle || '—'}</div>
+                    <div><span className="text-stone-500">Habit:</span> {(catalogItem.growth_habit || []).join(', ') || '—'}</div>
+                    <div><span className="text-stone-500">Photo:</span> {catalogItem.photosynthesis_type || '—'}</div>
+                  </div>
                 </div>
               </div>
-              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🌿 Biology</div>
-                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                  <div><span className="text-stone-500">Life cycle:</span> {(catalogItem as any).life_cycle || '—'}</div>
-                  <div><span className="text-stone-500">Habit:</span> {(((catalogItem as any).growth_habit || []) as string[]).join(', ') || '—'}</div>
-                  <div><span className="text-stone-500">Photo:</span> {(catalogItem as any).photosynthesis_type || '—'}</div>
-                </div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                <div className="flex items-center gap-2">
-                  <FlaskConical className="w-3.5 h-3.5 text-stone-500" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧪 Sowing</div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                  <div className="flex items-center gap-2">
+                    <FlaskConical className="w-3.5 h-3.5 text-stone-500" />
+                    <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧪 Sowing</div>
+                  </div>
+                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                    <div><span className="text-stone-500">Method:</span> {catalogItem.sowingMethod || '—'}</div>
+                    <div><span className="text-stone-500">Seasons:</span> {(catalogItem.sowingSeason || []).join(', ') || '—'}</div>
+                    <div><span className="text-stone-500">Pollination:</span> {catalogItem.pollination_type || '—'}</div>
+                  </div>
                 </div>
-                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                  <div><span className="text-stone-500">Method:</span> {(catalogItem as any).sowingMethod || '—'}</div>
-                  <div><span className="text-stone-500">Seasons:</span> {(catalogItem.sowingSeason || []).join(', ') || '—'}</div>
-                  <div><span className="text-stone-500">Pollination:</span> {(catalogItem as any).pollination_type || '—'}</div>
-                </div>
-              </div>
+
 
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
@@ -310,15 +311,18 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                   <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Seasonality</div>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-stone-200">
-                    {Object.entries(kb.seasonality).map(([k, v]: any) => (
-                      <div key={k} className="rounded-lg border border-stone-800 bg-stone-900/30 p-2">
-                        <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">{k.replace('_', ' ')}</div>
-                        <div className="mt-1">
-                          <span className="text-stone-500">From:</span> {v?.start_month || '—'}
-                          <span className="text-stone-500"> · To:</span> {v?.end_month || '—'}
+                    {Object.entries(kb.seasonality).map(([k, v]) => {
+                      const seasonData = v as { start_month?: string; end_month?: string };
+                      return (
+                        <div key={k} className="rounded-lg border border-stone-800 bg-stone-900/30 p-2">
+                          <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">{k.replace('_', ' ')}</div>
+                          <div className="mt-1">
+                            <span className="text-stone-500">From:</span> {seasonData?.start_month || '—'}
+                            <span className="text-stone-500"> · To:</span> {seasonData?.end_month || '—'}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -373,19 +377,22 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                   <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">KB Sources</div>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {kb.source_metadata.map((s: any, idx: number) => (
-                      <a
-                        key={`${s.source_name || 'src'}-${idx}`}
-                        href={s.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1 text-[9px] text-stone-200 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50 hover:border-garden-500/40 hover:text-garden-200 transition-colors"
-                        title={s.url}
-                      >
-                        {s.source_name || 'Source'} ({Math.round((s.confidence_score || 0) * 100)}%)
-                        <ExternalLink className="w-2 h-2" />
-                      </a>
-                    ))}
+                    {kb.source_metadata.map((s, idx: number) => {
+                      const source = s as { source_name?: string; url?: string; confidence_score?: number };
+                      return (
+                        <a
+                          key={`${source.source_name || 'src'}-${idx}`}
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1 text-[9px] text-stone-200 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50 hover:border-garden-500/40 hover:text-garden-200 transition-colors"
+                          title={source.url}
+                        >
+                          {source.source_name || 'Source'} ({Math.round((source.confidence_score || 0) * 100)}%)
+                          <ExternalLink className="w-2 h-2" />
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               )}

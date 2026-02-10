@@ -8,8 +8,15 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
+interface Config {
+  _id?: string;
+  hemisphere?: string;
+  city?: string;
+  [key: string]: unknown;
+}
+
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<Config | null>(null);
   const [primaryColor, setPrimaryColor] = useState('#22c55e'); // Default garden green
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -29,13 +36,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
     fetchSettings();
   }, []);
 
-  const updateSetting = async (key: string, value: any) => {
+  const updateSetting = async (key: string, value: unknown) => {
     const db = await getDatabase();
     await db.settings.upsert({
       ...config,
       [key]: value
     });
-    setConfig((prev: any) => ({ ...prev, [key]: value }));
+    setConfig((prev: Config | null) => ({ ...prev, [key]: value }));
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {

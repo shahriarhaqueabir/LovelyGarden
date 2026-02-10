@@ -74,7 +74,7 @@ export const DetailModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="w-full max-w-4xl bg-stone-900 border border-stone-800 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden my-8">
+      <div className="w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-3xl lg:max-w-4xl bg-stone-900 border border-stone-800 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Header Section */}
         <div className="relative p-8 border-b border-stone-800 bg-gradient-to-br from-stone-900 to-stone-950">
           <div className="flex justify-between items-start relative z-10">
@@ -459,7 +459,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
       const haystack = `${p.name ?? ''} ${p.scientificName ?? ''} ${(p.categories || []).join(' ')} ${p.family ?? ''}`.toLowerCase();
       return haystack.includes(q);
     });
-  }, [mergedCatalog]);
+  }, [mergedCatalog, query]);
 
   // Check if current date is outside optimal sowing window for Dresden (Zone 7b)
   const isRiskyTiming = (plant: PlantSpecies & Partial<ExpandedPlantKB>): boolean => {
@@ -474,10 +474,12 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
     const plant = mergedCatalog.find(p => p.id === catalogId);
     if (!plant) return;
 
+    // Generate unique ID using a combination of catalogId and timestamp
+    const timestamp = Date.now();
     const bagItem = {
-      id: `inv-${catalogId}-${Date.now()}`,
+      id: `inv-${catalogId}-${timestamp}`,
       catalogId,
-      acquiredDate: Date.now()
+      acquiredDate: timestamp
     };
 
     await db.inventory.insert(bagItem);

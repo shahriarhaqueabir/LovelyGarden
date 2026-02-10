@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Trash2, CheckCircle, XCircle, Info, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trash2, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { useInventory } from '../hooks/useInventory';
 import { getDatabase } from '../db';
+import { showSuccess, showError } from '../lib/toast';
 
 // ... (SeedCard component remains same) -> Restored below
 export const SeedCard: React.FC<{ 
@@ -70,8 +71,10 @@ export const SeedCard: React.FC<{
 };
 
 
+import type { CatalogDocument } from '../db/types';
+
 export const InventoryTray: React.FC<{
-  catalog: any[];
+  catalog: CatalogDocument[];
   onOpenStore: () => void;
   isVertical?: boolean;
   plantNowMode?: boolean;
@@ -79,7 +82,6 @@ export const InventoryTray: React.FC<{
   plantNowSet?: Set<string>;
 }> = ({ catalog, onOpenStore, isVertical, plantNowMode, onTogglePlantNow, plantNowSet }) => {
   const inventory = useInventory();
-  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   
   // Scroll indicators state for horizontal layout
@@ -116,13 +118,11 @@ export const InventoryTray: React.FC<{
       const item = await db.inventory.findOne(inventoryId).exec();
       if (item) {
         await item.remove();
-        setToast({ message: 'Item removed from Bag', type: 'success' });
-        setTimeout(() => setToast(null), 2000);
+        showSuccess('Item removed from Bag');
       }
     } catch (error) {
       console.error('Error deleting inventory item:', error);
-      setToast({ message: 'Failed to remove item', type: 'error' });
-      setTimeout(() => setToast(null), 2000);
+      showError('Failed to remove item');
     }
   };
 
@@ -178,21 +178,6 @@ export const InventoryTray: React.FC<{
           </button>
         )}
       </div>
-
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`
-          fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2
-          ${toast.type === 'error' ? 'bg-red-900/80 border border-red-700 text-red-200' : 
-            toast.type === 'success' ? 'bg-garden-900/80 border border-garden-700 text-garden-200' : 
-            'bg-stone-900/80 border border-stone-700 text-stone-200'}
-        `}>
-          <span className="text-xs">
-            {toast.type === 'success' ? <CheckCircle className="w-4 h-4" /> : toast.type === 'error' ? <XCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-          </span>
-          <span className="text-xs font-bold">{toast.message}</span>
-        </div>
-      )}
 
       {/* Container for scroll indicators - only for horizontal layout */}
       <div className={`${isVertical ? containerClass : 'relative flex gap-4'}`}>

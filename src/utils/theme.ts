@@ -61,6 +61,20 @@ export const applyTheme = (baseHex: string) => {
   });
 };
 
+export const applyBackgroundColor = (bgColor: string) => {
+  const root = document.documentElement;
+  root.style.setProperty('--bg-primary', bgColor);
+  
+  // Update all elements that use the background color
+  const elements = document.querySelectorAll('.bg-app-background, .bg-primary, [class*="bg-[#090c0a]"]');
+  elements.forEach(el => {
+    (el as HTMLElement).style.backgroundColor = bgColor;
+  });
+  
+  // Also update document.body if needed
+  document.body.style.backgroundColor = bgColor;
+};
+
 export const toggleThemeMode = (mode: 'light' | 'dark') => {
   const root = document.documentElement;
   if (mode === 'light') {

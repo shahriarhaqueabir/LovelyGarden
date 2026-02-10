@@ -54,11 +54,27 @@
 
 ---
 
+## ✅ COMPLETED TASKS (Continued)
+
+#### ✅ Task 4: Add Scroll Indicators to Inventory Tray (COMPLETE)
+**File**: `src/components/InventoryTray.tsx`  
+**Changes Made**:
+- Added `scrollRef` and state tracking for left/right indicators
+- Implemented `handleScroll()` function to detect scroll position
+- Added `useEffect` to update indicators on mount and inventory changes
+- Added left gradient indicator (fades in when scrolled right)
+- Added right gradient indicator (fades in when more content available)
+- Indicators only show for horizontal layout (not vertical sidebar)
+
+**Result**: Users can now see visual cues when there's more inventory to scroll through
+
+---
+
 ## 🔄 IN PROGRESS
 
-### Task 4: Add Scroll Indicators to Inventory Tray
+### Task 5: Make Modal Dialogs Responsive
 **Status**: NEXT  
-**Estimated Time**: 45 minutes
+**Estimated Time**: 30 minutes
 
 ---
 
@@ -68,10 +84,10 @@
 - ✅ Task 1: Header Overflow (5/5 subtasks complete)
 - ✅ Task 2: Tab Truncation (4/4 subtasks complete)
 - ✅ Task 3: PlantedCard Overflow (4/4 subtasks complete)
-- ⏳ Task 4: Scroll Indicators (0/5 subtasks)
+- ✅ Task 4: Scroll Indicators (5/5 subtasks complete)
 - ⏳ Task 5: Modal Responsiveness (0/5 subtasks)
 
-**Phase 1 Progress**: 13/23 subtasks (56.5%)
+**Phase 1 Progress**: 18/23 subtasks (78.3%)
 
 ### Phase 2: High Priority Fixes
 - ⏳ All tasks pending
