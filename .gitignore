@@ -71,12 +71,7 @@ blackbox_mcp_settings.json
 *.tsbuildinfo
 
 # Documentation / Reports
-# Keep private reports ignored but allow key documents
-/Guidebook/*
-!/Guidebook/README.md
-!/Guidebook/USER_GUIDE.md
-!/Guidebook/TECHNICAL_SPEC.md
-!/Guidebook/PROJECT_STATE.md
+/Guidebook/
 
 # Playwright
 /playwright-report/
