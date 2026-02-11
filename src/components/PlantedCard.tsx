@@ -4,23 +4,37 @@ interface PlantedCardViewProps {
   catalogId: string;
   stage: string;
   onClick?: () => void;
+  completedStages?: string[];
+  daysElapsed?: number;
 }
 
-export const PlantedCardView: React.FC<PlantedCardViewProps> = ({ catalogId, stage, onClick }) => {
+export const PlantedCardView: React.FC<PlantedCardViewProps> = ({ catalogId, stage, onClick, completedStages = [], daysElapsed = 0 }) => {
   const colors = getStageColor(stage);
   
   return (
     <div 
       onClick={onClick}
-      className="w-full h-full flex flex-col items-center justify-center gap-1 cursor-pointer group/card"
+      className="w-full h-full flex flex-col items-center justify-center gap-1 cursor-pointer group/card relative"
     >
-      <div className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center text-xl shadow-inner border ${colors.text.replace('text', 'border')} group-hover/card:scale-110 transition-transform duration-300`}>
+      {/* Growth Progress Dots */}
+      <div className="absolute top-1 right-2 flex flex-col gap-0.5 pointer-events-none">
+          {completedStages.map((_, i) => (
+               <div key={i} className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-sm border border-green-600/50" title="Stage Completed" />
+          ))}
+      </div>
+
+      <div className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center text-xl shadow-inner border ${colors.text.replace('text', 'border')} group-hover/card:scale-110 transition-transform duration-300 relative`}>
         {stage.toLowerCase().includes('seed') ? '🌱' : 
          stage.toLowerCase().includes('germ') ? '🧪' : 
          stage.toLowerCase().includes('veg') ? '🌿' : 
          stage.toLowerCase().includes('flower') ? '🌸' : 
          stage.toLowerCase().includes('fruit') ? '🍎' : 
          stage.toLowerCase().includes('harvest') ? '🧺' : '🌳'}
+         
+         {/* Active Stage Indicator */}
+         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center border border-stone-700">
+            <span className="text-[8px] text-white font-bold">{daysElapsed}d</span>
+         </div>
       </div>
       <div className={`text-[9px] font-black uppercase leading-tight tracking-widest ${colors.text} group-hover/card:brightness-110 transition-colors`}>
         {stage}

@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
+import { calculateCurrentStage, getCompletedStages } from '../logic/lifecycle';
 import type { PlantedDocument, CatalogDocument, Relationship, GridLayer, PlantHealthStatus } from '../db/types';
 
 interface GridSlotProps {
@@ -17,6 +18,7 @@ interface GridSlotProps {
   onEdit?: (item: PlantedDocument) => void;
   onDelete?: (item: PlantedDocument) => void;
   onStatusChange?: (item: PlantedDocument, status: PlantHealthStatus) => void;
+  catalog?: CatalogDocument[]; // Added catalog prop
 }
 
 // Observation Menu Component
@@ -91,7 +93,7 @@ const DraggablePlant: React.FC<{ item: PlantedDocument; children: React.ReactNod
 };
 
 export const GridSlot: React.FC<GridSlotProps> = ({ 
-  x, y, item, onSelect, layer, activeSeedCatalogId, getItemAt, relationships, onEdit, onDelete, onStatusChange 
+  x, y, item, onSelect, layer, activeSeedCatalogId, getItemAt, relationships, onEdit, onDelete, onStatusChange, catalog 
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `slot-${x}-${y}`,
@@ -109,6 +111,37 @@ export const GridSlot: React.FC<GridSlotProps> = ({
   const healthStatus = item?.healthStatus || 'Healthy';
   const isDead = healthStatus === 'Dead';
   const isPestInfested = healthStatus === 'Pest Infestation';
+
+  // --- Growth & Stage Calculation ---
+  const currentCatalogItem = useMemo(() => {
+      if (!item || !catalog) return undefined;
+      return catalog.find(c => c.id === item.catalogId);
+  }, [item, catalog]);
+
+  const [growthData, setGrowthData] = useState<{ completedStages: string[], daysElapsed: number, stage: string }>({ completedStages: [], daysElapsed: 0, stage: 'seedling' });
+
+  useEffect(() => {
+      if (!item || !currentCatalogItem?.stages) {
+          setGrowthData({ completedStages: [], daysElapsed: 0, stage: 'seedling' });
+          return;
+      }
+      
+      const now = Date.now();
+      const planted = item.plantedDate;
+      
+      let days = 0;
+      if (planted > 100000) { 
+         days = Math.floor((now - planted) / (1000 * 60 * 60 * 24));
+      }
+      if (days < 0) days = 0;
+
+      const completed = getCompletedStages(planted, currentCatalogItem.stages, now);
+      const stage = calculateCurrentStage(planted, currentCatalogItem.stages, now);
+      
+      // Update local state with time-dependent calculations
+      setGrowthData({ completedStages: completed, daysElapsed: days, stage });
+  }, [item, currentCatalogItem]);
+  // ----------------------------------
 
   // --- Sprint 2: Companion Synergy Overlay ---
   const synergy = useMemo(() => {
@@ -272,7 +305,12 @@ export const GridSlot: React.FC<GridSlotProps> = ({
               </div>
 
               <div className="z-10 group-hover:scale-110 transition-transform duration-500 my-auto">
-                <PlantedCardView catalogId={item.catalogId} stage="seedling" />
+                <PlantedCardView 
+                    catalogId={item.catalogId} 
+                    stage={growthData.stage}
+                    completedStages={growthData.completedStages}
+                    daysElapsed={growthData.daysElapsed}
+                />
               </div>
 
               <div className="z-10 w-full space-y-2">

@@ -11,11 +11,17 @@ output*.log
 # Dependencies
 node_modules/
 .pnpm-store/
+package-lock.json
+yarn.lock
 
 # Build artifacts
 dist/
 dist-ssr/
 /dev-dist
+.next/
+.turbo/
+.vercel/
+.netlify/
 
 # Local environment variables
 .env
@@ -36,10 +42,14 @@ dist-ssr/
 *.sln
 *.sw?
 Thumbs.db
+.history/
+*.bak
+*.tmp
 
 # Tool-specific / AI agents
 .blackbox/
 .blackboxrules
+blackbox_mcp_settings.json
 .qodo/
 .gemini/
 .agent/
@@ -60,21 +70,24 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 
-# Project-specific private documentation
-/Guidebook/
+# Documentation / Reports
+# Keep private reports ignored but allow key documents
+/Guidebook/*
+!/Guidebook/README.md
+!/Guidebook/USER_GUIDE.md
+!/Guidebook/TECHNICAL_SPEC.md
+!/Guidebook/PROJECT_STATE.md
 
 # Playwright
 /playwright-report/
 /test-results/
+/test-results/
 
 # Test Outputs
 test_results.txt
+coverage/
+.nyc_output/
 
 # Vite / ESLint / Temporary
 .eslintcache
 vite.config.ts.timestamp-*
-*.tmp
-*.bak
-
-# Task tracking
-/tasks/

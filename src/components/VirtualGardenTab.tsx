@@ -15,7 +15,7 @@ import { InventoryTray } from './InventoryTray';
 import { PlantInspector } from './PlantInspector';
 import { usePlantedCards } from '../hooks/usePlantedCards';
 import { getDatabase } from '../db';
-import { advanceGlobalDay, rewindGlobalDay, createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed } from '../db/queries';
+import { createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed } from '../db/queries';
 import { calculateCurrentStage } from '../logic/lifecycle';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning';
@@ -27,9 +27,7 @@ import { Subscription } from 'rxjs';
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
   currentDay: number;
-  setCurrentDay: (day: number) => void;
   xp: number;
-  setXp: React.Dispatch<React.SetStateAction<number>>;
   alerts: string[];
   onOpenSeedStore?: () => void;
 }
@@ -37,9 +35,7 @@ interface VirtualGardenTabProps {
 export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({ 
   catalog, 
   currentDay, 
-  setCurrentDay, 
   xp, 
-  setXp, 
   alerts,
   onOpenSeedStore 
 }) => {
@@ -247,19 +243,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   };
 
 
-  const handleAdvanceDay = async () => {
-    const newDay = await advanceGlobalDay();
-    setCurrentDay(newDay);
-    setScrubDays(0);
-    setXp(prev => prev + 10); // Gain XP for advancing day
-  };
 
-  const handleRewindDay = async () => {
-    const newDay = await rewindGlobalDay();
-    setCurrentDay(newDay);
-    setScrubDays(0);
-    // Don't subtract XP on rewind, just maintain current XP
-  };
 
   // Calculate grid capacity
   const totalCells = activeGarden ? activeGarden.gridWidth * activeGarden.gridHeight : 0;
@@ -282,86 +266,83 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         )}
 
         {/* HUD OVERLAY */}
-        <header className="min-h-12 flex flex-wrap items-center justify-between px-2 sm:px-4 lg:px-6 gap-1 sm:gap-2 glass z-30 border-b border-stone-800">
-          {/* 1. Cycle Day */}
-          <div className="bg-stone-900 px-2 sm:px-3 py-1 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
-            <Calendar className="w-3.5 h-3.5 text-garden-500" /> <span className="hidden xs:inline">Day:</span> {currentDay}
-          </div>
+        <header className="min-h-12 flex flex-wrap items-center justify-between px-2 sm:px-4 lg:px-6 gap-2 glass z-30 border-b border-stone-800">
+          
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
+            {/* 1. Cycle Day */}
+            <div className="bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
+              <Calendar className="w-3.5 h-3.5 text-garden-500" /> <span className="hidden xs:inline">Day:</span> {currentDay}
+            </div>
 
-          {/* 2. Grid Capacity */}
-          <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
-            isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
-          }`}>
-            <LayoutGrid className="w-3 h-3" />
-            <span>{occupiedCells}/{totalCells}</span>
-          </div>
-
-          {/* 3. Temporal Axis - Hidden below md */}
-          <div className="hidden md:flex items-center gap-2 sm:gap-3 bg-stone-900 px-2 sm:px-3 py-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
-            <span className="text-xs font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1">
-              ⏳ <span className="hidden lg:inline">Axis</span>
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={30}
-              value={scrubDays}
-              onChange={(e) => setScrubDays(Number.parseInt(e.target.value, 10) || 0)}
-              className="w-16 sm:w-24 accent-garden-500 h-1"
-              aria-label="Temporal scrub slider"
-            />
-            <span className="text-xs font-bold uppercase tracking-widest text-stone-400">+{scrubDays}d</span>
-          </div>
-
-          {/* 4. Global Alerts Marquee - Hidden below xl */}
-          <div className="max-w-[200px] overflow-hidden hidden xl:block">
-            <div className="animate-marquee whitespace-nowrap text-[10px] text-stone-500 uppercase tracking-widest">
-              {alerts.join(' • ')}
+            {/* 2. Grid Capacity */}
+            <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
+              isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
+            }`}>
+              <LayoutGrid className="w-3 h-3" />
+              <span>{occupiedCells}/{totalCells}</span>
             </div>
           </div>
 
-          {/* 5. Intervention Console - Hidden below sm */}
-          <div className="hidden sm:flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
-            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all hover:scale-110 active:scale-90" title="Water">
-              <Droplets className="w-3.5 h-3.5" />
-            </button>
-            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all hover:scale-110 active:scale-90" title="Fertilize">
-              <Activity className="w-3.5 h-3.5" />
-            </button>
-            <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all hover:scale-110 active:scale-90" title="Remedy">
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* 6. Spectral Layer Toggle - Hidden below lg */}
-          <div className="hidden lg:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
-            <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
-              Visual
-            </button>
-            <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
-              Hydration
-            </button>
-            <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
-              Blight
-            </button>
-          </div>
-
-          {/* 7. XP/Level Tracker - Hidden below sm */}
-          <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1 rounded-full border border-stone-800 shrink-0">
-            <span className="text-[10px] font-bold text-garden-400">XP: {xp}</span>
-            <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
-              <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
+          {/* 3. Temporal Axis - Central and Wider */}
+          <div className="flex-1 flex justify-center px-4 hidden md:flex">
+             <div className="flex items-center gap-3 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner w-full max-w-[400px]">
+              <span className="text-xs font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1 shrink-0">
+                ⏳ <span className="hidden lg:inline">Axis</span>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={30}
+                value={scrubDays}
+                onChange={(e) => setScrubDays(Number.parseInt(e.target.value, 10) || 0)}
+                className="flex-1 accent-garden-500 h-1.5 cursor-pointer"
+                aria-label="Temporal scrub slider"
+              />
+              <span className="text-xs font-bold uppercase tracking-widest text-stone-400 min-w-[3ch] text-right">+{scrubDays}d</span>
             </div>
           </div>
 
-          {/* 8. Action Block */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <button onClick={handleRewindDay} disabled={currentDay <= 1} className={`p-1.5 font-black rounded-lg text-xs transition-all active:scale-95 shadow-lg ${currentDay <= 1 ? 'bg-stone-700 text-stone-500 opacity-50' : 'bg-amber-600 text-stone-950 hover:bg-amber-400'}`} title="Rewind Day" aria-label="Rewind Day">
-              ↩️
-            </button>
-            <button onClick={handleAdvanceDay} className="p-1.5 bg-garden-600 text-stone-950 font-black rounded-lg text-xs hover:bg-garden-400 transition-all active:scale-95 shadow-lg shadow-garden-500/20" title="Advance Day" aria-label="Advance Day">
-              ↪️
-            </button>
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar justify-end">
+             {/* 4. Global Alerts Marquee - Hidden below xl */}
+            <div className="max-w-[150px] overflow-hidden hidden 2xl:block border-r border-stone-800 pr-4 mr-2">
+              <div className="animate-marquee whitespace-nowrap text-[10px] text-stone-500 uppercase tracking-widest">
+                {alerts.join(' • ')}
+              </div>
+            </div>
+
+            {/* 5. Intervention Console - Hidden below sm */}
+            <div className="hidden sm:flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
+              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all hover:scale-110 active:scale-90" title="Water">
+                <Droplets className="w-3.5 h-3.5" />
+              </button>
+              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all hover:scale-110 active:scale-90" title="Fertilize">
+                <Activity className="w-3.5 h-3.5" />
+              </button>
+              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all hover:scale-110 active:scale-90" title="Remedy">
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 6. Spectral Layer Toggle - Hidden below lg */}
+            <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
+              <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
+                Visual
+              </button>
+              <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
+                Hydration
+              </button>
+              <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
+                Blight
+              </button>
+            </div>
+
+            {/* 7. XP/Level Tracker - Hidden below sm */}
+            <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 shrink-0">
+              <span className="text-[10px] font-bold text-garden-400">XP: {xp}</span>
+              <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
+                <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
+              </div>
+            </div>
           </div>
         </header>
 

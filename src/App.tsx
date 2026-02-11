@@ -200,9 +200,7 @@ const AppContent: React.FC = () => {
               <VirtualGardenTab
                 catalog={catalog}
                 currentDay={currentDay}
-                setCurrentDay={setCurrentDay}
                 xp={xp}
-                setXp={setXp}
                 alerts={alerts}
                 onOpenSeedStore={() => setShowSeedStore(true)}
               />
