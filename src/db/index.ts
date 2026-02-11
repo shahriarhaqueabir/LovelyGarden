@@ -3,7 +3,7 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema, gardenSchema, logbookSchema } from './schemas';
 import { ExpandedPlantKBSchema } from '../schema/zod-schemas';
-import type { CatalogDocument, PlantKbDocument, SourceDocument, SettingsDocument, GardenDocument } from './types';
+import type { CatalogDocument, PlantKbDocument, SettingsDocument, GardenDocument } from './types';
 
 // Type for migration documents
 type MigrationDoc<T> = T & { _rev?: string; _attachments?: Record<string, unknown> };

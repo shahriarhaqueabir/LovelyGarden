@@ -38,18 +38,16 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
       throw new Error(`Slot (${x}, ${y}) is already occupied`);
     }
 
-    const settings = await db.settings.findOne('local-user').exec();
-    const currentDay = settings?.currentDay || 1;
-
-    // 1. Insert into planted with simulation defaults
+    // 1. Insert into planted with real timestamp
+    const plantedTimestamp = Date.now();
     await db.planted.insert({
       id,
       bedId: gardenId,
       catalogId,
       gridX: x,
       gridY: y,
-      plantedDate: currentDay,
-      lastWateredDate: currentDay,
+      plantedDate: plantedTimestamp,
+      lastWateredDate: plantedTimestamp,
       currentStageIndex: 0,
       healthStatus: 'Healthy',
       hydration: 100,

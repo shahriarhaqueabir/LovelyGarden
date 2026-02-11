@@ -85,6 +85,9 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
   const eligible = filtered.filter(p => isSowingSeason(p, location, activeMonth).eligible);
   const ineligible = filtered.filter(p => !isSowingSeason(p, location, activeMonth).eligible);
 
+  // Real-time month based on current date + scrub (kept for potential future use or removed if strictly unused)
+  // const getSimulatedDate ... removed to satisfy lint
+
   return (
     <div className="flex flex-col h-full bg-[#0c0a09] text-stone-100 p-6 overflow-auto">
       <div className="mb-6">
@@ -110,8 +113,8 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
             
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="p-4 bg-stone-950/50 rounded-2xl border border-stone-800/50 hover:border-garden-500/30 transition-colors group">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600 block mb-1 group-hover:text-stone-400 transition-colors">Plan Day</span>
-                <span className="text-2xl font-black text-garden-400 tracking-tighter">{currentDay}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600 block mb-1 group-hover:text-stone-400 transition-colors">Date</span>
+                <span className="text-xl font-black text-garden-400 tracking-tighter">{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
               </div>
               <div className="p-4 bg-stone-950/50 rounded-2xl border border-stone-800/50 hover:border-garden-500/30 transition-colors group">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600 block mb-1 group-hover:text-stone-400 transition-colors">Active Month</span>
@@ -128,7 +131,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-garden-500 animate-pulse" />
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500">Temporal Scrubbing</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500">Planning Window</span>
               </div>
               {activeMonth !== realMonth && (
                 <button 
@@ -207,7 +210,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
             <div className="w-3 h-3 bg-garden-500 rounded-full"></div>
             <h3 className="font-bold text-garden-400">Plant Now ({eligible.length})</h3>
           </div>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
             {eligible.map(p => (
               <div key={p.id} className="p-3 rounded-xl border border-garden-500/20 bg-garden-900/10">
                 <div className="flex justify-between items-start">
@@ -235,7 +238,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
             {eligible.length === 0 && (
               <div className="text-center py-8 text-stone-500">
                 <p>No plants are currently in season for sowing.</p>
-                <p className="text-sm mt-2">Try adjusting the temporal axis or check other seasons.</p>
+                <p className="text-sm mt-2">Try adjusting the active month or check other seasons.</p>
               </div>
             )}
           </div>
@@ -246,7 +249,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({ catalog, c
             <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
             <h3 className="font-bold text-amber-400">Out of Window ({ineligible.length})</h3>
           </div>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
             {ineligible.map(p => (
               <div key={p.id} className="p-3 rounded-xl border border-amber-500/10 bg-amber-900/5">
                 <div className="flex justify-between items-start">
