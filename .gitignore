@@ -86,3 +86,5 @@ coverage/
 # Vite / ESLint / Temporary
 .eslintcache
 vite.config.ts.timestamp-*
+blackbox_mcp_settings.json
+Guidebook/  
