@@ -228,6 +228,7 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
 
             <div className="flex gap-2">
               <select
+                title="Filter by category"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 className="px-3 py-2 bg-stone-900/50 border border-stone-800 rounded-lg text-sm text-stone-200 focus:outline-none focus:ring-1 focus:ring-garden-500"
@@ -239,6 +240,7 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
               </select>
 
               <select
+                title="Sort by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3 py-2 bg-stone-900/50 border border-stone-800 rounded-lg text-sm text-stone-200 focus:outline-none focus:ring-1 focus:ring-garden-500"
@@ -282,19 +284,19 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
                     <div
                       className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30 hover:border-garden-700/50 cursor-pointer transition-all group h-full"
                       onClick={() => {
-                        if (catalogItem && expandedPlantKB[item.catalogId]) {
+                        if (catalogItem) {
                           const expanded = expandedPlantKB[item.catalogId];
                           setSelectedPlant({
                             ...catalogItem,
-                            sowingSeason: (expanded.sowingSeason as Season[]) || catalogItem.sowingSeason,
-                            sowingMethod: (expanded.sowingMethod as "Direct" | "Transplant") || catalogItem.sowingMethod,
-                            stages: expanded.stages?.map(stage => ({
+                            sowingSeason: (expanded?.sowingSeason as Season[]) || catalogItem.sowingSeason || [],
+                            sowingMethod: (expanded?.sowingMethod as "Direct" | "Transplant") || catalogItem.sowingMethod || 'Direct',
+                            stages: expanded?.stages?.map(stage => ({
                               id: stage.id as GrowthStageId,
                               name: stage.name,
                               durationDays: stage.durationDays,
                               waterFrequencyDays: stage.waterFrequencyDays,
                               imageAssetId: stage.imageAssetId || 'generic_image'
-                            })) || catalogItem.stages
+                            })) || catalogItem.stages || []
                           });
                         }
                       }}

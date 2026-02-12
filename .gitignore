@@ -86,3 +86,8 @@ coverage/
 # Vite / ESLint / Temporary
 .eslintcache
 vite.config.ts.timestamp-*
+
+.gitignore      
+
+
+

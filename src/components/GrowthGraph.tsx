@@ -12,14 +12,42 @@ interface GrowthGraphProps {
 
 export const getStageColor = (stageId: string) => {
   const sid = stageId.toLowerCase();
-  if (sid.includes('seed')) return { bg: 'bg-stone-200', text: 'text-stone-700', bar: 'bg-stone-400' };
-  if (sid.includes('germ')) return { bg: 'bg-emerald-100', text: 'text-emerald-700', bar: 'bg-emerald-400' };
-  if (sid.includes('seedling') || sid.includes('sapling')) return { bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-400' };
-  if (sid.includes('veg')) return { bg: 'bg-lime-100', text: 'text-lime-700', bar: 'bg-lime-400' };
-  if (sid.includes('flower')) return { bg: 'bg-pink-100', text: 'text-pink-700', bar: 'bg-pink-400' };
-  if (sid.includes('fruit')) return { bg: 'bg-amber-100', text: 'text-amber-700', bar: 'bg-amber-400' };
-  if (sid.includes('harvest')) return { bg: 'bg-orange-100', text: 'text-orange-700', bar: 'bg-orange-400' };
-  if (sid.includes('dormant')) return { bg: 'bg-blue-100', text: 'text-blue-700', bar: 'bg-blue-400' };
+  
+  // 1. Young Plants / Establishment (Green) - Check this BEFORE generic seed to avoid shadowing 'seedling'
+  if (sid.includes('seedling') || sid.includes('sapling') || sid.includes('establishment')) 
+    return { bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-400' };
+
+  // 2. Early Life / Propagules (Stone/Emerald)
+  if (sid.includes('seed') || sid.includes('sprout')) 
+    return { bg: 'bg-stone-200', text: 'text-stone-700', bar: 'bg-stone-400' };
+  
+  if (sid.includes('germ') || sid.includes('cutting') || sid.includes('rhizome') || sid.includes('clove') || sid.includes('sucker') || sid.includes('runner')) 
+    return { bg: 'bg-emerald-100', text: 'text-emerald-700', bar: 'bg-emerald-400' };
+
+  // 3. Vegetative / Biomass Growth (Lime)
+  if (sid.includes('veg') || sid.includes('habit') || sid.includes('cane') || sid.includes('crown') || sid.includes('foliage')) 
+    return { bg: 'bg-lime-100', text: 'text-lime-700', bar: 'bg-lime-400' };
+
+  // 4. Structural Maturity (Teal)
+  if (sid.includes('development') || sid.includes('formation')) 
+    return { bg: 'bg-teal-100', text: 'text-teal-700', bar: 'bg-teal-400' };
+
+  // 5. Reproductive / Bloom (Pink)
+  if (sid.includes('flower') || sid.includes('bloom') || sid.includes('silk') || sid.includes('tassel')) 
+    return { bg: 'bg-pink-100', text: 'text-pink-700', bar: 'bg-pink-400' };
+
+  // 6. Fruit / Set (Amber)
+  if (sid.includes('fruit') || sid.includes('set') || sid.includes('pod')) 
+    return { bg: 'bg-amber-100', text: 'text-amber-700', bar: 'bg-amber-400' };
+
+  // 7. Maturity / Harvest (Orange)
+  if (sid.includes('harvest') || sid.includes('ripe')) 
+    return { bg: 'bg-orange-100', text: 'text-orange-700', bar: 'bg-orange-400' };
+
+  // 8. Dormancy / End of Life (Blue/Stone)
+  if (sid.includes('dormant') || sid.includes('senesce')) 
+    return { bg: 'bg-blue-100', text: 'text-blue-700', bar: 'bg-blue-400' };
+
   return { bg: 'bg-stone-800', text: 'text-stone-400', bar: 'bg-stone-600' };
 };
 
