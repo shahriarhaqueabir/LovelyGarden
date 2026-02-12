@@ -214,7 +214,13 @@ const synthesizePlantData = (
     growth_habit: plant.growth_habit || kbMatch?.growth_habit || ['bushy'],
     pollination_type: plant.pollination_type || kbMatch?.pollination_type || 'insect',
     sowingSeason: plant.sowingSeason || kbMatch?.sowingSeason || [],
-    seasonality: plant.seasonality || kbMatch?.seasonality
+    seasonality: plant.seasonality || kbMatch?.seasonality,
+    sunlight: plant.sunlight || kbMatch?.sunlight,
+    water_requirements: plant.water_requirements || kbMatch?.water_requirements,
+    soil_type: plant.soil_type || (kbMatch as any)?.soil_type || [],
+    common_pests: plant.common_pests || (kbMatch as any)?.common_pests || [],
+    common_diseases: plant.common_diseases || (kbMatch as any)?.common_diseases || [],
+    nutrient_preferences: plant.nutrient_preferences || (kbMatch as any)?.nutrient_preferences || []
   };
 };
 

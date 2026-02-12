@@ -75,17 +75,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     const loadKb = async () => {
       if (!catalogItem) return;
       const db = await getDatabase();
-      // heuristic mapping: try match by scientific name first, then by common name
-      const sci = catalogItem.scientificName;
-      const common = catalogItem.name;
-
-      let doc = null;
-      if (sci) {
-        doc = await db.plant_kb.findOne({ selector: { scientific_name: sci } }).exec();
-      }
-      if (!doc && common) {
-        doc = await db.plant_kb.findOne({ selector: { common_name: common } }).exec();
-      }
+      const doc = await db.plant_kb.findOne(catalogItem.id).exec();
       setKb(doc ? (doc.toJSON() as PlantKbDocument) : null);
     };
     loadKb();
