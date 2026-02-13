@@ -184,6 +184,126 @@ export const deleteGarden = async (id: string) => {
 };
 
 /**
+ * OBSERVATION & DIAGNOSTICS
+ */
+export const addPlantObservation = async (plantId: string, observation: { id: string, category: string, label: string, impact: { hydration?: number; stress?: number; n?: number; p?: number; k?: number } }) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  
+  if (!plant) throw new Error("Plant unit not found");
+
+  const data = plant.toJSON();
+  const newObservations = [...(data.observations || []), {
+    id: observation.id,
+    category: observation.category,
+    label: observation.label,
+    timestamp: Date.now()
+  }];
+
+  // Clear system diagnosis on manual observation (Human Override)
+  const updates: Partial<import('./types').PlantedDocument> = {
+    observations: newObservations,
+    systemDiagnosis: undefined 
+  };
+
+  if (observation.impact.hydration !== undefined) updates.hydration = observation.impact.hydration;
+  if (observation.impact.stress !== undefined) {
+    // Stress impact is additive
+    updates.stressLevel = Math.min(100, (data.stressLevel || 0) + observation.impact.stress);
+  }
+  
+  if (observation.impact.n !== undefined || observation.impact.p !== undefined || observation.impact.k !== undefined) {
+    updates.nutrients = {
+      n: observation.impact.n ?? data.nutrients?.n ?? 50,
+      p: observation.impact.p ?? data.nutrients?.p ?? 50,
+      k: observation.impact.k ?? data.nutrients?.k ?? 50
+    };
+  }
+
+  // Auto-set health status based on category
+  if (observation.category === 'Pests') {
+    updates.healthStatus = 'Pest Infestation';
+  } else if (observation.category === 'Moisture' && observation.impact.hydration !== undefined && observation.impact.hydration > 90) {
+    updates.healthStatus = 'Overwatered';
+  }
+
+  await plant.patch(updates);
+};
+
+export const waterPlant = async (plantId: string) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  if (!plant) throw new Error("Plant not found");
+
+  const timestamp = Date.now();
+  await plant.patch({
+    hydration: 100,
+    lastWateredDate: timestamp,
+    stressLevel: Math.max(0, (plant.stressLevel || 0) - 10) // Watering reduces stress
+  });
+
+  // Grant XP: +5 for watering
+  const settings = await db.settings.findOne('local-user').exec();
+  if (settings) {
+    await settings.patch({ xp: (settings.xp || 0) + 5 });
+  }
+};
+
+export const harvestPlant = async (plantId: string, itemName?: string, notes?: string) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  if (!plant) throw new Error("Plant not found");
+
+  const data = plant.toJSON();
+  const timestamp = Date.now();
+
+  // 1. Log to logbook
+  const id = `harvest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  await db.logbook.insert({
+    id,
+    type: 'harvest',
+    itemName: itemName || data.catalogId,
+    category: 'plants',
+    date: timestamp,
+    notes: notes || 'Harvested from garden',
+    catalogId: data.catalogId
+  });
+
+  // 2. Remove from garden
+  await plant.remove();
+
+  // 3. Grant XP: +50 for successful harvest
+  const settings = await db.settings.findOne('local-user').exec();
+  if (settings) {
+    await settings.patch({ xp: (settings.xp || 0) + 50 });
+  }
+};
+
+export const recordLoss = async (plantId: string, itemName?: string, reason?: string) => {
+  const db = await getDatabase();
+  const plant = await db.planted.findOne(plantId).exec();
+  if (!plant) throw new Error("Plant not found");
+
+  const data = plant.toJSON();
+  const timestamp = Date.now();
+
+  // 1. Log to logbook as lost
+  const id = `loss-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  await db.logbook.insert({
+    id,
+    type: 'lost_harvest',
+    itemName: itemName || data.catalogId,
+    category: 'plants',
+    date: timestamp,
+    notes: reason || 'Plant lost/died',
+    catalogId: data.catalogId
+  });
+
+  // 2. Remove from garden
+  await plant.remove();
+};
+
+/**
  * ADVANCE GLOBAL TIME
  */
 export const advanceGlobalDay = async () => {
@@ -226,10 +346,19 @@ export const advanceGlobalDay = async () => {
       else if (newStress > 50) health = 'Stressed';
       else if (newStress > 20) health = 'Wilting';
 
+      // --- Theoretical Mortality Proposal ---
+      let diagnosis = undefined;
+      if (newStress >= 100 && newHydration <= 0) {
+        diagnosis = 'Theoretical Mortality: Biological functions likely ceased due to extreme stress/dehydration.';
+      } else if (newHydration < 10) {
+        diagnosis = 'Critical Dehydration: Immediate intervention required to prevent permanent cell damage.';
+      }
+
       await plant.patch({
         hydration: newHydration,
         stressLevel: newStress,
-        healthStatus: health
+        healthStatus: health,
+        systemDiagnosis: diagnosis
       });
     }
 

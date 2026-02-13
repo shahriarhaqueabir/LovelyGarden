@@ -1,66 +1,4527 @@
 [
-  { "plant_id": "plant_cucumber", "common_name": "Cucumber", "scientific_name": "Cucumis sativus", "type": "vegetable", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["loamy", "well_draining", "fertile"], "companion_plants": ["plant_bean", "plant_radish", "plant_dill", "plant_corn"], "incompatible_plants": ["plant_sage", "plant_melon", "plant_potato"], "common_pests": ["pest_cucumber_beetle", "pest_aphids"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Requires trellising for air circulation." },
-  { "plant_id": "plant_zucchini", "common_name": "Zucchini", "scientific_name": "Cucurbita pepo", "type": "vegetable", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining", "rich"], "companion_plants": ["plant_bean", "plant_corn", "plant_nasturtium"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_squash_bug", "pest_vine_borer"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Heavy feeder; harvest regularly." },
-  { "plant_id": "plant_bell_pepper", "common_name": "Bell Pepper", "scientific_name": "Capsicum annuum", "type": "vegetable", "family": "Solanaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "July", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_basil", "plant_onion", "plant_parsley"], "incompatible_plants": ["plant_fennel", "plant_kohlrabi"], "common_pests": ["pest_aphids", "pest_hornworm"], "common_diseases": ["disease_blossom_end_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Requires warm soil." },
-  { "plant_id": "plant_bean", "common_name": "Green Bean", "scientific_name": "Phaseolus vulgaris", "type": "vegetable", "family": "Fabaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "pod_formation", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "July" }, "harvest": { "start_month": "June", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"], "incompatible_plants": ["plant_onion", "plant_garlic"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"], "notes": "Nitrogen-fixing legume." },
-  { "plant_id": "plant_broccoli", "common_name": "Broccoli", "scientific_name": "Brassica oleracea var. italica", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "head_formation", "harvest"], "seasonality": { "sowing": { "start_month": "February", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate_to_high", "soil_type": ["loamy", "fertile"], "companion_plants": ["plant_onion", "plant_celery", "plant_beet"], "incompatible_plants": ["plant_strawberry", "plant_tomato"], "common_pests": ["pest_cabbage_worm"], "common_diseases": ["disease_clubroot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Cool-season crop." },
-  { "plant_id": "plant_cauliflower", "common_name": "Cauliflower", "scientific_name": "Brassica oleracea var. botrytis", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "curd_formation", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_celery", "plant_onion", "plant_sage"], "incompatible_plants": ["plant_strawberry", "plant_tomato"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Requires blanching." },
-  { "plant_id": "plant_beet", "common_name": "Beet", "scientific_name": "Beta vulgaris", "type": "vegetable", "family": "Amaranthaceae", "growth_stage": ["seed", "seedling", "vegetative", "root_development", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "July" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_onion", "plant_lettuce", "plant_broccoli"], "incompatible_plants": ["plant_pole_bean"], "common_pests": ["pest_leaf_miner"], "common_diseases": ["disease_leaf_spot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Greens are edible." },
-  { "plant_id": "plant_onion", "common_name": "Onion", "scientific_name": "Allium cepa", "type": "vegetable", "family": "Amaryllidaceae", "growth_stage": ["seed", "seedling", "vegetative", "bulb_formation", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "July", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_carrot", "plant_lettuce", "plant_beet"], "incompatible_plants": ["plant_bean", "plant_pea"], "common_pests": ["pest_thrips"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Day-length sensitive." },
-  { "plant_id": "plant_thyme", "common_name": "Thyme", "scientific_name": "Thymus vulgaris", "type": "herb", "family": "Lamiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["sandy", "well_draining"], "companion_plants": ["plant_cabbage", "plant_eggplant", "plant_strawberry"], "incompatible_plants": [], "common_pests": ["pest_spider_mites"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Drought-tolerant." },
-  { "plant_id": "plant_oregano", "common_name": "Oregano", "scientific_name": "Origanum vulgare", "type": "herb", "family": "Lamiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["well_draining", "sandy"], "companion_plants": ["plant_cucumber", "plant_squash", "plant_tomato"], "incompatible_plants": [], "common_pests": ["pest_aphids"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Perennial herb." },
-  { "plant_id": "plant_coriander", "common_name": "Coriander / Cilantro", "scientific_name": "Coriandrum sativum", "type": "herb", "family": "Apiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "September" }, "harvest": { "start_month": "April", "end_month": "November" } }, "sunlight": "partial_shade", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_spinach", "plant_tomato"], "incompatible_plants": ["plant_fennel"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_low"], "notes": "Bolts quickly in heat." },
-  { "plant_id": "plant_parsley", "common_name": "Parsley", "scientific_name": "Petroselinum crispum", "type": "herb", "family": "Apiaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "May", "end_month": "November" } }, "sunlight": "partial_shade", "water_requirements": "moderate", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_tomato", "plant_asparagus", "plant_carrot"], "incompatible_plants": [], "common_pests": ["pest_carrot_fly"], "common_diseases": ["disease_crown_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Slow germination." },
-  { "plant_id": "plant_dill", "common_name": "Dill", "scientific_name": "Anethum graveolens", "type": "herb", "family": "Apiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_cucumber", "plant_lettuce", "plant_onion"], "incompatible_plants": ["plant_carrot", "plant_fennel"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_low"], "notes": "Attracts beneficial insects." },
-  { "plant_id": "plant_sage", "common_name": "Sage", "scientific_name": "Salvia officinalis", "type": "herb", "family": "Lamiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["sandy", "well_draining"], "companion_plants": ["plant_carrot", "plant_cabbage", "plant_strawberry"], "incompatible_plants": ["plant_cucumber", "plant_onion"], "common_pests": ["pest_spider_mites"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Woody perennial." },
-  { "plant_id": "plant_chive", "common_name": "Chive", "scientific_name": "Allium schoenoprasum", "type": "herb", "family": "Amaryllidaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_carrot", "plant_tomato"], "incompatible_plants": ["plant_bean", "plant_pea"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Edible flowers." },
-  { "plant_id": "plant_sunflower", "common_name": "Sunflower", "scientific_name": "Helianthus annuus", "type": "flower", "family": "Asteraceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "August", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_moderate"], "notes": "Allelopathic properties." },
-  { "plant_id": "plant_zinnia", "common_name": "Zinnia", "scientific_name": "Zinnia elegans", "type": "flower", "family": "Asteraceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "neutral"], "companion_plants": ["plant_tomato", "plant_cucumber"], "incompatible_plants": [], "common_pests": ["pest_japanese_beetle"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Attracts butterflies." },
-  { "plant_id": "plant_petunia", "common_name": "Petunia", "scientific_name": "Petunia × hybrida", "type": "flower", "family": "Solanaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_tomato", "plant_bean"], "incompatible_plants": [], "common_pests": ["pest_aphids"], "common_diseases": ["disease_botrytis"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_moderate"], "notes": "Requires deadheading." },
-  { "plant_id": "plant_cosmos", "common_name": "Cosmos", "scientific_name": "Cosmos bipinnatus", "type": "flower", "family": "Asteraceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["well_draining"], "companion_plants": ["plant_tomato", "plant_bean"], "incompatible_plants": [], "common_pests": ["pest_aphids"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"], "notes": "Self-seeding annual." },
-  { "plant_id": "plant_nasturtium", "common_name": "Nasturtium", "scientific_name": "Tropaeolum majus", "type": "flower", "family": "Tropaeolaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["well_draining", "poor"], "companion_plants": ["plant_cucumber", "plant_radish", "plant_squash"], "incompatible_plants": [], "common_pests": ["pest_aphids"], "common_diseases": ["disease_bacterial_wilt"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Trap crop for aphids." },
-  { "plant_id": "plant_geranium", "common_name": "Geranium", "scientific_name": "Pelargonium × hortorum", "type": "flower", "family": "Geraniaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["well_draining"], "companion_plants": ["plant_rose", "plant_corn", "plant_grape"], "incompatible_plants": [], "common_pests": ["pest_whitefly"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Tender perennial." },
-  { "plant_id": "plant_eggplant", "common_name": "Eggplant", "scientific_name": "Solanum melongena", "type": "vegetable", "family": "Solanaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "July", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["loamy", "fertile"], "companion_plants": ["plant_bean", "plant_thyme", "plant_pepper"], "incompatible_plants": ["plant_fennel", "plant_potato"], "common_pests": ["pest_flea_beetle"], "common_diseases": ["disease_verticillium_wilt"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Requires warm soil." },
-  { "plant_id": "plant_swiss_chard", "common_name": "Swiss Chard", "scientific_name": "Beta vulgaris subsp. vulgaris", "type": "vegetable", "family": "Amaranthaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "July" }, "harvest": { "start_month": "May", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_bean", "plant_onion"], "incompatible_plants": [], "common_pests": ["pest_leaf_miner"], "common_diseases": ["disease_leaf_spot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Tolerates light frost." },
-  { "plant_id": "plant_arugula", "common_name": "Arugula", "scientific_name": "Eruca vesicaria", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "September" }, "harvest": { "start_month": "April", "end_month": "November" } }, "sunlight": "partial_shade", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_carrot", "plant_beet"], "incompatible_plants": [], "common_pests": ["pest_flea_beetle"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Bolts in heat." },
-  { "plant_id": "plant_collard_greens", "common_name": "Collard Greens", "scientific_name": "Brassica oleracea var. viridis", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "June", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "fertile"], "companion_plants": ["plant_bean", "plant_onion"], "incompatible_plants": ["plant_tomato"], "common_pests": ["pest_cabbage_worm"], "common_diseases": ["disease_clubroot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Cold hardy." },
-  { "plant_id": "plant_turnip", "common_name": "Turnip", "scientific_name": "Brassica rapa subsp. rapa", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "root_development", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "May", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_pea", "plant_bean"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_root_maggot"], "common_diseases": ["disease_clubroot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Greens edible." },
-  { "plant_id": "plant_squash_butternut", "common_name": "Butternut Squash", "scientific_name": "Cucurbita moschata", "type": "vegetable", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "September", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "fertile"], "companion_plants": ["plant_corn", "plant_bean"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_squash_bug"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Long growing season." },
-  { "plant_id": "plant_pumpkin", "common_name": "Pumpkin", "scientific_name": "Cucurbita pepo", "type": "vegetable", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "May", "end_month": "June" }, "harvest": { "start_month": "September", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_corn", "plant_bean", "plant_sunflower"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_vine_borer"], "common_diseases": ["disease_bacterial_wilt"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Requires space." },
-  { "plant_id": "plant_watermelon", "common_name": "Watermelon", "scientific_name": "Citrullus lanatus", "type": "fruit", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "July", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["sandy_loam", "well_draining"], "companion_plants": ["plant_corn", "plant_nasturtium"], "incompatible_plants": [], "common_pests": ["pest_aphids", "pest_cucumber_beetle"], "common_diseases": ["disease_fusarium_wilt"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Needs long warm season." },
-  { "plant_id": "plant_cantaloupe", "common_name": "Cantaloupe", "scientific_name": "Cucumis melo", "type": "fruit", "family": "Cucurbitaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "July", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["sandy_loam"], "companion_plants": ["plant_corn", "plant_radish"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_melon_fly"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Reduce water as it ripens." },
-  { "plant_id": "plant_chilli", "common_name": "Chilli Pepper", "scientific_name": "Capsicum frutescens", "type": "vegetable", "family": "Solanaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "January", "end_month": "March" }, "harvest": { "start_month": "June", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy"], "companion_plants": ["plant_basil", "plant_onion"], "incompatible_plants": ["plant_bean"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_anthracnose"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Heat loving." },
-  { "plant_id": "plant_papaya", "common_name": "Papaya", "scientific_name": "Carica papaya", "type": "fruit", "family": "Caricaceae", "growth_stage": ["seed", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "June" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["sandy_loam", "rich"], "companion_plants": ["plant_banana"], "incompatible_plants": [], "common_pests": ["pest_whitefly"], "common_diseases": ["disease_ringspot_virus"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"], "notes": "Avoid waterlogging." },
-  { "plant_id": "plant_long_bean", "common_name": "Yardlong Bean", "scientific_name": "Vigna unguiculata", "type": "vegetable", "family": "Fabaceae", "growth_stage": ["seed", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "July" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy"], "companion_plants": ["plant_corn", "plant_cucumber"], "incompatible_plants": ["plant_onion"], "common_pests": ["pest_thrips"], "common_diseases": ["disease_mosaic_virus"], "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"], "notes": "Vigorous climber." },
-  { "plant_id": "plant_cherimoya", "common_name": "Cherimoya", "scientific_name": "Annona cherimola", "type": "fruit", "family": "Annonaceae", "growth_stage": ["seed", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "February", "end_month": "April" }, "harvest": { "start_month": "October", "end_month": "May" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["sandy_loam"], "companion_plants": ["plant_pepper"], "incompatible_plants": [], "common_pests": ["pest_mealybugs"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Custard like fruit." },
-  { "plant_id": "plant_monstera", "common_name": "Monstera", "scientific_name": "Monstera deliciosa", "type": "ornamental", "family": "Araceae", "growth_stage": ["cutting", "vegetative"], "seasonality": { "sowing": { "start_month": "January", "end_month": "December" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "bright_indirect_light", "water_requirements": "moderate", "soil_type": ["peaty"], "companion_plants": ["plant_pothos"], "incompatible_plants": [], "common_pests": ["pest_thrips"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Toxic to pets." },
-  { "plant_id": "plant_money_plant", "common_name": "Money Plant", "scientific_name": "Epipremnum aureum", "type": "ornamental", "family": "Araceae", "growth_stage": ["cutting", "vegetative"], "seasonality": { "sowing": { "start_month": "January", "end_month": "December" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "low_indirect_light", "water_requirements": "low", "soil_type": ["potting_mix"], "companion_plants": [], "incompatible_plants": [], "common_pests": ["pest_mealybugs"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_low"], "notes": "Hardy air purifier." },
-  { "plant_id": "plant_banana", "common_name": "Banana", "scientific_name": "Musa acuminata", "type": "fruit", "family": "Musaceae", "growth_stage": ["sucker", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "very_high", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_sweet_potato"], "incompatible_plants": [], "common_pests": ["pest_banana_weevil"], "common_diseases": ["disease_panama_disease"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_very_high"], "notes": "Needs high potassium." },
-  { "plant_id": "plant_cacao", "common_name": "Cacao", "scientific_name": "Theobroma cacao", "type": "tree", "family": "Malvaceae", "growth_stage": ["seed", "seedling", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "January", "end_month": "December" }, "harvest": { "start_month": "October", "end_month": "March" } }, "sunlight": "partial_shade", "water_requirements": "high", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_banana"], "incompatible_plants": [], "common_pests": ["pest_pod_borer"], "common_diseases": ["disease_black_pod"], "nutrient_preferences": ["nitrogen_high", "phosphorus_high", "potassium_high"], "notes": "Shade tree required." },
-  { "plant_id": "plant_bottle_gourd", "common_name": "Bottle Gourd", "scientific_name": "Lagenaria siceraria", "type": "vegetable", "family": "Cucurbitaceae", "growth_stage": ["seed", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "June" }, "harvest": { "start_month": "July", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["sandy_loam"], "companion_plants": ["plant_corn"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_fruit_fly"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Night flowering." },
-  { "plant_id": "plant_mint", "common_name": "Mint", "scientific_name": "Mentha", "type": "herb", "family": "Lamiaceae", "growth_stage": ["cutting", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "partial_shade", "water_requirements": "high", "soil_type": ["moist", "rich"], "companion_plants": ["plant_tomato", "plant_cabbage"], "incompatible_plants": ["plant_parsley"], "common_pests": ["pest_spider_mites"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Invasive roots." },
-  { "plant_id": "plant_apricot", "common_name": "Apricot", "scientific_name": "Prunus armeniaca", "type": "fruit_tree", "family": "Rosaceae", "growth_stage": ["sapling", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "November", "end_month": "March" }, "harvest": { "start_month": "June", "end_month": "August" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy"], "companion_plants": ["plant_basil", "plant_garlic"], "incompatible_plants": ["plant_tomato"], "common_pests": ["pest_aphids"], "common_diseases": ["disease_brown_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Early bloomer." },
-  { "plant_id": "plant_plum", "common_name": "Plum", "scientific_name": "Prunus domestica", "type": "fruit_tree", "family": "Rosaceae", "growth_stage": ["sapling", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "November", "end_month": "March" }, "harvest": { "start_month": "July", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy"], "companion_plants": ["plant_lavender"], "incompatible_plants": ["plant_potato"], "common_pests": ["pest_scale"], "common_diseases": ["disease_black_knot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_high"], "notes": "Needs cross pollination." },
-  { "plant_id": "plant_tomato", "common_name": "Tomato", "scientific_name": "Solanum lycopersicum", "type": "vegetable", "family": "Solanaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "July", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_basil", "plant_onion", "plant_marigold", "plant_carrot"], "incompatible_plants": ["plant_cabbage", "plant_fennel", "plant_potato"], "common_pests": ["pest_hornworm", "pest_whitefly"], "common_diseases": ["disease_blight", "disease_blossom_end_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Requires staking and consistent watering." },
-  { "plant_id": "plant_potato", "common_name": "Potato", "scientific_name": "Solanum tuberosum", "type": "vegetable", "family": "Solanaceae", "growth_stage": ["sprout", "vegetative", "flowering", "tuber_set", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "August", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "slightly_acidic"], "companion_plants": ["plant_bean", "plant_corn", "plant_cabbage"], "incompatible_plants": ["plant_tomato", "plant_cucumber", "plant_sunflower"], "common_pests": ["pest_colorado_beetle"], "common_diseases": ["disease_scab", "disease_late_blight"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Hill soil around stems to increase yield." },
-  { "plant_id": "plant_carrot", "common_name": "Carrot", "scientific_name": "Daucus carota", "type": "vegetable", "family": "Apiaceae", "growth_stage": ["seed", "seedling", "root_development", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "June", "end_month": "November" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["sandy", "loose"], "companion_plants": ["plant_onion", "plant_leek", "plant_tomato"], "incompatible_plants": ["plant_dill", "plant_fennel"], "common_pests": ["pest_carrot_fly"], "common_diseases": ["disease_leaf_blight"], "nutrient_preferences": ["nitrogen_low", "phosphorus_high", "potassium_high"], "notes": "Soil must be stone-free for straight roots." },
-  { "plant_id": "plant_garlic", "common_name": "Garlic", "scientific_name": "Allium sativum", "type": "vegetable", "family": "Amaryllidaceae", "growth_stage": ["clove", "vegetative", "bulb_formation", "harvest"], "seasonality": { "sowing": { "start_month": "October", "end_month": "November" }, "harvest": { "start_month": "July", "end_month": "August" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_tomato", "plant_rose", "plant_beet"], "incompatible_plants": ["plant_bean", "plant_pea"], "common_pests": ["pest_onion_maggot"], "common_diseases": ["disease_white_rot"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Plant in fall for summer harvest." },
-  { "plant_id": "plant_spinach", "common_name": "Spinach", "scientific_name": "Spinacia oleracea", "type": "vegetable", "family": "Amaranthaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "July" } }, "sunlight": "partial_shade", "water_requirements": "moderate", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_strawberry", "plant_pea", "plant_chilli"], "incompatible_plants": [], "common_pests": ["pest_leaf_miner"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Cool season crop; bolts in heat." },
-  { "plant_id": "plant_lettuce", "common_name": "Lettuce", "scientific_name": "Lactuca sativa", "type": "vegetable", "family": "Asteraceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "May", "end_month": "October" } }, "sunlight": "partial_shade", "water_requirements": "moderate", "soil_type": ["loamy", "moist"], "companion_plants": ["plant_carrot", "plant_radish", "plant_onion"], "incompatible_plants": ["plant_celery"], "common_pests": ["pest_slugs", "pest_aphids"], "common_diseases": ["disease_leaf_spot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_low", "potassium_low"], "notes": "Succession planting recommended." },
-  { "plant_id": "plant_kale", "common_name": "Kale", "scientific_name": "Brassica oleracea var. sabellica", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "August" }, "harvest": { "start_month": "June", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_onion", "plant_bean", "plant_beet"], "incompatible_plants": ["plant_strawberry", "plant_tomato"], "common_pests": ["pest_cabbage_worm"], "common_diseases": ["disease_clubroot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Flavor improves after frost." },
-  { "plant_id": "plant_radish", "common_name": "Radish", "scientific_name": "Raphanus sativus", "type": "vegetable", "family": "Brassicaceae", "growth_stage": ["seed", "seedling", "root_development", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "September" }, "harvest": { "start_month": "April", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["sandy", "loamy"], "companion_plants": ["plant_cucumber", "plant_lettuce", "plant_pea"], "incompatible_plants": ["plant_hyssop"], "common_pests": ["pest_flea_beetle"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"], "notes": "Fastest growing crop." },
-  { "plant_id": "plant_asparagus", "common_name": "Asparagus", "scientific_name": "Asparagus officinalis", "type": "vegetable", "family": "Asparagaceae", "growth_stage": ["crown", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "April", "end_month": "June" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_tomato", "plant_parsley", "plant_basil"], "incompatible_plants": ["plant_onion", "plant_garlic", "plant_potato"], "common_pests": ["pest_asparagus_beetle"], "common_diseases": ["disease_rust"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Perennial; requires 2-3 years to establish." },
-  { "plant_id": "plant_strawberry", "common_name": "Strawberry", "scientific_name": "Fragaria × ananassa", "type": "fruit", "family": "Rosaceae", "growth_stage": ["runner", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "April" }, "harvest": { "start_month": "June", "end_month": "August" } }, "sunlight": "full_sun", "water_requirements": "moderate_to_high", "soil_type": ["loamy", "acidic"], "companion_plants": ["plant_spinach", "plant_bean", "plant_thyme"], "incompatible_plants": ["plant_cabbage", "plant_broccoli", "plant_cauliflower"], "common_pests": ["pest_slugs", "pest_birds"], "common_diseases": ["disease_gray_mold"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_high", "potassium_high"], "notes": "Mulch with straw to keep fruit off ground." },
-  { "plant_id": "plant_rosemary", "common_name": "Rosemary", "scientific_name": "Salvia rosmarinus", "type": "herb", "family": "Lamiaceae", "growth_stage": ["cutting", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["sandy", "well_draining"], "companion_plants": ["plant_bean", "plant_cabbage", "plant_carrot"], "incompatible_plants": [], "common_pests": ["pest_spider_mites"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Perennial; avoid overwatering." },
-  { "plant_id": "plant_basil", "common_name": "Basil", "scientific_name": "Ocimum basilicum", "type": "herb", "family": "Lamiaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "April", "end_month": "June" }, "harvest": { "start_month": "June", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_tomato", "plant_pepper", "plant_asparagus"], "incompatible_plants": ["plant_rue"], "common_pests": ["pest_aphids", "pest_slugs"], "common_diseases": ["disease_downy_mildew"], "nutrient_preferences": ["nitrogen_high", "phosphorus_low", "potassium_low"], "notes": "Pinch off flowers to prolong leaf production." },
-  { "plant_id": "plant_lavender", "common_name": "Lavender", "scientific_name": "Lavandula", "type": "herb", "family": "Lamiaceae", "growth_stage": ["cutting", "vegetative", "flowering", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "June", "end_month": "August" } }, "sunlight": "full_sun", "water_requirements": "low", "soil_type": ["sandy", "well_draining", "alkaline"], "companion_plants": ["plant_plum", "plant_rose"], "incompatible_plants": [], "common_pests": ["pest_whitefly"], "common_diseases": ["disease_root_rot"], "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"], "notes": "Drought tolerant once established." },
-  { "plant_id": "plant_corn", "common_name": "Sweet Corn", "scientific_name": "Zea mays", "type": "vegetable", "family": "Poaceae", "growth_stage": ["seed", "seedling", "vegetative", "tasseling", "silking", "harvest"], "seasonality": { "sowing": { "start_month": "May", "end_month": "June" }, "harvest": { "start_month": "August", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["loamy", "fertile"], "companion_plants": ["plant_bean", "plant_squash", "plant_cucumber"], "incompatible_plants": ["plant_tomato"], "common_pests": ["pest_corn_earworm"], "common_diseases": ["disease_smut"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Wind pollinated; plant in blocks for better pollination." },
-  { "plant_id": "plant_pea", "common_name": "Pea", "scientific_name": "Pisum sativum", "type": "vegetable", "family": "Fabaceae", "growth_stage": ["seed", "seedling", "vegetative", "flowering", "pod_formation", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "May", "end_month": "July" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_carrot", "plant_radish", "plant_turnip"], "incompatible_plants": ["plant_onion", "plant_garlic"], "common_pests": ["pest_aphids", "pest_pea_weevil"], "common_diseases": ["disease_powdery_mildew"], "nutrient_preferences": ["nitrogen_low", "phosphorus_moderate", "potassium_moderate"], "notes": "Nitrogen fixer; cool season crop." },
-  { "plant_id": "plant_blueberry", "common_name": "Blueberry", "scientific_name": "Vaccinium corymbosum", "type": "fruit", "family": "Ericaceae", "growth_stage": ["sapling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "November", "end_month": "March" }, "harvest": { "start_month": "July", "end_month": "August" } }, "sunlight": "full_sun", "water_requirements": "high", "soil_type": ["peaty", "highly_acidic"], "companion_plants": ["plant_rhododendron", "plant_cranberry"], "incompatible_plants": [], "common_pests": ["pest_birds"], "common_diseases": ["disease_mummy_berry"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_low", "potassium_moderate"], "notes": "Requires soil pH 4.5-5.5." },
-  { "plant_id": "plant_raspberry", "common_name": "Raspberry", "scientific_name": "Rubus idaeus", "type": "fruit", "family": "Rosaceae", "growth_stage": ["cane", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "November", "end_month": "March" }, "harvest": { "start_month": "July", "end_month": "September" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_garlic", "plant_tansy"], "incompatible_plants": ["plant_blackberry", "plant_potato"], "common_pests": ["pest_cane_borer"], "common_diseases": ["disease_cane_blight"], "nutrient_preferences": ["nitrogen_moderate", "phosphorus_moderate", "potassium_moderate"], "notes": "Prune second-year canes after harvest." },
-  { "plant_id": "plant_ginger", "common_name": "Ginger", "scientific_name": "Zingiber officinale", "type": "herb", "family": "Zingiberaceae", "growth_stage": ["rhizome", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "February", "end_month": "April" }, "harvest": { "start_month": "October", "end_month": "December" } }, "sunlight": "partial_shade", "water_requirements": "high", "soil_type": ["loamy", "rich", "loose"], "companion_plants": ["plant_turmeric", "plant_chilli"], "incompatible_plants": [], "common_pests": ["pest_thrips"], "common_diseases": ["disease_rhizome_rot"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"], "notes": "Tropical perennial; requires high humidity." },
-  { "plant_id": "plant_turmeric", "common_name": "Turmeric", "scientific_name": "Curcuma longa", "type": "herb", "family": "Zingiberaceae", "growth_stage": ["rhizome", "vegetative", "harvest"], "seasonality": { "sowing": { "start_month": "February", "end_month": "April" }, "harvest": { "start_month": "November", "end_month": "January" } }, "sunlight": "partial_shade", "water_requirements": "high", "soil_type": ["loamy", "rich"], "companion_plants": ["plant_ginger"], "incompatible_plants": [], "common_pests": ["pest_rhizome_scale"], "common_diseases": ["disease_leaf_blotch"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_high"], "notes": "Long growing season (9 months)." },
-  { "plant_id": "plant_lemon", "common_name": "Lemon", "scientific_name": "Citrus × limon", "type": "fruit_tree", "family": "Rutaceae", "growth_stage": ["sapling", "vegetative", "flowering", "fruiting", "harvest"], "seasonality": { "sowing": { "start_month": "March", "end_month": "May" }, "harvest": { "start_month": "January", "end_month": "December" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining", "slightly_acidic"], "companion_plants": ["plant_rosemary", "plant_thyme"], "incompatible_plants": [], "common_pests": ["pest_scale", "pest_citrus_miner"], "common_diseases": ["disease_citrus_canker"], "nutrient_preferences": ["nitrogen_high", "phosphorus_moderate", "potassium_moderate"], "notes": "Sensitive to frost; heavy feeder." },
-  { "plant_id": "plant_spider_plant", "common_name": "Spider Plant", "scientific_name": "Chlorophytum comosum", "type": "indoor_plant", "family": "Asparagaceae", "growth_stage": ["seedling", "vegetative", "flowering"], "sunlight": "indirect light", "water_requirements": "moderate", "soil_type": ["well_draining"], "companion_plants": [], "incompatible_plants": [], "common_pests": ["spider_mites"], "common_diseases": ["root_rot"], "nutrient_preferences": ["balanced_fertilizer"], "notes": "One of the easiest houseplants to grow." },
-  { "plant_id": "plant_apple_tree", "common_name": "Apple Tree", "scientific_name": "Malus domestica", "type": "fruit_tree", "family": "Rosaceae", "growth_stage": ["seedling", "vegetative", "flowering", "fruit_set", "harvest"], "seasonality": { "sowing": { "start_month": "February", "end_month": "March" }, "harvest": { "start_month": "September", "end_month": "October" } }, "sunlight": "full_sun", "water_requirements": "moderate", "soil_type": ["loamy", "well_draining"], "companion_plants": ["plant_chive", "plant_marigold"], "incompatible_plants": ["plant_walnut"], "common_pests": ["pest_codling_moth"], "common_diseases": ["disease_apple_scab"], "nutrient_preferences": ["potassium_high"], "notes": "Requires winter chill hours for proper fruiting." }
+  {
+    "plant_id": "plant_cucumber_1",
+    "common_name": "Cucumber",
+    "scientific_name": "Cucumis sativus",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_radish",
+      "plant_dill",
+      "plant_corn"
+    ],
+    "incompatible_plants": [
+      "plant_sage",
+      "plant_melon",
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_cucumber_beetle",
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Requires trellising for air circulation."
+  },
+  {
+    "plant_id": "plant_zucchini",
+    "common_name": "Zucchini",
+    "scientific_name": "Cucurbita pepo",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining",
+      "rich"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_corn",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_squash_bug",
+      "pest_vine_borer"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Heavy feeder; harvest regularly."
+  },
+  {
+    "plant_id": "plant_bell_pepper",
+    "common_name": "Bell Pepper",
+    "scientific_name": "Capsicum annuum",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "ripening",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_onion",
+      "plant_tomato",
+      "plant_carrot",
+      "plant_marigold",
+      "plant_oregano",
+      "plant_parsley",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [
+      "plant_fennel",
+      "plant_kohlrabi",
+      "plant_cabbage",
+      "plant_broccoli",
+      "plant_cauliflower"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_thrips",
+      "pest_whiteflies",
+      "pest_spider_mites",
+      "pest_fruit_borer"
+    ],
+    "common_diseases": [
+      "disease_phytophthora_blight",
+      "disease_bacterial_spot",
+      "disease_mosaic_virus",
+      "disease_blossom_end_rot"
+    ],
+    "notes": "Requires warm soil (above 15Â°C). Companion basil improves health and flavor."
+  },
+  {
+    "plant_id": "plant_bean",
+    "common_name": "Green Bean",
+    "scientific_name": "Phaseolus vulgaris",
+    "family": "Fabaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "pod_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "July"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_cucumber",
+      "plant_squash"
+    ],
+    "incompatible_plants": [
+      "plant_onion",
+      "plant_garlic"
+    ],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_rust"
+    ],
+    "notes": "Nitrogen-fixing legume."
+  },
+  {
+    "plant_id": "plant_broccoli",
+    "common_name": "Broccoli",
+    "scientific_name": "Brassica oleracea var. italica",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate_to_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "head_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_onion",
+      "plant_celery",
+      "plant_beet"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_cabbage_worm"
+    ],
+    "common_diseases": [
+      "disease_clubroot"
+    ],
+    "notes": "Cool-season crop."
+  },
+  {
+    "plant_id": "plant_cauliflower",
+    "common_name": "Cauliflower",
+    "scientific_name": "Brassica oleracea var. botrytis",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "curd_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_celery",
+      "plant_onion",
+      "plant_sage"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew"
+    ],
+    "notes": "Requires blanching."
+  },
+  {
+    "plant_id": "plant_beet",
+    "common_name": "Beet",
+    "scientific_name": "Beta vulgaris",
+    "family": "Amaranthaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "alkaline"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "germination",
+      "seedling",
+      "root_development",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_lettuce",
+      "plant_onion",
+      "plant_garlic",
+      "plant_broccoli",
+      "plant_kale",
+      "plant_mint"
+    ],
+    "incompatible_plants": [
+      "plant_bean_pole",
+      "plant_mustard_field",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_leaf_miner",
+      "pest_aphids",
+      "pest_flea_beetle",
+      "pest_slugs"
+    ],
+    "common_diseases": [
+      "disease_leaf_spot",
+      "disease_heart_rot",
+      "disease_downy_mildew"
+    ],
+    "notes": "Sensitive to boron deficiency (heart rot). Thrives in cool weather."
+  },
+  {
+    "plant_id": "plant_onion",
+    "common_name": "Onion",
+    "scientific_name": "Allium cepa",
+    "family": "Amaryllidaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "bulb_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_carrot",
+      "plant_lettuce",
+      "plant_beet"
+    ],
+    "incompatible_plants": [
+      "plant_bean",
+      "plant_pea"
+    ],
+    "common_pests": [
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew"
+    ],
+    "notes": "Day-length sensitive."
+  },
+  {
+    "plant_id": "plant_thyme",
+    "common_name": "Thyme",
+    "scientific_name": "Thymus vulgaris",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "sandy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_cabbage",
+      "plant_eggplant",
+      "plant_strawberry"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_root_rot"
+    ],
+    "notes": "Drought-tolerant."
+  },
+  {
+    "plant_id": "plant_oregano",
+    "common_name": "Oregano",
+    "scientific_name": "Origanum vulgare",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "well_draining",
+      "sandy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_cucumber",
+      "plant_squash",
+      "plant_tomato"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_rust"
+    ],
+    "notes": "Perennial herb."
+  },
+  {
+    "plant_id": "plant_coriander_1",
+    "common_name": "Coriander / Cilantro",
+    "scientific_name": "Coriandrum sativum",
+    "family": "Apiaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "April",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_spinach",
+      "plant_tomato"
+    ],
+    "incompatible_plants": [
+      "plant_fennel"
+    ],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Bolts quickly in heat."
+  },
+  {
+    "plant_id": "plant_parsley",
+    "common_name": "Parsley",
+    "scientific_name": "Petroselinum crispum",
+    "family": "Apiaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_asparagus",
+      "plant_carrot"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_carrot_fly"
+    ],
+    "common_diseases": [
+      "disease_crown_rot"
+    ],
+    "notes": "Slow germination."
+  },
+  {
+    "plant_id": "plant_dill_1",
+    "common_name": "Dill",
+    "scientific_name": "Anethum graveolens",
+    "family": "Apiaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_cucumber",
+      "plant_lettuce",
+      "plant_onion"
+    ],
+    "incompatible_plants": [
+      "plant_carrot",
+      "plant_fennel"
+    ],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew"
+    ],
+    "notes": "Attracts beneficial insects."
+  },
+  {
+    "plant_id": "plant_sage",
+    "common_name": "Sage",
+    "scientific_name": "Salvia officinalis",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "sandy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_carrot",
+      "plant_cabbage",
+      "plant_strawberry"
+    ],
+    "incompatible_plants": [
+      "plant_cucumber",
+      "plant_onion"
+    ],
+    "common_pests": [
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Woody perennial."
+  },
+  {
+    "plant_id": "plant_chive",
+    "common_name": "Chive",
+    "scientific_name": "Allium schoenoprasum",
+    "family": "Amaryllidaceae",
+    "type": "herb",
+    "soil_type": [
+      "rich_loamy_well_drained"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate"
+    ],
+    "growth_stage": [
+      "germination",
+      "seedling",
+      "vegetative_growth",
+      "flowering",
+      "dormancy"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_carrot",
+      "plant_pea",
+      "plant_apple",
+      "plant_strawberry",
+      "plant_broccoli",
+      "plant_cabbage",
+      "plant_celery",
+      "plant_lettuce",
+      "plant_parsnip",
+      "plant_kohlrabi",
+      "plant_spinach",
+      "plant_basil",
+      "plant_parsley",
+      "plant_dill",
+      "plant_marigold",
+      "plant_nasturtium",
+      "plant_lavender"
+    ],
+    "incompatible_plants": [
+      "plant_asparagus",
+      "plant_bean"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_thrips",
+      "pest_onion_maggot",
+      "pest_slugs"
+    ],
+    "common_diseases": [
+      "disease_bulb_rot",
+      "disease_white_rot",
+      "disease_rust",
+      "disease_downy_mildew"
+    ],
+    "notes": "Perennial herb. Divide every few years. Edible purple flowers."
+  },
+  {
+    "plant_id": "plant_sunflower",
+    "common_name": "Sunflower",
+    "scientific_name": "Helianthus annuus",
+    "family": "Asteraceae",
+    "type": "flower",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "August",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_cucumber",
+      "plant_squash"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_rust"
+    ],
+    "notes": "Allelopathic properties."
+  },
+  {
+    "plant_id": "plant_zinnia",
+    "common_name": "Zinnia",
+    "scientific_name": "Zinnia elegans",
+    "family": "Asteraceae",
+    "type": "flower",
+    "soil_type": [
+      "loamy",
+      "neutral"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_cucumber"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_japanese_beetle"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Attracts butterflies."
+  },
+  {
+    "plant_id": "plant_petunia",
+    "common_name": "Petunia",
+    "scientific_name": "Petunia Ã— hybrida",
+    "family": "Solanaceae",
+    "type": "flower",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_bean"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_botrytis"
+    ],
+    "notes": "Requires deadheading."
+  },
+  {
+    "plant_id": "plant_cosmos_1",
+    "common_name": "Cosmos",
+    "scientific_name": "Cosmos bipinnatus",
+    "family": "Asteraceae",
+    "type": "flower",
+    "soil_type": [
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_bean"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Self-seeding annual."
+  },
+  {
+    "plant_id": "plant_nasturtium",
+    "common_name": "Nasturtium",
+    "scientific_name": "Tropaeolum majus",
+    "family": "Tropaeolaceae",
+    "type": "flower",
+    "soil_type": [
+      "well_draining",
+      "poor"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_cucumber",
+      "plant_radish",
+      "plant_squash"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_bacterial_wilt"
+    ],
+    "notes": "Trap crop for aphids."
+  },
+  {
+    "plant_id": "plant_geranium",
+    "common_name": "Geranium",
+    "scientific_name": "Pelargonium Ã— hortorum",
+    "family": "Geraniaceae",
+    "type": "flower",
+    "soil_type": [
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_rose",
+      "plant_corn",
+      "plant_grape"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_whitefly"
+    ],
+    "common_diseases": [
+      "disease_rust"
+    ],
+    "notes": "Tender perennial."
+  },
+  {
+    "plant_id": "plant_eggplant_1",
+    "common_name": "Eggplant",
+    "scientific_name": "Solanum melongena",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_thyme",
+      "plant_pepper"
+    ],
+    "incompatible_plants": [
+      "plant_fennel",
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_flea_beetle"
+    ],
+    "common_diseases": [
+      "disease_verticillium_wilt"
+    ],
+    "notes": "Requires warm soil."
+  },
+  {
+    "plant_id": "plant_swiss_chard",
+    "common_name": "Swiss Chard",
+    "scientific_name": "Beta vulgaris subsp. vulgaris",
+    "family": "Amaranthaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "July"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_onion"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_leaf_miner"
+    ],
+    "common_diseases": [
+      "disease_leaf_spot"
+    ],
+    "notes": "Tolerates light frost."
+  },
+  {
+    "plant_id": "plant_arugula",
+    "common_name": "Arugula",
+    "scientific_name": "Eruca vesicaria",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "partial_shade_to_full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "April",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_carrot",
+      "plant_beet",
+      "plant_onion",
+      "plant_celery",
+      "plant_dill"
+    ],
+    "incompatible_plants": [
+      "plant_tomato",
+      "plant_pepper",
+      "plant_strawberry",
+      "plant_bean_pole"
+    ],
+    "common_pests": [
+      "pest_flea_beetle",
+      "pest_aphids",
+      "pest_slugs"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew",
+      "disease_bacterial_leaf_spot",
+      "disease_powdery_mildew"
+    ],
+    "notes": "Bolts in heat; prefers cool soil."
+  },
+  {
+    "plant_id": "plant_collard_greens",
+    "common_name": "Collard Greens",
+    "scientific_name": "Brassica oleracea var. viridis",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_onion"
+    ],
+    "incompatible_plants": [
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_cabbage_worm"
+    ],
+    "common_diseases": [
+      "disease_clubroot"
+    ],
+    "notes": "Cold hardy."
+  },
+  {
+    "plant_id": "plant_turnip",
+    "common_name": "Turnip",
+    "scientific_name": "Brassica rapa subsp. rapa",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "root_development",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_pea",
+      "plant_bean"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_root_maggot"
+    ],
+    "common_diseases": [
+      "disease_clubroot"
+    ],
+    "notes": "Greens edible."
+  },
+  {
+    "plant_id": "plant_squash_butternut",
+    "common_name": "Butternut Squash",
+    "scientific_name": "Cucurbita moschata",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "September",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_bean"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_squash_bug"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Long growing season."
+  },
+  {
+    "plant_id": "plant_pumpkin",
+    "common_name": "Pumpkin",
+    "scientific_name": "Cucurbita pepo",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "May",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "September",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_bean",
+      "plant_sunflower"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_vine_borer"
+    ],
+    "common_diseases": [
+      "disease_bacterial_wilt"
+    ],
+    "notes": "Requires space."
+  },
+  {
+    "plant_id": "plant_watermelon",
+    "common_name": "Watermelon",
+    "scientific_name": "Citrullus lanatus",
+    "family": "Cucurbitaceae",
+    "type": "fruit",
+    "soil_type": [
+      "sandy_loam",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_cucumber_beetle"
+    ],
+    "common_diseases": [
+      "disease_fusarium_wilt"
+    ],
+    "notes": "Needs long warm season."
+  },
+  {
+    "plant_id": "plant_cantaloupe_1",
+    "common_name": "Cantaloupe",
+    "scientific_name": "Cucumis melo",
+    "family": "Cucurbitaceae",
+    "type": "fruit",
+    "soil_type": [
+      "sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_radish"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_melon_fly"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Reduce water as it ripens."
+  },
+  {
+    "plant_id": "plant_chilli",
+    "common_name": "Chilli Pepper",
+    "scientific_name": "Capsicum frutescens",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy_rich_organic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed_germination",
+      "vegetative_growth",
+      "flowering",
+      "fruit_set",
+      "fruit_ripening",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_onion",
+      "plant_garlic",
+      "plant_tomato",
+      "plant_carrot",
+      "plant_nasturtium",
+      "plant_oregano",
+      "plant_marigold",
+      "plant_lettuce",
+      "plant_thyme"
+    ],
+    "incompatible_plants": [
+      "plant_bean",
+      "plant_fennel",
+      "plant_cabbage",
+      "plant_potato",
+      "plant_beet",
+      "plant_pea"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_whiteflies",
+      "pest_fruit_fly",
+      "pest_pepper_weevil",
+      "pest_hornworms",
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_phytophthora_blight",
+      "disease_bacterial_spot",
+      "disease_anthracnose",
+      "disease_mosaic_virus",
+      "disease_powdery_mildew"
+    ],
+    "notes": "Wear gloves when harvesting. Heat-loving perennial in tropics. Pinch early flowers to encourage plant development."
+  },
+  {
+    "plant_id": "plant_papaya",
+    "common_name": "Papaya",
+    "scientific_name": "Carica papaya",
+    "family": "Caricaceae",
+    "type": "fruit",
+    "soil_type": [
+      "sandy_loam",
+      "rich"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_banana"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_whitefly"
+    ],
+    "common_diseases": [
+      "disease_ringspot_virus"
+    ],
+    "notes": "Avoid waterlogging."
+  },
+  {
+    "plant_id": "plant_long_bean",
+    "common_name": "Yardlong Bean",
+    "scientific_name": "Vigna unguiculata",
+    "family": "Fabaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "July"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_cucumber"
+    ],
+    "incompatible_plants": [
+      "plant_onion"
+    ],
+    "common_pests": [
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_mosaic_virus"
+    ],
+    "notes": "Vigorous climber."
+  },
+  {
+    "plant_id": "plant_cherimoya",
+    "common_name": "Cherimoya",
+    "scientific_name": "Annona cherimola",
+    "family": "Annonaceae",
+    "type": "fruit",
+    "soil_type": [
+      "medium_loamy_rich"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate_to_high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "dormancy",
+      "leaf_flush",
+      "flowering",
+      "fruit_set",
+      "fruit_development",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "October",
+        "end_month": "May"
+      }
+    },
+    "companion_plants": [
+      "plant_lavender",
+      "plant_rosemary",
+      "plant_thyme",
+      "plant_marigold",
+      "plant_bean"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_mealybugs",
+      "pest_fruit_fly",
+      "pest_seedborer",
+      "pest_leaf_miner",
+      "pest_aphids",
+      "pest_snails"
+    ],
+    "common_diseases": [
+      "disease_anthracnose",
+      "disease_phytophthora_root_rot",
+      "disease_powdery_mildew",
+      "disease_bacterial_canker",
+      "disease_sooty_mold"
+    ],
+    "notes": "Subtropical fruit tree. Hand-pollination is usually necessary (protogynous flowers). Protect from frost and strong winds."
+  },
+  {
+    "plant_id": "plant_monstera",
+    "common_name": "Monstera",
+    "scientific_name": "Monstera deliciosa",
+    "family": "Araceae",
+    "type": "ornamental",
+    "soil_type": [
+      "peaty"
+    ],
+    "sunlight": "bright_indirect_light",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "cutting",
+      "vegetative"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "December"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_pothos"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_root_rot"
+    ],
+    "notes": "Toxic to pets."
+  },
+  {
+    "plant_id": "plant_money_plant",
+    "common_name": "Money Plant",
+    "scientific_name": "Epipremnum aureum",
+    "family": "Araceae",
+    "type": "ornamental",
+    "soil_type": [
+      "potting_mix"
+    ],
+    "sunlight": "low_indirect_light",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "cutting",
+      "vegetative"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "December"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_mealybugs"
+    ],
+    "common_diseases": [
+      "disease_root_rot"
+    ],
+    "notes": "Hardy air purifier."
+  },
+  {
+    "plant_id": "plant_banana",
+    "common_name": "Banana",
+    "scientific_name": "Musa acuminata",
+    "family": "Musaceae",
+    "type": "tree",
+    "soil_type": [
+      "rich",
+      "loamy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "very_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_very_high"
+    ],
+    "growth_stage": [
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "December"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_papaya",
+      "plant_sweet_potato",
+      "plant_cacao",
+      "plant_ginger",
+      "plant_turmeric",
+      "plant_lemongrass"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_banana_weevil",
+      "pest_aphids",
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_panama_disease",
+      "disease_black_sigatoka",
+      "disease_bbtv"
+    ],
+    "notes": "Continuous growth cycle; no dormancy."
+  },
+  {
+    "plant_id": "plant_cacao",
+    "common_name": "Cacao",
+    "scientific_name": "Theobroma cacao",
+    "family": "Malvaceae",
+    "type": "tree",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "December"
+      },
+      "harvest": {
+        "start_month": "October",
+        "end_month": "March"
+      }
+    },
+    "companion_plants": [
+      "plant_banana"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_pod_borer"
+    ],
+    "common_diseases": [
+      "disease_black_pod"
+    ],
+    "notes": "Shade tree required."
+  },
+  {
+    "plant_id": "plant_bottle_gourd",
+    "common_name": "Bottle Gourd",
+    "scientific_name": "Lagenaria siceraria",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_corn"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_fruit_fly"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Night flowering."
+  },
+  {
+    "plant_id": "plant_mint",
+    "common_name": "Mint",
+    "scientific_name": "Mentha",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "moist",
+      "rich"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "cutting",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_cabbage"
+    ],
+    "incompatible_plants": [
+      "plant_parsley"
+    ],
+    "common_pests": [
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_rust"
+    ],
+    "notes": "Invasive roots."
+  },
+  {
+    "plant_id": "plant_apricot",
+    "common_name": "Apricot",
+    "scientific_name": "Prunus armeniaca",
+    "family": "Rosaceae",
+    "type": "fruit_tree",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "variable_high_during_fruiting",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "dormancy",
+      "bloom",
+      "fruit_set",
+      "fruit_development",
+      "ripening",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "November",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_garlic",
+      "plant_chive",
+      "plant_lavender",
+      "plant_rosemary",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [
+      "plant_tomato",
+      "plant_pepper",
+      "plant_potato",
+      "plant_eggplant"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_peach_twig_borer",
+      "pest_oriental_fruit_moth",
+      "pest_scale"
+    ],
+    "common_diseases": [
+      "disease_brown_rot",
+      "disease_bacterial_canker",
+      "disease_coryneum_blight",
+      "disease_root_rot"
+    ],
+    "notes": "Early bloomer. Requires winter chill hours (300-900) for fruit set."
+  },
+  {
+    "plant_id": "plant_plum",
+    "common_name": "Plum",
+    "scientific_name": "Prunus domestica",
+    "family": "Rosaceae",
+    "type": "fruit_tree",
+    "soil_type": [
+      "loamy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "sapling",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "November",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_lavender"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_scale"
+    ],
+    "common_diseases": [
+      "disease_black_knot"
+    ],
+    "notes": "Needs cross pollination."
+  },
+  {
+    "plant_id": "plant_tomato",
+    "common_name": "Tomato",
+    "scientific_name": "Solanum lycopersicum",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_onion",
+      "plant_marigold",
+      "plant_carrot"
+    ],
+    "incompatible_plants": [
+      "plant_cabbage",
+      "plant_fennel",
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_hornworm",
+      "pest_whitefly"
+    ],
+    "common_diseases": [
+      "disease_blight",
+      "disease_blossom_end_rot"
+    ],
+    "notes": "Requires staking and consistent watering."
+  },
+  {
+    "plant_id": "plant_potato",
+    "common_name": "Potato",
+    "scientific_name": "Solanum tuberosum",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "slightly_acidic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "sprout",
+      "vegetative",
+      "flowering",
+      "tuber_set",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "August",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_corn",
+      "plant_cabbage"
+    ],
+    "incompatible_plants": [
+      "plant_tomato",
+      "plant_cucumber",
+      "plant_sunflower"
+    ],
+    "common_pests": [
+      "pest_colorado_beetle"
+    ],
+    "common_diseases": [
+      "disease_scab",
+      "disease_late_blight"
+    ],
+    "notes": "Hill soil around stems to increase yield."
+  },
+  {
+    "plant_id": "plant_carrot",
+    "common_name": "Carrot",
+    "scientific_name": "Daucus carota subsp. sativus",
+    "family": "Apiaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loose_sandy_loam",
+      "stone_free"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_high",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "germination",
+      "true_leaf",
+      "taproot_expansion",
+      "maturity",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_lettuce",
+      "plant_onion",
+      "plant_chive",
+      "plant_garlic",
+      "plant_leek",
+      "plant_rosemary",
+      "plant_sage",
+      "plant_marigold",
+      "plant_nasturtium",
+      "plant_bean",
+      "plant_pea",
+      "plant_radish",
+      "plant_spinach"
+    ],
+    "incompatible_plants": [
+      "plant_dill",
+      "plant_fennel",
+      "plant_celery",
+      "plant_parsnip",
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_carrot_rust_fly",
+      "pest_aphids",
+      "pest_leafhoppers",
+      "pest_flea_beetles",
+      "pest_root_knot_nematodes"
+    ],
+    "common_diseases": [
+      "disease_alternaria_leaf_blight",
+      "disease_bacterial_soft_rot",
+      "disease_cavity_spot",
+      "disease_carrot_yellows"
+    ],
+    "notes": "Sensitive to soil compaction. Do not transplant. Harvesting at different sizes is possible."
+  },
+  {
+    "plant_id": "plant_garlic_1",
+    "common_name": "Garlic",
+    "scientific_name": "Allium sativum",
+    "family": "Amaryllidaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "clove",
+      "vegetative",
+      "bulb_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "October",
+        "end_month": "November"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_rose",
+      "plant_beet"
+    ],
+    "incompatible_plants": [
+      "plant_bean",
+      "plant_pea"
+    ],
+    "common_pests": [
+      "pest_onion_maggot"
+    ],
+    "common_diseases": [
+      "disease_white_rot"
+    ],
+    "notes": "Plant in fall for summer harvest."
+  },
+  {
+    "plant_id": "plant_spinach",
+    "common_name": "Spinach",
+    "scientific_name": "Spinacia oleracea",
+    "family": "Amaranthaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "July"
+      }
+    },
+    "companion_plants": [
+      "plant_strawberry",
+      "plant_pea",
+      "plant_chilli"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_leaf_miner"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew"
+    ],
+    "notes": "Cool season crop; bolts in heat."
+  },
+  {
+    "plant_id": "plant_lettuce_1",
+    "common_name": "Lettuce",
+    "scientific_name": "Lactuca sativa",
+    "family": "Asteraceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "moist"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_carrot",
+      "plant_radish",
+      "plant_onion"
+    ],
+    "incompatible_plants": [
+      "plant_celery"
+    ],
+    "common_pests": [
+      "pest_slugs",
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_leaf_spot"
+    ],
+    "notes": "Succession planting recommended."
+  },
+  {
+    "plant_id": "plant_kale_1",
+    "common_name": "Kale",
+    "scientific_name": "Brassica oleracea var. sabellica",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_onion",
+      "plant_bean",
+      "plant_beet"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_cabbage_worm"
+    ],
+    "common_diseases": [
+      "disease_clubroot"
+    ],
+    "notes": "Flavor improves after frost."
+  },
+  {
+    "plant_id": "plant_radish",
+    "common_name": "Radish",
+    "scientific_name": "Raphanus sativus",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "sandy",
+      "loamy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "root_development",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "April",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_cucumber",
+      "plant_lettuce",
+      "plant_pea"
+    ],
+    "incompatible_plants": [
+      "plant_hyssop"
+    ],
+    "common_pests": [
+      "pest_flea_beetle"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew"
+    ],
+    "notes": "Fastest growing crop."
+  },
+  {
+    "plant_id": "plant_asparagus",
+    "common_name": "Asparagus",
+    "scientific_name": "Asparagus officinalis",
+    "family": "Asparagaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun_tolerates_partial",
+    "water_requirements": "high_first_year_moderate_after",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "dormancy",
+      "spear_emergence",
+      "fern_development",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "April",
+        "end_month": "June"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_parsley",
+      "plant_basil",
+      "plant_strawberry",
+      "plant_spinach",
+      "plant_eggplant"
+    ],
+    "incompatible_plants": [
+      "plant_onion",
+      "plant_garlic",
+      "plant_leek",
+      "plant_carrot"
+    ],
+    "common_pests": [
+      "pest_asparagus_beetle",
+      "pest_asparagus_aphid",
+      "pest_cutworms"
+    ],
+    "common_diseases": [
+      "disease_fusarium_rot",
+      "disease_rust",
+      "disease_purple_spot"
+    ],
+    "notes": "Perennial; requires 2-3 years to establish. Companion tomatoes repel asparagus beetles."
+  },
+  {
+    "plant_id": "plant_strawberry",
+    "common_name": "Strawberry",
+    "scientific_name": "Fragaria Ã— ananassa",
+    "family": "Rosaceae",
+    "type": "fruit",
+    "soil_type": [
+      "loamy",
+      "acidic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate_to_high",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "runner",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_spinach",
+      "plant_bean",
+      "plant_thyme"
+    ],
+    "incompatible_plants": [
+      "plant_cabbage",
+      "plant_broccoli",
+      "plant_cauliflower"
+    ],
+    "common_pests": [
+      "pest_slugs",
+      "pest_birds"
+    ],
+    "common_diseases": [
+      "disease_gray_mold"
+    ],
+    "notes": "Mulch with straw to keep fruit off ground."
+  },
+  {
+    "plant_id": "plant_rosemary",
+    "common_name": "Rosemary",
+    "scientific_name": "Salvia rosmarinus",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "sandy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "cutting",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_cabbage",
+      "plant_carrot"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_root_rot"
+    ],
+    "notes": "Perennial; avoid overwatering."
+  },
+  {
+    "plant_id": "plant_basil",
+    "common_name": "Basil",
+    "scientific_name": "Ocimum basilicum",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "start_month": "April",
+      "end_month": "June"
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_pepper",
+      "plant_asparagus",
+      "plant_marigold",
+      "plant_borage",
+      "plant_garlic",
+      "plant_onion"
+    ],
+    "incompatible_plants": [
+      "plant_rue",
+      "plant_fennel",
+      "plant_rosemary",
+      "plant_cucumber"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_slugs",
+      "pest_japanese_beetle",
+      "pest_whitefly"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew",
+      "disease_fusarium_wilt",
+      "disease_gray_mold"
+    ],
+    "notes": "Pinch off flowers to prolong leaf production. Companion tomatoes love basil."
+  },
+  {
+    "plant_id": "plant_lavender_1",
+    "common_name": "Lavender",
+    "scientific_name": "Lavandula",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "sandy",
+      "well_draining",
+      "alkaline"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_low",
+      "potassium_low"
+    ],
+    "growth_stage": [
+      "cutting",
+      "vegetative",
+      "flowering",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_plum",
+      "plant_rose"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_whitefly"
+    ],
+    "common_diseases": [
+      "disease_root_rot"
+    ],
+    "notes": "Drought tolerant once established."
+  },
+  {
+    "plant_id": "plant_corn",
+    "common_name": "Sweet Corn",
+    "scientific_name": "Zea mays",
+    "family": "Poaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "fertile"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "tasseling",
+      "silking",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "May",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "August",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_squash",
+      "plant_cucumber"
+    ],
+    "incompatible_plants": [
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_corn_earworm"
+    ],
+    "common_diseases": [
+      "disease_smut"
+    ],
+    "notes": "Wind pollinated; plant in blocks for better pollination."
+  },
+  {
+    "plant_id": "plant_pea",
+    "common_name": "Pea",
+    "scientific_name": "Pisum sativum",
+    "family": "Fabaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_low",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "flowering",
+      "pod_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "July"
+      }
+    },
+    "companion_plants": [
+      "plant_carrot",
+      "plant_radish",
+      "plant_turnip"
+    ],
+    "incompatible_plants": [
+      "plant_onion",
+      "plant_garlic"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_pea_weevil"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew"
+    ],
+    "notes": "Nitrogen fixer; cool season crop."
+  },
+  {
+    "plant_id": "plant_blueberry",
+    "common_name": "Blueberry",
+    "scientific_name": "Vaccinium corymbosum",
+    "family": "Ericaceae",
+    "type": "fruit",
+    "soil_type": [
+      "peaty",
+      "highly_acidic",
+      "sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "high_consistent",
+    "nutrient_preferences": [
+      "balanced_low_concentration"
+    ],
+    "growth_stage": [
+      "dormancy",
+      "bud_swell",
+      "bloom",
+      "fruit_set",
+      "berry_development",
+      "maturation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "November",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_rhododendron",
+      "plant_cranberry",
+      "plant_azalea",
+      "plant_pine",
+      "plant_dill",
+      "plant_borage",
+      "plant_thyme",
+      "plant_strawberry"
+    ],
+    "incompatible_plants": [
+      "plant_walnut_black",
+      "plant_cabbage",
+      "plant_broccoli",
+      "plant_cauliflower",
+      "plant_potato",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_birds",
+      "pest_spotted_wing_drosophila",
+      "pest_aphids",
+      "pest_mealybugs"
+    ],
+    "common_diseases": [
+      "disease_mummy_berry",
+      "disease_anthracnose",
+      "disease_botrytis_blight",
+      "disease_phytophthora_root_rot"
+    ],
+    "notes": "Requires soil pH 4.5-5.5. Mulch with pine needles or bark. Cross-pollination increases yield."
+  },
+  {
+    "plant_id": "plant_raspberry",
+    "common_name": "Raspberry",
+    "scientific_name": "Rubus idaeus",
+    "family": "Rosaceae",
+    "type": "fruit",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "cane",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "November",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_garlic",
+      "plant_tansy"
+    ],
+    "incompatible_plants": [
+      "plant_blackberry",
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_cane_borer"
+    ],
+    "common_diseases": [
+      "disease_cane_blight"
+    ],
+    "notes": "Prune second-year canes after harvest."
+  },
+  {
+    "plant_id": "plant_ginger_1",
+    "common_name": "Ginger",
+    "scientific_name": "Zingiber officinale",
+    "family": "Zingiberaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "rich",
+      "loose"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "rhizome",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "October",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_turmeric",
+      "plant_chilli"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_rhizome_rot"
+    ],
+    "notes": "Tropical perennial; requires high humidity."
+  },
+  {
+    "plant_id": "plant_turmeric",
+    "common_name": "Turmeric",
+    "scientific_name": "Curcuma longa",
+    "family": "Zingiberaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy",
+      "rich"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "rhizome",
+      "vegetative",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "November",
+        "end_month": "January"
+      }
+    },
+    "companion_plants": [
+      "plant_ginger"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_rhizome_scale"
+    ],
+    "common_diseases": [
+      "disease_leaf_blotch"
+    ],
+    "notes": "Long growing season (9 months)."
+  },
+  {
+    "plant_id": "plant_lemon",
+    "common_name": "Lemon",
+    "scientific_name": "Citrus Ã— limon",
+    "family": "Rutaceae",
+    "type": "fruit_tree",
+    "soil_type": [
+      "loamy",
+      "well_draining",
+      "slightly_acidic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "sapling",
+      "vegetative",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_rosemary",
+      "plant_thyme"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_scale",
+      "pest_citrus_miner"
+    ],
+    "common_diseases": [
+      "disease_citrus_canker"
+    ],
+    "notes": "Sensitive to frost; heavy feeder."
+  },
+  {
+    "plant_id": "plant_celery",
+    "common_name": "Celery",
+    "scientific_name": "Apium graveolens",
+    "family": "Apiaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "rich_loamy_moist_organic"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_very_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seedling",
+      "transplanting",
+      "vegetative_growth",
+      "blanching",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "August",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_cabbage",
+      "plant_tomato",
+      "plant_onion",
+      "plant_mint",
+      "plant_sage",
+      "plant_dill",
+      "plant_oregano",
+      "plant_rosemary",
+      "plant_garlic",
+      "plant_leek",
+      "plant_cauliflower",
+      "plant_broccoli",
+      "plant_radish",
+      "plant_bean_bush",
+      "plant_cucumber",
+      "plant_nasturtium",
+      "plant_chive"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_slugs",
+      "pest_carrot_rust_fly",
+      "pest_leaf_miner"
+    ],
+    "common_diseases": [
+      "disease_root_rot",
+      "disease_late_blight",
+      "disease_fusarium_yellows"
+    ],
+    "notes": "Heavy feeder. Trench varieties require blanching. Do not allow soil to dry out."
+  },
+  {
+    "plant_id": "plant_birds_eye_chilli",
+    "common_name": "Birds Eye Chilli",
+    "scientific_name": "Capsicum annuum",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "rich_sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "seed",
+      "seedling",
+      "vegetative",
+      "branching",
+      "flowering",
+      "fruiting",
+      "ripening",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_onion",
+      "plant_garlic",
+      "plant_tomato",
+      "plant_carrot",
+      "plant_nasturtium",
+      "plant_oregano"
+    ],
+    "incompatible_plants": [
+      "plant_bean",
+      "plant_fennel",
+      "plant_cabbage",
+      "plant_potato",
+      "plant_beet",
+      "plant_pea"
+    ],
+    "common_pests": [
+      "pest_thrips",
+      "pest_mites",
+      "pest_whiteflies",
+      "pest_aphids",
+      "pest_cutworms"
+    ],
+    "common_diseases": [
+      "disease_fusarium_wilt",
+      "disease_anthracnose",
+      "disease_chilli_collar_rot",
+      "disease_mosaic_virus"
+    ],
+    "notes": "Extremely hot. Heat loving tropical perennial; requires protection from cold."
+  },
+  {
+    "plant_id": "plant_blackberry",
+    "common_name": "Blackberry",
+    "scientific_name": "Rubus fruticosus",
+    "family": "Rosaceae",
+    "type": "fruit",
+    "soil_type": [
+      "loamy",
+      "well_draining"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate_to_high_during_fruiting",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "primocane",
+      "floricane",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "November",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_garlic",
+      "plant_chive",
+      "plant_borage",
+      "plant_yarrow",
+      "plant_lavender",
+      "plant_marigold",
+      "plant_tansy"
+    ],
+    "incompatible_plants": [
+      "plant_raspberry",
+      "plant_potato",
+      "plant_tomato",
+      "plant_pepper",
+      "plant_eggplant"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_raspberry_beetle",
+      "pest_mites",
+      "pest_swd"
+    ],
+    "common_diseases": [
+      "disease_anthracnose",
+      "disease_cane_blight",
+      "disease_orange_rust",
+      "disease_verticillium_wilt"
+    ],
+    "notes": "Biennial canes (primocane/floricane cycle). Prune floricanes after second year fruiting."
+  },
+  {
+    "plant_id": "plant_bok_choy",
+    "common_name": "Bok Choy",
+    "scientific_name": "Brassica rapa subsp. chinensis",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "rich_loamy_well_drained"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_high"
+    ],
+    "growth_stage": [
+      "germination",
+      "seedling",
+      "vegetative",
+      "maturation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "April",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_celery",
+      "plant_onion",
+      "plant_beet",
+      "plant_garlic",
+      "plant_rosemary",
+      "plant_sage",
+      "plant_thyme",
+      "plant_pea",
+      "plant_bean"
+    ],
+    "incompatible_plants": [
+      "plant_cabbage",
+      "plant_kohlrabi",
+      "plant_radish"
+    ],
+    "common_pests": [
+      "pest_flea_beetles",
+      "pest_cabbage_loopers",
+      "pest_aphids",
+      "pest_slugs"
+    ],
+    "common_diseases": [
+      "disease_club_root",
+      "disease_downy_mildew",
+      "disease_white_rust",
+      "disease_bacterial_soft_rot"
+    ],
+    "notes": "Sensitive to heat; bolts quickly. Harvest early for baby greens."
+  },
+  {
+    "plant_id": "plant_borage",
+    "common_name": "Borage",
+    "scientific_name": "Borago officinalis",
+    "family": "Boraginaceae",
+    "type": "herb",
+    "soil_type": [
+      "fertile",
+      "well_draining"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "low_to_moderate",
+    "nutrient_preferences": [
+      "balanced_organic"
+    ],
+    "growth_stage": [
+      "germination",
+      "leaf_production",
+      "strong_growth",
+      "flowering",
+      "seed_maturity"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_squash",
+      "plant_strawberry",
+      "plant_cabbage",
+      "plant_broccoli"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_slugs",
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew",
+      "disease_leaf_spot"
+    ],
+    "notes": "Attracts pollinators. Deep taproot; improves soil quality."
+  },
+  {
+    "plant_id": "plant_brussels_sprout",
+    "common_name": "Brussels Sprout",
+    "scientific_name": "Brassica oleracea var. gemmifera",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "rich_loamy_moist_heavy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seedling",
+      "early_vegetative",
+      "sprout_formation",
+      "maturation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "September",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_celery",
+      "plant_onion",
+      "plant_garlic",
+      "plant_sage",
+      "plant_thyme",
+      "plant_dill",
+      "plant_rosemary",
+      "plant_marigold",
+      "plant_nasturtium",
+      "plant_chamomile",
+      "plant_beet",
+      "plant_spinach",
+      "plant_potato"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_broccoli",
+      "plant_cabbage",
+      "plant_kale",
+      "plant_cauliflower"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_cabbage_worms",
+      "pest_flea_beetles",
+      "pest_cabbage_maggots",
+      "pest_leaf_miners"
+    ],
+    "common_diseases": [
+      "disease_black_rot",
+      "disease_clubroot",
+      "disease_downy_mildew",
+      "disease_powdery_mildew"
+    ],
+    "notes": "Long growing season. Frost improves flavor. Top the plant to encourage uniform sprout growth."
+  },
+  {
+    "plant_id": "plant_cabbage",
+    "common_name": "Cabbage",
+    "scientific_name": "Brassica oleracea var. capitata",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "rich_loamy_well_drained"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate_to_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seedling",
+      "rosette",
+      "folding",
+      "heading",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "November"
+      }
+    },
+    "companion_plants": [
+      "plant_onion",
+      "plant_beet",
+      "plant_celery",
+      "plant_garlic",
+      "plant_dill",
+      "plant_chamomile",
+      "plant_sage",
+      "plant_mint",
+      "plant_thyme",
+      "plant_rosemary",
+      "plant_borage",
+      "plant_nasturtium",
+      "plant_bean",
+      "plant_pea",
+      "plant_marigold"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_tomato",
+      "plant_pole_bean"
+    ],
+    "common_pests": [
+      "pest_cabbage_worms",
+      "pest_aphids",
+      "pest_cabbage_root_maggot",
+      "pest_cutworms",
+      "pest_flea_beetles"
+    ],
+    "common_diseases": [
+      "disease_black_rot",
+      "disease_blackleg",
+      "disease_clubroot",
+      "disease_downy_mildew",
+      "disease_alternaria",
+      "disease_fusarium_yellows"
+    ],
+    "notes": "Heavy feeder. Surface roots; mulch to protect. Harvest when head is firm and dense."
+  },
+  {
+    "plant_id": "plant_cantaloupe_2",
+    "common_name": "Cantaloupe",
+    "scientific_name": "Cucumis melo",
+    "family": "Cucurbitaceae",
+    "type": "fruit",
+    "soil_type": [
+      "rich_sandy_loam"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_high_frequent",
+    "nutrient_preferences": [
+      "potassium_high",
+      "magnesium_moderate"
+    ],
+    "growth_stage": [
+      "germination",
+      "vegetative",
+      "flowering",
+      "fruit_expansion",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_corn",
+      "plant_squash",
+      "plant_pumpkin",
+      "plant_bean",
+      "plant_carrot",
+      "plant_garlic",
+      "plant_onion",
+      "plant_chive",
+      "plant_lettuce",
+      "plant_radish",
+      "plant_spinach",
+      "plant_basil",
+      "plant_dill",
+      "plant_marigold",
+      "plant_nasturtium",
+      "plant_sunflower"
+    ],
+    "incompatible_plants": [
+      "plant_potato",
+      "plant_cucumber"
+    ],
+    "common_pests": [
+      "pest_melon_aphid",
+      "pest_cucumber_beetle",
+      "pest_squash_bug",
+      "pest_pickleworm",
+      "pest_whiteflies"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew",
+      "disease_powdery_mildew",
+      "disease_fusarium_wilt",
+      "disease_gummy_stem_blight",
+      "disease_bacterial_wilt"
+    ],
+    "notes": "Requires high heat and consistent water. Watch for full slip at harvest time."
+  },
+  {
+    "plant_id": "plant_coriander_2",
+    "common_name": "Coriander / Cilantro",
+    "scientific_name": "Coriandrum sativum",
+    "family": "Apiaceae",
+    "type": "herb",
+    "soil_type": [
+      "loamy_sandy_rich"
+    ],
+    "sunlight": "full_sun_to_partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "germination",
+      "vegetative_cilantro",
+      "flowering",
+      "green_seed",
+      "brown_seed_maturity",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "September"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_pepper",
+      "plant_spinach",
+      "plant_lettuce",
+      "plant_kale",
+      "plant_cabbage",
+      "plant_potato",
+      "plant_dill",
+      "plant_bean"
+    ],
+    "incompatible_plants": [
+      "plant_fennel",
+      "plant_rosemary",
+      "plant_lavender"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_thrips",
+      "pest_whiteflies",
+      "pest_cutworms",
+      "pest_seed_midge"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew",
+      "disease_wilt",
+      "disease_stem_gall",
+      "disease_damping_off",
+      "disease_septoria_leaf_spot"
+    ],
+    "notes": "Keep soil moist to prevent bolting. Attracts beneficial insects like ladybugs and hoverflies."
+  },
+  {
+    "plant_id": "plant_cosmos_2",
+    "common_name": "Cosmos",
+    "scientific_name": "Cosmos bipinnatus",
+    "family": "Asteraceae",
+    "type": "flower",
+    "soil_type": [
+      "medium_loamy_well_drained"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low_to_moderate",
+    "nutrient_preferences": [
+      "balanced_organic_low"
+    ],
+    "growth_stage": [
+      "germination",
+      "seedling",
+      "vegetative_growth",
+      "bud_formation",
+      "flowering",
+      "seed_set",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_zinnia",
+      "plant_marigold",
+      "plant_dahlia",
+      "plant_sunflower",
+      "plant_nasturtium",
+      "plant_tomato",
+      "plant_cucumber",
+      "plant_beet",
+      "plant_basil",
+      "plant_dill"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_slugs",
+      "pest_spider_mites",
+      "pest_japanese_beetles",
+      "pest_leafhoppers",
+      "pest_thrips"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew",
+      "disease_botrytis_blight",
+      "disease_fusarium_wilt",
+      "disease_bacterial_wilt",
+      "disease_aster_yellows"
+    ],
+    "notes": "Deadhead spent flowers to keep them blooming. Pinch young plants for bushier growth. Drought tolerant."
+  },
+  {
+    "plant_id": "plant_cucumber_2",
+    "common_name": "Cucumber",
+    "scientific_name": "Cucumis sativus",
+    "family": "Cucurbitaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "light_textured_rich_organic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_high",
+    "nutrient_preferences": [
+      "nitrogen_early",
+      "phosphorus_flowering",
+      "potassium_high_fruiting"
+    ],
+    "growth_stage": [
+      "germination",
+      "seedling",
+      "vegetative_growth",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_dill",
+      "plant_borage",
+      "plant_chive",
+      "plant_oregano",
+      "plant_basil",
+      "plant_parsley",
+      "plant_corn",
+      "plant_sunflower",
+      "plant_bean",
+      "plant_pea",
+      "plant_beet",
+      "plant_carrot",
+      "plant_radish",
+      "plant_nasturtium",
+      "plant_marigold"
+    ],
+    "incompatible_plants": [
+      "plant_potato",
+      "plant_pumpkin",
+      "plant_squash",
+      "plant_melon",
+      "plant_sage"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_cucumber_beetle",
+      "pest_cabbage_looper",
+      "pest_pickleworm",
+      "pest_squash_vine_borer",
+      "pest_spider_mites",
+      "pest_whiteflies"
+    ],
+    "common_diseases": [
+      "disease_powdery_mildew",
+      "disease_alternaria_blight",
+      "disease_anthracnose",
+      "disease_bacterial_wilt",
+      "disease_cucumber_mosaic_virus",
+      "disease_grey_mold",
+      "disease_fusarium_wilt"
+    ],
+    "notes": "Pollination (bees) is essential. Harvest regularly to encourage production. Keep soil consistently moist."
+  },
+  {
+    "plant_id": "plant_curry_leaf",
+    "common_name": "Curry Leaf",
+    "scientific_name": "Murraya koenigii",
+    "family": "Rutaceae",
+    "type": "herb",
+    "soil_type": [
+      "fertile_well_drained_slightly_acidic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "balanced_organic_active"
+    ],
+    "growth_stage": [
+      "seed_germination",
+      "sapling_establishment",
+      "vegetative_growth",
+      "flowering",
+      "fruiting",
+      "mature_dormancy"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "June"
+      },
+      "harvest": {
+        "start_month": "January",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_marigold",
+      "plant_tomato",
+      "plant_chilli",
+      "plant_borage",
+      "plant_chive",
+      "plant_rosemary"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_citrus_psylla",
+      "pest_aphids",
+      "pest_citrus_butterfly_caterpillar",
+      "pest_leaf_miner",
+      "pest_scales",
+      "pest_mealybugs",
+      "pest_whiteflies",
+      "pest_spider_mites"
+    ],
+    "common_diseases": [
+      "disease_leaf_spot",
+      "disease_powdery_mildew",
+      "disease_fungal_stem_canker",
+      "disease_root_rot",
+      "disease_sooty_mold",
+      "disease_mosaic_virus",
+      "disease_bacterial_leaf_spot",
+      "disease_downy_mildew",
+      "disease_fusarium_wilt"
+    ],
+    "notes": "Sensitive to cold; move indoors below 10°C. Do not overwater. Remove berries to prioritize leaf growth."
+  },
+  {
+    "plant_id": "plant_dill_2",
+    "common_name": "Dill",
+    "scientific_name": "Anethum graveolens",
+    "family": "Apiaceae",
+    "type": "herb",
+    "soil_type": [
+      "well_draining_fertile_organic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "low_to_moderate_organic"
+    ],
+    "growth_stage": [
+      "seed_germination",
+      "vegetative_growth",
+      "flowering_umbel",
+      "seed_development",
+      "maturity_harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "April",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "September"
+      }
+    },
+    "companion_plants": [
+      "plant_broccoli",
+      "plant_cabbage",
+      "plant_cauliflower",
+      "plant_kale",
+      "plant_cucumber",
+      "plant_lettuce",
+      "plant_asparagus",
+      "plant_corn",
+      "plant_tomato",
+      "plant_pepper",
+      "plant_onion",
+      "plant_basil"
+    ],
+    "incompatible_plants": [
+      "plant_carrot",
+      "plant_fennel",
+      "plant_coriander"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_cabbage_looper",
+      "pest_tomato_hornworm",
+      "pest_spider_mites",
+      "pest_slugs",
+      "pest_carrot_rust_fly",
+      "pest_black_swallowtail_caterpillar"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew",
+      "disease_powdery_mildew",
+      "disease_cercospora_leaf_blight",
+      "disease_damping_off",
+      "disease_fusarium_wilt",
+      "disease_phytophthora_root_rot",
+      "disease_aster_yellows"
+    ],
+    "notes": "Host plant for Black Swallowtail butterflies. Does not transplant well; direct sow. Stake taller varieties in windy areas."
+  },
+  {
+    "plant_id": "plant_eggplant_2",
+    "common_name": "Eggplant",
+    "scientific_name": "Solanum melongena",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "sandy_loam_well_drained"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_high",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "potassium_high",
+      "phosphorus_moderate",
+      "calcium_moderate"
+    ],
+    "growth_stage": [
+      "seed_germination",
+      "seedling",
+      "vegetative_growth",
+      "flowering",
+      "fruit_formation",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_bean",
+      "plant_pea",
+      "plant_onion",
+      "plant_garlic",
+      "plant_chive",
+      "plant_dill",
+      "plant_oregano",
+      "plant_marigold",
+      "plant_borage",
+      "plant_nasturtium",
+      "plant_spinach"
+    ],
+    "incompatible_plants": [
+      "plant_potato"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_whiteflies",
+      "pest_flea_beetles",
+      "pest_colorado_potato_beetle",
+      "pest_spider_mites",
+      "pest_leafhoppers",
+      "pest_hornworms",
+      "pest_stink_bugs"
+    ],
+    "common_diseases": [
+      "disease_phytophthora_blight",
+      "disease_phomopsis_blight",
+      "disease_southern_blight",
+      "disease_verticillium_wilt",
+      "disease_damping_off",
+      "disease_bacterial_wilt",
+      "disease_alternaria_rot",
+      "disease_blossom_end_rot"
+    ],
+    "notes": "Optimal temps 22-30°C day, 18-24°C night. Avoid over-fertilizing with nitrogen. Harvest when skin is smooth and firm."
+  },
+  {
+    "plant_id": "plant_garlic_2",
+    "common_name": "Garlic",
+    "scientific_name": "Allium sativum",
+    "family": "Amaryllidaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "well_drained_fertile_organic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "dormancy_germination",
+      "green_garlic",
+      "scaping_hardneck",
+      "young_bulb",
+      "mature_bulb",
+      "harvest_curing"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "October",
+        "end_month": "November"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_tomato",
+      "plant_rose",
+      "plant_carrot",
+      "plant_cabbage",
+      "plant_broccoli",
+      "plant_beet",
+      "plant_strawberry",
+      "plant_pepper",
+      "plant_lettuce",
+      "plant_marigold",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [
+      "plant_pea",
+      "plant_bean"
+    ],
+    "common_pests": [
+      "pest_bulb_mites",
+      "pest_leek_moth",
+      "pest_onion_maggot",
+      "pest_nematodes",
+      "pest_thrips",
+      "pest_wheat_curl_mites"
+    ],
+    "common_diseases": [
+      "disease_white_rot",
+      "disease_fusarium_bulb_rot",
+      "disease_fusarium_basal_rot",
+      "disease_downy_mildew",
+      "disease_penicillium_mold",
+      "disease_onion_yellow_dwarf_virus"
+    ],
+    "notes": "Requires 10 weeks below 8°C for vernalization. Plant cloves 4-6 inches apart. Mulch heavily. Remove scapes on hardneck varieties."
+  },
+  {
+    "plant_id": "plant_ginger_2",
+    "common_name": "Ginger",
+    "scientific_name": "Zingiber officinale",
+    "family": "Zingiberaceae",
+    "type": "herb",
+    "soil_type": [
+      "loose_loamy_rich_organic"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "phosphorus_high",
+      "nitrogen_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "sprouting",
+      "vegetative_growth",
+      "maturation_dormancy",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "February",
+        "end_month": "April"
+      },
+      "harvest": {
+        "start_month": "October",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_turmeric",
+      "plant_bean",
+      "plant_pea",
+      "plant_coriander",
+      "plant_garlic",
+      "plant_onion",
+      "plant_chilli",
+      "plant_lemongrass",
+      "plant_nasturtium"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_shoot_borer",
+      "pest_root_knot_nematodes",
+      "pest_thrips",
+      "pest_aphids"
+    ],
+    "common_diseases": [
+      "disease_soft_rot",
+      "disease_bacterial_wilt",
+      "disease_dry_rot",
+      "disease_leaf_spot",
+      "disease_anthracnose"
+    ],
+    "notes": "Takes 8-10 months to mature. Cannot tolerate waterlogging. Mulch heavily. Harvest when stems yellow and die back."
+  },
+  {
+    "plant_id": "plant_habanero",
+    "common_name": "Habanero Pepper",
+    "scientific_name": "Capsicum chinense",
+    "family": "Solanaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "well_draining_fertile_loamy"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_high",
+      "potassium_high",
+      "calcium_moderate"
+    ],
+    "growth_stage": [
+      "germination",
+      "seedling",
+      "vegetative_growth",
+      "flowering",
+      "fruiting",
+      "harvest"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "January",
+        "end_month": "March"
+      },
+      "harvest": {
+        "start_month": "July",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_basil",
+      "plant_onion",
+      "plant_garlic",
+      "plant_chive",
+      "plant_carrot",
+      "plant_cilantro",
+      "plant_dill",
+      "plant_oregano",
+      "plant_marigold",
+      "plant_borage",
+      "plant_nasturtium",
+      "plant_spinach"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_spider_mites",
+      "pest_thrips",
+      "pest_whiteflies",
+      "pest_cutworms",
+      "pest_pepper_maggots",
+      "pest_colorado_potato_beetle"
+    ],
+    "common_diseases": [
+      "disease_mosaic_virus",
+      "disease_verticillium_wilt",
+      "disease_powdery_mildew",
+      "disease_blossom_end_rot",
+      "disease_anthracnose",
+      "disease_bacterial_spot"
+    ],
+    "notes": "Germination 7-21 days at 24-29°C. Space 18-24 inches apart. Pinch growing tips for bushier growth. Harvest when peppers reach final color."
+  },
+  {
+    "plant_id": "plant_kale_2",
+    "common_name": "Kale",
+    "scientific_name": "Brassica oleracea var. sabellica",
+    "family": "Brassicaceae",
+    "type": "vegetable",
+    "soil_type": [
+      "fertile_well_drained_organic"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_high",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seedling",
+      "teenager_young_plant",
+      "maturity",
+      "bolting"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "December"
+      }
+    },
+    "companion_plants": [
+      "plant_onion",
+      "plant_garlic",
+      "plant_chive",
+      "plant_dill",
+      "plant_rosemary",
+      "plant_mint",
+      "plant_thyme",
+      "plant_basil",
+      "plant_marigold",
+      "plant_nasturtium",
+      "plant_bean",
+      "plant_beet",
+      "plant_carrot"
+    ],
+    "incompatible_plants": [
+      "plant_strawberry",
+      "plant_tomato"
+    ],
+    "common_pests": [
+      "pest_aphids",
+      "pest_cabbage_worms",
+      "pest_cabbage_loopers",
+      "pest_flea_beetles",
+      "pest_harlequin_bugs",
+      "pest_slugs",
+      "pest_whiteflies",
+      "pest_cutworms"
+    ],
+    "common_diseases": [
+      "disease_downy_mildew",
+      "disease_black_rot",
+      "disease_clubroot",
+      "disease_powdery_mildew",
+      "disease_alternaria_leaf_spot",
+      "disease_damping_off"
+    ],
+    "notes": "Optimal temps 16-21°C. Can survive to -15°C. Harvest outer leaves when palm-sized. Needs 1-1.5 inches water weekly."
+  },
+  {
+    "plant_id": "plant_lavender_2",
+    "common_name": "Lavender",
+    "scientific_name": "Lavandula",
+    "family": "Lamiaceae",
+    "type": "herb",
+    "soil_type": [
+      "sandy_gritty_well_drained"
+    ],
+    "sunlight": "full_sun",
+    "water_requirements": "low",
+    "nutrient_preferences": [
+      "low_fertility"
+    ],
+    "growth_stage": [
+      "seed_germination",
+      "seedling_care",
+      "juvenile_development",
+      "flowering_maturation",
+      "harvest",
+      "dormancy"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "May"
+      },
+      "harvest": {
+        "start_month": "June",
+        "end_month": "August"
+      }
+    },
+    "companion_plants": [
+      "plant_rosemary",
+      "plant_sage",
+      "plant_thyme",
+      "plant_oregano",
+      "plant_basil",
+      "plant_marigold",
+      "plant_zinnia",
+      "plant_rose"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_whiteflies",
+      "pest_spittlebugs",
+      "pest_leafhoppers"
+    ],
+    "common_diseases": [
+      "disease_root_rot",
+      "disease_crown_rot",
+      "disease_botrytis",
+      "disease_septoria_leaf_spot",
+      "disease_shab",
+      "disease_alfalfa_mosaic_virus"
+    ],
+    "notes": "Germination 14-30 days. Reaches maturity in 3-5 years. Harvest when 25-30% of buds open. Prune after flowering; avoid old wood."
+  },
+  {
+    "plant_id": "plant_lettuce_2",
+    "common_name": "Lettuce",
+    "scientific_name": "Lactuca sativa",
+    "family": "Asteraceae",
+    "type": "vegetable",
+    "soil_type": [
+      "loamy_moist_well_drained"
+    ],
+    "sunlight": "partial_shade",
+    "water_requirements": "consistent_moderate",
+    "nutrient_preferences": [
+      "nitrogen_moderate",
+      "phosphorus_moderate",
+      "potassium_moderate"
+    ],
+    "growth_stage": [
+      "seed",
+      "cotyledon",
+      "seedling",
+      "rosette",
+      "cupping",
+      "heading"
+    ],
+    "seasonality": {
+      "sowing": {
+        "start_month": "March",
+        "end_month": "August"
+      },
+      "harvest": {
+        "start_month": "May",
+        "end_month": "October"
+      }
+    },
+    "companion_plants": [
+      "plant_onion",
+      "plant_garlic",
+      "plant_chive",
+      "plant_radish",
+      "plant_carrot",
+      "plant_beet",
+      "plant_bean",
+      "plant_pea",
+      "plant_basil",
+      "plant_mint",
+      "plant_dill",
+      "plant_nasturtium",
+      "plant_marigold",
+      "plant_corn"
+    ],
+    "incompatible_plants": [],
+    "common_pests": [
+      "pest_aphids",
+      "pest_whiteflies",
+      "pest_thrips",
+      "pest_leafhoppers",
+      "pest_caterpillars",
+      "pest_leaf_miners",
+      "pest_slugs",
+      "pest_flea_beetles"
+    ],
+    "common_diseases": [
+      "disease_damping_off",
+      "disease_downy_mildew",
+      "disease_sclerotinia_rot",
+      "disease_bottom_rot",
+      "disease_lettuce_mosaic_virus",
+      "disease_aster_yellows",
+      "disease_tipburn"
+    ],
+    "notes": "Optimal germination 15-20°C. Bolts above 25°C. Needs 25-30mm water weekly. Harvest 50-80 days from seed. Succession plant every 2 weeks."
+  }
 ]

@@ -3,6 +3,7 @@ import { ShoppingCart, Calendar, Tag, Plus, ScrollText, History, Package, Edit, 
 import { logUserPurchase, updateLogbookEntry, deleteLogbookEntry } from '../db/queries';
 import { useLogbook } from '../hooks/useLogbook';
 import { showSuccess, showError, showInfo } from '../lib/toast';
+import { ShoppingBasket, Skull } from 'lucide-react';
 import { format } from 'date-fns';
 import type { LogbookDocument } from '../db/types';
 
@@ -129,10 +130,14 @@ export const LogbookTab: React.FC = () => {
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
                       entry.type === 'seed_purchase' ? 'bg-garden-500/10 text-garden-500' : 
                       entry.type === 'planting' ? 'bg-green-500/10 text-green-500' :
-                      'bg-amber-500/10 text-amber-500'
+                      entry.type === 'harvest' ? 'bg-amber-500/10 text-amber-500' :
+                      entry.type === 'lost_harvest' ? 'bg-red-500/10 text-red-500' :
+                      'bg-stone-500/10 text-stone-500'
                     }`}>
                       {entry.type === 'seed_purchase' ? <Package className="w-6 h-6" /> : 
                        entry.type === 'planting' ? <Plus className="w-6 h-6" /> :
+                       entry.type === 'harvest' ? <ShoppingBasket className="w-6 h-6" /> :
+                       entry.type === 'lost_harvest' ? <Skull className="w-6 h-6" /> :
                        <ShoppingCart className="w-6 h-6" />}
                     </div>
                     <div>
@@ -156,10 +161,14 @@ export const LogbookTab: React.FC = () => {
                         <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${
                           entry.type === 'seed_purchase' ? 'border-garden-500/20 text-garden-400 bg-garden-500/5' : 
                           entry.type === 'planting' ? 'border-green-500/20 text-green-400 bg-green-500/5' :
+                          entry.type === 'harvest' ? 'border-amber-500/20 text-amber-400 bg-amber-500/5' :
+                          entry.type === 'lost_harvest' ? 'border-red-500/20 text-red-400 bg-red-500/5' :
                           'border-stone-700 text-stone-500 bg-stone-900/40'
                         }`}>
                           {entry.type === 'seed_purchase' ? 'Catalog Sync' : 
                            entry.type === 'planting' ? 'Activity' : 
+                           entry.type === 'harvest' ? 'Success' :
+                           entry.type === 'lost_harvest' ? 'Casualty' :
                            'Manual Entry'}
                         </span>
                       </div>

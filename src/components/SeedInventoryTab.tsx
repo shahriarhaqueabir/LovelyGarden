@@ -5,6 +5,8 @@ import { useInventory } from '../hooks/useInventory';
 import { PlantSpecies, Season, GrowthStageId } from '../schema/knowledge-graph';
 import { DetailModal } from './SeedStore';
 
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 // Define the expanded plant knowledge base interface
 interface ExpandedPlantKB {
   plant_id: string;
@@ -337,7 +339,18 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({ catalog }) =
                       {item.seasonality?.sowing && (
                         <div className="mt-2 flex items-center gap-1 text-xs text-stone-500">
                           <Calendar className="w-3 h-3" />
-                          <span>Sow: {item.seasonality.sowing.start_month} - {item.seasonality.sowing.end_month}</span>
+                          <span>
+                            Sow: {(() => {
+                              const s = item.seasonality.sowing;
+                              const range = Array.isArray(s) ? s[0] : s;
+                              if (range) {
+                                const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                                const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+                                return `${start} - ${end}`;
+                              }
+                              return "—";
+                            })()}
+                          </span>
                         </div>
                       )}
 

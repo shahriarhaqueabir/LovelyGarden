@@ -1,10 +1,22 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
-import { Edit, Trash2, Bug, X, Zap, Sparkles, Skull, ShoppingBasket, Waves, Droplets, Activity, AlertTriangle, FlaskConical, Plus } from 'lucide-react';
+import { 
+  Droplets, 
+  AlertTriangle, 
+  Zap, 
+  Plus, 
+  Activity, 
+  Bug, 
+  Trash2, 
+  Skull, 
+  Sparkles, 
+  FlaskConical,
+  Heart
+} from 'lucide-react';
 import { PlantedCardView } from './PlantedCard';
 import { calculateCompanionScore } from '../logic/reasoning';
 import { calculateCurrentStage, getCompletedStages } from '../logic/lifecycle';
-import type { PlantedDocument, CatalogDocument, Relationship, GridLayer, PlantHealthStatus } from '../db/types';
+import type { PlantedDocument, CatalogDocument, GridLayer } from '../db/types';
 
 interface GridSlotProps {
   x: number;
@@ -14,59 +26,13 @@ interface GridSlotProps {
   layer: GridLayer;
   activeSeedCatalogId?: string | null;
   getItemAt?: (x: number, y: number) => PlantedDocument | undefined;
-  relationships?: Relationship[];
-  onEdit?: (item: PlantedDocument) => void;
+  relationships?: any[];
   onDelete?: (item: PlantedDocument) => void;
-  onStatusChange?: (item: PlantedDocument, status: PlantHealthStatus) => void;
-  catalog?: CatalogDocument[]; // Added catalog prop
+  onOpenObservation?: (item: PlantedDocument) => void;
+  catalog?: CatalogDocument[];
+  currentDay: number;
 }
 
-// Observation Menu Component
-const ObservationMenu: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  onStatusSelect: (status: PlantHealthStatus) => void;
-  currentStatus?: string;
-}> = ({ isOpen, onClose, onStatusSelect, currentStatus }) => {
-  if (!isOpen) return null;
-
-  const statuses: { value: PlantHealthStatus; label: string; icon: React.ReactNode; color: string }[] = [
-    { value: 'Healthy', label: 'Healthy', icon: <Sparkles className="w-3 h-3" />, color: 'text-green-400' },
-    { value: 'Pest Infestation', label: 'Pest', icon: <Bug className="w-3 h-3" />, color: 'text-amber-400' },
-    { value: 'Dead', label: 'Dead', icon: <Skull className="w-3 h-3" />, color: 'text-red-400' },
-    { value: 'Harvested', label: 'Harvested', icon: <ShoppingBasket className="w-3 h-3" />, color: 'text-blue-400' },
-    { value: 'Overwatered', label: 'Overwatered', icon: <Waves className="w-3 h-3" />, color: 'text-cyan-400' },
-  ];
-
-  return (
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50">
-      <div className="bg-stone-900 border border-stone-700 rounded-lg shadow-2xl p-2 min-w-[140px]">
-        <div className="flex justify-between items-center mb-2 pb-2 border-b border-stone-800">
-          <span className="text-[10px] font-bold uppercase text-stone-500">Status</span>
-          <button onClick={onClose} className="text-stone-600 hover:text-stone-400" title="Close status selector">
-            <X className="w-3 h-3" />
-          </button>
-        </div>
-        <div className="space-y-1">
-          {statuses.map((status) => (
-            <button
-              key={status.value}
-              onClick={() => { onStatusSelect(status.value); onClose(); }}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-bold transition-all ${
-                currentStatus === status.value 
-                  ? 'bg-stone-800 ' + status.color 
-                  : 'hover:bg-stone-800/50 text-stone-400 hover:' + status.color
-              }`}
-            >
-              {status.icon}
-              {status.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const DraggablePlant: React.FC<{ item: PlantedDocument; children: React.ReactNode }> = ({ item, children }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -92,16 +58,35 @@ const DraggablePlant: React.FC<{ item: PlantedDocument; children: React.ReactNod
   );
 };
 
-export const GridSlot: React.FC<GridSlotProps> = ({ 
-  x, y, item, onSelect, layer, activeSeedCatalogId, getItemAt, relationships, onEdit, onDelete, onStatusChange, catalog 
-}) => {
+export const GridSlot: React.FC<GridSlotProps> = (props) => {
+  const { x, y, item, onSelect, layer, activeSeedCatalogId, getItemAt, relationships, onDelete, onOpenObservation, catalog, currentDay } = props;
+
   const { setNodeRef, isOver } = useDroppable({
     id: `slot-${x}-${y}`,
     data: { x, y }
   });
 
   const [showActions, setShowActions] = useState(false);
-  const [showObservationMenu, setShowObservationMenu] = useState(false);
+
+  const catalogItem = useMemo(() => catalog?.find(c => c.id === item?.catalogId), [catalog, item]);
+  
+  const nutrientRequirements = useMemo(() => {
+    if (!catalogItem?.nutrient_preferences) return { n: 2, p: 2, k: 2 };
+    const result = { n: 2, p: 2, k: 2 };
+    const map: Record<string, number> = { low: 1, moderate: 2, high: 3, very_high: 4 };
+    
+    catalogItem.nutrient_preferences.forEach(pref => {
+      const parts = pref.split('_');
+      if (parts.length < 2) return;
+      const level = parts.slice(1).join('_');
+      const val = map[level] || 2;
+      
+      if (pref.startsWith('nitrogen')) result.n = val;
+      else if (pref.startsWith('phosphorus')) result.p = val;
+      else if (pref.startsWith('potassium')) result.k = val;
+    });
+    return result;
+  }, [catalogItem]);
 
   const stressLevel = item?.stressLevel || 0;
   const hydration = item?.hydration || 100;
@@ -112,126 +97,132 @@ export const GridSlot: React.FC<GridSlotProps> = ({
   const isDead = healthStatus === 'Dead';
   const isPestInfested = healthStatus === 'Pest Infestation';
 
-  // --- Growth & Stage Calculation ---
-  const currentCatalogItem = useMemo(() => {
-      if (!item || !catalog) return undefined;
-      return catalog.find(c => c.id === item.catalogId);
-  }, [item, catalog]);
+  const growthData = useMemo(() => {
+    if (!item || !catalogItem?.stages) {
+      return { completedStages: [] as string[], daysElapsed: 0, stage: 'seedling' };
+    }
+    
+    const planted = item?.plantedDate || 0;
+    const daysElapsed = currentDay; 
+    const nowTimestamp = planted + (daysElapsed * 86400000);
 
-  const [growthData, setGrowthData] = useState<{ completedStages: string[], daysElapsed: number, stage: string }>({ completedStages: [], daysElapsed: 0, stage: 'seedling' });
+    const completed = getCompletedStages(planted, catalogItem.stages, nowTimestamp);
+    const stage = calculateCurrentStage(planted, catalogItem.stages, nowTimestamp);
+    
+    return { completedStages: completed, daysElapsed: daysElapsed, stage };
+  }, [item, catalogItem, currentDay]);
 
-  useEffect(() => {
-      if (!item || !currentCatalogItem?.stages) {
-          setGrowthData({ completedStages: [], daysElapsed: 0, stage: 'seedling' });
-          return;
-      }
-      
-      const now = Date.now();
-      const planted = item.plantedDate;
-      
-      let days = 0;
-      if (planted > 100000) { 
-         days = Math.floor((now - planted) / (1000 * 60 * 60 * 24));
-      }
-      if (days < 0) days = 0;
+  // Derived synergy for placed items
+  const synergyScore = useMemo(() => {
+    if (!item || !relationships || !getItemAt) return 0;
+    const neighbors = [
+      getItemAt(x - 1, y), getItemAt(x + 1, y),
+      getItemAt(x, y - 1), getItemAt(x, y + 1)
+    ].filter(Boolean) as PlantedDocument[];
+    const neighborIds = neighbors.map(nx => nx.catalogId);
+    return calculateCompanionScore(item.catalogId, neighborIds, relationships as any);
+  }, [item, relationships, x, y, getItemAt]);
 
-      const completed = getCompletedStages(planted, currentCatalogItem.stages, now);
-      const stage = calculateCurrentStage(planted, currentCatalogItem.stages, now);
-      
-      // Update local state with time-dependent calculations
-      setGrowthData({ completedStages: completed, daysElapsed: days, stage });
-  }, [item, currentCatalogItem]);
-  // ----------------------------------
 
-  // --- Sprint 2: Companion Synergy Overlay ---
-  const synergy = useMemo(() => {
+  // Holding seed synergy logic
+  const seedSynergy = useMemo(() => {
     if (!activeSeedCatalogId || !getItemAt || !relationships) return 0;
-
-    // Evaluate effect of placing activeSeedCatalogId *here* against existing neighbor plants.
     const neighborIds: string[] = [];
-    const dirs = [
-      { dx: 1, dy: 0 },
-      { dx: -1, dy: 0 },
-      { dx: 0, dy: 1 },
-      { dx: 0, dy: -1 }
-    ];
-
+    const dirs = [{ dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 }];
     for (const d of dirs) {
       const nItem = getItemAt(x + d.dx, y + d.dy);
       if (nItem?.catalogId) neighborIds.push(nItem.catalogId);
     }
-
     if (neighborIds.length === 0) return 0;
-    return calculateCompanionScore(activeSeedCatalogId, neighborIds, (relationships || []) as any);
+    return calculateCompanionScore(activeSeedCatalogId, neighborIds, relationships as any);
   }, [activeSeedCatalogId, getItemAt, relationships, x, y]);
 
-  // Zero-Click Health logic: Use border color to reflect state without clicking
+  // Border and FX logic
   const getBorderColor = () => {
-    if (isOver) return 'border-garden-400';
-    if (!item) return 'border-stone-800 hover:border-stone-700';
+    if (isOver) return 'border-garden-400 border-2 shadow-[0_0_30px_rgba(34,197,94,0.4)] z-10';
+    
+    if (activeSeedCatalogId) {
+      if (seedSynergy > 10) return 'border-garden-400/60 shadow-[0_0_20px_rgba(34,197,94,0.3)]';
+      if (seedSynergy < -10) return 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]';
+      return 'border-stone-700/50';
+    }
 
-    if (isDead) return 'border-stone-600 bg-app-background/50';
-    if (isPestInfested) return 'border-amber-500 shadow-[inset_0_0_15px_rgba(245,158,11,0.3)]';
+    if (layer === 'companions') {
+      if (!item) return 'border-stone-800/30';
+      if (synergyScore > 10) return 'border-garden-400 shadow-[0_0_20px_rgba(74,222,128,0.4)]';
+      if (synergyScore < -10) return 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]';
+      return 'border-stone-700/60';
+    }
 
     if (layer === 'hydration') {
-      if (hydration < 30) return 'border-blue-600 shadow-[inset_0_0_10px_rgba(37,99,235,0.3)] shadow-blue-500/20';
-      return 'border-blue-400/30';
+      if (hydration < 25) return 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-pulse';
+      if (hydration < 50) return 'border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]';
+      if (hydration < 75) return 'border-blue-400/60 shadow-[0_0_15px_rgba(96,165,250,0.2)]';
+      return 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]';
     }
 
     if (layer === 'health') {
-      if (stressLevel > 70) return 'border-red-500 shadow-[inset_0_0_15px_rgba(239,68,68,0.4)] pulse-red';
-      if (stressLevel > 40) return 'border-amber-500/50';
-      return 'border-garden-500/30';
+      if (isDead) return 'border-stone-800 opacity-60';
+      if (isPestInfested) return 'border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.4)] animate-pulse';
+      if (stressLevel > 70) return 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]';
+      if (stressLevel > 30) return 'border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]';
+      return 'border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]';
     }
 
     if (layer === 'nutrients') {
       const avg = (n + p + k) / 3;
-      if (avg < 30) return 'border-purple-600';
-      return 'border-purple-400/30';
+      if (avg < 30) return 'border-purple-900 shadow-[0_0_15px_rgba(88,28,135,0.3)]';
+      if (avg < 60) return 'border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]';
+      return 'border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.5)]';
     }
 
-    // Default "Visual" mode
     if (stressLevel > 80) return 'border-red-500/50';
     if (stressLevel > 40) return 'border-amber-500/40';
     return 'border-garden-900/40 shadow-xl';
   };
 
-  const getAnimationClass = () => {
-    if (!item || isDead) return '';
-    if (isPestInfested) return 'animate-pest';
-    if (stressLevel > 70) return 'animate-stressed';
-    if (stressLevel < 20 && hydration > 70) return 'animate-healthy';
-    return '';
-  };
-
   const getOverlayLabel = () => {
     if (isDead) return <span className="flex items-center gap-1"><Skull className="w-3 h-3" /> COMPOST</span>;
     if (isPestInfested) return <span className="flex items-center gap-1"><Bug className="w-3 h-3" /> PEST ALERT</span>;
+    
     if (layer === 'hydration') return <span className="flex items-center gap-1"><Droplets className="w-3 h-3" /> {Math.round(hydration)}% H2O</span>;
-    if (layer === 'health') return stressLevel > 70 ? <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> CRITICAL BLIGHT</span> : <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> {Math.round(stressLevel)}% STRESS</span>;
-    if (layer === 'nutrients') return <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3" /> NITRO: {n}%</span>;
+    
+    if (layer === 'health') {
+      const isCritical = stressLevel > 70;
+      return (
+        <span className="flex items-center gap-1">
+          {isCritical ? <AlertTriangle className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
+          {isCritical ? 'CRITICAL BLIGHT' : `${Math.round(stressLevel)}% STRESS`}
+        </span>
+      );
+    }
+    
+    if (layer === 'nutrients') {
+      return (
+        <span className="flex items-center gap-1">
+          <FlaskConical className="w-3 h-3" />
+          N-P-K: {nutrientRequirements.n}-{nutrientRequirements.p}-{nutrientRequirements.k}
+        </span>
+      );
+    }
+
+    if (layer === 'companions') {
+      if (!item) return null;
+      return (
+        <span className="flex items-center gap-1">
+          <Heart className={`w-3 h-3 ${synergyScore > 0 ? 'text-garden-400' : synergyScore < 0 ? 'text-red-400' : 'text-stone-500'}`} />
+          {synergyScore > 0 ? 'SYNERGY' : synergyScore < 0 ? 'ANTAGONISM' : 'NEUTRAL'}
+        </span>
+      );
+    }
+    
     return null;
   };
 
-  // Synergy Buff: Glow Effect + 10% Growth Multiplier indicator
-  const synergyClass = activeSeedCatalogId
-    ? synergy > 0
-      ? 'ring-2 ring-garden-400/80 shadow-[0_0_22px_rgba(34,197,94,0.35)]'
-      : synergy < 0
-        ? 'ring-2 ring-red-500/70 shadow-[0_0_22px_rgba(239,68,68,0.25)]'
-        : 'ring-1 ring-stone-700/60'
-    : '';
-
-  // Contagion Logic: Check if neighbors have pest infestation
+  // Contagion Logic
   const contagionRisk = useMemo(() => {
     if (!getItemAt) return false;
-    const dirs = [
-      { dx: 1, dy: 0 },
-      { dx: -1, dy: 0 },
-      { dx: 0, dy: 1 },
-      { dx: 0, dy: -1 }
-    ];
-
+    const dirs = [{ dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 }];
     for (const d of dirs) {
       const nItem = getItemAt(x + d.dx, y + d.dy);
       if (nItem?.healthStatus === 'Pest Infestation') return true;
@@ -239,163 +230,71 @@ export const GridSlot: React.FC<GridSlotProps> = ({
     return false;
   }, [getItemAt, x, y]);
 
-  const handleStatusChange = (status: PlantHealthStatus) => {
-    if (item) {
-      onStatusChange?.(item, status);
-    }
-  };
-
-  const handleEdit = () => {
-    if (item) {
-      onEdit?.(item);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (item && globalThis.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
-      onDelete?.(item);
-    }
-  };
-
   return (
     <div
       ref={setNodeRef}
       onClick={() => item && onSelect?.(item)}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => {
-        setShowActions(false);
-        setShowObservationMenu(false);
-      }}
+      onMouseLeave={() => setShowActions(false)}
       className={`
         relative w-full aspect-square max-w-[80px] sm:max-w-[100px] md:max-w-[120px] lg:max-w-[140px] xl:max-w-[160px] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
         ${item ? 'glass-panel' : 'bg-app-background/40'}
-        ${synergyClass}
+        ${activeSeedCatalogId ? (seedSynergy > 0 ? 'ring-2 ring-garden-400/80' : seedSynergy < 0 ? 'ring-2 ring-red-500/70' : 'ring-1 ring-stone-700/60') : ''}
         ${contagionRisk && !isPestInfested ? 'pulse-red border-amber-500/30' : ''}
-        ${getAnimationClass()}
         group
       `}
     >
       {item ? (
         <DraggablePlant item={item}>
         <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden shimmer-bg rounded-3xl">
-          {/* Layer Specific Overlays */}
           {layer !== 'normal' && !isDead && (
             <div className={`
               absolute inset-0 z-0 opacity-10 pointer-events-none transition-all
-              ${layer === 'hydration' ? 'bg-blue-500' : layer === 'health' ? 'bg-red-500' : 'bg-purple-500'}
+              ${layer === 'hydration' ? 'bg-blue-500' : layer === 'health' ? 'bg-red-500' : layer === 'companions' ? (synergyScore > 0 ? 'bg-garden-500' : synergyScore < 0 ? 'bg-red-500' : 'bg-stone-500') : 'bg-purple-500'}
             `} />
           )}
 
-          {/* Death State: Compost Icon */}
-          {isDead ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-              <Skull className="w-8 h-8 text-stone-600 mb-2" />
-              <span className="text-[10px] font-bold text-stone-500 uppercase">Compost</span>
+          <div className="z-10 w-full flex justify-between items-start">
+            <span className="text-[11px] font-black uppercase text-stone-500">{item.catalogId}</span>
+            <div className="flex gap-1">
+              {stressLevel > 70 && <AlertTriangle className="w-4 h-4 text-red-500" />}
+              {hydration > 90 && stressLevel < 10 && <Sparkles className="w-4 h-4 text-garden-400" />}
+              {isPestInfested && <Bug className="w-4 h-4 text-amber-500 animate-bounce" />}
             </div>
-          ) : (
-            <>
-              <div className="z-10 w-full flex justify-between items-start">
-                <span className="text-[11px] font-black uppercase text-stone-500">{item.catalogId}</span>
-                <div className="flex gap-1">
-                  {stressLevel > 70 && <span className="text-[13px] animate-pulse"><AlertTriangle className="w-4 h-4 text-red-500" /></span>}
-                  {hydration > 90 && stressLevel < 10 && <span className="text-[13px]"><Sparkles className="w-4 h-4 text-garden-400" /></span>}
-                  {isPestInfested && <span className="text-[13px] animate-bounce"><Bug className="w-4 h-4 text-amber-500" /></span>}
-                </div>
-              </div>
+          </div>
 
-              <div className="z-10 group-hover:scale-110 transition-transform duration-500 my-auto">
-                <PlantedCardView 
-                    catalogId={item.catalogId} 
-                    stage={growthData.stage}
-                    completedStages={growthData.completedStages}
-                    daysElapsed={growthData.daysElapsed}
-                />
-              </div>
-
-              <div className="z-10 w-full space-y-2">
-                {/* Spectral Metric Label */}
-                {getOverlayLabel() && (
-                  <div className="flex justify-center">
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border flex items-center gap-1 ${
-                       isDead ? 'bg-stone-800 border-stone-600 text-stone-400' :
-                       isPestInfested ? 'bg-amber-900/30 border-amber-500 text-amber-400' :
-                       layer === 'hydration' ? 'bg-blue-900/30 border-blue-500 text-blue-400' :
-                       layer === 'health' ? 'bg-red-900/30 border-red-500 text-red-400' :
-                       'bg-purple-900/30 border-purple-500 text-purple-400'
-                    }`}>
-                      {getOverlayLabel()}
-                    </span>
-                  </div>
-                )}
-
-                {/* Synergy Buff Indicator */}
-                {synergy > 0 && activeSeedCatalogId && (
-                  <div className="flex justify-center">
-                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-garden-900/30 border border-garden-500 text-garden-400">
-                      +10% Growth
-                    </span>
-                  </div>
-                )}
-
-                {/* Contagion Risk Warning */}
-                {contagionRisk && !isPestInfested && (
-                  <div className="flex justify-center">
-                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-900/30 border border-amber-500 text-amber-400 animate-pulse">
-                      Disease Risk
-                    </span>
-                  </div>
-                )}
-
-                {/* Bars for Quick View */}
-                <div className="space-y-1">
-                  <div className="h-2 w-full bg-stone-800/50 rounded-full overflow-hidden">
-                     <div
-                       className={`h-full opacity-60 ${hydration < 30 ? 'bg-amber-500' : 'bg-blue-500'}`}
-                       style={{ width: `${hydration}%` }}
-                     />
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Action Buttons */}
-          {showActions && item && !isDead && (
-            <div className="absolute top-2 right-2 flex gap-1 z-20">
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowObservationMenu(true); }}
-                className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-amber-400 transition-colors"
-                title="Update Status"
-              >
-                <Bug className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleEdit(); }}
-                className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-garden-400 transition-colors"
-                title="Edit Plant"
-              >
-                <Edit className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleDelete(); }}
-                className="p-1.5 bg-stone-900/80 border border-stone-700 rounded text-stone-400 hover:text-red-400 transition-colors"
-                title="Remove Plant"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Observation Menu */}
-          {showObservationMenu && (
-            <ObservationMenu
-              isOpen={showObservationMenu}
-              onClose={() => setShowObservationMenu(false)}
-              onStatusSelect={handleStatusChange}
-              currentStatus={healthStatus}
+          <div className="z-10 group-hover:scale-110 transition-transform duration-500 my-auto">
+            <PlantedCardView 
+                catalogId={item.catalogId} 
+                stage={growthData.stage}
+                completedStages={growthData.completedStages}
+                daysElapsed={growthData.daysElapsed}
             />
-          )}
+          </div>
+
+          <div className="z-10 w-full space-y-2">
+            {getOverlayLabel() && (
+              <div className="flex justify-center">
+                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border flex items-center gap-1 ${
+                    isDead ? 'bg-stone-800 border-stone-600 text-stone-400' :
+                    isPestInfested ? 'bg-amber-900/30 border-amber-500 text-amber-400' :
+                    layer === 'hydration' ? 'bg-blue-900/30 border-blue-500 text-blue-400' :
+                    layer === 'health' ? 'bg-red-900/30 border-red-500 text-red-400' :
+                    layer === 'nutrients' ? 'bg-purple-900/30 border-purple-500 text-purple-400' :
+                    (synergyScore > 0 ? 'bg-garden-900/30 border-garden-500 text-garden-400' : synergyScore < 0 ? 'bg-red-900/30 border-red-500 text-red-400' : 'bg-stone-900/30 border-stone-500 text-stone-400')
+                }`}>
+                  {getOverlayLabel()}
+                </span>
+              </div>
+            )}
+            <div className="h-2 w-full bg-stone-800/50 rounded-full overflow-hidden">
+                 <div
+                   className={`h-full opacity-60 ${hydration < 30 ? 'bg-amber-500' : 'bg-blue-500'}`}
+                   style={{ width: `${hydration}%` }}
+                 />
+            </div>
+          </div>
         </div>
         </DraggablePlant>
       ) : (
@@ -403,6 +302,13 @@ export const GridSlot: React.FC<GridSlotProps> = ({
            <Zap className="w-8 h-8 text-stone-700" />
            <Plus className="w-10 h-10 text-stone-500" />
            <span className="text-[11px] font-black tracking-widest uppercase">{x},{y}</span>
+        </div>
+      )}
+      
+      {showActions && item && !isDead && (
+        <div className="absolute top-2 right-2 flex gap-1 z-30">
+          <button onClick={(e) => { e.stopPropagation(); onOpenObservation?.(item); }} className="p-1.5 bg-stone-900/90 border border-stone-700/50 rounded-lg text-stone-400 hover:text-amber-400 transition-all"><Activity className="w-3.5 h-3.5" /></button>
+          <button onClick={(e) => { e.stopPropagation(); onDelete?.(item); }} className="p-1.5 bg-stone-900/90 border border-stone-700/50 rounded-lg text-stone-400 hover:text-red-400 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       )}
     </div>
@@ -417,74 +323,46 @@ export const GardenField: React.FC<{
   catalog?: CatalogDocument[];
   rows?: number;
   cols?: number;
-  onEdit?: (item: PlantedDocument) => void;
   onDelete?: (item: PlantedDocument) => void;
-}> = ({ items, onSelect, layer, activeSeedCatalogId, catalog, rows = 3, cols = 4, onEdit, onDelete }) => {
-  const getItemAt = (x: number, y: number) => {
-    return items.find(item => item.gridX === x && item.gridY === y);
-  };
+  onOpenObservation?: (item: PlantedDocument) => void;
+  currentDay: number;
+}> = ({ items, onSelect, layer, activeSeedCatalogId, catalog, rows = 3, cols = 4, onDelete, onOpenObservation, currentDay }) => {
+  const getItemAt = (x: number, y: number) => items.find(item => item.gridX === x && item.gridY === y);
 
-  const relationships = (catalog || []).flatMap((c: CatalogDocument) => 
-    (c.companions || []).map((targetId: string): Relationship => ({
-      targetPlantId: targetId,
-      type: 'companion',
-      strength: 1,
-    }))
-  );
-
-  // Handle status changes with simulation pause logic
-  const handleStatusChange = async (item: PlantedDocument, status: PlantHealthStatus) => {
-    const db = await import('../db').then(m => m.getDatabase());
-    const doc = await db.planted.findOne(item.id).exec();
-    
-    if (doc) {
-      // Pause simulation for certain statuses
-      const pauseSimulation = ['Pest Infestation', 'Overwatered', 'Dead'].includes(status);
-      
-      await doc.patch({
-        healthStatus: status,
-        simulationPaused: pauseSimulation,
-        // If dead, freeze all counters
-        ...(status === 'Dead' && {
-          hydration: 0,
-          stressLevel: 100,
-          nutrients: { n: 0, p: 0, k: 0 }
-        })
+  const relationships = useMemo(() => {
+    const rels: any[] = [];
+    (catalog || []).forEach((c: CatalogDocument) => {
+      (c.companions || []).forEach((targetId: string) => {
+        rels.push({ source_plant_id: c.id, target_plant_id: targetId, relationship: 'beneficial' });
       });
-    }
-  };
+      (c.antagonists || []).forEach((targetId: string) => {
+        rels.push({ source_plant_id: c.id, target_plant_id: targetId, relationship: 'antagonistic' });
+      });
+    });
+    return rels;
+  }, [catalog]);
 
   return (
     <div className="relative group/field">
-      {/* Field FX */}
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
-
       <div
-        className="grid gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8 relative z-10 w-full max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-        }}
+        className="grid gap-2 sm:gap-4 lg:gap-8 relative z-10 w-full max-w-5xl mx-auto"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}
       >
         {Array.from({ length: rows * cols }).map((_, i) => {
           const x = i % cols;
           const y = Math.floor(i / cols);
-          const item = items.find(p => p.gridX === x && p.gridY === y); // Explicit find
-          
+          const item = items.find(p => p.gridX === x && p.gridY === y);
           return (
             <GridSlot
               key={`${x}-${y}`}
-              x={x}
-              y={y}
-              item={item}
-              onSelect={onSelect}
-              layer={layer}
+              x={x} y={y} item={item}
+              onSelect={onSelect} layer={layer}
               activeSeedCatalogId={activeSeedCatalogId}
-              getItemAt={getItemAt}
-              relationships={relationships}
-              onEdit={onEdit}
+              getItemAt={getItemAt} relationships={relationships}
               onDelete={onDelete}
-              onStatusChange={handleStatusChange}
+              onOpenObservation={onOpenObservation}
+              currentDay={currentDay} catalog={catalog}
             />
           );
         })}
