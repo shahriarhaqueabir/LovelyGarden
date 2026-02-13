@@ -135,7 +135,7 @@ export const inventorySchema: RxJsonSchema<InventoryDocument> = {
 
 export const plantedSchema: RxJsonSchema<PlantedDocument> = {
   title: 'planted',
-  version: 2,
+  version: 3,
   description: 'Plants currently in the ground',
   primaryKey: 'id',
   type: 'object',
@@ -177,6 +177,22 @@ export const plantedSchema: RxJsonSchema<PlantedDocument> = {
   indexes: ['bedId'],
   required: ['id', 'bedId', 'catalogId', 'gridX', 'gridY', 'plantedDate']
 };
+
+export const plantedMigrationStrategies = {
+  1: function(oldDoc: any) {
+    // v0 → v1: Add observations array
+    return { ...oldDoc, observations: [] };
+  },
+  2: function(oldDoc: any) {
+    // v1 → v2: Add systemDiagnosis field
+    return { ...oldDoc, systemDiagnosis: '' };
+  },
+  3: function(oldDoc: any) {
+    // v2 → v3: Ensure observations exists
+    return { ...oldDoc, observations: oldDoc.observations || [] };
+  }
+};
+
 
 export const settingsSchema: RxJsonSchema<SettingsDocument> = {
   title: 'settings',
