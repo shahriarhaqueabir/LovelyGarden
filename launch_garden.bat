@@ -36,16 +36,21 @@ del "!ZIP_PATH!"
 :: 2. Add Node to Path
 set "PATH=!NODE_DIR!;!APP_DIR!node_modules\.bin;%PATH%"
 
-:: 3. Detect Package Manager
-set "PKG=npm"
-set "PKG_FLAGS=--no-audit"
+:: 3. Enable Corepack (for pnpm)
+echo [INFO] Enabling package manager support...
+call corepack enable 2>nul
+
+:: 4. Detect/Install Package Manager
+set "PKG=pnpm"
+set "PKG_FLAGS=--prefer-offline"
+
 where pnpm >nul 2>nul
-if %ERRORLEVEL% equ 0 (
-    set "PKG=pnpm"
-    set "PKG_FLAGS=--prefer-offline"
+if %ERRORLEVEL% neq 0 (
+    echo [INFO] Installing pnpm via corepack...
+    call corepack prepare pnpm@latest --activate
 )
 
-:: 4. Check for dependencies
+:: 5. Check for dependencies
 echo [INFO] Preparing environment via %PKG%...
 if not exist "node_modules" goto :install_deps
 echo [INFO] Verifying dependencies...
