@@ -66,5 +66,10 @@
     "typescript-eslint": "^8.54.0",
     "vite": "^5.4.10",
     "vite-plugin-pwa": "^0.20.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "firebase": "npm:empty-module@^1.0.0"
+    }
   }
 }
