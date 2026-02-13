@@ -88,10 +88,14 @@ coverage/
 vite.config.ts.timestamp-*
 
 .runtime/
-*.txt
-launch_garden.bat
 public/plants-kb-old.json
-scripts/
+
+# Local workspace artifacts (keep ignored)
+*.txt
+chive_context.txt
+last_line.txt
+test_results.txt
+blackbox_mcp_settings.json
 
 
 
