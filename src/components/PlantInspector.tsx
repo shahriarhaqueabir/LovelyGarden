@@ -12,11 +12,16 @@ import {
   LineChart as ChartIcon
 } from 'lucide-react';
 import { PlantSpecies, PlantStage, UserLocation } from '../schema/knowledge-graph';
+
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 import { calculateCurrentStage } from '../logic/lifecycle';
 import { getConfidenceThreshold, isSowingSeason } from '../logic/reasoning';
 import { getDatabase } from '../db';
 import { GrowthGraph, getStageColor } from './GrowthGraph';
 import { GrowthTelemetry } from './GrowthTelemetry';
+import { waterPlant, harvestPlant, recordLoss } from '../db/queries';
+import { Modal } from './ui/Modal';
+import { showInfo } from '../lib/toast';
 import type { PlantedDocument, SourceDocument, PlantKbDocument } from '../db/types';
 
 interface PlantInspectorProps {
@@ -43,6 +48,10 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [sourcesById, setSourcesById] = useState<Record<string, SourceDocument>>({});
   const [kb, setKb] = useState<PlantKbDocument | null>(null);
+  
+  // Modal states
+  const [modalType, setModalType] = useState<'harvest' | 'loss' | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -81,8 +90,8 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     loadKb();
   }, [catalogItem]);
 
-  const companions = useMemo(() => catalogItem?.companions ? [...catalogItem.companions] : [], [catalogItem?.companions]);
-  const antagonists = useMemo(() => catalogItem?.antagonists ? [...catalogItem.antagonists] : [], [catalogItem?.antagonists]);
+  const companions = useMemo(() => catalogItem?.companions ? [...catalogItem.companions] : [], [catalogItem]);
+  const antagonists = useMemo(() => catalogItem?.antagonists ? [...catalogItem.antagonists] : [], [catalogItem]);
 
   const containerClass = docked
     ? 'h-full w-full bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300'
@@ -122,6 +131,18 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
+          {/* Simulation Alerts (Decision Support) */}
+          {plant.systemDiagnosis && (
+            <div className="p-4 rounded-2xl bg-red-900/20 border border-red-500/40 text-red-200 animate-in fade-in zoom-in duration-300">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <h4 className="text-[10px] uppercase font-black tracking-widest text-red-500">System Warning: Proposed Mortality</h4>
+              </div>
+              <p className="text-xs font-bold leading-relaxed">{plant.systemDiagnosis}</p>
+              <p className="text-[10px] mt-2 opacity-60 italic">This is a theoretical projection. Add a manual observation to override this diagnosis.</p>
+            </div>
+          )}
+
           {/* Sowing Season Advice */}
           {seasonalAdvice && (
             <div
@@ -315,13 +336,18 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                   <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Seasonality</div>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-stone-200">
                     {Object.entries(kb.seasonality).map(([k, v]) => {
-                      const seasonData = v as { start_month?: string; end_month?: string };
+                      const range = Array.isArray(v) ? v[0] : v as { start_month?: string | number; end_month?: string | number };
+                      if (!range) return null;
+                      
+                      const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                      const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+
                       return (
                         <div key={k} className="rounded-lg border border-stone-800 bg-stone-900/30 p-2">
                           <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">{k.replace('_', ' ')}</div>
                           <div className="mt-1">
-                            <span className="text-stone-500">From:</span> {seasonData?.start_month || '—'}
-                            <span className="text-stone-500"> · To:</span> {seasonData?.end_month || '—'}
+                            <span className="text-stone-500">From:</span> {start || '—'}
+                            <span className="text-stone-500"> · To:</span> {end || '—'}
                           </div>
                         </div>
                       );
@@ -361,6 +387,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                     <div><span className="text-stone-500">Sunlight:</span> {kb.sunlight || '—'}</div>
                     <div><span className="text-stone-500">Water:</span> {kb.water_requirements || '—'}</div>
                     <div><span className="text-stone-500">Soil:</span> {(kb.soil_type || []).join(', ') || '—'}</div>
+                    <div><span className="text-stone-500">Soil pH:</span> {kb.preferred_ph || '—'}</div>
                   </div>
                 </div>
 
@@ -455,13 +482,135 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
           </section>
         </div>
 
+        {/* MODALS */}
+        <Modal 
+          isOpen={modalType === 'harvest'} 
+          onClose={() => setModalType(null)}
+          title="Confirm Harvest"
+          footer={
+            <>
+              <button 
+                onClick={() => setModalType(null)}
+                className="px-6 py-2 text-sm font-bold text-stone-500 hover:text-stone-300 transition-colors"
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={async () => {
+                  setIsProcessing(true);
+                  await harvestPlant(plant.id, catalogItem.name);
+                  showInfo(`Successfully harvested ${catalogItem.name}`);
+                  setModalType(null);
+                  onClose();
+                }}
+                className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-xl text-sm font-black uppercase tracking-widest transition-all"
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Harvesting...' : 'Harvest Now'}
+              </button>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 p-4 bg-garden-950/20 border border-garden-900/30 rounded-2xl">
+              <div className="p-3 bg-garden-500/10 rounded-xl">
+                <Leaf className="w-6 h-6 text-garden-400" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-stone-200">{catalogItem.name}</div>
+                <div className="text-[10px] text-garden-500 uppercase font-black tracking-widest">{currentStage.name} Stage</div>
+              </div>
+            </div>
+            
+            {catalogItem.stages.indexOf(currentStage) < catalogItem.stages.length - 2 && (
+              <div className="p-4 bg-amber-950/20 border border-amber-900/30 rounded-2xl flex gap-3 items-start">
+                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                <div className="space-y-1">
+                  <div className="text-xs font-bold text-amber-200">Premature Harvest Warning</div>
+                  <p className="text-[10px] text-amber-500/80 leading-relaxed">
+                    This plant has not yet reached its peak maturation. Harvesting now may result in reduced yield quality or quantity.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <p className="text-sm text-stone-400 leading-relaxed">
+              Are you sure you want to harvest this plant? It will be removed from your garden bed and moved to your Harvest Logbook.
+            </p>
+          </div>
+        </Modal>
+
+        <Modal 
+          isOpen={modalType === 'loss'} 
+          onClose={() => setModalType(null)}
+          title="Report Casualty"
+          footer={
+            <>
+              <button 
+                onClick={() => setModalType(null)}
+                className="px-6 py-2 text-sm font-bold text-stone-500 hover:text-stone-300 transition-colors"
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={async () => {
+                  setIsProcessing(true);
+                  await recordLoss(plant.id, catalogItem.name, "Manually marked as lost");
+                  showInfo(`Logged ${catalogItem.name} as a casualty`);
+                  setModalType(null);
+                  onClose();
+                }}
+                className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-black uppercase tracking-widest transition-all"
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Recording...' : 'Confirm Death'}
+              </button>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 p-4 bg-red-950/20 border border-red-900/30 rounded-2xl">
+              <div className="p-3 bg-red-500/10 rounded-xl text-red-400">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-stone-200">{catalogItem.name}</div>
+                <div className="text-[10px] text-red-500 uppercase font-black tracking-widest">Mark as Lost</div>
+              </div>
+            </div>
+            <p className="text-sm text-stone-400 leading-relaxed text-center py-2">
+              This will irreversibly remove <span className="text-stone-200 font-bold">{catalogItem.name}</span> from your garden. The event will be archived in your logbook for future retrospective analysis.
+            </p>
+          </div>
+        </Modal>
+
         {/* Footer Actions */}
-        <div className="p-6 border-t border-stone-800 grid grid-cols-2 gap-3">
-          <button className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95">
-            💧 Water Now
-          </button>
-          <button className="py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold transition-all border border-stone-700 active:scale-95">
-            🧺 Harvest
+        <div className="p-6 border-t border-stone-800 space-y-3 bg-stone-900/60">
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              onClick={async () => {
+                await waterPlant(plant.id);
+                // The query now handles XP (+5)
+              }}
+              className="py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Droplets className="w-4 h-4" />
+              Water Now (+5 XP)
+            </button>
+            <button 
+              onClick={() => setModalType('harvest')}
+              className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95 flex items-center justify-center gap-2"
+            >
+              🧺 Harvest (+50 XP)
+            </button>
+          </div>
+          <button 
+            onClick={() => setModalType('loss')}
+            className="w-full py-3 bg-stone-800 hover:bg-red-900/40 hover:text-red-400 text-stone-500 rounded-xl text-xs font-bold transition-all border border-stone-700/50 active:scale-95 flex items-center justify-center gap-2"
+          >
+            💀 Mark as Lost
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema, gardenSchema, logbookSchema } from './schemas';
 import { ExpandedPlantKBSchema } from '../schema/zod-schemas';
-import type { CatalogDocument, PlantKbDocument, SettingsDocument, GardenDocument } from './types';
+import type { CatalogDocument, PlantKbDocument, SettingsDocument, GardenDocument, PlantedDocument } from './types';
 
 // Type for migration documents
 type MigrationDoc<T> = T & { _rev?: string; _attachments?: Record<string, unknown> };
@@ -20,7 +20,7 @@ export const getDatabase = async () => {
   if (!dbPromise) {
     dbPromise = (async () => {
       const db = await createRxDatabase({
-        name: 'raidas_garden_v3', // Incremented for fresh schema versioning
+        name: 'raidas_garden_v4', // Incremented for fresh schema versioning
         storage: getRxStorageDexie(),
         ignoreDuplicate: true,
       });
@@ -30,11 +30,28 @@ export const getDatabase = async () => {
           schema: catalogSchema,
           migrationStrategies: {
             '1': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; },
-            '2': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; }
+            '2': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; },
+            '3': (oldDoc: MigrationDoc<CatalogDocument>) => { return { ...oldDoc, preferred_ph: undefined }; }
           }
         },
         sources: { schema: sourceSchema },
-        planted: { schema: plantedSchema },
+        planted: { 
+          schema: plantedSchema,
+          migrationStrategies: {
+            '1': (oldDoc: MigrationDoc<PlantedDocument>) => {
+              return {
+                ...oldDoc,
+                observations: []
+              };
+            },
+            '2': (oldDoc: MigrationDoc<PlantedDocument>) => {
+              return {
+                ...oldDoc,
+                systemDiagnosis: undefined
+              };
+            }
+          }
+        },
         inventory: { schema: inventorySchema },
         settings: { 
           schema: settingsSchema,
@@ -59,7 +76,8 @@ export const getDatabase = async () => {
             '1': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
             '2': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
             '3': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
-            '4': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; }
+            '4': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
+            '5': (oldDoc: MigrationDoc<PlantKbDocument>) => { return { ...oldDoc, preferred_ph: undefined }; }
           }
         },
         gardens: { 
@@ -94,6 +112,7 @@ interface RawPlantData {
   name: string;
   scientific_name?: string;
   notes?: string;
+  preferred_ph?: string;
   family?: string;
   plant_type?: string;
   life_cycle?: string;
@@ -146,6 +165,7 @@ interface KBEntry {
   pollination_type?: string;
   sowingSeason?: string[];
   notes?: string;
+  preferred_ph?: string;
 }
 
 const generateDefaultStages = (category: string = 'vegetable', lifeCycle: string = 'annual'): any[] => {
@@ -220,7 +240,8 @@ const synthesizePlantData = (
     soil_type: plant.soil_type || (kbMatch as any)?.soil_type || [],
     common_pests: plant.common_pests || (kbMatch as any)?.common_pests || [],
     common_diseases: plant.common_diseases || (kbMatch as any)?.common_diseases || [],
-    nutrient_preferences: plant.nutrient_preferences || (kbMatch as any)?.nutrient_preferences || []
+    nutrient_preferences: plant.nutrient_preferences || (kbMatch as any)?.nutrient_preferences || [],
+    preferred_ph: plant.preferred_ph || (plant.requirements as any)?.soil_ph || kbMatch?.preferred_ph
   };
 };
 
@@ -262,6 +283,7 @@ const mapToCatalogDocument = (plant: RawPlantData): CatalogDocument => {
     common_pests: plant.common_pests || [],
     common_diseases: plant.common_diseases || [],
     nutrient_preferences: plant.nutrient_preferences || [],
+    preferred_ph: (reqs.soil_ph as string) || plant.preferred_ph,
     source_metadata: plant.source_metadata as any
   };
 };
@@ -356,7 +378,7 @@ const handleDemoGardens = async (db: RxDatabase) => {
 export const hydrateDatabase = async () => {
   const db = await getDatabase();
   const settings = await db.settings.findOne('local-user').exec();
-  const currentDataVersion = 6;
+  const currentDataVersion = 7;
   
   if (settings?.firstLoadComplete && (settings.dataVersion || 0) >= currentDataVersion) {
     await handleDemoGardens(db);
@@ -420,6 +442,7 @@ export const hydrateDatabase = async () => {
       common_pests: plant.common_pests,
       common_diseases: plant.common_diseases,
       nutrient_preferences: plant.nutrient_preferences,
+      preferred_ph: plant.preferred_ph,
       source_metadata: plant.source_metadata
     }));
 

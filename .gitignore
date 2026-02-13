@@ -87,7 +87,11 @@ coverage/
 .eslintcache
 vite.config.ts.timestamp-*
 
-.gitignore      
+.runtime/
+*.txt
+launch_garden.bat
+public/plants-kb-old.json
+scripts/
 
 
 

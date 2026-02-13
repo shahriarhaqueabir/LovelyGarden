@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Droplets,
   AlertCircle,
   Calendar,
   LayoutGrid,
-  Activity,
   Sprout,
   Plus,
   Edit
@@ -15,14 +13,16 @@ import { InventoryTray } from './InventoryTray';
 import { PlantInspector } from './PlantInspector';
 import { usePlantedCards } from '../hooks/usePlantedCards';
 import { getDatabase } from '../db';
-import { createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed } from '../db/queries';
+import { createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed, addPlantObservation } from '../db/queries';
 import { calculateCurrentStage } from '../logic/lifecycle';
 import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
 import { isSowingSeason } from '../logic/reasoning';
 import { showSuccess, showError, showInfo } from '../lib/toast';
-import type { PlantedDocument } from '../db/types';
+import { PlantedDocument, GridLayer } from '../db/types';
 import { PlantSpecies } from '../schema/knowledge-graph';
 import { Subscription } from 'rxjs';
+import { ObservationTerminal } from './ObservationTerminal';
+import { ObservationPattern } from '../logic/diagnostics';
 
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
@@ -46,10 +46,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
   const plantedCards = usePlantedCards(activeGardenId || undefined);
   const [selectedPlant, setSelectedPlant] = useState<PlantedDocument | null>(null);
-  const [spectralLayer, setSpectralLayer] = useState<'normal' | 'hydration' | 'health' | 'nutrients'>('normal');
+  const [spectralLayer, setSpectralLayer] = useState<GridLayer>('normal');
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [scrubDays, setScrubDays] = useState(0);
+  const [observationPlant, setObservationPlant] = useState<PlantedDocument | null>(null);
   
   // Sprint 2: "Plant Now" filter - derived via useMemo to avoid cascading renders
   const currentMonth = useMemo(() => Math.floor(((currentDay - 1) % 365) / 30.42), [currentDay]);
@@ -242,6 +243,18 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
   };
 
+  const handleSaveObservation = async (pattern: ObservationPattern) => {
+    if (!observationPlant) return;
+    try {
+      await addPlantObservation(observationPlant.id, pattern);
+      showSuccess(`Status updated: ${pattern.label}`);
+      setObservationPlant(null);
+    } catch (err) {
+      console.error("Failed to save observation:", err);
+      showError('Failed to log observation');
+    }
+  };
+
 
 
 
@@ -310,29 +323,22 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               </div>
             </div>
 
-            {/* 5. Intervention Console - Hidden below sm */}
-            <div className="hidden sm:flex items-center gap-1.5 glass-panel p-1 rounded-xl border border-stone-800 shrink-0 shadow-inner">
-              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-blue-400 transition-all hover:scale-110 active:scale-90" title="Water">
-                <Droplets className="w-3.5 h-3.5" />
-              </button>
-              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-green-400 transition-all hover:scale-110 active:scale-90" title="Fertilize">
-                <Activity className="w-3.5 h-3.5" />
-              </button>
-              <button className="p-1.5 bg-stone-950/40 border border-stone-800 rounded text-stone-500 hover:text-red-400 transition-all hover:scale-110 active:scale-90" title="Remedy">
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
             {/* 6. Spectral Layer Toggle - Hidden below lg */}
-            <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0">
+            <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 origin-right">
               <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
                 Visual
               </button>
               <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
-                Hydration
+                H2O
               </button>
               <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
                 Blight
+              </button>
+              <button onClick={() => setSpectralLayer('nutrients')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'nutrients' ? 'bg-purple-900/40 text-purple-400 shadow-md' : 'text-stone-500'}`}>
+                N-P-K
+              </button>
+              <button onClick={() => setSpectralLayer('companions')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'companions' ? 'bg-garden-900/40 text-garden-400 shadow-md' : 'text-stone-500'}`}>
+                Companions
               </button>
             </div>
 
@@ -443,15 +449,14 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       catalog={catalog}
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
-                      onEdit={(item: PlantedDocument) => console.log('Edit plant:', item)}
                       onDelete={async (item: PlantedDocument) => {
-                        if (globalThis.confirm(`This will delete ${item.catalogId}. Proceed?`)) {
-                          const db = await getDatabase();
+                          const db = await import('../db').then(m => m.getDatabase());
                           await db.planted.findOne(item.id).remove();
                           showInfo('Plant removed from garden');
-                        }
                       }}
-                    />
+                      onOpenObservation={setObservationPlant}
+                      currentDay={currentDay}
+                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
                         <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
@@ -504,6 +509,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             <div className="mt-4 text-[13px] font-black uppercase text-garden-400">Deploying...</div>
           </div>
         </DragOverlay>
+
+        {observationPlant && (
+          <ObservationTerminal
+            plant={observationPlant}
+            catalog={catalog}
+            onClose={() => setObservationPlant(null)}
+            onSave={handleSaveObservation}
+          />
+        )}
       </div>
     </DndContext>
   );

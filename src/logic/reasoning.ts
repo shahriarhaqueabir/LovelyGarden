@@ -46,7 +46,7 @@ export const isSowingSeason = (
     // Convert month names to indices if they are strings
     const getMonthIndex = (m: string | number | undefined | null): number | null => {
       if (m === undefined || m === null) return null;
-      if (typeof m === 'number') return m;
+      if (typeof m === 'number') return m - 1; // Convert 1-indexed (JSON) to 0-indexed (JS)
       const search = String(m).toLowerCase();
       const idx = monthNames.findIndex(name => 
         name.toLowerCase() === search || 

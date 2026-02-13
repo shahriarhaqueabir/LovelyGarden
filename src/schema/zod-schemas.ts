@@ -46,6 +46,7 @@ export const PlantSpeciesSchema = z.object({
   stages: z.array(PlantStageSchema),
   companions: z.array(z.string()),
   antagonists: z.array(z.string()),
+  preferred_ph: z.string().optional(),
   confidence_score: z.number().min(0).max(1),
   sources: z.array(z.string()),
 });
@@ -82,6 +83,7 @@ export const ExpandedPlantKBSchema = z.object({
   common_diseases: z.array(z.string()).optional(),
   nutrient_preferences: z.array(z.string()).optional(),
   notes: z.string().optional(),
+  preferred_ph: z.string().optional(),
   sowingSeason: z.array(z.string()).optional(),
   source_metadata: z.array(z.object({
     source_name: z.string().optional(),

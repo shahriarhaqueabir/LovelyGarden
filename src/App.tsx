@@ -13,6 +13,7 @@ const WeatherForecastTab = React.lazy(() => import('./components/WeatherForecast
 const SettingsTab = React.lazy(() => import('./components/SettingsTab').then(m => ({ default: m.SettingsTab })));
 const SeedStore = React.lazy(() => import('./components/SeedStore').then(m => ({ default: m.SeedStore })));
 const LogbookTab = React.lazy(() => import('./components/LogbookTab').then(m => ({ default: m.LogbookTab })));
+const HarvestTab = React.lazy(() => import('./components/HarvestTab').then(m => ({ default: m.HarvestTab })));
 import { useWeatherStore } from './stores/weatherStore';
 import { getUserLocation } from './services/geolocationService';
 
@@ -63,6 +64,26 @@ const AppContent: React.FC = () => {
 
     return activeAlerts.length > 0 ? activeAlerts : ['✅ Conditions Normal'];
   }, [weather]);
+
+  // Automatic Shutdown Heartbeat
+  React.useEffect(() => {
+    // We use a relative path since the launcher now serves the app 
+    // and the heartbeat endpoint on the same port.
+    const sendHeartbeat = () => {
+      fetch('/api/heartbeat')
+        .catch(() => {
+            // Launcher likely closed
+        });
+    };
+
+    // Initial heartbeat
+    sendHeartbeat();
+
+    // Pulse every 5 seconds
+    const interval = setInterval(sendHeartbeat, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   React.useEffect(() => {
     const init = async () => {
@@ -223,6 +244,9 @@ const AppContent: React.FC = () => {
             </TabPanel>
             <TabPanel id="logbook">
               <LogbookTab />
+            </TabPanel>
+            <TabPanel id="harvest">
+              <HarvestTab />
             </TabPanel>
             <TabPanel id="settings">
               <SettingsTab />

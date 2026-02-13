@@ -348,6 +348,10 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                       <span className="text-[9px] font-bold text-stone-600 uppercase">Soil Preferences</span>
                       <p className="text-xs text-stone-300 capitalize">{selectedPlant.soil_type?.join(', ') || "loamy, well_draining"}</p>
                     </div>
+                    <div className="col-span-2">
+                      <span className="text-[9px] font-bold text-stone-600 uppercase">Soil pH</span>
+                      <p className="text-xs text-stone-300">{selectedPlant.preferred_ph || "6.0-7.0"}</p>
+                    </div>
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-stone-700">

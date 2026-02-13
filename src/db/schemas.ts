@@ -3,7 +3,7 @@ import type { CatalogDocument, PlantKbDocument, SourceDocument, InventoryDocumen
 
 export const catalogSchema: RxJsonSchema<CatalogDocument> = {
   title: 'catalog',
-  version: 2,
+  version: 3,
   description: 'Master library of plants',
   primaryKey: 'id',
   type: 'object',
@@ -34,6 +34,7 @@ export const catalogSchema: RxJsonSchema<CatalogDocument> = {
     sunlight: { type: 'string' },
     water_requirements: { type: 'string' },
     soil_type: { type: 'array', items: { type: 'string' } },
+    preferred_ph: { type: 'string' },
     common_pests: { type: 'array', items: { type: 'string' } },
     common_diseases: { type: 'array', items: { type: 'string' } },
     nutrient_preferences: { type: 'array', items: { type: 'string' } },
@@ -44,7 +45,7 @@ export const catalogSchema: RxJsonSchema<CatalogDocument> = {
 
 export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
   title: 'plant_kb',
-  version: 4,
+  version: 5,
   description: 'Expanded plant knowledge base (seasonality, pests, diseases, nutrients, sources) hydrated from plants-kb.json',
   primaryKey: 'plant_id',
   type: 'object',
@@ -67,6 +68,7 @@ export const plantKbSchema: RxJsonSchema<PlantKbDocument> = {
     common_diseases: { type: 'array', items: { type: 'string' } },
     nutrient_preferences: { type: 'array', items: { type: 'string' } },
     notes: { type: 'string' },
+    preferred_ph: { type: 'string' },
     life_cycle: { type: 'string' },
     growth_habit: { type: 'array', items: { type: 'string' } },
     photosynthesis_type: { type: 'string' },
@@ -133,7 +135,7 @@ export const inventorySchema: RxJsonSchema<InventoryDocument> = {
 
 export const plantedSchema: RxJsonSchema<PlantedDocument> = {
   title: 'planted',
-  version: 0,
+  version: 2,
   description: 'Plants currently in the ground',
   primaryKey: 'id',
   type: 'object',
@@ -157,7 +159,20 @@ export const plantedSchema: RxJsonSchema<PlantedDocument> = {
         p: { type: 'number' },
         k: { type: 'number' }
       }
-    }
+    },
+    observations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          timestamp: { type: 'number' },
+          category: { type: 'string' },
+          label: { type: 'string' }
+        }
+      }
+    },
+    systemDiagnosis: { type: 'string' }
   },
   indexes: ['bedId'],
   required: ['id', 'bedId', 'catalogId', 'gridX', 'gridY', 'plantedDate']

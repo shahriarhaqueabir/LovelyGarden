@@ -6,6 +6,8 @@ import { logSeedPurchase } from '../db/queries';
 import { isSowingSeason } from '../logic/reasoning';
 import { GrowthGraph } from './GrowthGraph';
 
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 interface SeedStoreProps {
   catalog: PlantSpecies[];
   onClose: () => void;
@@ -90,7 +92,7 @@ export const DetailModal: React.FC<{
               </div>
               <p className="text-sm text-stone-500 italic font-medium tracking-tight mb-4">{plant.scientificName || plant.scientific_name}</p>
             </div>
-            <button onClick={onClose} className="p-2 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded-full transition-all">
+            <button onClick={onClose} className="p-2 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded-full transition-all" title="Close">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -245,7 +247,16 @@ export const DetailModal: React.FC<{
                       <div className="absolute -left-1.5 top-0 w-3 h-3 bg-amber-600 rounded-full ring-4 ring-stone-900" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Sowing Window</span>
                       <p className="text-xs text-stone-300 font-bold mt-1">
-                        {plant.seasonality.sowing.start_month} — {plant.seasonality.sowing.end_month}
+                        {(() => {
+                          const s = plant.seasonality.sowing;
+                          const range = Array.isArray(s) ? s[0] : s;
+                          if (range) {
+                            const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                            const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+                            return `${start} — ${end}`;
+                          }
+                          return "—";
+                        })()}
                       </p>
                     </div>
                   )}
@@ -254,7 +265,16 @@ export const DetailModal: React.FC<{
                       <div className="absolute -left-1.5 top-0 w-3 h-3 bg-garden-600 rounded-full ring-4 ring-stone-900" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-garden-500">Optimal Harvest</span>
                       <p className="text-xs text-stone-300 font-bold mt-1">
-                        {plant.seasonality.harvest.start_month} — {plant.seasonality.harvest.end_month}
+                        {(() => {
+                          const h = plant.seasonality.harvest;
+                          const range = Array.isArray(h) ? h[0] : h;
+                          if (range) {
+                            const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
+                            const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+                            return `${start} — ${end}`;
+                          }
+                          return "—";
+                        })()}
                       </p>
                     </div>
                   )}
@@ -483,7 +503,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({ catalog, onClose, currentD
               <Package className="w-6 h-6 text-stone-500" />
               <h2 className="text-xl font-bold text-stone-100">Seed Store</h2>
             </div>
-            <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
+            <button onClick={onClose} className="text-stone-500 hover:text-stone-300" title="Close">
               <X className="w-5 h-5" />
             </button>
           </div>

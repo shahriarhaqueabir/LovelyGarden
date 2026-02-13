@@ -11,6 +11,7 @@ export type TabType =
   | 'seeds-in-hand'
   | 'weather-forecast'
   | 'logbook'
+  | 'harvest'
   | 'settings';
 
 interface TabsProps {
@@ -57,6 +58,7 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
     // { id: 'seeds-in-hand' as TabType, label: '🧺 Bag' },
     { id: 'weather-forecast' as TabType, label: '🌈 Weather' },
     { id: 'logbook' as TabType, label: '📜 Logbook' },
+    { id: 'harvest' as TabType, label: '🧺 Harvest' },
     { id: 'settings' as TabType, label: '⚙️ Settings' },
   ];
 

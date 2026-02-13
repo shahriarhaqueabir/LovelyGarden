@@ -27,6 +27,7 @@ export interface CatalogDocument {
   sunlight?: string;
   water_requirements?: string;
   soil_type?: string[];
+  preferred_ph?: string;
   common_pests?: string[];
   common_diseases?: string[];
   nutrient_preferences?: string[];
@@ -46,6 +47,7 @@ export interface PlantKbDocument {
   sunlight?: string;
   water_requirements?: string;
   soil_type?: string[];
+  preferred_ph?: string;
   companion_plants?: string[];
   incompatible_plants?: string[];
   common_pests?: string[];
@@ -107,6 +109,13 @@ export interface PlantedDocument {
     p?: number;
     k?: number;
   };
+  observations?: Array<{
+    id: string;
+    timestamp: number;
+    category: string;
+    label: string;
+  }>;
+  systemDiagnosis?: string;
 }
 
 export interface SettingsDocument {
@@ -155,7 +164,7 @@ export interface Relationship {
 }
 
 // Grid layer types
-export type GridLayer = 'normal' | 'hydration' | 'health' | 'nutrients';
+export type GridLayer = 'normal' | 'hydration' | 'health' | 'nutrients' | 'companions';
 
 // Plant status types
 export type PlantHealthStatus = 'Healthy' | 'Pest Infestation' | 'Dead' | 'Harvested' | 'Overwatered';
