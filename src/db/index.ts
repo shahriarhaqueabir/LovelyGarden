@@ -49,6 +49,12 @@ export const getDatabase = async () => {
                 ...oldDoc,
                 systemDiagnosis: undefined
               };
+            },
+            '3': (oldDoc: MigrationDoc<PlantedDocument>) => {
+              return {
+                ...oldDoc,
+                observations: oldDoc.observations || []
+              };
             }
           }
         },
