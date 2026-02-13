@@ -36,30 +36,34 @@ del "!ZIP_PATH!"
 :: 2. Add Node to Path
 set "PATH=!NODE_DIR!;!APP_DIR!node_modules\.bin;%PATH%"
 
-:: 3. Enable Corepack (for pnpm)
-echo [INFO] Enabling package manager support...
-call corepack enable 2>nul
+:: 3. Setup Standalone Package Manager (pnpm)
+set "PNPM_EXE=!NODE_DIR!\pnpm.exe"
+if exist "!PNPM_EXE!" goto :files_ready
 
-:: 4. Detect/Install Package Manager
-set "PKG=pnpm"
-set "PKG_FLAGS=--prefer-offline"
+echo [INFO] Downloading pnpm standalone executable...
+set "PNPM_URL=https://github.com/pnpm/pnpm/releases/latest/download/pnpm-win-x64.exe"
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object Net.WebClient).DownloadFile('!PNPM_URL!', '!PNPM_EXE!')"
 
-where pnpm >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo [INFO] Installing pnpm via corepack...
-    call corepack prepare pnpm@latest --activate
+if not exist "!PNPM_EXE!" (
+    echo [ERROR] Failed to download pnpm.
+    pause
+    exit /b 1
 )
 
-:: 5. Check for dependencies
-echo [INFO] Preparing environment via %PKG%...
+:files_ready
+set "PKG=!PNPM_EXE!"
+set "PKG_FLAGS=--prefer-offline"
+
+:: 4. Check for dependencies
+echo [INFO] Preparing environment via pnpm...
 if not exist "node_modules" goto :install_deps
 echo [INFO] Verifying dependencies...
-call %PKG% install %PKG_FLAGS%
+call "!PKG!" install %PKG_FLAGS%
 goto :start_app
 
 :install_deps
 echo [INFO] Installing dependencies (this may take a minute)...
-call %PKG% install %PKG_FLAGS%
+call "!PKG!" install %PKG_FLAGS%
 
 :start_app
 :: 5. Start the Application
