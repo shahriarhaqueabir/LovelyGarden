@@ -1,110 +1,201 @@
-import { createRxDatabase, RxDatabase, addRxPlugin } from 'rxdb';
-import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
-import { catalogSchema, sourceSchema, settingsSchema, plantedSchema, inventorySchema, plantKbSchema, gardenSchema, logbookSchema } from './schemas';
-import { ExpandedPlantKBSchema } from '../schema/zod-schemas';
-import type { CatalogDocument, PlantKbDocument, SettingsDocument, GardenDocument, PlantedDocument } from './types';
+import { createRxDatabase, RxDatabase, addRxPlugin } from "rxdb";
+import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
+import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema";
+import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
+import {
+  catalogSchema,
+  sourceSchema,
+  settingsSchema,
+  plantedSchema,
+  inventorySchema,
+  plantKbSchema,
+  gardenSchema,
+  logbookSchema,
+} from "./schemas";
+import { PlantSpeciesSchema } from "../schema/zod-schemas";
+import type {
+  CatalogDocument,
+  PlantKbDocument,
+  SettingsDocument,
+  GardenDocument,
+  PlantedDocument,
+} from "./types";
+import type { PlantStage, Season } from "../schema/knowledge-graph";
 
 // Type for migration documents
-type MigrationDoc<T> = T & { _rev?: string; _attachments?: Record<string, unknown> };
+type MigrationDoc<T> = T & {
+  _rev?: string;
+  _attachments?: Record<string, unknown>;
+};
 
-// Register RxDB Plugins
-addRxPlugin(RxDBMigrationSchemaPlugin);
+// Register RxDB Plugins (only once, even with HMR)
+if (!(window as any)._rxdbPluginsInit) {
+  try {
+    addRxPlugin(RxDBMigrationSchemaPlugin);
+  } catch {
+    console.debug("Migration plugin already added");
+  }
+  try {
+    addRxPlugin(RxDBDevModePlugin);
+  } catch {
+    console.debug("DevMode plugin already added");
+  }
+  (window as any)._rxdbPluginsInit = true;
+}
 
 /**
  * DATABASE INITIALIZATION
  */
 let dbPromise: Promise<RxDatabase> | null = null;
+let isInitializing = false;
 
 export const getDatabase = async () => {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      const db = await createRxDatabase({
-        name: 'raidas_garden_v4', // Incremented for fresh schema versioning
-        storage: getRxStorageDexie(),
-        ignoreDuplicate: true,
-      });
+  // If already initializing, wait for it
+  while (isInitializing) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 
-      await db.addCollections({
-        catalog: { 
-          schema: catalogSchema,
-          migrationStrategies: {
-            '1': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; },
-            '2': (oldDoc: MigrationDoc<CatalogDocument>) => { return oldDoc; },
-            '3': (oldDoc: MigrationDoc<CatalogDocument>) => { return { ...oldDoc, preferred_ph: undefined }; }
-          }
-        },
-        sources: { schema: sourceSchema },
-        planted: { 
-          schema: plantedSchema,
-          migrationStrategies: {
-            '1': (oldDoc: MigrationDoc<PlantedDocument>) => {
-              return {
-                ...oldDoc,
-                observations: []
-              };
-            },
-            '2': (oldDoc: MigrationDoc<PlantedDocument>) => {
-              return {
-                ...oldDoc,
-                systemDiagnosis: undefined
-              };
-            },
-            '3': (oldDoc: MigrationDoc<PlantedDocument>) => {
-              return {
-                ...oldDoc,
-                observations: oldDoc.observations || []
-              };
-            }
-          }
-        },
-        inventory: { schema: inventorySchema },
-        settings: { 
-          schema: settingsSchema,
-          migrationStrategies: {
-            '1': (oldDoc: MigrationDoc<SettingsDocument>) => {
-              return {
-                ...oldDoc,
-                xp: 0 // Initialize xp for existing users
-              };
-            },
-            '2': (oldDoc: MigrationDoc<SettingsDocument>) => {
-              return {
-                ...oldDoc,
-                dataVersion: 0 // Initialize dataVersion for existing users
-              };
-            }
-          }
-        },
-        plant_kb: {
-          schema: plantKbSchema,
-          migrationStrategies: {
-            '1': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
-            '2': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
-            '3': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
-            '4': (oldDoc: MigrationDoc<PlantKbDocument>) => { return oldDoc; },
-            '5': (oldDoc: MigrationDoc<PlantKbDocument>) => { return { ...oldDoc, preferred_ph: undefined }; }
-          }
-        },
-        gardens: { 
-          schema: gardenSchema,
-          migrationStrategies: {
-            '1': (oldDoc: MigrationDoc<GardenDocument>) => {
-              return {
-                ...oldDoc,
-                backgroundColor: '#14532d', // Default forest green
-                theme: 'forest'
-              };
-            }
-          }
-        },
-        logbook: { schema: logbookSchema }
+  if (dbPromise) {
+    try {
+      return await dbPromise;
+    } catch (err) {
+      console.warn(
+        "Existing database promise rejected, retrying initialization...",
+        err,
+      );
+      dbPromise = null;
+    }
+  }
+
+  isInitializing = true;
+  dbPromise = (async () => {
+    try {
+      console.log("Initializing RxDB [raidas_garden_v10]...");
+      const db = await createRxDatabase({
+        name: "raidas_garden_v10",
+        storage: wrappedValidateAjvStorage({
+          storage: getRxStorageDexie(),
+        }),
+        ignoreDuplicate: true,
+      }).catch((err) => {
+        console.error("CRITICAL: createRxDatabase rejected:", err);
+        throw err;
       });
+      console.log("RxDB Database created.");
+
+      try {
+        await db.addCollections({
+          catalog: {
+            schema: catalogSchema,
+            migrationStrategies: {
+              "1": (oldDoc: MigrationDoc<CatalogDocument>) => {
+                return oldDoc;
+              },
+              "2": (oldDoc: MigrationDoc<CatalogDocument>) => {
+                return oldDoc;
+              },
+              "3": (oldDoc: MigrationDoc<CatalogDocument>) => {
+                return { ...oldDoc, preferred_ph: undefined };
+              },
+            },
+          },
+          sources: { schema: sourceSchema },
+          planted: {
+            schema: plantedSchema,
+            migrationStrategies: {
+              "1": (oldDoc: MigrationDoc<PlantedDocument>) => {
+                return {
+                  ...oldDoc,
+                  observations: [],
+                };
+              },
+              "2": (oldDoc: MigrationDoc<PlantedDocument>) => {
+                return {
+                  ...oldDoc,
+                  systemDiagnosis: undefined,
+                };
+              },
+              "3": (oldDoc: MigrationDoc<PlantedDocument>) => {
+                return {
+                  ...oldDoc,
+                  observations: oldDoc.observations || [],
+                };
+              },
+            },
+          },
+          inventory: { schema: inventorySchema },
+          settings: {
+            schema: settingsSchema,
+            migrationStrategies: {
+              "1": (oldDoc: MigrationDoc<SettingsDocument>) => {
+                return {
+                  ...oldDoc,
+                  xp: 0, // Initialize xp for existing users
+                };
+              },
+              "2": (oldDoc: MigrationDoc<SettingsDocument>) => {
+                return {
+                  ...oldDoc,
+                  dataVersion: 0, // Initialize dataVersion for existing users
+                };
+              },
+            },
+          },
+          plant_kb: {
+            schema: plantKbSchema,
+            migrationStrategies: {
+              "1": (oldDoc: MigrationDoc<PlantKbDocument>) => {
+                return oldDoc;
+              },
+              "2": (oldDoc: MigrationDoc<PlantKbDocument>) => {
+                return oldDoc;
+              },
+              "3": (oldDoc: MigrationDoc<PlantKbDocument>) => {
+                return oldDoc;
+              },
+              "4": (oldDoc: MigrationDoc<PlantKbDocument>) => {
+                return oldDoc;
+              },
+              "5": (oldDoc: MigrationDoc<PlantKbDocument>) => {
+                return { ...oldDoc, preferred_ph: undefined };
+              },
+            },
+          },
+          gardens: {
+            schema: gardenSchema,
+            migrationStrategies: {
+              "1": (oldDoc: MigrationDoc<GardenDocument>) => {
+                return {
+                  ...oldDoc,
+                  backgroundColor: "#14532d", // Default forest green
+                  theme: "forest",
+                };
+              },
+            },
+          },
+          logbook: { schema: logbookSchema },
+        });
+        console.log("Collections added.");
+      } catch (colErr: any) {
+        console.error("FAILED TO ADD COLLECTIONS:", colErr);
+        if (colErr.parameters)
+          console.error(
+            "Collection error parameters:",
+            JSON.stringify(colErr.parameters, null, 2),
+          );
+        throw colErr;
+      }
 
       return db;
-    })();
-  }
-  
+    } catch (err) {
+      dbPromise = null; // Allow retry on next call
+      throw err;
+    } finally {
+      isInitializing = false;
+    }
+  })();
+
   return await dbPromise;
 };
 
@@ -130,12 +221,12 @@ interface RawPlantData {
   sowingSeason?: string[];
   sowingMethod?: string;
   requirements?: Record<string, unknown>;
-  stages?: Array<{ 
-    id: string; 
-    name?: string; 
-    durationDays: number; 
+  stages?: Array<{
+    id: string;
+    name?: string;
+    durationDays: number;
     waterFrequencyDays?: number;
-    imageAssetId?: string 
+    imageAssetId?: string;
   }>;
   companions?: string[];
   antagonists?: string[];
@@ -174,39 +265,147 @@ interface KBEntry {
   preferred_ph?: string;
 }
 
-const generateDefaultStages = (category: string = 'vegetable', lifeCycle: string = 'annual'): any[] => {
-  const isTree = category.toLowerCase().includes('tree') || category.toLowerCase() === 'fruit' || lifeCycle?.toLowerCase() === 'perennial';
-  const isHerb = category.toLowerCase() === 'herb';
-  
+const generateDefaultStages = (
+  category: string = "vegetable",
+  lifeCycle: string = "annual",
+): PlantStage[] => {
+  const isTree =
+    category.toLowerCase().includes("tree") ||
+    category.toLowerCase() === "fruit" ||
+    lifeCycle?.toLowerCase() === "perennial";
+  const isHerb = category.toLowerCase() === "herb";
+
   if (isTree) {
     return [
-      { id: 'germination', name: 'Germination', durationDays: 30, waterFrequencyDays: 3, imageAssetId: 'germination_generic' },
-      { id: 'seedling', name: 'Sapling Phase', durationDays: 365, waterFrequencyDays: 7, imageAssetId: 'sapling_generic' },
-      { id: 'vegetative', name: 'Active Growth', durationDays: 365 * 2, waterFrequencyDays: 10, imageAssetId: 'vegetative_tree' },
-      { id: 'flowering', name: 'Bloom Cycle', durationDays: 45, waterFrequencyDays: 5, imageAssetId: 'flowering_generic' },
-      { id: 'fruiting', name: 'Fruit Set', durationDays: 90, waterFrequencyDays: 4, imageAssetId: 'fruiting_generic' },
-      { id: 'harvest', name: 'Harvest Window', durationDays: 30, waterFrequencyDays: 5, imageAssetId: 'harvest_generic' },
-      { id: 'dormant', name: 'Dormancy', durationDays: 120, waterFrequencyDays: 14, imageAssetId: 'dormant_generic' }
+      {
+        id: "germination",
+        name: "Germination",
+        durationDays: 30,
+        waterFrequencyDays: 3,
+        imageAssetId: "germination_generic",
+      },
+      {
+        id: "seedling",
+        name: "Sapling Phase",
+        durationDays: 365,
+        waterFrequencyDays: 7,
+        imageAssetId: "sapling_generic",
+      },
+      {
+        id: "vegetative",
+        name: "Active Growth",
+        durationDays: 365 * 2,
+        waterFrequencyDays: 10,
+        imageAssetId: "vegetative_tree",
+      },
+      {
+        id: "flowering",
+        name: "Bloom Cycle",
+        durationDays: 45,
+        waterFrequencyDays: 5,
+        imageAssetId: "flowering_generic",
+      },
+      {
+        id: "fruiting",
+        name: "Fruit Set",
+        durationDays: 90,
+        waterFrequencyDays: 4,
+        imageAssetId: "fruiting_generic",
+      },
+      {
+        id: "harvest",
+        name: "Harvest Window",
+        durationDays: 30,
+        waterFrequencyDays: 5,
+        imageAssetId: "harvest_generic",
+      },
+      {
+        id: "dormant",
+        name: "Dormancy",
+        durationDays: 120,
+        waterFrequencyDays: 14,
+        imageAssetId: "dormant_generic",
+      },
     ];
   }
 
   if (isHerb) {
     return [
-      { id: 'germination', name: 'Germination', durationDays: 10, waterFrequencyDays: 1, imageAssetId: 'germination_generic' },
-      { id: 'seedling', name: 'Establishment', durationDays: 14, waterFrequencyDays: 2, imageAssetId: 'seedling_generic' },
-      { id: 'vegetative', name: 'Foliage Growth', durationDays: 60, waterFrequencyDays: 3, imageAssetId: 'vegetative_generic' },
-      { id: 'harvest', name: 'Pruning / Harvest', durationDays: 90, waterFrequencyDays: 3, imageAssetId: 'harvest_generic' }
+      {
+        id: "germination",
+        name: "Germination",
+        durationDays: 10,
+        waterFrequencyDays: 1,
+        imageAssetId: "germination_generic",
+      },
+      {
+        id: "seedling",
+        name: "Establishment",
+        durationDays: 14,
+        waterFrequencyDays: 2,
+        imageAssetId: "seedling_generic",
+      },
+      {
+        id: "vegetative",
+        name: "Foliage Growth",
+        durationDays: 60,
+        waterFrequencyDays: 3,
+        imageAssetId: "vegetative_generic",
+      },
+      {
+        id: "harvest",
+        name: "Pruning / Harvest",
+        durationDays: 90,
+        waterFrequencyDays: 3,
+        imageAssetId: "harvest_generic",
+      },
     ];
   }
 
   // Default Vegetable Cycle
   return [
-    { id: 'germination', name: 'Germination', durationDays: 7, waterFrequencyDays: 1, imageAssetId: 'germination_generic' },
-    { id: 'seedling', name: 'Seedling Phase', durationDays: 14, waterFrequencyDays: 2, imageAssetId: 'seedling_generic' },
-    { id: 'vegetative', name: 'Vegetative Growth', durationDays: 35, waterFrequencyDays: 3, imageAssetId: 'vegetative_generic' },
-    { id: 'flowering', name: 'Flowering Stage', durationDays: 14, waterFrequencyDays: 2, imageAssetId: 'flowering_generic' },
-    { id: 'fruiting', name: 'Fruiting', durationDays: 30, waterFrequencyDays: 3, imageAssetId: 'fruiting_generic' },
-    { id: 'harvest', name: 'Peak Harvest', durationDays: 21, waterFrequencyDays: 2, imageAssetId: 'harvest_generic' }
+    {
+      id: "germination",
+      name: "Germination",
+      durationDays: 7,
+      waterFrequencyDays: 1,
+      imageAssetId: "germination_generic",
+    },
+    {
+      id: "seedling",
+      name: "Seedling Phase",
+      durationDays: 14,
+      waterFrequencyDays: 2,
+      imageAssetId: "seedling_generic",
+    },
+    {
+      id: "vegetative",
+      name: "Vegetative Growth",
+      durationDays: 35,
+      waterFrequencyDays: 3,
+      imageAssetId: "vegetative_generic",
+    },
+    {
+      id: "flowering",
+      name: "Flowering Stage",
+      durationDays: 14,
+      waterFrequencyDays: 2,
+      imageAssetId: "flowering_generic",
+    },
+    {
+      id: "fruiting",
+      name: "Fruiting",
+      durationDays: 30,
+      waterFrequencyDays: 3,
+      imageAssetId: "fruiting_generic",
+    },
+    {
+      id: "harvest",
+      name: "Peak Harvest",
+      durationDays: 21,
+      waterFrequencyDays: 2,
+      imageAssetId: "harvest_generic",
+    },
   ];
 };
 
@@ -214,20 +413,21 @@ const generateDefaultStages = (category: string = 'vegetable', lifeCycle: string
  * DATA SYNTHESIS UTILITIES
  */
 const synthesizePlantData = (
-  plant: RawPlantData, 
-  kbLookup: Map<string, KBEntry>
+  plant: RawPlantData,
+  kbLookup: Map<string, KBEntry>,
 ): RawPlantData => {
   const kbMatch = kbLookup.get(plant.id);
-  
+
   let stages = plant.stages;
   if (!stages || stages.length === 0) {
     if (kbMatch?.stages) {
-      stages = kbMatch.stages as any;
+      stages =
+        kbMatch.stages as import("../schema/knowledge-graph").PlantStage[];
     } else if (kbMatch?.growth_stage) {
       stages = kbMatch.growth_stage.map((sId: string) => ({
-         id: sId,
-         name: sId.charAt(0).toUpperCase() + sId.slice(1),
-         durationDays: 20 
+        id: sId,
+        name: sId.charAt(0).toUpperCase() + sId.slice(1),
+        durationDays: 20,
       }));
     } else {
       stages = generateDefaultStages(plant.plant_type, plant.life_cycle);
@@ -237,17 +437,25 @@ const synthesizePlantData = (
   return {
     ...plant,
     stages,
-    growth_habit: plant.growth_habit || kbMatch?.growth_habit || ['bushy'],
-    pollination_type: plant.pollination_type || kbMatch?.pollination_type || 'insect',
+    growth_habit: plant.growth_habit || kbMatch?.growth_habit || ["bushy"],
+    pollination_type:
+      plant.pollination_type || kbMatch?.pollination_type || "insect",
     sowingSeason: plant.sowingSeason || kbMatch?.sowingSeason || [],
     seasonality: plant.seasonality || kbMatch?.seasonality,
     sunlight: plant.sunlight || kbMatch?.sunlight,
     water_requirements: plant.water_requirements || kbMatch?.water_requirements,
     soil_type: plant.soil_type || (kbMatch as any)?.soil_type || [],
     common_pests: plant.common_pests || (kbMatch as any)?.common_pests || [],
-    common_diseases: plant.common_diseases || (kbMatch as any)?.common_diseases || [],
-    nutrient_preferences: plant.nutrient_preferences || (kbMatch as any)?.nutrient_preferences || [],
-    preferred_ph: plant.preferred_ph || (plant.requirements as any)?.soil_ph || kbMatch?.preferred_ph
+    common_diseases:
+      plant.common_diseases || (kbMatch as any)?.common_diseases || [],
+    nutrient_preferences:
+      plant.nutrient_preferences ||
+      (kbMatch as any)?.nutrient_preferences ||
+      [],
+    preferred_ph:
+      plant.preferred_ph ||
+      (plant as any).requirements?.soil_ph ||
+      kbMatch?.preferred_ph,
   };
 };
 
@@ -257,123 +465,130 @@ const mapToCatalogDocument = (plant: RawPlantData): CatalogDocument => {
     id: plant.id,
     name: plant.name,
     scientificName: plant.scientific_name,
-    description: plant.notes || '',
-    family: plant.family || '',
-    genus: '',
-    species: '',
-    categories: [plant.plant_type || 'vegetable'],
-    life_cycle: plant.life_cycle || 'annual',
-    growth_habit: plant.growth_habit || ['bushy'],
-    photosynthesis_type: plant.photosynthesis_type || 'C3',
+    description: plant.notes || "",
+    family: plant.family || "",
+    genus: "",
+    species: "",
+    categories: [plant.plant_type || "vegetable"],
+    life_cycle: plant.life_cycle || "annual",
+    growth_habit: plant.growth_habit || ["bushy"],
+    photosynthesis_type: plant.photosynthesis_type || "C3",
     edible_parts: plant.edible_parts || [],
     toxic_parts: plant.toxic_parts || [],
-    pollination_type: plant.pollination_type || 'insect',
-    sowingSeason: (plant.sowingSeason || []) as any,
-    sowingMethod: plant.sowingMethod || 'Direct',
+    pollination_type: plant.pollination_type || "insect",
+    sowingSeason: (plant.sowingSeason || []) as Season[],
+    sowingMethod: plant.sowingMethod || "Direct",
     stages: (plant.stages || []).map((s) => ({
       ...s,
-      id: s.id as any,
-      name: s.name || (typeof s.id === 'string' ? s.id.charAt(0).toUpperCase() + s.id.slice(1) : 'Growth Stage'),
+      id: s.id as import("../schema/knowledge-graph").GrowthStageId,
+      name:
+        s.name ||
+        (typeof s.id === "string"
+          ? s.id.charAt(0).toUpperCase() + s.id.slice(1)
+          : "Growth Stage"),
       durationDays: s.durationDays || 20,
       waterFrequencyDays: s.waterFrequencyDays || 3,
-      imageAssetId: s.imageAssetId || 'sprout_generic'
+      imageAssetId: s.imageAssetId || "sprout_generic",
     })),
     companions: plant.companions || [],
     antagonists: plant.antagonists || [],
     confidence_score: 0.95,
-    sources: (plant.source_metadata || []).map((m) => m.source_name || 'unknown'),
+    sources: (plant.source_metadata || []).map(
+      (m) => m.source_name || "unknown",
+    ),
     seasonality: plant.seasonality as any,
     sunlight: (reqs.sunlight as string) || plant.sunlight,
-    water_requirements: (reqs.water_requirements as string) || plant.water_requirements,
+    water_requirements:
+      (reqs.water_requirements as string) || plant.water_requirements,
     soil_type: plant.soil_type || [],
     common_pests: plant.common_pests || [],
     common_diseases: plant.common_diseases || [],
     nutrient_preferences: plant.nutrient_preferences || [],
     preferred_ph: (reqs.soil_ph as string) || plant.preferred_ph,
-    source_metadata: plant.source_metadata as any
+    source_metadata: plant.source_metadata as any,
   };
 };
 
 const handleDemoGardens = async (db: RxDatabase) => {
   const existingGardens = await db.gardens.find().exec();
-  const existingIds = new Set(existingGardens.map(g => g.get('id')));
+  const existingIds = new Set(existingGardens.map((g) => g.get("id")));
 
   const demoGardens = [
     {
-      id: 'main-garden',
-      name: 'Garden 1',
-      type: 'In-ground',
-      soilType: 'Loam', 
-      sunExposure: 'Full Sun',
+      id: "main-garden",
+      name: "Garden 1",
+      type: "In-ground",
+      soilType: "Loam",
+      sunExposure: "Full Sun",
       gridWidth: 4,
       gridHeight: 4,
       createdDate: 1677640000000,
-      backgroundColor: '#14532d',
-      theme: 'forest'
+      backgroundColor: "#14532d",
+      theme: "forest",
     },
     {
-      id: 'moon-greenhouse',
-      name: 'Garden 2', 
-      type: 'Greenhouse',
-      soilType: 'Custom Mix',
-      sunExposure: 'Full Shade',
+      id: "moon-greenhouse",
+      name: "Garden 2",
+      type: "Greenhouse",
+      soilType: "Custom Mix",
+      sunExposure: "Full Shade",
       gridWidth: 4,
       gridHeight: 4,
       createdDate: 1677641000000,
-      backgroundColor: '#1e1b4b',
-      theme: 'midnight'
+      backgroundColor: "#1e1b4b",
+      theme: "midnight",
     },
     {
-      id: 'desert-pot',
-      name: 'Garden 3',
-      type: 'Container',
-      soilType: 'Sandy',
-      sunExposure: 'Full Sun',
+      id: "desert-pot",
+      name: "Garden 3",
+      type: "Container",
+      soilType: "Sandy",
+      sunExposure: "Full Sun",
       gridWidth: 4,
       gridHeight: 4,
       createdDate: 1677642000000,
-      backgroundColor: '#451a03',
-      theme: 'desert'
+      backgroundColor: "#451a03",
+      theme: "desert",
     },
     {
-      id: 'shadow-grove',
-      name: 'Garden 4',
-      type: 'In-ground',
-      soilType: 'Silt',
-      sunExposure: 'Partial Shade',
+      id: "shadow-grove",
+      name: "Garden 4",
+      type: "In-ground",
+      soilType: "Silt",
+      sunExposure: "Partial Shade",
       gridWidth: 4,
       gridHeight: 4,
       createdDate: 1677643000000,
-      backgroundColor: '#14532d',
-      theme: 'forest'
+      backgroundColor: "#14532d",
+      theme: "forest",
     },
     {
-      id: 'vertical-haven',
-      name: 'Garden 5',
-      type: 'Vertical',
-      soilType: 'Loam',
-      sunExposure: 'Partial Sun',
+      id: "vertical-haven",
+      name: "Garden 5",
+      type: "Vertical",
+      soilType: "Loam",
+      sunExposure: "Partial Sun",
       gridWidth: 4,
       gridHeight: 4,
       createdDate: 1677644000000,
-      backgroundColor: '#14532d',
-      theme: 'forest'
-    }
+      backgroundColor: "#14532d",
+      theme: "forest",
+    },
   ];
 
   let mainGardenCreated = false;
   for (const garden of demoGardens) {
-     if (!existingIds.has(garden.id)) {
-         await db.gardens.upsert(garden);
-         if (garden.id === 'main-garden') mainGardenCreated = true;
-     }
+    if (!existingIds.has(garden.id)) {
+      await db.gardens.upsert(garden);
+      if (garden.id === "main-garden") mainGardenCreated = true;
+    }
   }
 
   if (mainGardenCreated) {
     const planted = await db.planted.find().exec();
-    const updates = planted.map(p => {
-      if (!p.bedId || p.bedId === 'main') {
-         return p.patch({ bedId: 'main-garden' });
+    const updates = planted.map((p) => {
+      if (!p.bedId || p.bedId === "main") {
+        return p.patch({ bedId: "main-garden" });
       }
       return Promise.resolve();
     });
@@ -383,43 +598,50 @@ const handleDemoGardens = async (db: RxDatabase) => {
 
 export const hydrateDatabase = async () => {
   const db = await getDatabase();
-  const settings = await db.settings.findOne('local-user').exec();
+  const settings = await db.settings.findOne("local-user").exec();
   const currentDataVersion = 7;
-  
-  if (settings?.firstLoadComplete && (settings.dataVersion || 0) >= currentDataVersion) {
+
+  if (
+    settings?.firstLoadComplete &&
+    (settings.dataVersion || 0) >= currentDataVersion
+  ) {
     await handleDemoGardens(db);
     return;
   }
 
   console.log(`Starting data hydration (v${currentDataVersion})...`);
-  
+
   if (settings?.firstLoadComplete) {
     await Promise.all([
       db.catalog.find().remove(),
       db.plant_kb.find().remove(),
-      db.sources.find().remove()
+      db.sources.find().remove(),
     ]);
   }
 
   try {
     const [sourcesRes, plantCatalogRes, plantKbJsonRes] = await Promise.all([
-      fetch('/data/sources.json'),
-      fetch('/data/plants-catalog.json'),
-      fetch('/data/plants-kb.json').catch(() => null)
+      fetch("/data/sources.json"),
+      fetch("/data/plants-catalog.json"),
+      fetch("/data/plants-kb.json").catch(() => null),
     ]);
 
     const sources = await sourcesRes.json();
-    const plantCatalogRaw = await plantCatalogRes.json() as RawPlantData[];
-    const plantKbJsonData = (plantKbJsonRes ? await plantKbJsonRes.json() : []) as KBEntry[];
-    const kbLookup = new Map<string, KBEntry>(plantKbJsonData.map((p) => [p.plant_id || p.id || '', p]));
+    const plantCatalogRaw = (await plantCatalogRes.json()) as RawPlantData[];
+    const plantKbJsonData = (
+      plantKbJsonRes ? await plantKbJsonRes.json() : []
+    ) as KBEntry[];
+    const kbLookup = new Map<string, KBEntry>(
+      plantKbJsonData.map((p) => [p.plant_id || p.id || "", p]),
+    );
 
     const catalogData = plantCatalogRaw
-      .map(p => synthesizePlantData(p, kbLookup))
+      .map((p) => synthesizePlantData(p, kbLookup))
       .filter((plant) => {
-        const result = ExpandedPlantKBSchema.safeParse({ 
-          ...plant, 
-          plant_id: plant.id, 
-          common_name: plant.name 
+        const result = PlantSpeciesSchema.safeParse({
+          ...plant,
+          plant_id: plant.id,
+          common_name: plant.name,
         });
         return result.success;
       })
@@ -449,36 +671,47 @@ export const hydrateDatabase = async () => {
       common_diseases: plant.common_diseases,
       nutrient_preferences: plant.nutrient_preferences,
       preferred_ph: plant.preferred_ph,
-      source_metadata: plant.source_metadata
+      source_metadata: plant.source_metadata,
     }));
+
+    // Read existing settings so we can preserve user-progress fields (xp, currentDay)
+    // across data-version bumps. Only seed defaults for brand-new installs.
+    const existingSettingsDoc = await db.settings.findOne("local-user").exec();
+    const existingSettings = existingSettingsDoc
+      ? existingSettingsDoc.toJSON()
+      : null;
 
     await Promise.all([
       ...(sources as any[]).map((s) => db.sources.upsert(s)),
       ...catalogData.map((item) => db.catalog.upsert(item)),
       ...rxKbData.map((kbItem) => db.plant_kb.upsert(kbItem)),
       db.gardens.upsert({
-        id: 'main-garden',
-        name: 'Garden 1',
-        type: 'In-ground',
-        soilType: 'Loam',
-        sunExposure: 'Full Sun',
+        id: "main-garden",
+        name: "Garden 1",
+        type: "In-ground",
+        soilType: "Loam",
+        sunExposure: "Full Sun",
         gridWidth: 4,
         gridHeight: 4,
-        createdDate: Date.now(),
-        backgroundColor: '#14532d',
-        theme: 'forest'
+        createdDate: existingSettings?.createdDate ?? Date.now(),
+        backgroundColor: "#14532d",
+        theme: "forest",
       }),
       db.settings.upsert({
-        id: 'local-user',
+        id: "local-user",
         firstLoadComplete: true,
-        hemisphere: 'North', 
-        city: 'Dresden',
-        dataVersion: currentDataVersion
-      })
+        // Preserve user-chosen location; fall back to default only for new installs.
+        hemisphere: existingSettings?.hemisphere ?? "North",
+        city: existingSettings?.city ?? "Dresden",
+        // Never reset user progress fields.
+        xp: existingSettings?.xp ?? 0,
+        currentDay: existingSettings?.currentDay ?? 1,
+        dataVersion: currentDataVersion,
+      }),
     ]);
 
-    console.log('Hydration complete!');
+    console.log("Hydration complete!");
   } catch (error) {
-    console.error('Hydration failed:', error);
+    console.error("Hydration failed:", error);
   }
 };

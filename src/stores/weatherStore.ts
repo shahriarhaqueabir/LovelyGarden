@@ -1,7 +1,12 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { WeatherData, fetchWeather, calculateWateringScore, hasFrostRisk } from '../services/weatherService';
-import { WEATHER_API } from '../constants/weather';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import {
+  WeatherData,
+  fetchWeather,
+  calculateWateringScore,
+  hasFrostRisk,
+} from "../services/weatherService";
+import { WEATHER_API } from "../constants/weather";
 
 interface WeatherState {
   // Data
@@ -41,37 +46,53 @@ export const useWeatherStore = create<WeatherState>()(
 
       // Actions
       setLocation: (lat: number, lng: number, name?: string) => {
-        set({ latitude: lat, longitude: lng, locationName: name || null, error: null });
+        set({
+          latitude: lat,
+          longitude: lng,
+          locationName: name || null,
+          error: null,
+        });
       },
 
       fetchWeatherData: async (force = false) => {
         const { latitude, longitude, lastFetch, locationName } = get();
-        
+
         // Don't fetch more than once per hour unless forced
-        if (!force && lastFetch && Date.now() - lastFetch < WEATHER_API.CACHE_DURATION && locationName) {
+        if (
+          !force &&
+          lastFetch &&
+          Date.now() - lastFetch < WEATHER_API.CACHE_DURATION &&
+          locationName
+        ) {
           return;
         }
 
-        if (!latitude || !longitude) {
-          set({ error: 'Location not set. Please enable location or set coordinates manually.' });
+        // Use explicit null checks so valid 0-degree coordinates (equator / prime meridian) are accepted.
+        if (latitude === null || longitude === null) {
+          set({
+            error:
+              "Location not set. Please enable location or set coordinates manually.",
+          });
           return;
         }
 
         set({ isLoading: true, error: null });
 
         try {
-          const { reverseGeocode } = await import('../utils/geocoding');
+          const { reverseGeocode } = await import("../utils/geocoding");
           const [weatherData, cityName] = await Promise.all([
             fetchWeather(latitude, longitude),
-            locationName ? Promise.resolve(locationName) : reverseGeocode(latitude, longitude)
+            locationName
+              ? Promise.resolve(locationName)
+              : reverseGeocode(latitude, longitude),
           ]);
-          
+
           const wateringScore = calculateWateringScore(weatherData);
           const hasFrost = hasFrostRisk(weatherData);
-          
+
           set({
             data: weatherData,
-            locationName: cityName !== 'Unknown Location' ? cityName : null,
+            locationName: cityName !== "Unknown Location" ? cityName : null,
             wateringScore,
             hasFrost,
             lastFetch: Date.now(),
@@ -80,7 +101,10 @@ export const useWeatherStore = create<WeatherState>()(
           });
         } catch (err) {
           set({
-            error: err instanceof Error ? err.message : 'Failed to fetch weather data',
+            error:
+              err instanceof Error
+                ? err.message
+                : "Failed to fetch weather data",
             isLoading: false,
           });
         }
@@ -91,7 +115,7 @@ export const useWeatherStore = create<WeatherState>()(
       },
     }),
     {
-      name: 'weather-store',
+      name: "weather-store",
       partialize: (state) => ({
         latitude: state.latitude,
         longitude: state.longitude,
@@ -101,6 +125,6 @@ export const useWeatherStore = create<WeatherState>()(
         hasFrost: state.hasFrost,
         lastFetch: state.lastFetch,
       }),
-    }
-  )
+    },
+  ),
 );

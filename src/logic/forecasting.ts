@@ -1,9 +1,9 @@
-import { PlantedDocument, CatalogDocument } from '../db/types';
+import { PlantedDocument, CatalogDocument } from "../db/types";
 
 export interface ForecastResult {
   predictedHarvestDay: number;
   yieldProbability: number; // 0-100
-  harvestQuality: 'Premium' | 'Standard' | 'Poor' | 'Failure';
+  harvestQuality: "Premium" | "Standard" | "Poor" | "Failure";
   riskFactors: string[];
 }
 
@@ -15,20 +15,23 @@ export interface ForecastResult {
 export const forecastPlantOutcome = (
   plant: PlantedDocument,
   catalogItem?: CatalogDocument,
-  synergyScore: number = 0
+  synergyScore: number = 0,
 ): ForecastResult => {
   if (!catalogItem || !catalogItem.stages) {
     return {
       predictedHarvestDay: 0,
       yieldProbability: 50,
-      harvestQuality: 'Standard',
-      riskFactors: ['Insufficient species data for prediction']
+      harvestQuality: "Standard",
+      riskFactors: ["Insufficient species data for prediction"],
     };
   }
 
   const stages = catalogItem.stages;
-  const totalGrowthDays = stages.reduce((acc, s) => acc + (s.durationDays || 0), 0);
-  
+  const totalGrowthDays = stages.reduce(
+    (acc, s) => acc + (s.durationDays || 0),
+    0,
+  );
+
   // 1. Calculate Base Probability
   // Start with 100%, then deduct based on current state
   let yieldProp = 100;
@@ -37,7 +40,7 @@ export const forecastPlantOutcome = (
   // Stress Penalty (High stress = lower yield)
   const stress = plant.stressLevel || 0;
   if (stress > 20) {
-    yieldProp -= (stress * 0.5);
+    yieldProp -= stress * 0.5;
     risks.push(`High current stress (${Math.round(stress)}%)`);
   }
 
@@ -45,10 +48,10 @@ export const forecastPlantOutcome = (
   const hydration = plant.hydration || 0;
   if (hydration < 40) {
     yieldProp -= 15;
-    risks.push('Chronic dehydration detected');
+    risks.push("Chronic dehydration detected");
   } else if (hydration > 90) {
     yieldProp -= 10;
-    risks.push('Risk of root suffocation (Overwatering)');
+    risks.push("Risk of root suffocation (Overwatering)");
   }
 
   // Synergy Bonus/Penalty
@@ -56,14 +59,16 @@ export const forecastPlantOutcome = (
     yieldProp += 10;
   } else if (synergyScore < -5) {
     yieldProp -= 15;
-    risks.push('Antagonistic plant proximity');
+    risks.push("Antagonistic plant proximity");
   }
 
   // Observations History Impact
   if (plant.observations && plant.observations.length > 0) {
-    const pestCount = plant.observations.filter(o => o.category === 'Pests').length;
+    const pestCount = plant.observations.filter(
+      (o) => o.category === "Pests",
+    ).length;
     if (pestCount > 0) {
-      yieldProp -= (pestCount * 5);
+      yieldProp -= pestCount * 5;
       risks.push(`Historical pathogen pressure (${pestCount} events)`);
     }
   }
@@ -72,11 +77,14 @@ export const forecastPlantOutcome = (
   yieldProp = Math.max(0, Math.min(100, yieldProp));
 
   // 2. Predict Harvest Quality
-  let quality: ForecastResult['harvestQuality'] = 'Standard';
-  if (yieldProp > 85) quality = 'Premium';
-  else if (yieldProp > 40) quality = 'Standard';
-  else if (yieldProp > 10) quality = 'Poor';
-  else quality = 'Failure';
+  const quality: ForecastResult["harvestQuality"] =
+    yieldProp > 85
+      ? "Premium"
+      : yieldProp > 40
+        ? "Standard"
+        : yieldProp > 10
+          ? "Poor"
+          : "Failure";
 
   // 3. Predicted Harvest Day
   // If stressed, growth might be stunted (longer cycle)
@@ -90,6 +98,6 @@ export const forecastPlantOutcome = (
     predictedHarvestDay: prediction,
     yieldProbability: Math.round(yieldProp),
     harvestQuality: quality,
-    riskFactors: risks
+    riskFactors: risks,
   };
 };

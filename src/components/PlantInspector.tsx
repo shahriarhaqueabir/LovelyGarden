@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from "react";
 import {
   X,
   Droplets,
@@ -9,20 +9,42 @@ import {
   AlertCircle,
   FlaskConical,
   Users,
-  LineChart as ChartIcon
-} from 'lucide-react';
-import { PlantSpecies, PlantStage, UserLocation } from '../schema/knowledge-graph';
+  LineChart as ChartIcon,
+} from "lucide-react";
+import {
+  PlantSpecies,
+  PlantStage,
+  UserLocation,
+} from "../schema/knowledge-graph";
 
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-import { calculateCurrentStage } from '../logic/lifecycle';
-import { getConfidenceThreshold, isSowingSeason } from '../logic/reasoning';
-import { getDatabase } from '../db';
-import { GrowthGraph, getStageColor } from './GrowthGraph';
-import { GrowthTelemetry } from './GrowthTelemetry';
-import { waterPlant, harvestPlant, recordLoss } from '../db/queries';
-import { Modal } from './ui/Modal';
-import { showInfo } from '../lib/toast';
-import type { PlantedDocument, SourceDocument, PlantKbDocument } from '../db/types';
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+import { calculateCurrentStage } from "../logic/lifecycle";
+import { getConfidenceThreshold, isSowingSeason } from "../logic/reasoning";
+import { getDatabase } from "../db";
+import { GrowthGraph } from "./GrowthGraph";
+import { getStageColor } from "../utils/ui-helpers";
+import { GrowthTelemetry } from "./GrowthTelemetry";
+import { waterPlant, harvestPlant, recordLoss } from "../db/queries";
+import { Modal } from "./ui/Modal";
+import { showInfo } from "../lib/toast";
+import type {
+  PlantedDocument,
+  SourceDocument,
+  PlantKbDocument,
+} from "../db/types";
 
 interface PlantInspectorProps {
   plant: PlantedDocument;
@@ -43,26 +65,28 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   companionScore,
   currentDay,
   onClose,
-  docked
+  docked,
 }) => {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [sourcesById, setSourcesById] = useState<Record<string, SourceDocument>>({});
+  const [sourcesById, setSourcesById] = useState<
+    Record<string, SourceDocument>
+  >({});
   const [kb, setKb] = useState<PlantKbDocument | null>(null);
-  
+
   // Modal states
-  const [modalType, setModalType] = useState<'harvest' | 'loss' | null>(null);
+  const [modalType, setModalType] = useState<"harvest" | "loss" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchLocation = async () => {
       const db = await getDatabase();
-      const settings = await db.settings.findOne('local-user').exec();
+      const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
         const json = settings.toJSON();
         setUserLocation({
-          id: 'user_location',
+          id: "user_location",
           hemisphere: json.hemisphere,
-          frost_data: {} // Placeholder
+          frost_data: {}, // Placeholder
         });
       }
     };
@@ -74,7 +98,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
       const db = await getDatabase();
       const docs = await db.sources.find().exec();
       const map: Record<string, SourceDocument> = {};
-      for (const d of docs) map[d.get('id')] = d.toJSON() as SourceDocument;
+      for (const d of docs) map[d.get("id")] = d.toJSON() as SourceDocument;
       setSourcesById(map);
     };
     loadSources();
@@ -90,21 +114,35 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     loadKb();
   }, [catalogItem]);
 
-  const companions = useMemo(() => catalogItem?.companions ? [...catalogItem.companions] : [], [catalogItem]);
-  const antagonists = useMemo(() => catalogItem?.antagonists ? [...catalogItem.antagonists] : [], [catalogItem]);
+  const companions = useMemo(
+    () => (catalogItem?.companions ? [...catalogItem.companions] : []),
+    [catalogItem],
+  );
+  const antagonists = useMemo(
+    () => (catalogItem?.antagonists ? [...catalogItem.antagonists] : []),
+    [catalogItem],
+  );
 
   const containerClass = docked
-    ? 'h-full w-full bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300'
-    : 'fixed inset-y-0 right-0 w-96 bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 animate-in slide-in-from-right duration-300';
+    ? "h-full w-full bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300"
+    : "fixed inset-y-0 right-0 w-96 bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 animate-in slide-in-from-right duration-300";
 
   if (!catalogItem) return null;
 
-  const currentStageId = calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay);
-  const currentStage = catalogItem.stages.find(s => s.id === currentStageId) as PlantStage;
+  const currentStageId = calculateCurrentStage(
+    plant.plantedDate,
+    catalogItem.stages,
+    currentDay,
+  );
+  const currentStage = catalogItem.stages.find(
+    (s) => s.id === currentStageId,
+  ) as PlantStage;
   const confidenceLevel = getConfidenceThreshold(catalogItem.confidence_score);
 
   const currentMonth = new Date().getMonth();
-  const seasonalAdvice = userLocation ? isSowingSeason(catalogItem, userLocation, currentMonth) : null;
+  const seasonalAdvice = userLocation
+    ? isSowingSeason(catalogItem, userLocation, currentMonth)
+    : null;
 
   const edibleParts = (catalogItem.edible_parts || []) as string[];
   const toxicParts = (catalogItem.toxic_parts || []) as string[];
@@ -118,7 +156,9 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <h2 className="text-2xl font-bold bg-gradient-to-r from-stone-100 to-stone-400 bg-clip-text text-transparent">
               {catalogItem.name}
             </h2>
-            <p className="text-stone-500 italic text-sm">{catalogItem.scientificName}</p>
+            <p className="text-stone-500 italic text-sm">
+              {catalogItem.scientificName}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -136,10 +176,17 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <div className="p-4 rounded-2xl bg-red-900/20 border border-red-500/40 text-red-200 animate-in fade-in zoom-in duration-300">
               <div className="flex items-center gap-2 mb-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
-                <h4 className="text-[10px] uppercase font-black tracking-widest text-red-500">System Warning: Proposed Mortality</h4>
+                <h4 className="text-[10px] uppercase font-black tracking-widest text-red-500">
+                  System Warning: Proposed Mortality
+                </h4>
               </div>
-              <p className="text-xs font-bold leading-relaxed">{plant.systemDiagnosis}</p>
-              <p className="text-[10px] mt-2 opacity-60 italic">This is a theoretical projection. Add a manual observation to override this diagnosis.</p>
+              <p className="text-xs font-bold leading-relaxed">
+                {plant.systemDiagnosis}
+              </p>
+              <p className="text-[10px] mt-2 opacity-60 italic">
+                This is a theoretical projection. Add a manual observation to
+                override this diagnosis.
+              </p>
             </div>
           )}
 
@@ -148,16 +195,20 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <div
               className={`p-4 rounded-2xl border flex gap-3 items-start animate-in fade-in slide-in-from-top duration-500 ${
                 seasonalAdvice.eligible
-                  ? 'bg-garden-900/20 border-garden-500/30 text-garden-200'
-                  : 'bg-amber-900/10 border-amber-500/20 text-amber-200/80'
+                  ? "bg-garden-900/20 border-garden-500/30 text-garden-200"
+                  : "bg-amber-900/10 border-amber-500/20 text-amber-200/80"
               }`}
             >
               <Calendar
-                className={`w-5 h-5 shrink-0 ${seasonalAdvice.eligible ? 'text-garden-400' : 'text-amber-500'}`}
+                className={`w-5 h-5 shrink-0 ${seasonalAdvice.eligible ? "text-garden-400" : "text-amber-500"}`}
               />
               <div className="space-y-1">
-                <h4 className="text-[10px] uppercase font-bold tracking-widest opacity-60">📅 Seasonal Status</h4>
-                <p className="text-xs leading-relaxed">{seasonalAdvice.reason}</p>
+                <h4 className="text-[10px] uppercase font-bold tracking-widest opacity-60">
+                  📅 Seasonal Status
+                </h4>
+                <p className="text-xs leading-relaxed">
+                  {seasonalAdvice.reason}
+                </p>
               </div>
             </div>
           )}
@@ -167,14 +218,18 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
               <div className="flex items-center gap-2 mb-2 text-garden-400">
                 <Droplets className="w-4 h-4" />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">❤️ Health</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                  ❤️ Health
+                </span>
               </div>
               <div className="text-xl font-semibold">{plant.healthStatus}</div>
             </div>
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
               <div className="flex items-center gap-2 mb-2 text-amber-400">
                 <ChartIcon className="w-4 h-4" />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">🤝 Harmony</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                  🤝 Harmony
+                </span>
               </div>
               <div className="text-xl font-semibold">
                 {companionScore > 0 ? `✨ +${companionScore}` : companionScore}
@@ -183,7 +238,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
           </div>
 
           {/* Growth Telemetry */}
-          <GrowthTelemetry 
+          <GrowthTelemetry
             data={[
               { day: 1, health: 80, biomass: 10 },
               { day: 2, health: 82, biomass: 15 },
@@ -192,7 +247,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               { day: 5, health: 90, biomass: 35 },
               { day: 6, health: 88, biomass: 45 },
               { day: 7, health: 92, biomass: 60 },
-            ]} 
+            ]}
           />
 
           {/* Lifecycle Progress */}
@@ -202,30 +257,42 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               return (
                 <>
                   <div className="flex justify-between items-end">
-                    <h3 className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}>🌱 Lifecycle: {currentStage.name}</h3>
+                    <h3
+                      className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}
+                    >
+                      🌱 Lifecycle: {currentStage.name}
+                    </h3>
                     <span className="text-[10px] text-stone-600 font-mono">
-                      Stage {catalogItem.stages.indexOf(currentStage) + 1}/{catalogItem.stages.length}
+                      Stage {catalogItem.stages.indexOf(currentStage) + 1}/
+                      {catalogItem.stages.length}
                     </span>
                   </div>
                   <div className="h-2 w-full bg-stone-800 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${colors.bar} shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000`}
                       style={{
-                        width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`
+                        width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`,
                       }}
                     />
                   </div>
                   <p className="text-xs text-stone-400 leading-relaxed">
-                    Currently in the <span className={colors.text}>{currentStage.name}</span> stage. Requires watering 💧 every{' '}
-                    <span className={colors.text}>{currentStage.waterFrequencyDays} days</span>.
+                    Currently in the{" "}
+                    <span className={colors.text}>{currentStage.name}</span>{" "}
+                    stage. Requires watering 💧 every{" "}
+                    <span className={colors.text}>
+                      {currentStage.waterFrequencyDays} days
+                    </span>
+                    .
                   </p>
                 </>
               );
             })()}
-            
+
             <div className="pt-4 border-t border-stone-800">
-               <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Growth Graph</h4>
-               <GrowthGraph stages={catalogItem.stages} />
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">
+                Growth Graph
+              </h4>
+              <GrowthGraph stages={catalogItem.stages} />
             </div>
           </section>
 
@@ -233,54 +300,98 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
           <section className="p-4 bg-stone-900/30 rounded-2xl border border-stone-800 space-y-4">
             <div className="flex items-center gap-2">
               <Leaf className="w-4 h-4 text-garden-400" />
-              <h3 className="text-[10px] uppercase font-bold tracking-widest text-stone-400">Knowledge Base</h3>
+              <h3 className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
+                Knowledge Base
+              </h3>
             </div>
 
             {catalogItem.description && (
-              <p className="text-xs text-stone-300 leading-relaxed">{catalogItem.description}</p>
+              <p className="text-xs text-stone-300 leading-relaxed">
+                {catalogItem.description}
+              </p>
             )}
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧬 Taxonomy</div>
-                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                    <div><span className="text-stone-500">Family:</span> {catalogItem.family || '—'}</div>
-                    <div><span className="text-stone-500">Genus:</span> {catalogItem.genus || '—'}</div>
-                    <div><span className="text-stone-500">Species:</span> {catalogItem.species || '—'}</div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                  🧬 Taxonomy
+                </div>
+                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                  <div>
+                    <span className="text-stone-500">Family:</span>{" "}
+                    {catalogItem.family || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Genus:</span>{" "}
+                    {catalogItem.genus || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Species:</span>{" "}
+                    {catalogItem.species || "—"}
                   </div>
                 </div>
-                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🌿 Biology</div>
-                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                    <div><span className="text-stone-500">Life cycle:</span> {catalogItem.life_cycle || '—'}</div>
-                    <div><span className="text-stone-500">Habit:</span> {(catalogItem.growth_habit || []).join(', ') || '—'}</div>
-                    <div><span className="text-stone-500">Photo:</span> {catalogItem.photosynthesis_type || '—'}</div>
+              </div>
+              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                  🌿 Biology
+                </div>
+                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                  <div>
+                    <span className="text-stone-500">Life cycle:</span>{" "}
+                    {catalogItem.life_cycle || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Habit:</span>{" "}
+                    {(catalogItem.growth_habit || []).join(", ") || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Photo:</span>{" "}
+                    {catalogItem.photosynthesis_type || "—"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="w-3.5 h-3.5 text-stone-500" />
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    🧪 Sowing
+                  </div>
+                </div>
+                <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
+                  <div>
+                    <span className="text-stone-500">Method:</span>{" "}
+                    {catalogItem.sowingMethod || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Seasons:</span>{" "}
+                    {(catalogItem.sowingSeason || []).join(", ") || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Pollination:</span>{" "}
+                    {catalogItem.pollination_type || "—"}
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="flex items-center gap-2">
-                    <FlaskConical className="w-3.5 h-3.5 text-stone-500" />
-                    <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🧪 Sowing</div>
-                  </div>
-                  <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                    <div><span className="text-stone-500">Method:</span> {catalogItem.sowingMethod || '—'}</div>
-                    <div><span className="text-stone-500">Seasons:</span> {(catalogItem.sowingSeason || []).join(', ') || '—'}</div>
-                    <div><span className="text-stone-500">Pollination:</span> {catalogItem.pollination_type || '—'}</div>
-                  </div>
-                </div>
-
-
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-3.5 h-3.5 text-stone-500" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">🍴 Edibility</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    🍴 Edibility
+                  </div>
                 </div>
                 <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                  <div><span className="text-stone-500">Edible:</span> {edibleParts.join(', ') || '—'}</div>
-                  <div><span className="text-stone-500">Toxic:</span> {toxicParts.join(', ') || '—'}</div>
+                  <div>
+                    <span className="text-stone-500">Edible:</span>{" "}
+                    {edibleParts.join(", ") || "—"}
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Toxic:</span>{" "}
+                    {toxicParts.join(", ") || "—"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -289,34 +400,46 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
                   <Users className="w-3.5 h-3.5 text-garden-400" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Companions</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Companions
+                  </div>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {companions.length ? companions.map(id => (
-                    <span
-                      key={id}
-                      className="text-[9px] px-1.5 py-0.5 rounded border border-garden-500/20 bg-garden-900/10 text-garden-200"
-                    >
-                      {id}
-                    </span>
-                  )) : <span className="text-[10px] text-stone-500">—</span>}
+                  {companions.length ? (
+                    companions.map((id) => (
+                      <span
+                        key={id}
+                        className="text-[9px] px-1.5 py-0.5 rounded border border-garden-500/20 bg-garden-900/10 text-garden-200"
+                      >
+                        {id}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[10px] text-stone-500">—</span>
+                  )}
                 </div>
               </div>
 
               <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
                 <div className="flex items-center gap-2">
                   <Users className="w-3.5 h-3.5 text-red-400" />
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Antagonists</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Antagonists
+                  </div>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {antagonists.length ? antagonists.map(id => (
-                    <span
-                      key={id}
-                      className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/20 bg-red-900/10 text-red-200"
-                    >
-                      {id}
-                    </span>
-                  )) : <span className="text-[10px] text-stone-500">—</span>}
+                  {antagonists.length ? (
+                    antagonists.map((id) => (
+                      <span
+                        key={id}
+                        className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/20 bg-red-900/10 text-red-200"
+                      >
+                        {id}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[10px] text-stone-500">—</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -327,27 +450,49 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <section className="p-4 bg-stone-900/20 rounded-2xl border border-stone-800 space-y-4">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-400" />
-                <h3 className="text-[10px] uppercase font-bold tracking-widest text-stone-400">Diagnostics Intel</h3>
+                <h3 className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
+                  Diagnostics Intel
+                </h3>
               </div>
 
               {/* Seasonality windows */}
               {kb.seasonality && (
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Seasonality</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Seasonality
+                  </div>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-stone-200">
                     {Object.entries(kb.seasonality).map(([k, v]) => {
-                      const range = Array.isArray(v) ? v[0] : v as { start_month?: string | number; end_month?: string | number };
+                      const range = Array.isArray(v)
+                        ? v[0]
+                        : (v as {
+                            start_month?: string | number;
+                            end_month?: string | number;
+                          });
                       if (!range) return null;
-                      
-                      const start = typeof range.start_month === 'number' ? monthNames[range.start_month - 1] : range.start_month;
-                      const end = typeof range.end_month === 'number' ? monthNames[range.end_month - 1] : range.end_month;
+
+                      const start =
+                        typeof range.start_month === "number"
+                          ? monthNames[range.start_month - 1]
+                          : range.start_month;
+                      const end =
+                        typeof range.end_month === "number"
+                          ? monthNames[range.end_month - 1]
+                          : range.end_month;
 
                       return (
-                        <div key={k} className="rounded-lg border border-stone-800 bg-stone-900/30 p-2">
-                          <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">{k.replace('_', ' ')}</div>
+                        <div
+                          key={k}
+                          className="rounded-lg border border-stone-800 bg-stone-900/30 p-2"
+                        >
+                          <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                            {k.replace("_", " ")}
+                          </div>
                           <div className="mt-1">
-                            <span className="text-stone-500">From:</span> {start || '—'}
-                            <span className="text-stone-500"> · To:</span> {end || '—'}
+                            <span className="text-stone-500">From:</span>{" "}
+                            {start || "—"}
+                            <span className="text-stone-500"> · To:</span>{" "}
+                            {end || "—"}
                           </div>
                         </div>
                       );
@@ -358,74 +503,123 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Pests</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Pests
+                  </div>
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {(kb.common_pests || []).length ? (kb.common_pests || []).map((p: string) => (
-                      <span key={p} className="text-[9px] px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-900/10 text-amber-200">
-                        {p}
-                      </span>
-                    )) : <span className="text-[10px] text-stone-500">—</span>}
+                    {(kb.common_pests || []).length ? (
+                      (kb.common_pests || []).map((p: string) => (
+                        <span
+                          key={p}
+                          className="text-[9px] px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-900/10 text-amber-200"
+                        >
+                          {p}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] text-stone-500">—</span>
+                    )}
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Diseases</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Diseases
+                  </div>
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {(kb.common_diseases || []).length ? (kb.common_diseases || []).map((d: string) => (
-                      <span key={d} className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/20 bg-red-900/10 text-red-200">
-                        {d}
-                      </span>
-                    )) : <span className="text-[10px] text-stone-500">—</span>}
+                    {(kb.common_diseases || []).length ? (
+                      (kb.common_diseases || []).map((d: string) => (
+                        <span
+                          key={d}
+                          className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/20 bg-red-900/10 text-red-200"
+                        >
+                          {d}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] text-stone-500">—</span>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Environment</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Environment
+                  </div>
                   <div className="mt-2 text-[11px] text-stone-200 space-y-0.5">
-                    <div><span className="text-stone-500">Sunlight:</span> {kb.sunlight || '—'}</div>
-                    <div><span className="text-stone-500">Water:</span> {kb.water_requirements || '—'}</div>
-                    <div><span className="text-stone-500">Soil:</span> {(kb.soil_type || []).join(', ') || '—'}</div>
-                    <div><span className="text-stone-500">Soil pH:</span> {kb.preferred_ph || '—'}</div>
+                    <div>
+                      <span className="text-stone-500">Sunlight:</span>{" "}
+                      {kb.sunlight || "—"}
+                    </div>
+                    <div>
+                      <span className="text-stone-500">Water:</span>{" "}
+                      {kb.water_requirements || "—"}
+                    </div>
+                    <div>
+                      <span className="text-stone-500">Soil:</span>{" "}
+                      {(kb.soil_type || []).join(", ") || "—"}
+                    </div>
+                    <div>
+                      <span className="text-stone-500">Soil pH:</span>{" "}
+                      {kb.preferred_ph || "—"}
+                    </div>
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">Nutrients</div>
+                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                    Nutrients
+                  </div>
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {(kb.nutrient_preferences || []).length ? (kb.nutrient_preferences || []).map((n: string) => (
-                      <span key={n} className="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/20 bg-purple-900/10 text-purple-200">
-                        {n}
-                      </span>
-                    )) : <span className="text-[10px] text-stone-500">—</span>}
+                    {(kb.nutrient_preferences || []).length ? (
+                      (kb.nutrient_preferences || []).map((n: string) => (
+                        <span
+                          key={n}
+                          className="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/20 bg-purple-900/10 text-purple-200"
+                        >
+                          {n}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] text-stone-500">—</span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {Array.isArray(kb.source_metadata) && kb.source_metadata.length > 0 && (
-                <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
-                  <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">KB Sources</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {kb.source_metadata.map((s, idx: number) => {
-                      const source = s as { source_name?: string; url?: string; confidence_score?: number };
-                      return (
-                        <a
-                          key={`${source.source_name || 'src'}-${idx}`}
-                          href={source.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-1 text-[9px] text-stone-200 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50 hover:border-garden-500/40 hover:text-garden-200 transition-colors"
-                          title={source.url}
-                        >
-                          {source.source_name || 'Source'} ({Math.round((source.confidence_score || 0) * 100)}%)
-                          <ExternalLink className="w-2 h-2" />
-                        </a>
-                      );
-                    })}
+              {Array.isArray(kb.source_metadata) &&
+                kb.source_metadata.length > 0 && (
+                  <div className="p-3 rounded-xl border border-stone-800 bg-stone-950/30">
+                    <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
+                      KB Sources
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {kb.source_metadata.map((s, idx: number) => {
+                        const source = s as {
+                          source_name?: string;
+                          url?: string;
+                          confidence_score?: number;
+                        };
+                        return (
+                          <a
+                            key={`${source.source_name || "src"}-${idx}`}
+                            href={source.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1 text-[9px] text-stone-200 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50 hover:border-garden-500/40 hover:text-garden-200 transition-colors"
+                            title={source.url}
+                          >
+                            {source.source_name || "Source"} (
+                            {Math.round((source.confidence_score || 0) * 100)}%)
+                            <ExternalLink className="w-2 h-2" />
+                          </a>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </section>
           )}
 
@@ -433,26 +627,34 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
           <section className="p-4 bg-garden-950/20 rounded-2xl border border-garden-900/30 space-y-3">
             <div className="flex items-center gap-2 text-garden-400 mb-1">
               <Info className="w-4 h-4" />
-              <h3 className="text-[10px] uppercase font-bold tracking-widest text-garden-400">Horticultural Integrity</h3>
+              <h3 className="text-[10px] uppercase font-bold tracking-widest text-garden-400">
+                Horticultural Integrity
+              </h3>
             </div>
             <div className="flex justify-between items-center bg-stone-900/40 p-2 rounded-lg border border-stone-800">
-              <span className="text-[10px] text-stone-500 uppercase tracking-wider">Confidence Level</span>
+              <span className="text-[10px] text-stone-500 uppercase tracking-wider">
+                Confidence Level
+              </span>
               <span
                 className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
-                  confidenceLevel === 'actionable'
-                    ? 'bg-garden-500/20 text-garden-400'
-                    : 'bg-amber-500/20 text-amber-400'
+                  confidenceLevel === "actionable"
+                    ? "bg-garden-500/20 text-garden-400"
+                    : "bg-amber-500/20 text-amber-400"
                 }`}
               >
                 {confidenceLevel}
               </span>
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] text-stone-500 uppercase tracking-wider">Sources</span>
+              <span className="text-[10px] text-stone-500 uppercase tracking-wider">
+                Sources
+              </span>
               <div className="flex flex-wrap gap-2">
-                {catalogItem.sources.map(sourceId => {
+                {catalogItem.sources.map((sourceId) => {
                   const s = sourcesById[sourceId];
-                  const label = s?.name || sourceId.replace('source_', '').split('_').join(' ');
+                  const label =
+                    s?.name ||
+                    sourceId.replace("source_", "").split("_").join(" ");
                   const url = s?.url;
 
                   return url ? (
@@ -483,20 +685,20 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
         </div>
 
         {/* MODALS */}
-        <Modal 
-          isOpen={modalType === 'harvest'} 
+        <Modal
+          isOpen={modalType === "harvest"}
           onClose={() => setModalType(null)}
           title="Confirm Harvest"
           footer={
             <>
-              <button 
+              <button
                 onClick={() => setModalType(null)}
                 className="px-6 py-2 text-sm font-bold text-stone-500 hover:text-stone-300 transition-colors"
                 disabled={isProcessing}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={async () => {
                   setIsProcessing(true);
                   await harvestPlant(plant.id, catalogItem.name);
@@ -507,7 +709,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-xl text-sm font-black uppercase tracking-widest transition-all"
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Harvesting...' : 'Harvest Now'}
+                {isProcessing ? "Harvesting..." : "Harvest Now"}
               </button>
             </>
           }
@@ -518,46 +720,60 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 <Leaf className="w-6 h-6 text-garden-400" />
               </div>
               <div>
-                <div className="text-sm font-bold text-stone-200">{catalogItem.name}</div>
-                <div className="text-[10px] text-garden-500 uppercase font-black tracking-widest">{currentStage.name} Stage</div>
+                <div className="text-sm font-bold text-stone-200">
+                  {catalogItem.name}
+                </div>
+                <div className="text-[10px] text-garden-500 uppercase font-black tracking-widest">
+                  {currentStage.name} Stage
+                </div>
               </div>
             </div>
-            
-            {catalogItem.stages.indexOf(currentStage) < catalogItem.stages.length - 2 && (
+
+            {catalogItem.stages.indexOf(currentStage) <
+              catalogItem.stages.length - 2 && (
               <div className="p-4 bg-amber-950/20 border border-amber-900/30 rounded-2xl flex gap-3 items-start">
                 <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
                 <div className="space-y-1">
-                  <div className="text-xs font-bold text-amber-200">Premature Harvest Warning</div>
+                  <div className="text-xs font-bold text-amber-200">
+                    Premature Harvest Warning
+                  </div>
                   <p className="text-[10px] text-amber-500/80 leading-relaxed">
-                    This plant has not yet reached its peak maturation. Harvesting now may result in reduced yield quality or quantity.
+                    This plant has not yet reached its peak maturation.
+                    Harvesting now may result in reduced yield quality or
+                    quantity.
                   </p>
                 </div>
               </div>
             )}
-            
+
             <p className="text-sm text-stone-400 leading-relaxed">
-              Are you sure you want to harvest this plant? It will be removed from your garden bed and moved to your Harvest Logbook.
+              Are you sure you want to harvest this plant? It will be removed
+              from your garden bed and moved to your Harvest Logbook.
             </p>
           </div>
         </Modal>
 
-        <Modal 
-          isOpen={modalType === 'loss'} 
+        <Modal
+          isOpen={modalType === "loss"}
           onClose={() => setModalType(null)}
           title="Report Casualty"
           footer={
             <>
-              <button 
+              <button
                 onClick={() => setModalType(null)}
                 className="px-6 py-2 text-sm font-bold text-stone-500 hover:text-stone-300 transition-colors"
                 disabled={isProcessing}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={async () => {
                   setIsProcessing(true);
-                  await recordLoss(plant.id, catalogItem.name, "Manually marked as lost");
+                  await recordLoss(
+                    plant.id,
+                    catalogItem.name,
+                    "Manually marked as lost",
+                  );
                   showInfo(`Logged ${catalogItem.name} as a casualty`);
                   setModalType(null);
                   onClose();
@@ -565,7 +781,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-black uppercase tracking-widest transition-all"
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Recording...' : 'Confirm Death'}
+                {isProcessing ? "Recording..." : "Confirm Death"}
               </button>
             </>
           }
@@ -576,12 +792,21 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 <AlertCircle className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-sm font-bold text-stone-200">{catalogItem.name}</div>
-                <div className="text-[10px] text-red-500 uppercase font-black tracking-widest">Mark as Lost</div>
+                <div className="text-sm font-bold text-stone-200">
+                  {catalogItem.name}
+                </div>
+                <div className="text-[10px] text-red-500 uppercase font-black tracking-widest">
+                  Mark as Lost
+                </div>
               </div>
             </div>
             <p className="text-sm text-stone-400 leading-relaxed text-center py-2">
-              This will irreversibly remove <span className="text-stone-200 font-bold">{catalogItem.name}</span> from your garden. The event will be archived in your logbook for future retrospective analysis.
+              This will irreversibly remove{" "}
+              <span className="text-stone-200 font-bold">
+                {catalogItem.name}
+              </span>{" "}
+              from your garden. The event will be archived in your logbook for
+              future retrospective analysis.
             </p>
           </div>
         </Modal>
@@ -589,7 +814,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
         {/* Footer Actions */}
         <div className="p-6 border-t border-stone-800 space-y-3 bg-stone-900/60">
           <div className="grid grid-cols-2 gap-3">
-            <button 
+            <button
               onClick={async () => {
                 await waterPlant(plant.id);
                 // The query now handles XP (+5)
@@ -599,15 +824,15 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <Droplets className="w-4 h-4" />
               Water Now (+5 XP)
             </button>
-            <button 
-              onClick={() => setModalType('harvest')}
+            <button
+              onClick={() => setModalType("harvest")}
               className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95 flex items-center justify-center gap-2"
             >
               🧺 Harvest (+50 XP)
             </button>
           </div>
-          <button 
-            onClick={() => setModalType('loss')}
+          <button
+            onClick={() => setModalType("loss")}
             className="w-full py-3 bg-stone-800 hover:bg-red-900/40 hover:text-red-400 text-stone-500 rounded-xl text-xs font-bold transition-all border border-stone-700/50 active:scale-95 flex items-center justify-center gap-2"
           >
             💀 Mark as Lost
