@@ -1,31 +1,42 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Trash2, Sprout, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
-import { useInventory } from '../hooks/useInventory';
-import { getDatabase } from '../db';
-import { showSuccess, showError } from '../lib/toast';
+import React, { useState, useRef, useEffect } from "react";
+import { Trash2, Sprout, ChevronLeft, ChevronRight } from "lucide-react";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { useInventory } from "../hooks/useInventory";
+import { getDatabase } from "../db";
+import { showSuccess, showError } from "../lib/toast";
 
 // ... (SeedCard component remains same) -> Restored below
-export const SeedCard: React.FC<{ 
-  id: string; 
-  catalogId: string; 
-  name: string; 
-  type: string; 
-  plantNowEligible?: boolean; 
+export const SeedCard: React.FC<{
+  id: string;
+  catalogId: string;
+  name: string;
+  type: string;
+  plantNowEligible?: boolean;
   plantNowMode?: boolean;
   onDelete?: (id: string) => void;
-}> = ({ id, catalogId, name, type, plantNowEligible, plantNowMode, onDelete }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `seed-${id}`, // The unique inventory item id
-    data: { id: catalogId, name, type } // The catalog data for planting
-  });
+}> = ({
+  id,
+  catalogId,
+  name,
+  type,
+  plantNowEligible,
+  plantNowMode,
+  onDelete,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: `seed-${id}`, // The unique inventory item id
+      data: { id: catalogId, name, type }, // The catalog data for planting
+    });
 
   const [showDelete, setShowDelete] = useState(false);
 
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: 1000
-  } : undefined;
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        zIndex: 1000,
+      }
+    : undefined;
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,7 +47,7 @@ export const SeedCard: React.FC<{
   };
 
   return (
-    <div 
+    <div
       ref={setNodeRef}
       style={style}
       {...listeners}
@@ -45,8 +56,8 @@ export const SeedCard: React.FC<{
       onMouseLeave={() => setShowDelete(false)}
       className={`
         relative w-[80px] h-[100px] rounded-3xl border p-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing depth-3d transition-all
-        ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
-        ${plantNowMode ? (plantNowEligible ? 'bg-garden-800 border-garden-400 animate-healthy shadow-[0_0_20px_rgba(34,197,94,0.25)]' : 'bg-stone-900/60 border-stone-800 opacity-40 glass-panel') : 'bg-stone-900/40 glass-panel border-stone-800'}
+        ${isDragging ? "opacity-50 scale-95" : "opacity-100"}
+        ${plantNowMode ? (plantNowEligible ? "bg-garden-800 border-garden-400 animate-healthy shadow-[0_0_20px_rgba(34,197,94,0.25)]" : "bg-stone-900/60 border-stone-800 opacity-40 glass-panel") : "bg-stone-900/40 glass-panel border-stone-800"}
       `}
     >
       {/* Delete Button */}
@@ -59,19 +70,21 @@ export const SeedCard: React.FC<{
           <Trash2 className="w-3 h-3" />
         </button>
       )}
-      
 
-      <div className="text-white font-semibold text-[13px] mb-1 break-words text-center w-full">{name}</div>
+      <div className="text-white font-semibold text-[13px] mb-1 break-words text-center w-full">
+        {name}
+      </div>
       <div className="h-10 w-full bg-garden-900/50 rounded-md flex items-center justify-center text-xl">
         <Sprout className="w-4 h-4 text-garden-200/50" />
       </div>
-      <div className="text-[11px] italic text-garden-300 mt-1 break-words leading-tight text-center w-full">{type.replace('_', ' ')}</div>
+      <div className="text-[11px] italic text-garden-300 mt-1 break-words leading-tight text-center w-full">
+        {type.replace("_", " ")}
+      </div>
     </div>
   );
 };
 
-
-import type { CatalogDocument } from '../db/types';
+import type { CatalogDocument } from "../db/types";
 
 export const InventoryTray: React.FC<{
   catalog: CatalogDocument[];
@@ -80,19 +93,26 @@ export const InventoryTray: React.FC<{
   plantNowMode?: boolean;
   onTogglePlantNow?: () => void;
   plantNowSet?: Set<string>;
-}> = ({ catalog, onOpenStore, isVertical, plantNowMode, onTogglePlantNow, plantNowSet }) => {
+}> = ({
+  catalog,
+  onOpenStore,
+  isVertical,
+  plantNowMode,
+  onTogglePlantNow,
+  plantNowSet,
+}) => {
   const { setNodeRef, isOver } = useDroppable({
-    id: 'inventory-tray',
+    id: "inventory-tray",
   });
   const inventory = useInventory();
   const [collapsed, setCollapsed] = useState(false);
-  
+
   // Scroll indicators state for horizontal layout
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftIndicator, setShowLeftIndicator] = useState(false);
   const [showRightIndicator, setShowRightIndicator] = useState(false);
 
-  const getCatalogItem = (id: string) => catalog.find(c => c.id === id);
+  const getCatalogItem = (id: string) => catalog.find((c) => c.id === id);
 
   // Scroll handler for horizontal layout
   const handleScroll = () => {
@@ -109,9 +129,10 @@ export const InventoryTray: React.FC<{
       const timer = setTimeout(() => {
         handleScroll();
       }, 0);
-      
+
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, isVertical]);
 
   // Delete item from Bag (Inventory)
@@ -121,27 +142,26 @@ export const InventoryTray: React.FC<{
       const item = await db.inventory.findOne(inventoryId).exec();
       if (item) {
         await item.remove();
-        showSuccess('Item removed from Bag');
+        showSuccess("Item removed from Bag");
       }
     } catch (error) {
-      console.error('Error deleting inventory item:', error);
-      showError('Failed to remove item');
+      console.error("Error deleting inventory item:", error);
+      showError("Failed to remove item");
     }
   };
 
-
   const wrapperClass = isVertical
-    ? `h-full transition-all duration-300 ${collapsed ? 'w-20' : 'w-80'} border-r border-stone-800 glass-panel flex flex-col relative z-40`
-    : 'fixed bottom-0 left-0 right-0';
+    ? `h-full transition-all duration-300 ${collapsed ? "w-20" : "w-80"} border-r border-stone-800 glass-panel flex flex-col relative z-40`
+    : "fixed bottom-0 left-0 right-0";
 
   const containerClass = isVertical
-    ? 'flex-1 overflow-y-auto overflow-x-hidden p-4 grid grid-cols-3 gap-3 auto-rows-max scrollbar-hide'
-    : 'p-6 glass-panel border-t border-stone-800 flex items-center gap-6 overflow-x-auto';
+    ? "flex-1 overflow-y-auto overflow-x-hidden p-4 grid grid-cols-3 gap-3 auto-rows-max scrollbar-hide"
+    : "p-6 glass-panel border-t border-stone-800 flex items-center gap-6 overflow-x-auto";
 
   return (
-    <div 
+    <div
       ref={setNodeRef}
-      className={`${wrapperClass} ${isVertical ? '' : containerClass} ${isOver ? 'ring-2 ring-garden-500 ring-inset bg-garden-500/10' : ''}`}
+      className={`${wrapperClass} ${isVertical ? "" : containerClass} ${isOver ? "ring-2 ring-garden-500 ring-inset bg-garden-500/10" : ""}`}
     >
       {/* Sidebar Toggle Handle */}
       {isVertical && (
@@ -155,43 +175,59 @@ export const InventoryTray: React.FC<{
             hover:border-garden-500/50 transition-all z-40 shadow-2xl
             group cursor-pointer
           `}
-          title={collapsed ? "Expand Intelligence Node" : "Collapse Intelligence Node"}
+          title={
+            collapsed
+              ? "Expand Intelligence Node"
+              : "Collapse Intelligence Node"
+          }
         >
           <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
             <div className="w-0.5 h-4 bg-stone-500 rounded-full" />
-            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            {collapsed ? (
+              <ChevronRight className="w-5 h-5" />
+            ) : (
+              <ChevronLeft className="w-5 h-5" />
+            )}
             <div className="w-0.5 h-4 bg-stone-500 rounded-full" />
           </div>
         </button>
       )}
 
       {/* Header / Hand / Tools */}
-      <div className={`${isVertical ? 'p-4 border-b border-stone-800 flex flex-col items-center gap-4' : 'flex flex-col items-center gap-1 min-w-[60px]'}`}>
-        <div className={`flex flex-col items-center gap-1 text-stone-500 ${collapsed ? 'scale-75' : ''} transition-transform`}>
+      <div
+        className={`${isVertical ? "p-4 border-b border-stone-800 flex flex-col items-center gap-4" : "flex flex-col items-center gap-1 min-w-[60px]"}`}
+      >
+        <div
+          className={`flex flex-col items-center gap-1 text-stone-500 ${collapsed ? "scale-75" : ""} transition-transform`}
+        >
           <div className="text-2xl">🧺</div>
-          {!collapsed && <span className="text-[13px] uppercase font-bold tracking-widest text-stone-400">Bag</span>}
+          {!collapsed && (
+            <span className="text-[13px] uppercase font-bold tracking-widest text-stone-400">
+              Bag
+            </span>
+          )}
         </div>
-        
+
         {onTogglePlantNow && !collapsed && (
           <button
             onClick={onTogglePlantNow}
             className={`px-3 py-2 rounded-lg border text-[12px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 w-full justify-center
-              ${plantNowMode ? 'bg-garden-500/10 border-garden-500/30 text-garden-400 shadow-inner' : 'bg-stone-900/30 border-stone-800 text-stone-500 hover:text-stone-300'}
+              ${plantNowMode ? "bg-garden-500/10 border-garden-500/30 text-garden-400 shadow-inner" : "bg-stone-900/30 border-stone-800 text-stone-500 hover:text-stone-300"}
             `}
             title="Highlight seeds that are in-season"
           >
-           ✨ In Season
+            ✨ In Season
           </button>
         )}
       </div>
 
       {/* Container for scroll indicators - only for horizontal layout */}
-      <div className={`${isVertical ? containerClass : 'relative flex gap-4'}`}>
+      <div className={`${isVertical ? containerClass : "relative flex gap-4"}`}>
         {/* Left scroll indicator for horizontal layout */}
         {!isVertical && showLeftIndicator && (
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-stone-900 to-transparent pointer-events-none z-10" />
         )}
-        
+
         {/* Scrollable content - only wrap in scroll container for horizontal layout */}
         {isVertical ? (
           <>
@@ -206,12 +242,16 @@ export const InventoryTray: React.FC<{
               if (!plant) return null;
 
               if (collapsed && isVertical) {
-                 // Mini view for collapsed sidebar
-                 return (
-                   <div key={item.id} className="w-10 h-10 bg-garden-900/30 rounded-full flex items-center justify-center border border-garden-500/30 mx-auto" title={plant.name}>
-                     <Sprout className="w-5 h-5 text-garden-400" />
-                   </div>
-                 );
+                // Mini view for collapsed sidebar
+                return (
+                  <div
+                    key={item.id}
+                    className="w-10 h-10 bg-garden-900/30 rounded-full flex items-center justify-center border border-garden-500/30 mx-auto"
+                    title={plant.name}
+                  >
+                    <Sprout className="w-5 h-5 text-garden-400" />
+                  </div>
+                );
               }
 
               return (
@@ -220,9 +260,11 @@ export const InventoryTray: React.FC<{
                   id={item.id}
                   catalogId={item.catalogId}
                   name={plant.name}
-                  type={plant.categories?.[0] || 'Unknown'}
+                  type={plant.categories?.[0] || "Unknown"}
                   plantNowMode={plantNowMode}
-                  plantNowEligible={plantNowSet ? plantNowSet.has(item.catalogId) : false}
+                  plantNowEligible={
+                    plantNowSet ? plantNowSet.has(item.catalogId) : false
+                  }
                   onDelete={handleDeleteItem}
                 />
               );
@@ -232,19 +274,27 @@ export const InventoryTray: React.FC<{
             <button
               onClick={onOpenStore}
               className={`
-                ${isVertical
-                  ? `w-full ${collapsed ? 'h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center' : 'h-24 col-span-3'} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
-                  : 'w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'}
+                ${
+                  isVertical
+                    ? `w-full ${collapsed ? "h-12 w-12 rounded-full mx-auto p-0 flex items-center justify-center" : "h-24 col-span-3"} bg-stone-800/20 border-2 border-dashed border-stone-700 hover:border-garden-600 hover:text-garden-500 transition-all group flex flex-col items-center justify-center gap-2 text-stone-600`
+                    : "w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner"
+                }
               `}
               title="Open Seed Store"
             >
-              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
-              {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
+              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">
+                📦
+              </div>
+              {!collapsed && (
+                <span className="text-[13px] font-bold uppercase tracking-widest">
+                  Add Seeds
+                </span>
+              )}
             </button>
           </>
         ) : (
           // Horizontal layout with scroll container
-          <div 
+          <div
             ref={scrollRef}
             onScroll={handleScroll}
             className="overflow-x-auto flex gap-4 pb-2"
@@ -265,9 +315,11 @@ export const InventoryTray: React.FC<{
                   id={item.id}
                   catalogId={item.catalogId}
                   name={plant.name}
-                  type={plant.categories?.[0] || 'Unknown'}
+                  type={plant.categories?.[0] || "Unknown"}
                   plantNowMode={plantNowMode}
-                  plantNowEligible={plantNowSet ? plantNowSet.has(item.catalogId) : false}
+                  plantNowEligible={
+                    plantNowSet ? plantNowSet.has(item.catalogId) : false
+                  }
                   onDelete={handleDeleteItem}
                 />
               );
@@ -276,15 +328,21 @@ export const InventoryTray: React.FC<{
             {/* Store Toggle */}
             <button
               onClick={onOpenStore}
-              className='w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner'
+              className="w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner"
               title="Open Seed Store"
             >
-              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">📦</div>
-              {!collapsed && <span className="text-[13px] font-bold uppercase tracking-widest">Add Seeds</span>}
+              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">
+                📦
+              </div>
+              {!collapsed && (
+                <span className="text-[13px] font-bold uppercase tracking-widest">
+                  Add Seeds
+                </span>
+              )}
             </button>
           </div>
         )}
-        
+
         {/* Right scroll indicator for horizontal layout */}
         {!isVertical && showRightIndicator && (
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-stone-900 to-transparent pointer-events-none z-10" />

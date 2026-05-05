@@ -1,28 +1,47 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import {
   AlertCircle,
   Calendar,
   LayoutGrid,
   Sprout,
   Plus,
-  Edit
-} from 'lucide-react';
-import { DndContext, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, DragOverlay } from '@dnd-kit/core';
-import { GardenField } from './GardenGrid';
-import { InventoryTray } from './InventoryTray';
-import { PlantInspector } from './PlantInspector';
-import { usePlantedCards } from '../hooks/usePlantedCards';
-import { getDatabase } from '../db';
-import { createGarden, updateGarden, plantSeed, relocatePlant, unplantSeed, addPlantObservation } from '../db/queries';
-import { calculateCurrentStage } from '../logic/lifecycle';
-import { GardenConfigDialog, GardenConfig } from './GardenConfigDialog';
-import { isSowingSeason } from '../logic/reasoning';
-import { showSuccess, showError, showInfo } from '../lib/toast';
-import { PlantedDocument, GridLayer } from '../db/types';
-import { PlantSpecies } from '../schema/knowledge-graph';
-import { Subscription } from 'rxjs';
-import { ObservationTerminal } from './ObservationTerminal';
-import { ObservationPattern } from '../logic/diagnostics';
+  Edit,
+} from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragOverlay,
+} from "@dnd-kit/core";
+import { GardenField } from "./GardenGrid";
+import { InventoryTray } from "./InventoryTray";
+import { PlantInspector } from "./PlantInspector";
+import { usePlantedCards } from "../hooks/usePlantedCards";
+import { getDatabase } from "../db";
+import {
+  createGarden,
+  updateGarden,
+  plantSeed,
+  relocatePlant,
+  unplantSeed,
+  addPlantObservation,
+} from "../db/queries";
+import { calculateCurrentStage } from "../logic/lifecycle";
+import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
+import { isSowingSeason } from "../logic/reasoning";
+import { showSuccess, showError, showInfo } from "../lib/toast";
+import { PlantedDocument, GridLayer } from "../db/types";
+import { PlantSpecies } from "../schema/knowledge-graph";
+import { Subscription } from "rxjs";
+import { ObservationPattern } from "../logic/diagnostics";
+
+const ObservationTerminal = React.lazy(async () => {
+  const m = await import("./ObservationTerminal");
+  return { default: m.ObservationTerminal };
+});
 
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
@@ -32,62 +51,80 @@ interface VirtualGardenTabProps {
   onOpenSeedStore?: () => void;
 }
 
-export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({ 
-  catalog, 
-  currentDay, 
-  xp, 
+export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
+  catalog,
+  currentDay,
+  xp,
   alerts,
-  onOpenSeedStore 
+  onOpenSeedStore,
 }) => {
   // Garden State
   const [gardens, setGardens] = useState<GardenConfig[]>([]);
   const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
-  const activeGarden = gardens.find(g => g.id === activeGardenId);
+  const activeGarden = gardens.find((g) => g.id === activeGardenId);
 
   const plantedCards = usePlantedCards(activeGardenId || undefined);
-  const [selectedPlant, setSelectedPlant] = useState<PlantedDocument | null>(null);
-  const [spectralLayer, setSpectralLayer] = useState<GridLayer>('normal');
-  const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(null);
+  const [selectedPlant, setSelectedPlant] = useState<PlantedDocument | null>(
+    null,
+  );
+  const [spectralLayer, setSpectralLayer] = useState<GridLayer>("normal");
+  const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(
+    null,
+  );
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [scrubDays, setScrubDays] = useState(0);
-  const [observationPlant, setObservationPlant] = useState<PlantedDocument | null>(null);
-  
+  const [observationPlant, setObservationPlant] =
+    useState<PlantedDocument | null>(null);
+
   // Sprint 2: "Plant Now" filter - derived via useMemo to avoid cascading renders
-  const currentMonth = useMemo(() => Math.floor(((currentDay - 1) % 365) / 30.42), [currentDay]);
+  const currentMonth = useMemo(
+    () => Math.floor(((currentDay - 1) % 365) / 30.42),
+    [currentDay],
+  );
   const plantNowSet = useMemo(() => {
     if (!plantNowMode) return new Set<string>();
     const newSet = new Set<string>();
     for (const c of catalog) {
-      const res = isSowingSeason(c, { id: 'user_location', hemisphere: 'North', frost_data: {} }, currentMonth);
+      const res = isSowingSeason(
+        c,
+        { id: "user_location", hemisphere: "North", frost_data: {} },
+        currentMonth,
+      );
       if (res.eligible) newSet.add(c.id);
     }
     return newSet;
   }, [plantNowMode, catalog, currentMonth]);
 
+  // Capture wall-clock time once at component mount (lazy-initializer runs outside render,
+  // so it is not flagged as an impure function call during render).
+  const [mountTimestamp] = useState<number>(() => Date.now());
+  // nowMs is a pure derivation: mount time offset by however many days the scrub slider adds.
+  const nowMs = mountTimestamp + scrubDays * 86400000;
+
   // Dialog State
   const [showGardenDialog, setShowGardenDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
+  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
   // Reactive subscription for gardens
   useEffect(() => {
     let sub: Subscription;
     const initSub = async () => {
       const db = await getDatabase();
-      sub = db.gardens.find().$.subscribe(docs => {
-        const gardensData = docs.map(d => d.toJSON());
+      sub = db.gardens.find().$.subscribe((docs) => {
+        const gardensData = docs.map((d) => d.toJSON());
         gardensData.sort((a, b) => {
-            if (a.id === 'main-garden') return -1;
-            if (b.id === 'main-garden') return 1;
-            return (a.createdDate || 0) - (b.createdDate || 0);
+          if (a.id === "main-garden") return -1;
+          if (b.id === "main-garden") return 1;
+          return (a.createdDate || 0) - (b.createdDate || 0);
         });
         setGardens(gardensData);
 
         // Auto-select first garden if none selected
         if (gardensData.length > 0) {
-            setActiveGardenId(prev => {
-                if (prev) return prev;
-                return gardensData[0].id;
-            });
+          setActiveGardenId((prev) => {
+            if (prev) return prev;
+            return gardensData[0].id;
+          });
         }
       });
     };
@@ -97,30 +134,30 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
   // Sync garden list periodically or subscribe? For now, fetch on updates.
   const refreshGardens = async () => {
-      const db = await getDatabase();
-      const docs = await db.gardens.find().exec();
-      const gardensData = docs.map(d => d.toJSON());
-      gardensData.sort((a, b) => {
-          if (a.id === 'main-garden') return -1;
-          if (b.id === 'main-garden') return 1;
-          return (a.createdDate || 0) - (b.createdDate || 0);
-      });
-      setGardens(gardensData);
+    const db = await getDatabase();
+    const docs = await db.gardens.find().exec();
+    const gardensData = docs.map((d) => d.toJSON());
+    gardensData.sort((a, b) => {
+      if (a.id === "main-garden") return -1;
+      if (b.id === "main-garden") return 1;
+      return (a.createdDate || 0) - (b.createdDate || 0);
+    });
+    setGardens(gardensData);
   };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }
-    })
+      activationConstraint: { distance: 8 },
+    }),
   );
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const idStr = active.id.toString();
-    if (idStr.startsWith('seed-')) {
+    if (idStr.startsWith("seed-")) {
       const catalogId = active.data.current?.id as string | undefined;
       setActiveSeedCatalogId(catalogId || null);
-    } else if (idStr.startsWith('planted-')) {
+    } else if (idStr.startsWith("planted-")) {
       const plant = active.data.current?.item as PlantedDocument;
       setActiveSeedCatalogId(plant?.catalogId || null);
     }
@@ -136,111 +173,121 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     const overId = over.id.toString();
 
     // CASE 1: Planting from Bag to Grid
-    if (activeId.startsWith('seed-') && overId.startsWith('slot-')) {
+    if (activeId.startsWith("seed-") && overId.startsWith("slot-")) {
       if (!activeGarden) {
-        showError('No active garden selected');
+        showError("No active garden selected");
         return;
       }
 
-      const inventoryId = activeId.replace('seed-', '');
+      const inventoryId = activeId.replace("seed-", "");
       const catalogId = active.data.current?.id;
       const { x, y } = over.data.current as { x: number; y: number };
-      
+
       const totalCells = activeGarden.gridWidth * activeGarden.gridHeight;
       const occupiedCells = plantedCards.length;
-      
+
       if (occupiedCells >= totalCells) {
-        showError('Expand Grid to Plant');
+        showError("Expand Grid to Plant");
         return;
       }
-      
-      const existingPlant = plantedCards.find((p) => p.gridX === x && p.gridY === y);
+
+      const existingPlant = plantedCards.find(
+        (p) => p.gridX === x && p.gridY === y,
+      );
       if (existingPlant) {
-        showError('Slot already occupied');
+        showError("Slot already occupied");
         return;
       }
-      
+
       try {
         await plantSeed(catalogId, x, y, inventoryId, activeGarden.id);
-        showSuccess('Plant added to garden');
+        showSuccess("Plant added to garden");
       } catch {
-        showError('Failed to plant seed');
+        showError("Failed to plant seed");
       }
-    } 
-    
+    }
+
     // CASE 2: Relocating within Grid
-    else if (activeId.startsWith('planted-') && overId.startsWith('slot-')) {
+    else if (activeId.startsWith("planted-") && overId.startsWith("slot-")) {
       const plant = active.data.current?.item as PlantedDocument;
       const { x, y } = over.data.current as { x: number; y: number };
-      
+
       if (plant.gridX === x && plant.gridY === y) return; // Same slot
 
-      const existingPlant = plantedCards.find((p) => p.gridX === x && p.gridY === y);
+      const existingPlant = plantedCards.find(
+        (p) => p.gridX === x && p.gridY === y,
+      );
       if (existingPlant) {
-        showError('Target slot occupied');
+        showError("Target slot occupied");
         return;
       }
 
       try {
-        await relocatePlant(plant.id, x, y, activeGarden?.id || 'main-garden');
-        showSuccess('Plant unit relocated');
+        await relocatePlant(plant.id, x, y, activeGarden?.id || "main-garden");
+        showSuccess("Plant unit relocated");
       } catch {
-        showError('Failed to relocate plant');
+        showError("Failed to relocate plant");
       }
     }
 
     // CASE 3: Unplanting back to Bag
-    else if (activeId.startsWith('planted-') && overId === 'inventory-tray') {
+    else if (activeId.startsWith("planted-") && overId === "inventory-tray") {
       const plant = active.data.current?.item as PlantedDocument;
-      const catalogItem = catalog.find(c => c.id === plant.catalogId);
-      
+      const catalogItem = catalog.find((c) => c.id === plant.catalogId);
+
       if (!catalogItem) return;
 
-      // Rule: Only unplant if in first stage
-      const currentStageId = calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay);
-      const isFirstStage = catalogItem.stages.length > 0 && currentStageId === catalogItem.stages[0].id;
+      // Rule: Only unplant if in first stage (use real wall-clock time)
+      const currentStageId = calculateCurrentStage(
+        plant.plantedDate,
+        catalogItem.stages,
+        Date.now(),
+      );
+      const isFirstStage =
+        catalogItem.stages.length > 0 &&
+        currentStageId === catalogItem.stages[0].id;
 
       if (!isFirstStage) {
-        showError('Only young plants can be returned to Bag');
+        showError("Only young plants can be returned to Bag");
         return;
       }
 
       try {
         await unplantSeed(plant.id);
-        showSuccess('Plant returned to Bag');
+        showSuccess("Plant returned to Bag");
       } catch {
-        showError('Failed to unplant');
+        showError("Failed to unplant");
       }
     }
   };
 
   const handleSaveGarden = async (config: GardenConfig) => {
-      try {
-          if (dialogMode === 'create') {
-              const newId = await createGarden(config);
-              await refreshGardens();
-              setActiveGardenId(newId); // Immediately switch to new garden
-              showSuccess('New garden sector established');
-          } else {
-              // Edit
-              if (!config.id) return;
-              await updateGarden(config.id, {
-                 name: config.name,
-                 type: config.type,
-                 soilType: config.soilType,
-                 sunExposure: config.sunExposure,
-                 gridWidth: config.gridWidth,
-                 gridHeight: config.gridHeight,
-                 backgroundColor: config.backgroundColor,
-                 theme: config.theme
-              });
-              await refreshGardens();
-              showSuccess('Garden specs updated');
-          }
-      } catch (err) {
-          console.error("Failed to save garden:", err);
-          showError('Failed to save garden configuration');
+    try {
+      if (dialogMode === "create") {
+        const newId = await createGarden(config);
+        await refreshGardens();
+        setActiveGardenId(newId); // Immediately switch to new garden
+        showSuccess("New garden sector established");
+      } else {
+        // Edit
+        if (!config.id) return;
+        await updateGarden(config.id, {
+          name: config.name,
+          type: config.type,
+          soilType: config.soilType,
+          sunExposure: config.sunExposure,
+          gridWidth: config.gridWidth,
+          gridHeight: config.gridHeight,
+          backgroundColor: config.backgroundColor,
+          theme: config.theme,
+        });
+        await refreshGardens();
+        showSuccess("Garden specs updated");
       }
+    } catch (err) {
+      console.error("Failed to save garden:", err);
+      showError("Failed to save garden configuration");
+    }
   };
 
   const handleSaveObservation = async (pattern: ObservationPattern) => {
@@ -251,54 +298,62 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       setObservationPlant(null);
     } catch (err) {
       console.error("Failed to save observation:", err);
-      showError('Failed to log observation');
+      showError("Failed to log observation");
     }
   };
 
-
-
-
   // Calculate grid capacity
-  const totalCells = activeGarden ? activeGarden.gridWidth * activeGarden.gridHeight : 0;
+  const totalCells = activeGarden
+    ? activeGarden.gridWidth * activeGarden.gridHeight
+    : 0;
   const occupiedCells = plantedCards.length;
   const isGridFull = occupiedCells >= totalCells;
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className="flex flex-col h-full bg-app-background text-stone-100 overflow-hidden font-sans">
-        
         {/* Garden Configuration Dialog */}
         {showGardenDialog && (
-            <GardenConfigDialog
-                mode={dialogMode}
-                initialConfig={dialogMode === 'edit' ? activeGarden : null}
-                onClose={() => setShowGardenDialog(false)}
-                onSave={handleSaveGarden}
-                isGardenEmpty={plantedCards.length === 0}
-            />
+          <GardenConfigDialog
+            mode={dialogMode}
+            initialConfig={dialogMode === "edit" ? activeGarden : null}
+            onClose={() => setShowGardenDialog(false)}
+            onSave={handleSaveGarden}
+            isGardenEmpty={plantedCards.length === 0}
+          />
         )}
 
         {/* HUD OVERLAY */}
         <header className="min-h-12 flex flex-wrap items-center justify-between px-2 sm:px-4 lg:px-6 gap-2 glass z-30 border-b border-stone-800">
-          
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
             {/* 1. Cycle Day */}
             <div className="bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
-              <Calendar className="w-3.5 h-3.5 text-garden-500" /> <span className="hidden xs:inline">Day:</span> {currentDay}
+              <Calendar className="w-3.5 h-3.5 text-garden-500" />{" "}
+              <span className="hidden xs:inline">Day:</span> {currentDay}
             </div>
 
             {/* 2. Grid Capacity */}
-            <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
-              isGridFull ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-stone-900 border-stone-800 text-stone-400'
-            }`}>
+            <div
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
+                isGridFull
+                  ? "bg-red-900/30 border-red-700 text-red-400"
+                  : "bg-stone-900 border-stone-800 text-stone-400"
+              }`}
+            >
               <LayoutGrid className="w-3 h-3" />
-              <span>{occupiedCells}/{totalCells}</span>
+              <span>
+                {occupiedCells}/{totalCells}
+              </span>
             </div>
           </div>
 
           {/* 3. Temporal Axis - Central and Wider */}
           <div className="flex-1 flex justify-center px-4 hidden md:flex">
-             <div className="flex items-center gap-3 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner w-full max-w-[400px]">
+            <div className="flex items-center gap-3 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner w-full max-w-[400px]">
               <span className="text-xs font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1 shrink-0">
                 ⏳ <span className="hidden lg:inline">Axis</span>
               </span>
@@ -307,46 +362,70 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 min={0}
                 max={30}
                 value={scrubDays}
-                onChange={(e) => setScrubDays(Number.parseInt(e.target.value, 10) || 0)}
+                onChange={(e) =>
+                  setScrubDays(Number.parseInt(e.target.value, 10) || 0)
+                }
                 className="flex-1 accent-garden-500 h-1.5 cursor-pointer"
                 aria-label="Temporal scrub slider"
               />
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-400 min-w-[3ch] text-right">+{scrubDays}d</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-stone-400 min-w-[3ch] text-right">
+                +{scrubDays}d
+              </span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar justify-end">
-             {/* 4. Global Alerts Marquee - Hidden below xl */}
+            {/* 4. Global Alerts Marquee - Hidden below xl */}
             <div className="max-w-[150px] overflow-hidden hidden 2xl:block border-r border-stone-800 pr-4 mr-2">
               <div className="animate-marquee whitespace-nowrap text-[10px] text-stone-500 uppercase tracking-widest">
-                {alerts.join(' • ')}
+                {alerts.join(" • ")}
               </div>
             </div>
 
             {/* 6. Spectral Layer Toggle - Hidden below lg */}
             <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 origin-right">
-              <button onClick={() => setSpectralLayer('normal')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'normal' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500'}`}>
+              <button
+                onClick={() => setSpectralLayer("normal")}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "normal" ? "bg-stone-800 text-white shadow-md" : "text-stone-500"}`}
+              >
                 Visual
               </button>
-              <button onClick={() => setSpectralLayer('hydration')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'hydration' ? 'bg-blue-900/40 text-blue-400 shadow-md' : 'text-stone-500'}`}>
+              <button
+                onClick={() => setSpectralLayer("hydration")}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "hydration" ? "bg-blue-900/40 text-blue-400 shadow-md" : "text-stone-500"}`}
+              >
                 H2O
               </button>
-              <button onClick={() => setSpectralLayer('health')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'health' ? 'bg-red-900/40 text-red-400 shadow-md' : 'text-stone-500'}`}>
+              <button
+                onClick={() => setSpectralLayer("health")}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "health" ? "bg-red-900/40 text-red-400 shadow-md" : "text-stone-500"}`}
+              >
                 Blight
               </button>
-              <button onClick={() => setSpectralLayer('nutrients')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'nutrients' ? 'bg-purple-900/40 text-purple-400 shadow-md' : 'text-stone-500'}`}>
+              <button
+                onClick={() => setSpectralLayer("nutrients")}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "nutrients" ? "bg-purple-900/40 text-purple-400 shadow-md" : "text-stone-500"}`}
+              >
                 N-P-K
               </button>
-              <button onClick={() => setSpectralLayer('companions')} className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === 'companions' ? 'bg-garden-900/40 text-garden-400 shadow-md' : 'text-stone-500'}`}>
+              <button
+                onClick={() => setSpectralLayer("companions")}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "companions" ? "bg-garden-900/40 text-garden-400 shadow-md" : "text-stone-500"}`}
+              >
                 Companions
               </button>
             </div>
 
             {/* 7. XP/Level Tracker - Hidden below sm */}
             <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 shrink-0">
-              <span className="text-[10px] font-bold text-garden-400">XP: {xp}</span>
+              <span className="text-[10px] font-bold text-garden-400">
+                XP: {xp}
+              </span>
               <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
-                <div className="h-full bg-garden-500 rounded-full" style={{ width: `${(xp % 100) / 100 * 100}%` }}></div>
+                <div
+                  className="h-full bg-garden-500 rounded-full"
+                  style={{ width: `${((xp % 100) / 100) * 100}%` }}
+                ></div>
               </div>
             </div>
           </div>
@@ -359,7 +438,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             onOpenStore={onOpenSeedStore || (() => {})}
             isVertical={true}
             plantNowMode={plantNowMode}
-            onTogglePlantNow={() => setPlantNowMode(v => !v)}
+            onTogglePlantNow={() => setPlantNowMode((v) => !v)}
             plantNowSet={plantNowSet}
           />
 
@@ -367,81 +446,108 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           <div className="flex-1 flex flex-col relative overflow-hidden bg-bg-primary/20">
             <div className="h-12 glass-panel border-b border-stone-800 flex items-center px-4 gap-2 overflow-x-auto no-scrollbar shadow-lg relative">
               <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
-                {Array.from({ length: 5 }).map((_, i) => {
-                    const garden = gardens[i];
-                    const isActive = garden?.id && activeGardenId === garden.id;
-                    
-                    return (
-                        <button
-                            key={garden ? garden.id : `slot-${i}`}
-                            onClick={() => {
-                                if (garden) setActiveGardenId(garden.id || null);
-                                else {
-                                    setDialogMode('create');
-                                    setShowGardenDialog(true);
-                                }
-                            }}
-                            className={`
+              {Array.from({ length: 5 }).map((_, i) => {
+                const garden = gardens[i];
+                const isActive = garden?.id && activeGardenId === garden.id;
+
+                return (
+                  <button
+                    key={garden ? garden.id : `slot-${i}`}
+                    onClick={() => {
+                      if (garden) setActiveGardenId(garden.id || null);
+                      else {
+                        setDialogMode("create");
+                        setShowGardenDialog(true);
+                      }
+                    }}
+                    className={`
                                 relative h-full px-4 sm:px-6 flex items-center justify-center text-xs sm:text-[13px] font-bold uppercase tracking-widest transition-all border-r border-t border-stone-800 flex-shrink-0 max-w-[100px] sm:max-w-[120px] md:max-w-[150px] z-10
-                                ${i === 0 ? 'border-l' : ''}
-                                ${isActive
-                                    ? 'bg-bg-primary text-garden-400 border-b-bg-primary translate-y-[1px]'
-                                    : garden 
-                                        ? 'bg-[#090c0a] text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-border-primary'
-                                        : 'bg-[#090c0a]/30 text-stone-700 hover:text-stone-500 hover:bg-[#090c0a]/50 border-b-border-primary'}`}
-                            title={garden ? garden.name : `Create Garden ${i + 1}`}
-                        >
-                            {garden ? (
-                                <span className="truncate block w-full text-center">{garden.name}</span>
-                            ) : (
-                                <span className="flex items-center gap-2 opacity-60">
-                                    <Plus className="w-3 h-3" /> <span className="hidden sm:inline">Garden {i + 1}</span>
-                                </span>
-                            )}
-                            {i === 0 && garden && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]" title="Primary Axis" />}
-                        </button>
-                    );
-                })}
+                                ${i === 0 ? "border-l" : ""}
+                                ${
+                                  isActive
+                                    ? "bg-bg-primary text-garden-400 border-b-bg-primary translate-y-[1px]"
+                                    : garden
+                                      ? "bg-[#090c0a] text-stone-500 hover:text-stone-300 hover:bg-stone-800 border-b-border-primary"
+                                      : "bg-[#090c0a]/30 text-stone-700 hover:text-stone-500 hover:bg-[#090c0a]/50 border-b-border-primary"
+                                }`}
+                    title={garden ? garden.name : `Create Garden ${i + 1}`}
+                  >
+                    {garden ? (
+                      <span className="truncate block w-full text-center">
+                        {garden.name}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2 opacity-60">
+                        <Plus className="w-3 h-3" />{" "}
+                        <span className="hidden sm:inline">Garden {i + 1}</span>
+                      </span>
+                    )}
+                    {i === 0 && garden && (
+                      <span
+                        className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]"
+                        title="Primary Axis"
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="flex flex-1 relative overflow-hidden">
-
-            {/* CENTER PANE: TACTICAL FIELD */}
-          <div className="flex-1 flex flex-col relative overflow-hidden terrain-texture">
-              {/* Garden Config Controls (Edit/Delete Active) */}
-              {activeGarden && (
+              {/* CENTER PANE: TACTICAL FIELD */}
+              <div className="flex-1 flex flex-col relative overflow-hidden terrain-texture">
+                {/* Garden Config Controls (Edit/Delete Active) */}
+                {activeGarden && (
                   <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                      <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-800 rounded-xl p-2 shadow-lg backdrop-blur-sm">
-                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
-                              {activeGarden.type}
-                          </div>
-                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
-                             ☀️ {activeGarden.sunExposure}
-                          </div>
-                          <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
-                             💧 {activeGarden.soilType}
-                          </div>
-                      <button
-                          onClick={() => { setDialogMode('edit'); setShowGardenDialog(true); }}
-                          className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
-                          title="Configure Garden"
-                      >
-                          <Edit className="w-4 h-4" />
-                      </button>
+                    <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-800 rounded-xl p-2 shadow-lg backdrop-blur-sm">
+                      <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                        {activeGarden.type}
                       </div>
+                      <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                        ☀️ {activeGarden.sunExposure}
+                      </div>
+                      <div className="text-[13px] font-bold uppercase text-stone-400 px-2 border-r border-stone-700">
+                        💧 {activeGarden.soilType}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setDialogMode("edit");
+                          setShowGardenDialog(true);
+                        }}
+                        className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
+                        title="Configure Garden"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-              )}
+                )}
 
-              {/* THE FIELD */}
+                {/* THE FIELD */}
 
-              <main className="flex-1 flex justify-center items-center overflow-auto p-12">
-                {activeGarden ? (
+                <main className="flex-1 flex justify-center items-center overflow-auto p-12">
+                  {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
                       items={plantedCards.map((p: PlantedDocument) => ({
                         ...p,
-                        hydration: Math.max(0, Math.round((p.hydration ?? 100) * Math.pow(0.85, scrubDays))),
-                        stressLevel: Math.min(100, Math.round((p.stressLevel ?? 0) + (scrubDays > 0 && (p.hydration ?? 100) * Math.pow(0.85, scrubDays) < 20 ? scrubDays * 5 : 0)))
+                        hydration: Math.max(
+                          0,
+                          Math.round(
+                            (p.hydration ?? 100) * Math.pow(0.85, scrubDays),
+                          ),
+                        ),
+                        stressLevel: Math.min(
+                          100,
+                          Math.round(
+                            (p.stressLevel ?? 0) +
+                              (scrubDays > 0 &&
+                              (p.hydration ?? 100) * Math.pow(0.85, scrubDays) <
+                                20
+                                ? scrubDays * 5
+                                : 0),
+                          ),
+                        ),
                       }))}
                       onSelect={setSelectedPlant}
                       layer={spectralLayer}
@@ -450,73 +556,100 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
                       onDelete={async (item: PlantedDocument) => {
-                          const db = await import('../db').then(m => m.getDatabase());
-                          await db.planted.findOne(item.id).remove();
-                          showInfo('Plant removed from garden');
+                        const db = await import("../db").then((m) =>
+                          m.getDatabase(),
+                        );
+                        await db.planted.findOne(item.id).remove();
+                        showInfo("Plant removed from garden");
                       }}
                       onOpenObservation={setObservationPlant}
-                      currentDay={currentDay}
-                     />
-                ) : (
+                      currentDay={nowMs}
+                    />
+                  ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
-                        <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
-                        <h3 className="text-[21px] font-bold text-stone-400 uppercase tracking-widest">No Sector Online</h3>
-                        <p className="text-stone-500 text-[15px] mt-2">Initialize a garden sector to begin operations.</p>
-                        <button
-                            onClick={() => { setDialogMode('create'); setShowGardenDialog(true); }}
-                            className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
-                        >
-                            Initialize Sector
-                        </button>
+                      <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
+                      <h3 className="text-[21px] font-bold text-stone-400 uppercase tracking-widest">
+                        No Sector Online
+                      </h3>
+                      <p className="text-stone-500 text-[15px] mt-2">
+                        Initialize a garden sector to begin operations.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setDialogMode("create");
+                          setShowGardenDialog(true);
+                        }}
+                        className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
+                      >
+                        Initialize Sector
+                      </button>
                     </div>
-                )}
-              </main>
-            </div>
+                  )}
+                </main>
+              </div>
 
-            {/* RIGHT PANE: INTELLIGENCE (Inspector stays docked if plant selected) */}
-            <aside className={`
-              ${selectedPlant ? 'w-[26rem]' : 'w-0'}
+              {/* RIGHT PANE: INTELLIGENCE (Inspector stays docked if plant selected) */}
+              <aside
+                className={`
+              ${selectedPlant ? "w-[26rem]" : "w-0"}
               glass border-l border-border-primary transition-all duration-500 overflow-hidden flex flex-col z-30
-            `}>
-              {selectedPlant && (
-                <PlantInspector
-                  plant={selectedPlant}
-                  catalogItem={(catalog.find(c => c.id === selectedPlant.catalogId) as PlantSpecies | undefined)}
-                  companionScore={1}
-                  currentDay={currentDay + scrubDays}
-                  onClose={() => setSelectedPlant(null)}
-                  docked
-                />
-              )}
-              {!selectedPlant && (
-                <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-20">
-                  <span className="text-2xl">ℹ️</span>
-                  <p className="text-[13px] font-bold uppercase tracking-widest text-stone-500">Intelligence Node Inactive</p>
-                  <p className="text-[12px] text-stone-600 italic">Select a plant unit from the tactical field to initialize link...</p>
-                </div>
-              )}
-            </aside>
+            `}
+              >
+                {selectedPlant && (
+                  <PlantInspector
+                    plant={selectedPlant}
+                    catalogItem={
+                      catalog.find((c) => c.id === selectedPlant.catalogId) as
+                        | PlantSpecies
+                        | undefined
+                    }
+                    companionScore={1}
+                    currentDay={nowMs}
+                    onClose={() => setSelectedPlant(null)}
+                    docked
+                  />
+                )}
+                {!selectedPlant && (
+                  <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-20">
+                    <span className="text-2xl">ℹ️</span>
+                    <p className="text-[13px] font-bold uppercase tracking-widest text-stone-500">
+                      Intelligence Node Inactive
+                    </p>
+                    <p className="text-[12px] text-stone-600 italic">
+                      Select a plant unit from the tactical field to initialize
+                      link...
+                    </p>
+                  </div>
+                )}
+              </aside>
             </div>
-
-
           </div>
         </div>
-
 
         <DragOverlay dropAnimation={null}>
           <div className="w-40 h-40 bg-garden-800 rounded-3xl border-2 border-garden-500 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
             <Sprout className="w-16 h-16 text-garden-300" />
-            <div className="mt-4 text-[13px] font-black uppercase text-garden-400">Deploying...</div>
+            <div className="mt-4 text-[13px] font-black uppercase text-garden-400">
+              Deploying...
+            </div>
           </div>
         </DragOverlay>
 
         {observationPlant && (
-          <ObservationTerminal
-            plant={observationPlant}
-            catalog={catalog}
-            onClose={() => setObservationPlant(null)}
-            onSave={handleSaveObservation}
-          />
+          <Suspense
+            fallback={
+              <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
+                <div className="text-white">Loading...</div>
+              </div>
+            }
+          >
+            <ObservationTerminal
+              plant={observationPlant}
+              catalog={catalog}
+              onClose={() => setObservationPlant(null)}
+              onSave={handleSaveObservation}
+            />
+          </Suspense>
         )}
       </div>
     </DndContext>

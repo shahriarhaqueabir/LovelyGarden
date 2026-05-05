@@ -69,11 +69,16 @@ body {
 /* Command Center Utilities */
 /* Garden Terrain Texture System */
 .terrain-texture {
-  background-image: url("/assets/garden-bg.png");
+  background-image: url("/assets/garden-bg.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+}
+
+/* Fallback for browsers that don't support WebP */
+.no-webp .terrain-texture {
+  background-image: url("/assets/garden-bg.png");
 }
 
 .terrain-texture::before {

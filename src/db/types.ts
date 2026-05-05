@@ -1,4 +1,4 @@
-import { PlantStage } from '../schema/knowledge-graph';
+import { PlantStage } from "../schema/knowledge-graph";
 
 // RxDB Document Types
 export interface CatalogDocument {
@@ -43,7 +43,11 @@ export interface PlantKbDocument {
   growth_stage?: string[];
   sowingSeason?: string[];
   sowingMethod?: string;
-  seasonality?: Record<string, { start_month: string | number; end_month: string | number } | Array<{ start_month: string | number; end_month: string | number }>>;
+  seasonality?: Record<
+    string,
+    | { start_month: string | number; end_month: string | number }
+    | Array<{ start_month: string | number; end_month: string | number }>
+  >;
   sunlight?: string;
   water_requirements?: string;
   soil_type?: string[];
@@ -153,18 +157,29 @@ export interface LogbookDocument {
   date: number;
   notes?: string;
   catalogId?: string; // For seed purchases, reference to catalog
+  bedId?: string; // Optional bedId for tracking which bed activity occurred in
 }
 
 // Relationship type for companion planting logic
 export interface Relationship {
   targetPlantId: string;
-  type: 'companion' | 'antagonist';
+  type: "companion" | "antagonist";
   strength: number;
   description?: string;
 }
 
 // Grid layer types
-export type GridLayer = 'normal' | 'hydration' | 'health' | 'nutrients' | 'companions';
+export type GridLayer =
+  | "normal"
+  | "hydration"
+  | "health"
+  | "nutrients"
+  | "companions";
 
 // Plant status types
-export type PlantHealthStatus = 'Healthy' | 'Pest Infestation' | 'Dead' | 'Harvested' | 'Overwatered';
+export type PlantHealthStatus =
+  | "Healthy"
+  | "Pest Infestation"
+  | "Dead"
+  | "Harvested"
+  | "Overwatered";
