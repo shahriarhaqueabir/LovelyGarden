@@ -2,131 +2,82 @@
 
 ## High-Level Design
 
-LovelyGarden follows a **modular, offline-first architecture** with clear separation between UI, state, logic, and data layers.
+LovelyGarden follows a **modular, local-first architecture** designed for high reliability in gardening environments. It separates the presentation layer from the horticultural reasoning engine and the strict storage layer.
 
 ---
 
 ## System Diagram
 
+```mermaid
+graph TD
+    UI[React UI] --> Store[Zustand / RxDB]
+    Store --> Logic[Horticulture Logic Layer]
+    Logic --> Storage[RxDB + Dexie.js]
+    Storage --> PWA[Service Worker / Cache]
 ```
-┌───────────┐
-│                        UI Layer (React)                    │
-│  Tabs: VirtualGarden | SowingCalendar | Knowledgebase │
-│        SeedStore | Weather | Logbook | Settings        │
-└──────────────────────┬──────────────────────────────┘
-                         │
-┌──────────────────────▼──────────────────────────────┐
-│                   State Management                      │
-│  Zustand (weatherStore) | React Query (server state)  │
-└──────────────────────┬──────────────────────────────┘
-                         │
-┌────────────────────▼───────────────────────────────┐
-│                   Logic Layer                          │
-│  XState (plant lifecycle) | Reasoning (companion)   │
-│  Forecasting | Diagnostics | Explainability        │
-└──────────────────────┬──────────────────────────────┘
-                         │
-┌────────────────────▼───────────────────────────────┐
-│                   Data Layer                          │
-│  RxDB (IndexedDB) → Collections:                 │
-│    catalog, planted, inventory, settings, logbook    │
-│  Zod (validation) | Dexie.js (storage adapter)      │
-└───────────────────┘
 
 ---
 
 ## Component Breakdown
 
-### UI Layer (`src/components/`)
+### UI Layer (`src/components/`, `src/utils/`)
 | Component | Responsibility |
 |----------|----------------|
-| `VirtualGardenTab` | Grid-based garden with DnD, growth visualization |
-| `SowingCalendarTab` | Seasonal planning, month scrubber |
-| `PlantKnowledgebaseTab` | 100+ species, fuzzy search, growth graphs |
-| `SeedStore` / `SeedInventoryTab` | Purchase, inventory, bag management |
-| `WeatherForecastTab` | Open-Meteo integration, frost alerts |
-| `LogbookTab` | Activity logging (CRUD) |
-| `SettingsTab` | Theme, language, data management |
-| `GardenGrid` | Drag-and-drop grid with companion scoring |
-| `PlantedCard` | Individual plant card with lifecycle stages |
+| `VirtualGardenTab` | Grid-based garden with DnD and harmony scoring. |
+| `SowingCalendarTab` | Seasonal planning with scientific eligibility filtering. |
+| `PlantKnowledgebaseTab` | Extensive species catalog with fuzzy search. |
+| `ui-helpers.tsx` | **Centralized** visual tokens (colors, icons) to ensure HMR stability and satisfy `react-refresh` lint. |
+| `PlantedCard` | Individual plant card with lifecycle stages. |
+| `LogbookTab` | Activity logging (CRUD). |
 
 ### Logic Layer (`src/logic/`)
 | Module | Responsibility |
 |--------|----------------|
-| `lifecycle.ts` | XState state machine: seed → germination → harvest |
-| `reasoning.ts` | Companion/antagonist scoring, seasonal eligibility |
-| `forecasting.ts` | Weather-based predictions |
-| `diagnostics.ts` | Plant health analysis |
-| `explainability.ts` | User-facing decision explanations |
+| `lifecycle.ts` | XState finite state machines for plant growth stages (seed → germination → harvest). |
+| `reasoning.ts` | Companion planting rules, antagonist scoring, and seasonal windows. |
+| `diagnostics.ts` | Automated plant health and harmony analysis. |
+| `explainability.ts` | User-facing decision explanations (why a plant is/isn't eligible). |
 
 ### Data Layer (`src/db/`)
 | File | Responsibility |
 |------|----------------|
-| `schemas.ts` | RxDB JSON schemas with migration strategies |
-| `queries.ts` | Database CRUD operations |
-| `export-import.ts` | JSON backup/restore with Zod validation |
-| `index.ts` | DB initialization, RxDB plugins, data synthesis |
-
-### State Management (`src/stores/`, `src/hooks/`)
-| Store/Hook | Responsibility |
-|------------|----------------|
-| `weatherStore` | Current weather, forecasts, location |
-| `usePlantedCards` | Planted garden items |
-| `useInventory` | Seed bag/inventory |
-| `useLogbook` | Activity entries |
-| `useWeather` | Weather data fetching |
+| `schemas.ts` | **RxDB v10 Schemas**: Strict compliance with `required` and `maxLength` constraints for indexed fields. |
+| `index.ts` | **DB Mutex**: Prevents initialization race conditions during React Strict Mode/HMR using a global `dbPromise`. |
+| `queries.ts` | Optimized database operations with secondary indexing. |
+| `export-import.ts` | JSON backup/restore with Zod validation. |
 
 ---
 
 ## Data Flow Examples
 
-### Planting a Seed
-1. User drags seed from `SeedStore` → `GardenGrid`
-2. `usePlantedCards` hook calls `db.planted.insert()`
-3. XState machine initializes → `seed` state
-4. `VirtualGardenTab` re-renders grid with new plant
-5. XP awarded → `useGamification` updates level
+### 1. Planting a Seed
+1. User drags seed from `SeedStore` → `GardenGrid`.
+2. `usePlantedCards` hook calls `db.planted.insert()`.
+3. XState machine initializes → `seed` state.
+4. `VirtualGardenTab` re-renders grid with new plant.
+5. XP awarded via `useGamification`.
 
-### Searching the Knowledgebase
-1. User types in `PlantKnowledgebaseTab` search input
-2. `debounce.ts` waits 300ms
-3. `fuse.js` performs fuzzy search on `mergedCatalog`
-4. `useMemo` recalculates `filtered` list
-5. Virtualized list re-renders with results
+### 2. Fuzzy Searching the Catalog
+1. User types in `PlantKnowledgebaseTab` search input.
+2. `debounce.ts` waits 300ms to prevent excessive filtering.
+3. `fuse.js` performs fuzzy search on the merged plant catalog.
+4. Virtualized list re-renders with matched results.
 
 ---
 
 ## Key Design Decisions
 
-### Why RxDB over Firebase / Supabase?
-**Decision**: Use RxDB (IndexedDB) for local-first architecture.
+### 1. RxDB v10 Migration
+**Decision**: Upgrade to RxDB v10 and enforce strict schema attributes (`maxLength`, `multipleOf`).
+**Reason**: Dexie.js requires explicit constraints on indexed fields to prevent initialization failures (SC37, DXE1).
 
-**Reason**:
-- Gardeners work offline (greenhouses, remote plots)
-- No server costs for personal use
-- RxDB replication plugin enables future sync
+### 2. Initialization Mutex
+**Decision**: Implement a global `dbPromise` mutex in `db/index.ts`.
+**Reason**: Prevents double-initialization crashes during Vite HMR or React Concurrent rendering cycles.
 
-**Trade-off**: No multi-user collaboration yet.
-
-### Why XState for Lifecycle?
-**Decision**: Model plant growth as a finite state machine.
-
-**Reason**:
-- Plant stages are deterministic (germination → seedling → harvest)
-- XState provides visualization and testing tools
-- Easy to extend with environmental triggers
-
-**Trade-off**: Learning curve for contributors unfamiliar with state machines.
-
-### Why Fuse.js + Debounce?
-**Decision**: Client-side fuzzy search with 300ms debounce.
-
-**Reason**:
-- Plant names have typos, synonyms, scientific names
-- Debouncing prevents excessive recalculation
-- Fuse.js handles "tomato" vs "Tomato" vs "Solanum lycopersicum"
-
-**Trade-off**: Large catalogs (>1000 items) may need server-side search.
+### 3. UI Helper Centralization
+**Decision**: Move non-component logic (icons, color mappers) to `src/utils/ui-helpers.tsx`.
+**Reason**: Fixes `react-refresh` lint warnings and prevents "Lazy" component crashes during hot reloads.
 
 ---
 
@@ -134,63 +85,25 @@ LovelyGarden follows a **modular, offline-first architecture** with clear separa
 
 | Technology | Why? |
 |------------|------|
-| **Vite 5** | Fast HMR, PWA plugin, Rollup bundling |
-| **React 18** | Concurrent features, mature ecosystem |
-| **TypeScript** | Type-safe domain modeling (PlantStage, Season, etc.) |
-| **Tailwind CSS** | Rapid theming, consistent design tokens |
-| **Zod** | Runtime validation for JSON imports, API responses |
-| **TanStack Query** | Server state caching for weather API |
-| **@dnd-kit** | Accessible drag-and-drop for garden grid |
-| **Framer Motion** | Smooth animations for plant growth, transitions |
-| **i18next** | Multi-language support (EN/DE) |
-
----
-
-## Migration Strategy
-
-RxDB migrations in `schemas.ts` handle schema evolution:
-
-```typescript
-plantedMigrationStrategies = {
-  '1': (oldDoc) => ({ ...oldDoc, observations: [] }),      // v0→v1
-  '2': (oldDoc) => ({ ...oldDoc, systemDiagnosis: '' }),       // v1→v2
-  '3': (oldDoc) => ({ ...oldDoc, observations: oldDoc.observations || [] }), // v2→v3
-}
-```
-
-**Pattern**: Always additive, never destructive. Use `oldDoc.observations || []` for backward compatibility.
-
----
-
-## Security Considerations
-
-- **Input validation**: Zod schemas for all JSON imports (`export-import.ts`)
-- **No secrets in client**: `dotenv` + `VITE_` prefix for environment variables
-- **CSP headers**: Missing (opportunity for Express server)
-- **Service Worker**: Precaches assets, uses `StaleWhileRevalidate` for weather API
+| **Vite 5** | Fast HMR, PWA plugin, Rollup bundling. |
+| **RxDB** | Local-first architecture, MongoDB-like queries, sync-ready. |
+| **XState v5** | Deterministic state transitions for plant growth. |
+| **Tailwind CSS** | Rapid theming and consistent design tokens. |
+| **Zod** | Runtime validation for imports and API responses. |
+| **@dnd-kit** | Accessible drag-and-drop for the garden grid. |
 
 ---
 
 ## Performance Optimizations
-
-- **Code splitting**: Vendor chunks (db, icons, misc) for faster initial load
-- **Lazy loading**: `GrowthGraph`, `ObservationTerminal` via `React.lazy`
-- **Debounced search**: 300ms delay prevents excessive filtering
-- **Fuzzy search**: Fuse.js for tolerant plant name matching
-- **DB indexes**: `bedId`, `catalogId`, `date` for query performance
-- **WebP images**: `garden-bg.png` → WebP with PNG fallback
-- **React.memo**: `Modal`, `PlantedCardView` to prevent unnecessary re-renders
+- **Vendor Splitting**: Large libraries (RxDB, Lucide, Recharts) are bundled into separate chunks for better caching.
+- **Strict Indexing**: All primary queries use indexed fields (`bedId`, `catalogId`) for sub-millisecond lookups.
+- **Lazy Hydration**: Components like `GrowthGraph` are only loaded when the inspector is opened via `React.lazy`.
+- **WebP Assets**: Assets like `garden-bg.png` are converted to WebP for faster mobile loading.
 
 ---
 
 ## Testing Strategy
-
-| Layer | Tool | Coverage |
-|-------|------|---------|
-| Logic | Vitest | 17 tests (lifecycle, reasoning) |
-| Components | React Testing Library | 9 tests (SeedStore) |
-| E2E | Playwright | 6 tests (settings, seed store) |
-| Build | TypeScript strict mode | 0 errors |
-| Lint | ESLint v10 | 0 errors, 6 warnings |
-
-**Total**: 26 unit tests + E2E coverage expanding.
+- **Unit Tests**: Vitest coverage for the reasoning engine and state machine transitions (26+ tests).
+- **E2E Tests**: Playwright scripts for critical workflows (seed purchase, settings customization).
+- **Schema Validation**: Automated AJV validation during development to catch schema violations immediately.
+- **Build Quality**: 0 errors in TypeScript strict mode.
