@@ -34,6 +34,8 @@
     "@legendapp/state": "^2.1.15",
     "@orama/orama": "^3.1.18",
     "@prisma/client": "^6.19.3",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-virtual": "^3.13.0",
     "@tauri-apps/api": "^2.11.0",
