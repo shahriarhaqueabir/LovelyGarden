@@ -13,6 +13,7 @@ import {
 import { useInventory } from "../hooks/useInventory";
 import { PlantSpecies, Season, GrowthStageId } from "../schema/knowledge-graph";
 import { DetailModal } from "./SeedStore";
+import { listPlantKnowledgeBase } from "../services/referenceDataService";
 
 const monthNames = [
   "Jan",
@@ -86,18 +87,28 @@ export const SeedInventoryTab: React.FC<SeedInventoryTabProps> = ({
   useEffect(() => {
     const loadExpandedPlantKB = async () => {
       try {
-        const response = await fetch("/data/plants-kb.json");
-        const data = await response.json();
-        const plantsArray = Array.isArray(data) ? data : data.plants || [];
+        const plantsArray = await listPlantKnowledgeBase();
 
         const kbMap: Record<string, ExpandedPlantKB> = {};
-        plantsArray.forEach((plant: ExpandedPlantKB) => {
-          kbMap[plant.plant_id] = plant;
+        plantsArray.forEach((plant) => {
+          kbMap[plant.plant_id] = plant as ExpandedPlantKB;
         });
 
         setExpandedPlantKB(kbMap);
       } catch (error) {
-        console.error("Failed to load expanded plant knowledge base:", error);
+        console.warn(
+          "Falling back to bundled expanded plant knowledge base:",
+          error,
+        );
+
+        const response = await fetch("/data/plants-kb.json");
+        const data = await response.json();
+        const plantsArray = Array.isArray(data) ? data : data.plants || [];
+        const kbMap: Record<string, ExpandedPlantKB> = {};
+        plantsArray.forEach((plant: ExpandedPlantKB) => {
+          kbMap[plant.plant_id] = plant;
+        });
+        setExpandedPlantKB(kbMap);
       }
     };
 

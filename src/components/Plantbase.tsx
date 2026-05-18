@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { X, Search, BookOpen, Sun, Droplets } from "lucide-react";
+import { listPlantKnowledgeBase } from "../services/referenceDataService";
 
 interface PlantKB {
   plant_id: string;
@@ -39,14 +40,25 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
   useEffect(() => {
     const loadPlants = async () => {
       try {
-        const response = await fetch("/data/plants-kb.json");
-        const data = await response.json();
-        setPlants(data.plants || []);
+        setPlants((await listPlantKnowledgeBase()) as PlantKB[]);
       } catch (error) {
-        console.error("Failed to load plant knowledge base:", error);
-      } finally {
-        setLoading(false);
+        console.warn("Falling back to bundled plant knowledge base:", error);
+
+        try {
+          const response = await fetch("/data/plants-kb.json");
+          const data = await response.json();
+          setPlants(
+            (Array.isArray(data) ? data : data.plants || []) as PlantKB[],
+          );
+        } catch (fallbackError) {
+          console.error("Failed to load plant knowledge base:", fallbackError);
+        } finally {
+          setLoading(false);
+        }
+        return;
       }
+
+      setLoading(false);
     };
     loadPlants();
   }, []);
