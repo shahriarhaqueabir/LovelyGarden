@@ -7,3 +7,197 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+model PlantCatalog {
+  id                  String          @id
+  name                String
+  scientificName      String?         @map("scientific_name")
+  description         String?
+  family              String?
+  genus               String?
+  species             String?
+  categories          String[]        @default([])
+  lifeCycle           String?         @map("life_cycle")
+  growthHabit         String[]        @default([]) @map("growth_habit")
+  photosynthesisType  String?         @map("photosynthesis_type")
+  edibleParts         String[]        @default([]) @map("edible_parts")
+  toxicParts          String[]        @default([]) @map("toxic_parts")
+  pollinationType     String?         @map("pollination_type")
+  sowingSeason        String[]        @default([]) @map("sowing_season")
+  sowingMethod        String?         @map("sowing_method")
+  stages              Json            @default("[]")
+  companions          String[]        @default([])
+  antagonists         String[]        @default([])
+  confidenceScore     Float?          @map("confidence_score")
+  sources             String[]        @default([])
+  seasonality         Json?
+  sunlight            String?
+  waterRequirements   String?         @map("water_requirements")
+  soilType            String[]        @default([]) @map("soil_type")
+  preferredPh         String?         @map("preferred_ph")
+  commonPests         String[]        @default([]) @map("common_pests")
+  commonDiseases      String[]        @default([]) @map("common_diseases")
+  nutrientPreferences String[]        @default([]) @map("nutrient_preferences")
+  sourceMetadata      Json?           @map("source_metadata")
+  createdAt           DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  inventoryItems      InventoryItem[]
+  logbookEntries      LogbookEntry[]
+  plantedPlants       PlantedPlant[]
+
+  @@index([name])
+  @@map("plant_catalog")
+}
+
+model PlantKnowledgeBase {
+  plantId             String   @id @map("plant_id")
+  commonName          String   @map("common_name")
+  scientificName      String?  @map("scientific_name")
+  type                String?
+  family              String?
+  growthStage         String[] @default([]) @map("growth_stage")
+  sowingSeason        String[] @default([]) @map("sowing_season")
+  sowingMethod        String?  @map("sowing_method")
+  seasonality         Json?
+  sunlight            String?
+  waterRequirements   String?  @map("water_requirements")
+  soilType            String[] @default([]) @map("soil_type")
+  companionPlants     String[] @default([]) @map("companion_plants")
+  incompatiblePlants  String[] @default([]) @map("incompatible_plants")
+  commonPests         String[] @default([]) @map("common_pests")
+  commonDiseases      String[] @default([]) @map("common_diseases")
+  nutrientPreferences String[] @default([]) @map("nutrient_preferences")
+  notes               String?
+  preferredPh         String?  @map("preferred_ph")
+  lifeCycle           String?  @map("life_cycle")
+  growthHabit         String[] @default([]) @map("growth_habit")
+  photosynthesisType  String?  @map("photosynthesis_type")
+  edibleParts         String[] @default([]) @map("edible_parts")
+  toxicParts          String[] @default([]) @map("toxic_parts")
+  pollinationType     String?  @map("pollination_type")
+  stages              Json     @default("[]")
+  sourceMetadata      Json?    @map("source_metadata")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([commonName])
+  @@map("plant_knowledge_base")
+}
+
+model Source {
+  id              String   @id
+  name            String
+  type            String
+  url             String?
+  credibilityTier String?  @map("credibility_tier")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("sources")
+}
+
+model UserSettings {
+  id                String   @id
+  ownerId           String?  @map("owner_id") @db.Uuid
+  firstLoadComplete Boolean  @default(false) @map("first_load_complete")
+  hemisphere        String?
+  city              String?
+  currentDay        Int      @default(1) @map("current_day")
+  xp                Int      @default(0)
+  dataVersion       Int      @default(0) @map("data_version")
+  preferences       Json?
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([ownerId])
+  @@map("user_settings")
+}
+
+model Garden {
+  id              String         @id
+  ownerId         String?        @map("owner_id") @db.Uuid
+  name            String
+  type            String
+  soilType        String?        @map("soil_type")
+  sunExposure     String?        @map("sun_exposure")
+  gridWidth       Int            @map("grid_width")
+  gridHeight      Int            @map("grid_height")
+  backgroundColor String?        @map("background_color")
+  theme           String?
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  logbookEntries  LogbookEntry[]
+  plantedPlants   PlantedPlant[]
+
+  @@index([ownerId])
+  @@map("gardens")
+}
+
+model InventoryItem {
+  id           String       @id
+  ownerId      String?      @map("owner_id") @db.Uuid
+  catalogId    String       @map("catalog_id")
+  acquiredAt   DateTime     @default(now()) @map("acquired_at") @db.Timestamptz(6)
+  notes        String?
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  plantCatalog PlantCatalog @relation(fields: [catalogId], references: [id])
+
+  @@index([catalogId])
+  @@index([ownerId])
+  @@map("inventory_items")
+}
+
+model PlantedPlant {
+  id                String       @id
+  ownerId           String?      @map("owner_id") @db.Uuid
+  gardenId          String       @map("garden_id")
+  catalogId         String       @map("catalog_id")
+  gridX             Int          @map("grid_x")
+  gridY             Int          @map("grid_y")
+  plantedAt         DateTime     @default(now()) @map("planted_at") @db.Timestamptz(6)
+  lastWateredAt     DateTime?    @map("last_watered_at") @db.Timestamptz(6)
+  currentStageIndex Int          @default(0) @map("current_stage_index")
+  healthStatus      String       @default("Healthy") @map("health_status")
+  customName        String?      @map("custom_name")
+  hydration         Int          @default(100)
+  stressLevel       Int          @default(0) @map("stress_level")
+  nutrients         Json         @default("{\"k\": 50, \"n\": 50, \"p\": 50}")
+  observations      Json         @default("[]")
+  systemDiagnosis   String?      @map("system_diagnosis")
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  plantCatalog      PlantCatalog @relation(fields: [catalogId], references: [id])
+  garden            Garden       @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+
+  @@unique([gardenId, gridX, gridY])
+  @@index([catalogId])
+  @@index([ownerId])
+  @@map("planted_plants")
+}
+
+model LogbookEntry {
+  id           String        @id
+  ownerId      String?       @map("owner_id") @db.Uuid
+  type         String
+  itemName     String        @map("item_name")
+  category     String?
+  quantity     Float?
+  price        Decimal?      @db.Decimal(10, 2)
+  currency     String?
+  vendor       String?
+  occurredAt   DateTime      @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  notes        String?
+  catalogId    String?       @map("catalog_id")
+  gardenId     String?       @map("garden_id")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  plantCatalog PlantCatalog? @relation(fields: [catalogId], references: [id])
+  garden       Garden?       @relation(fields: [gardenId], references: [id])
+
+  @@index([catalogId])
+  @@index([gardenId])
+  @@index([occurredAt])
+  @@index([ownerId])
+  @@map("logbook_entries")
+}
