@@ -113,7 +113,15 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
       globals: true,
       setupFiles: ["./tests/setup.ts"],
-      exclude: [...configDefaults.exclude, "e2e/**"],
+      exclude: [
+        ...configDefaults.exclude,
+        "e2e/**",
+        "node_modules_broken/**",
+        "dist/**",
+        "dist2/**",
+        "dist_probe/**",
+        "src-tauri/target/**",
+      ],
     },
   };
 });
