@@ -224,11 +224,7 @@
       "plant_kale",
       "plant_mint"
     ],
-    "antagonists": [
-      "plant_bean_pole",
-      "plant_mustard_field",
-      "plant_tomato"
-    ],
+    "antagonists": ["plant_bean_pole", "plant_mustard_field", "plant_tomato"],
     "seasonality": {
       "sowing": [
         {
@@ -349,9 +345,7 @@
     "family": "Cucurbitaceae",
     "plant_type": "vegetable",
     "notes": "Vining plant; requires strong trellis support; very high medicinal value.",
-    "companions": [
-      "plant_corn"
-    ],
+    "companions": ["plant_corn"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -372,7 +366,7 @@
       "sunlight": "full_sun",
       "water_requirements": "high",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_sandy_well_drained" 
+      "soil_type": "loamy_sandy_well_drained"
     }
   },
   {
@@ -466,9 +460,7 @@
     "family": "Cucurbitaceae",
     "plant_type": "vegetable",
     "notes": "Night flowering.",
-    "companions": [
-      "plant_corn"
-    ],
+    "companions": ["plant_corn"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -523,11 +515,7 @@
       "plant_garlic",
       "plant_nasturtium"
     ],
-    "antagonists": [
-      "plant_tomato",
-      "plant_pepper",
-      "plant_cauliflower"
-    ],
+    "antagonists": ["plant_tomato", "plant_pepper", "plant_cauliflower"],
     "seasonality": {
       "sowing": [
         {
@@ -704,10 +692,7 @@
       "plant_nasturtium",
       "plant_sunflower"
     ],
-    "antagonists": [
-      "plant_potato",
-      "plant_cucumber"
-    ],
+    "antagonists": ["plant_potato", "plant_cucumber"],
     "seasonality": {
       "sowing": [
         {
@@ -801,10 +786,7 @@
       "plant_nasturtium",
       "plant_marigold"
     ],
-    "antagonists": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
+    "antagonists": ["plant_strawberry", "plant_tomato"],
     "seasonality": {
       "sowing": [
         {
@@ -855,11 +837,7 @@
       "plant_pea",
       "plant_marigold"
     ],
-    "antagonists": [
-      "plant_strawberry",
-      "plant_tomato",
-      "plant_pole_bean"
-    ],
+    "antagonists": ["plant_strawberry", "plant_tomato", "plant_pole_bean"],
     "seasonality": {
       "sowing": [
         {
@@ -953,11 +931,7 @@
       "plant_pea",
       "plant_bean"
     ],
-    "antagonists": [
-      "plant_cabbage",
-      "plant_kohlrabi",
-      "plant_radish"
-    ],
+    "antagonists": ["plant_cabbage", "plant_kohlrabi", "plant_radish"],
     "seasonality": {
       "sowing": [
         {
@@ -1104,10 +1078,7 @@
       "plant_nasturtium",
       "plant_lavender"
     ],
-    "antagonists": [
-      "plant_asparagus",
-      "plant_bean"
-    ],
+    "antagonists": ["plant_asparagus", "plant_bean"],
     "seasonality": {
       "sowing": [
         {
@@ -1137,9 +1108,7 @@
     "family": "Brassicaceae",
     "plant_type": "vegetable",
     "notes": "Cold hardy.",
-    "companions": [
-      "plant_onion"
-    ],
+    "companions": ["plant_onion"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -1189,11 +1158,7 @@
       "plant_dill",
       "plant_bean"
     ],
-    "antagonists": [
-      "plant_fennel",
-      "plant_rosemary",
-      "plant_lavender"
-    ],
+    "antagonists": ["plant_fennel", "plant_rosemary", "plant_lavender"],
     "seasonality": {
       "sowing": [
         {
@@ -1371,11 +1336,7 @@
       "plant_onion",
       "plant_basil"
     ],
-    "antagonists": [
-      "plant_carrot",
-      "plant_fennel",
-      "plant_coriander"
-    ],
+    "antagonists": ["plant_carrot", "plant_fennel", "plant_coriander"],
     "seasonality": {
       "sowing": [
         {
@@ -1418,9 +1379,7 @@
       "plant_nasturtium",
       "plant_spinach"
     ],
-    "antagonists": [
-      "plant_potato"
-    ],
+    "antagonists": ["plant_potato"],
     "seasonality": {
       "sowing": [
         {
@@ -1463,10 +1422,7 @@
       "plant_marigold",
       "plant_nasturtium"
     ],
-    "antagonists": [
-      "plant_pea",
-      "plant_bean"
-    ],
+    "antagonists": ["plant_pea", "plant_bean"],
     "seasonality": {
       "sowing": [
         {
@@ -1496,10 +1452,7 @@
     "family": "Geraniaceae",
     "plant_type": "flower",
     "notes": "Tender perennial.",
-    "companions": [
-      "plant_rose",
-      "plant_grape"
-    ],
+    "companions": ["plant_rose", "plant_grape"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -1696,10 +1649,7 @@
       "plant_beet",
       "plant_carrot"
     ],
-    "antagonists": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
+    "antagonists": ["plant_strawberry", "plant_tomato"],
     "seasonality": {
       "sowing": [
         {
@@ -1769,10 +1719,7 @@
     "family": "Rutaceae",
     "plant_type": "fruit_tree",
     "notes": "Sensitive to frost; heavy feeder.",
-    "companions": [
-      "plant_rosemary",
-      "plant_thyme"
-    ],
+    "companions": ["plant_rosemary", "plant_thyme"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -1857,9 +1804,7 @@
     "family": "Lamiaceae",
     "plant_type": "herb",
     "notes": "Invasive roots.",
-    "companions": [
-      "plant_tomato"
-    ],
+    "companions": ["plant_tomato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -1927,7 +1872,7 @@
       "sunlight": "low_indirect_light",
       "water_requirements": "low",
       "soil_ph": "6.1-6.5",
-      "soil_type": "well_drained_organic" 
+      "soil_type": "well_drained_organic"
     }
   },
   {
@@ -1937,9 +1882,7 @@
     "family": "Araceae",
     "plant_type": "ornamental",
     "notes": "Toxic to pets.",
-    "companions": [
-      "plant_pothos"
-    ],
+    "companions": ["plant_pothos"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -1968,7 +1911,7 @@
       "sunlight": "bright_indirect_light",
       "water_requirements": "moderate",
       "soil_ph": "5.5-7.0",
-      "soil_type": "rich_well_drained_organic"  
+      "soil_type": "rich_well_drained_organic"
     }
   },
   {
@@ -1978,9 +1921,7 @@
     "family": "Moringaceae",
     "plant_type": "tree",
     "notes": "Fastest growing tree; every part of the plant is edible; extremely drought resistant.",
-    "companions": [
-      "plant_sweet_potato"
-    ],
+    "companions": ["plant_sweet_potato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2001,7 +1942,7 @@
       "sunlight": "full_sun",
       "water_requirements": "low",
       "soil_ph": "6.3-7.0",
-      "soil_type": "sandy_loam_well_drained"  
+      "soil_type": "sandy_loam_well_drained"
     }
   },
   {
@@ -2076,7 +2017,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_sandy_well_drained" 
+      "soil_type": "loamy_sandy_well_drained"
     }
   },
   {
@@ -2086,10 +2027,7 @@
     "family": "Amaryllidaceae",
     "plant_type": "vegetable",
     "notes": "Day-length sensitive.",
-    "companions": [
-      "plant_swiss_chard",
-      "plant_tomato"
-    ],
+    "companions": ["plant_swiss_chard", "plant_tomato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2118,7 +2056,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_well_drained_fertile" 
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -2128,10 +2066,7 @@
     "family": "Lamiaceae",
     "plant_type": "herb",
     "notes": "Perennial herb.",
-    "companions": [
-      "plant_squash",
-      "plant_tomato"
-    ],
+    "companions": ["plant_squash", "plant_tomato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2160,7 +2095,7 @@
       "sunlight": "full_sun",
       "water_requirements": "low",
       "soil_ph": "6.0-8.0",
-      "soil_type": "sandy_well_drained_slightly_alkaline" 
+      "soil_type": "sandy_well_drained_slightly_alkaline"
     }
   },
   {
@@ -2199,7 +2134,7 @@
       "sunlight": "full_sun",
       "water_requirements": "high",
       "soil_ph": "6.0-6.5",
-      "soil_type": "sandy_loam_rich_well_drained"   
+      "soil_type": "sandy_loam_rich_well_drained"
     }
   },
   {
@@ -2209,9 +2144,7 @@
     "family": "Apiaceae",
     "plant_type": "herb",
     "notes": "Slow germination.",
-    "companions": [
-      "plant_tomato"
-    ],
+    "companions": ["plant_tomato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2240,7 +2173,7 @@
       "sunlight": "partial_shade",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_moist_well_drained" 
+      "soil_type": "loamy_moist_well_drained"
     }
   },
   {
@@ -2306,11 +2239,7 @@
     "family": "Fabaceae",
     "plant_type": "vegetable",
     "notes": "Nitrogen fixer; cool season crop.",
-    "companions": [
-      "plant_turnip",
-      "plant_spinach",
-      "plant_radish"
-    ],
+    "companions": ["plant_turnip", "plant_spinach", "plant_radish"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2339,7 +2268,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.5",
-      "soil_type": "loamy_well_drained" 
+      "soil_type": "loamy_well_drained"
     }
   },
   {
@@ -2349,9 +2278,7 @@
     "family": "Solanaceae",
     "plant_type": "flower",
     "notes": "Requires deadheading.",
-    "companions": [
-      "plant_tomato"
-    ],
+    "companions": ["plant_tomato"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2380,7 +2307,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_well_drained_slightly_acidic" 
+      "soil_type": "loamy_well_drained_slightly_acidic"
     }
   },
   {
@@ -2419,7 +2346,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "5.5-6.5",
-      "soil_type": "loamy_well_drained_fertile"   
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -2458,7 +2385,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "4.8-6.0",
-      "soil_type": "loose_sandy_loam_acidic"  
+      "soil_type": "loose_sandy_loam_acidic"
     }
   },
   {
@@ -2468,9 +2395,7 @@
     "family": "Cucurbitaceae",
     "plant_type": "vegetable",
     "notes": "Requires space.",
-    "companions": [
-      "plant_sunflower"
-    ],
+    "companions": ["plant_sunflower"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2499,7 +2424,7 @@
       "sunlight": "full_sun",
       "water_requirements": "high",
       "soil_ph": "6.0-6.8",
-      "soil_type": "rich_loamy_well_drained"  
+      "soil_type": "rich_loamy_well_drained"
     }
   },
   {
@@ -2538,7 +2463,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loose_sandy_loam_well_drained"  
+      "soil_type": "loose_sandy_loam_well_drained"
     }
   },
   {
@@ -2548,9 +2473,7 @@
     "family": "Rosaceae",
     "plant_type": "fruit",
     "notes": "Prune second-year canes after harvest.",
-    "companions": [
-      "plant_tansy"
-    ],
+    "companions": ["plant_tansy"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2579,7 +2502,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "5.5-6.5",
-      "soil_type": "loamy_well_drained_fertile"   
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -2663,7 +2586,7 @@
       "sunlight": "full_sun",
       "water_requirements": "low",
       "soil_ph": "6.0-7.0",
-      "soil_type": "sandy_well_drained_slightly_alkaline"   
+      "soil_type": "sandy_well_drained_slightly_alkaline"
     }
   },
   {
@@ -2673,9 +2596,7 @@
     "family": "Lamiaceae",
     "plant_type": "herb",
     "notes": "Woody perennial.",
-    "companions": [
-      "plant_strawberry"
-    ],
+    "companions": ["plant_strawberry"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2704,7 +2625,7 @@
       "sunlight": "full_sun",
       "water_requirements": "low",
       "soil_ph": "6.0-7.0",
-      "soil_type": "sandy_well_drained" 
+      "soil_type": "sandy_well_drained"
     }
   },
   {
@@ -2714,9 +2635,7 @@
     "family": "Amaranthaceae",
     "plant_type": "vegetable",
     "notes": "Cool season crop; bolts in heat.",
-    "companions": [
-      "plant_strawberry"
-    ],
+    "companions": ["plant_strawberry"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2745,7 +2664,7 @@
       "sunlight": "partial_shade",
       "water_requirements": "moderate",
       "soil_ph": "6.5-7.5",
-      "soil_type": "loamy_moist_nitrogen_rich"  
+      "soil_type": "loamy_moist_nitrogen_rich"
     }
   },
   {
@@ -2755,9 +2674,7 @@
     "family": "Rosaceae",
     "plant_type": "fruit",
     "notes": "Mulch with straw to keep fruit off ground.",
-    "companions": [
-      "plant_thyme"
-    ],
+    "companions": ["plant_thyme"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2786,7 +2703,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate_to_high",
       "soil_ph": "5.5-6.5",
-      "soil_type": "sandy_loam_well_drained_slightly_acidic"  
+      "soil_type": "sandy_loam_well_drained_slightly_acidic"
     }
   },
   {
@@ -2825,7 +2742,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.5",
-      "soil_type": "loamy_well_drained" 
+      "soil_type": "loamy_well_drained"
     }
   },
   {
@@ -2875,7 +2792,7 @@
       "sunlight": "full_sun",
       "water_requirements": "high",
       "soil_ph": "5.8-7.0",
-      "soil_type": "loamy_fertile_well_drained"   
+      "soil_type": "loamy_fertile_well_drained"
     }
   },
   {
@@ -2914,7 +2831,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.5",
-      "soil_type": "loamy_rich_well_drained"    
+      "soil_type": "loamy_rich_well_drained"
     }
   },
   {
@@ -2953,7 +2870,7 @@
       "sunlight": "full_sun",
       "water_requirements": "low",
       "soil_ph": "6.0-8.0",
-      "soil_type": "sandy_well_drained_slightly_alkaline"     
+      "soil_type": "sandy_well_drained_slightly_alkaline"
     }
   },
   {
@@ -2963,9 +2880,7 @@
     "family": "Solanaceae",
     "plant_type": "vegetable",
     "notes": "Requires staking and consistent watering.",
-    "companions": [
-      "plant_zinnia"
-    ],
+    "companions": ["plant_zinnia"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -2994,7 +2909,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-6.8",
-      "soil_type": "loamy_well_drained_rich"      
+      "soil_type": "loamy_well_drained_rich"
     }
   },
   {
@@ -3033,7 +2948,7 @@
       "sunlight": "partial_shade",
       "water_requirements": "high",
       "soil_ph": "5.5-7.0",
-      "soil_type": "loamy_rich_organic_well_drained"      
+      "soil_type": "loamy_rich_organic_well_drained"
     }
   },
   {
@@ -3072,7 +2987,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.5",
-      "soil_type": "loamy_well_drained_fertile"       
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -3111,7 +3026,7 @@
       "sunlight": "full_sun",
       "water_requirements": "high",
       "soil_ph": "6.0-7.0",
-      "soil_type": "sandy_loam_well_drained"        
+      "soil_type": "sandy_loam_well_drained"
     }
   },
   {
@@ -3150,7 +3065,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "5.5-7.5",
-      "soil_type": "loamy_well_drained"         
+      "soil_type": "loamy_well_drained"
     }
   },
   {
@@ -3189,7 +3104,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "5.5-7.0",
-      "soil_type": "loamy_well_drained"         
+      "soil_type": "loamy_well_drained"
     }
   },
   {
@@ -3228,7 +3143,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.5",
-      "soil_type": "loamy_rich_well_drained"         
+      "soil_type": "loamy_rich_well_drained"
     }
   },
   {
@@ -3238,13 +3153,8 @@
     "family": "Rosaceae",
     "plant_type": "flower",
     "notes": "Requires regular pruning and good air circulation.",
-    "companions": [
-      "plant_lavender",
-      "plant_garlic"
-    ],
-    "antagonists": [
-      "plant_fennel"
-    ],
+    "companions": ["plant_lavender", "plant_garlic"],
+    "antagonists": ["plant_fennel"],
     "seasonality": {
       "sowing": [
         {
@@ -3264,7 +3174,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_well_drained_fertile"         
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -3274,10 +3184,7 @@
     "family": "Asteraceae",
     "plant_type": "flower",
     "notes": "Known for suppressing soil nematodes.",
-    "companions": [
-      "plant_tomato",
-      "plant_beans"
-    ],
+    "companions": ["plant_tomato", "plant_beans"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -3308,13 +3215,8 @@
     "family": "Rosaceae",
     "plant_type": "fruit_tree",
     "notes": "Requires winter chill hours for proper fruiting.",
-    "companions": [
-      "plant_chives",
-      "plant_marigold"
-    ],
-    "antagonists": [
-      "plant_walnut"
-    ],
+    "companions": ["plant_chives", "plant_marigold"],
+    "antagonists": ["plant_walnut"],
     "seasonality": {
       "sowing": [
         {
@@ -3334,7 +3236,7 @@
       "sunlight": "full_sun",
       "water_requirements": "moderate",
       "soil_ph": "6.0-7.0",
-      "soil_type": "loamy_well_drained_fertile" 
+      "soil_type": "loamy_well_drained_fertile"
     }
   },
   {
@@ -3344,9 +3246,7 @@
     "family": "Dryopteridaceae",
     "plant_type": "ornamental",
     "notes": "Prefers consistently moist soil and shade.",
-    "companions": [
-      "plant_hosta"
-    ],
+    "companions": ["plant_hosta"],
     "antagonists": [],
     "seasonality": {
       "sowing": [
@@ -3408,12 +3308,8 @@
     "family": "Rutaceae",
     "plant_type": "fruit_tree",
     "notes": "Sensitive to frost; often container-grown in cooler climates.",
-    "companions": [
-      "plant_lavender"
-    ],
-    "antagonists": [
-      "plant_potato"
-    ],
+    "companions": ["plant_lavender"],
+    "antagonists": ["plant_potato"],
     "seasonality": {
       "sowing": [
         {
@@ -3443,9 +3339,7 @@
     "family": "Buxaceae",
     "plant_type": "ornamental_shrub",
     "notes": "Commonly used for hedging and topiary.",
-    "companions": [
-      "plant_fern"
-    ],
+    "companions": ["plant_fern"],
     "antagonists": [],
     "seasonality": {
       "sowing": [

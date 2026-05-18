@@ -29,30 +29,37 @@ LovelyGarden treats a garden as a **Reasoned Knowledge Graph** where plants, sea
 - **Core idea**: Local-first architecture using RxDB + Dexie.js for extreme reliability and privacy.
 - **Design philosophy**: "Command Deck" UI that surfaces complex horticultural insights through a clean, gamified interface.
 - **Key decisions**:
-    - **Strict Schema Enforcement**: Every plant field is validated at the storage level to prevent data corruption.
-    - **Reasoning Engine**: A decoupled logic layer that calculates companion compatibility and seasonal eligibility in real-time.
+  - **Strict Schema Enforcement**: Every plant field is validated at the storage level to prevent data corruption.
+  - **Reasoning Engine**: A decoupled logic layer that calculates companion compatibility and seasonal eligibility in real-time.
 
 ---
 
 ## 🏗️ Architecture
 
 ### Components
-- **UI**: React 18 + Tailwind CSS + Framer Motion. Centralized `ui-helpers.tsx` for shared visual tokens.
+
+- **UI**: React 19 + Tailwind CSS + Motion. Native View Transitions API for seamless navigation.
 - **Logic**: XState state machines for lifecycle tracking; custom reasoning engine for horticulture rules.
-- **Data layer**: RxDB (IndexedDB) with Dexie.js adapter. Zod validation for all data imports.
+- **Intelligence**: Orama vector-ready search engine for sub-millisecond plant knowledgebase indexing.
+- **Data layer**: RxDB (IndexedDB) with Dexie.js adapter. Local-first persistence.
+- **Desktop**: Tauri v2 (Rust backend) for native shell integration and premium desktop features.
 
 ### Data Flow
-1. **Input**: User logs a planting event or updates their garden location.
-2. **Processing**: Reasoning engine evaluates the knowledge graph against local weather data and companion rules.
-3. **Output**: Visual garden grid updates with "Harmony" scores, XP is awarded, and sowing windows are recalculated.
+
+1. **Input**: User logs a planting event or searches the knowledgebase.
+2. **Processing**: Orama indexes rank results by horticultural relevance; reasoning engine evaluates the knowledge graph.
+3. **Output**: Native system notifications (Tauri), hardware-accelerated UI transitions, and updated garden grid state.
 
 ### Diagram
+
 ```mermaid
 graph TD
-    UI[React UI] --> Store[Zustand / RxDB]
+    UI[React 19 UI] --> View[View Transitions API]
+    UI --> Store[Legend-State / RxDB]
     Store --> Engine[Reasoning Engine]
-    Engine --> Science[Horticulture Knowledge Graph]
-    Science --> Result[Sowing Alerts / Growth Projections]
+    Engine --> Search[Orama Search Engine]
+    Search --> Result[Ranked Plant Insights]
+    UI --> Native[Tauri v2 Native Shell]
 ```
 
 ---
@@ -60,60 +67,62 @@ graph TD
 ## 🤖 AI Involvement
 
 ### Where AI was used
-- **Ideation**: Structuring the 16-domain knowledge graph for plant species.
-- **Code generation**: Scaffolding RxDB schemas and complex UI components.
-- **Debugging**: Resolving storage-layer initialization race conditions and schema compliance (SC37/DXE1).
-- **Refactoring**: Centralizing shared UI logic to satisfy `react-refresh` lint constraints.
+
+- **Modernization**: Migrating the stack to React 19 and implementing the Native View Transitions API.
+- **Search Engineering**: Swapping legacy Fuse.js for Orama, implementing a custom indexing module with typings.
+- **Native Integration**: Scaffolding the Tauri v2 Rust backend and manual plugin registration for notifications and OS info.
+- **Architecture Refactoring**: Identifying and rejecting over-engineered patterns (like Effect-TS) in favor of pragmatic, high-performance logic.
 
 ### Prompt Strategy
-- **Initial prompt**: "Build a local-first garden manager using RxDB and React."
-- **Constraints added**: "All indexed fields must be required," "Use a mutex for DB initialization to prevent HMR race conditions."
-- **Iteration logic**: Subagent-driven refinement for performance, documentation, and database stabilization.
+
+- **Chain of Thought**: Using sequential thinking to evaluate library trade-offs (e.g., Orama vs Fuse.js) before implementation.
+- **Phase-Based Execution**: Breaking the modernization into 4 distinct sprints (Core, Performance, Intelligence, Packaging).
+- **Skeptical Pre-Flight**: Forcing the AI to verify dependencies and linker paths before making broad destructive changes.
 
 ### What worked
-- **Parallel Subagents**: Executing performance and core logic tasks simultaneously saved ~70% development time.
-- **Strict Schema-First AI**: Forcing the AI to satisfy RxDB storage constraints led to a more robust data layer.
 
-### What didn’t
-- **Generic AI Prompts**: Initial attempts to generate "a garden app" led to shallow MVPs. Required deep technical constraints to reach production stability.
+- **Local-First Search**: Orama's performance in the browser exceeded expectations for fuzzy-search relevance.
+- **Native Compositor Animations**: Moving from JS-based AnimatePresence to native View Transitions reduced main-thread load during navigation.
 
 ---
 
 ## 🔁 Build Log (Iteration History)
 
-### Iteration 1: Foundations
-- **Goal**: Basic PWA with RxDB storage.
-- **Result**: Functional grid but fragile data layer.
+### Iteration 1-4: Foundation & Reliability
 
-### Iteration 2: Intelligence
-- **Change introduced**: Reasoning engine for companion planting and seasonality.
-- **Result**: "Harmony" scores and smart calendar eligibility.
+- **Goal**: Stable RxDB persistence and core PWA features.
+- **Result**: Production-ready local-first baseline.
 
-### Iteration 3: Performance
-- **Change introduced**: Code splitting, lazy loading, and debounced fuzzy search.
-- **Result**: 40% reduction in initial bundle size.
+### Iteration 5: Core Modernization (Phase 1)
 
-### Iteration 4: Reliability (Current)
-- **Change introduced**: RxDB v10 migration, strict Dexie.js schema compliance, and initialization mutex.
-- **Result**: 100% stable initialization even during HMR cycles.
+- **Change**: Upgraded to React 19, migrated to `motion` package, and resolved peer-dep conflicts.
+- **Result**: Future-proof runtime with zero legacy React warnings.
 
----
+### Iteration 6: Performance & UX (Phase 2)
 
-## ⚖️ Trade-offs
+- **Change**: Implemented native View Transitions API and installed Legend-State for fine-grained reactivity.
+- **Result**: Fluid, "app-like" transitions with hardware acceleration.
 
-- **Chose RxDB over Firebase** because: Local-first architecture is non-negotiable for gardening environments.
-- **Known limitations**: Browser storage quotas; currently limited to single-device use (server sync planned).
-- **What I would do differently**: Implement strict TypeScript boundaries from the very first commit to avoid later refactoring.
+### Iteration 7: Intelligence (Phase 3)
+
+- **Change**: Integrated Orama search module to replace Fuse.js.
+- **Result**: Significantly better search relevance and ranking for the plant knowledgebase.
+
+### Iteration 8: Premium Packaging (Phase 4)
+
+- **Change**: Initialized Tauri v2, configured native notifications, and modernized the launcher.
+- **Result**: Ready for native desktop distribution with system-level integration.
 
 ---
 
 ## 🚀 Features
 
-- **Virtual Garden**: Grid-based layout with drag-and-drop and 6-stage growth visualization.
+- **Native Search**: Orama-powered plant knowledgebase with ranked horticultural results.
+- **Fluid Navigation**: Compositor-level View Transitions for tab switching.
+- **Virtual Garden**: Grid-based layout with 6-stage growth visualization.
 - **Harmony Scoring**: Real-time companion planting compatibility alerts.
-- **Sowing Calendar**: Seasonal planning with interactive month scrubbing.
 - **Weather Command**: Open-Meteo integration with watering scores and frost warnings.
-- **Gamified XP**: Progression system to encourage consistent logbook maintenance.
+- **Native Notifications**: Desktop system alerts for garden events (via Tauri).
 
 ---
 
@@ -123,33 +132,53 @@ graph TD
 # Install dependencies
 pnpm install
 
-# Start development server
+# Start development server (Web/PWA)
 pnpm dev
 
-# Build for production
-pnpm build
+# Start development mode (Native Desktop)
+pnpm tauri dev
 
-# Run tests
-pnpm test
+# Run unit tests
+pnpm test:unit
+
+# Run smoke test (Chromium)
+pnpm test:smoke
+
+# Run full E2E suite
+pnpm test:e2e
+
+# Run full diagnostics bundle (logs + build + tests)
+pnpm test:diagnostics
+
+# Build for Native Production
+pnpm tauri build
 ```
 
+> [!IMPORTANT]
+> To build the native desktop app (`pnpm tauri build`), you must have the **Visual Studio C++ Build Tools (MSVC)** installed on your system.
+
+`pnpm test:diagnostics` stores timestamped logs in `artifacts/diagnostics/<run-id>/` for deep debugging.
+
+---
+
 ### 📁 Project Structure
-- `/src/components`: UI Tabs and interactive elements.
-- `/src/db`: RxDB schemas, initialization mutex, and queries.
-- `/src/logic`: Reasoning engine and lifecycle state machines.
-- `/src/utils`: Unified UI helpers and theme tokens.
+
+- `/src-tauri`: Native Rust backend and Tauri configuration.
+- `/src/lib`: Core modules like Orama search (`plantSearch.ts`).
+- `/src/utils`: Unified UI helpers and native API wrappers (`native.ts`).
+- `/sprint`: Detailed logs of the modernization phases.
 
 ---
 
 ## 🔍 Key Learnings
-1. **Schema compliance is the foundation of reliability**: Cutting corners in RxDB schemas leads to runtime failures.
-2. **UI separation is critical for HMR**: Decoupling helpers from components prevents "Lazy" reload crashes.
 
-## 🔮 Future Improvements
-- **RxDB Replication**: Cross-device sync via remote backend.
-- **IoT Sensors**: Direct integration with soil moisture and light sensors.
+1. **Native APIs are often superior to libraries**: Moving from Framer Motion's AnimatePresence to native View Transitions improved performance and reduced complexity.
+2. **Local search is the killer feature for offline-first**: Orama provides "server-side" quality search without ever leaving the user's device.
+
+---
 
 ## 📌 TL;DR
-**Problem**: Fragmented, cloud-dependent gardening tools.
-**Solution**: Local-first, reasoning-engine-powered garden command deck.
-**Why it’s interesting**: It demonstrates how strict engineering patterns (mutexes, schema validation) can be combined with AI to build stable, complex niche tools.
+
+- **Problem**: Cloud-dependent, slow gardening tools.
+- **Solution**: React 19 + Tauri v2 powered local-first command deck with Orama intelligence.
+- **Why it’s interesting**: Shows the evolution of an AI-assisted project from a simple PWA to a high-end, native desktop application using state-of-the-art web APIs.

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { getDatabase } from '../db';
-import { Subscription } from 'rxjs';
-import type { LogbookDocument } from '../db/types';
+import { useState, useEffect } from "react";
+import { getDatabase } from "../db";
+import { Subscription } from "rxjs";
+import type { LogbookDocument } from "../db/types";
 
 /**
  * HOOK: useLogbook
@@ -15,19 +15,19 @@ export const useLogbook = () => {
 
     const init = async () => {
       const db = await getDatabase();
-      
+
       if (!db.logbook) {
-        console.error('Logbook collection not found in DB');
+        console.error("Logbook collection not found in DB");
         return;
       }
 
       // Sort by date descending
       const query = db.logbook.find({
-        sort: [{ date: 'desc' }]
+        sort: [{ date: "desc" }],
       });
-      
-      sub = query.$.subscribe(results => {
-        setEntries(results.map(doc => doc.toJSON()));
+
+      sub = query.$.subscribe((results) => {
+        setEntries(results.map((doc) => doc.toJSON()));
       });
     };
 

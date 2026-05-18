@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Settings,
   Wrench,
@@ -10,28 +10,34 @@ import {
   Sparkles,
   Trash2,
   RefreshCw,
-  Palette
-} from 'lucide-react';
-import { getDatabase } from '../db';
-import { exportDatabaseToJson, importDatabaseFromJson, downloadFile } from '../db/export-import';
-import { applyTheme, applyBackgroundColor } from '../utils/theme';
-import { WeatherSettings } from './WeatherSettings';
+  Palette,
+} from "lucide-react";
+import { getDatabase } from "../db";
+import {
+  exportDatabaseToJson,
+  importDatabaseFromJson,
+  downloadFile,
+} from "../db/export-import";
+import { applyTheme, applyBackgroundColor } from "../utils/theme";
+import { WeatherSettings } from "./WeatherSettings";
 export const SettingsTab: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'general' | 'developer'>('general');
+  const [activeSubTab, setActiveSubTab] = useState<"general" | "developer">(
+    "general",
+  );
   const [config, setConfig] = useState<Record<string, unknown> | null>(null);
-  const [accentColor, setAccentColor] = useState('#22c55e');
-  const [backgroundColor, setBackgroundColor] = useState('#090c0a');
-  const [language, setLanguage] = useState('en');
+  const [accentColor, setAccentColor] = useState("#22c55e");
+  const [backgroundColor, setBackgroundColor] = useState("#090c0a");
+  const [language, setLanguage] = useState("en");
   const [notifications, setNotifications] = useState(true);
-  const [locationCity, setLocationCity] = useState('Dresden');
-  const [hemisphere, setHemisphere] = useState('North');
-  
+  const [locationCity, setLocationCity] = useState("Dresden");
+  const [hemisphere, setHemisphere] = useState("North");
+
   const [, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logs, setLogs] = useState<{ type: string; msg: string }[]>([]);
 
   const addLog = (type: string, msg: string) => {
-    setLogs(prev => [{ type, msg }, ...prev].slice(0, 10));
+    setLogs((prev) => [{ type, msg }, ...prev].slice(0, 10));
   };
 
   // Apply background color when it changes
@@ -42,15 +48,15 @@ export const SettingsTab: React.FC = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       const db = await getDatabase();
-      const settings = await db.settings.findOne('local-user').exec();
+      const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
         const data = settings.toJSON();
         setConfig(data);
-        setLocationCity(data.city || 'Dresden');
-        setHemisphere(data.hemisphere || 'North');
+        setLocationCity(data.city || "Dresden");
+        setHemisphere(data.hemisphere || "North");
 
         // Load saved background color from localStorage
-        const savedBgColor = localStorage.getItem('bg-color');
+        const savedBgColor = localStorage.getItem("bg-color");
         if (savedBgColor) {
           setBackgroundColor(savedBgColor);
           applyBackgroundColor(savedBgColor);
@@ -68,48 +74,46 @@ export const SettingsTab: React.FC = () => {
           setAccentColor(savedAccent);
         }
         */
-        addLog('INFO', 'User configuration synchronized.');
+        addLog("INFO", "User configuration synchronized.");
       }
     };
     fetchSettings();
     setTimeout(() => {
-      addLog('INFO', 'Database initialized successfully.');
+      addLog("INFO", "Database initialized successfully.");
     }, 0);
   }, []);
-
-
 
   const handleSave = async () => {
     try {
       const db = await getDatabase();
       await db.settings.upsert({
         ...config,
-        id: 'local-user',
+        id: "local-user",
         city: locationCity,
         hemisphere: hemisphere,
-        firstLoadComplete: true
+        firstLoadComplete: true,
       });
 
-      localStorage.setItem('theme-color', accentColor);
-      localStorage.setItem('bg-color', backgroundColor);
+      localStorage.setItem("theme-color", accentColor);
+      localStorage.setItem("bg-color", backgroundColor);
       applyTheme(accentColor);
       applyBackgroundColor(backgroundColor);
       // Logic for autoSave/notifications would go here in a real app
 
-      addLog('SUCCESS', 'Configuration persisted to disk.');
-      alert('Settings saved successfully!');
+      addLog("SUCCESS", "Configuration persisted to disk.");
+      alert("Settings saved successfully!");
     } catch (e) {
-      addLog('ERROR', 'Failed to persist configuration.');
+      addLog("ERROR", "Failed to persist configuration.");
       console.error(e);
     }
   };
 
   const handleExport = async () => {
-    addLog('INFO', 'Preparing system snapshot...');
+    addLog("INFO", "Preparing system snapshot...");
     const json = await exportDatabaseToJson();
-    const filename = `garden-deck-backup-${new Date().toISOString().split('T')[0]}.json`;
-    downloadFile(json, filename, 'application/json');
-    addLog('SUCCESS', 'Export complete.');
+    const filename = `garden-deck-backup-${new Date().toISOString().split("T")[0]}.json`;
+    downloadFile(json, filename, "application/json");
+    addLog("SUCCESS", "Export complete.");
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,11 +123,11 @@ export const SettingsTab: React.FC = () => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const content = event.target?.result as string;
-      addLog('INFO', 'Reading transmission stream...');
+      addLog("INFO", "Reading transmission stream...");
       const result = await importDatabaseFromJson(content);
       setImportStatus(result.message);
-      addLog(result.success ? 'SUCCESS' : 'ERROR', result.message);
-      
+      addLog(result.success ? "SUCCESS" : "ERROR", result.message);
+
       if (result.success) {
         setTimeout(() => window.location.reload(), 1500);
       }
@@ -132,8 +136,12 @@ export const SettingsTab: React.FC = () => {
   };
 
   const handleFactoryReset = async () => {
-    if (confirm('⚠️ FATORY RESET WARNING ⚠️\n\nThis will ERASE all gardens, plants, and progress. This action is irreversible.\n\nContinue?')) {
-      addLog('WARN', 'Initiating self-destruct sequence...');
+    if (
+      confirm(
+        "⚠️ FATORY RESET WARNING ⚠️\n\nThis will ERASE all gardens, plants, and progress. This action is irreversible.\n\nContinue?",
+      )
+    ) {
+      addLog("WARN", "Initiating self-destruct sequence...");
       const db = await getDatabase();
       await db.remove();
       localStorage.clear();
@@ -142,37 +150,44 @@ export const SettingsTab: React.FC = () => {
   };
 
   const handleClearCache = () => {
-    addLog('INFO', 'Flushing local buffer...');
+    addLog("INFO", "Flushing local buffer...");
     localStorage.clear();
     window.location.reload();
   };
 
-  if (!config) return (
-    <div className="flex items-center justify-center h-full">
-      <div className="flex flex-col items-center gap-4">
-        <Sparkles className="w-8 h-8 text-garden-500 animate-spin" />
-        <span className="text-stone-500 text-sm font-mono uppercase tracking-widest">Hydrating Core...</span>
+  if (!config)
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="flex flex-col items-center gap-4">
+          <Sparkles className="w-8 h-8 text-garden-500 animate-spin" />
+          <span className="text-stone-500 text-sm font-mono uppercase tracking-widest">
+            Hydrating Core...
+          </span>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className="flex flex-col h-full bg-[#0c0a09] text-stone-100 p-6 overflow-auto">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Settings className="w-6 h-6 text-garden-400" />
-          <h1 className="text-xl font-bold text-stone-100 uppercase tracking-tighter">⚙️ Deck Controller</h1>
+          <h1 className="text-xl font-bold text-stone-100 uppercase tracking-tighter">
+            ⚙️ Deck Controller
+          </h1>
         </div>
-        <p className="text-stone-400 text-sm tracking-tight">Configure your botanical command center</p>
+        <p className="text-stone-400 text-sm tracking-tight">
+          Configure your botanical command center
+        </p>
       </div>
 
       <div className="flex gap-1 mb-6 border-b border-stone-800">
         <button
-          onClick={() => setActiveSubTab('general')}
+          onClick={() => setActiveSubTab("general")}
           className={`px-6 py-2 rounded-t-lg text-[11px] font-black uppercase tracking-widest transition-all ${
-            activeSubTab === 'general'
-              ? 'bg-stone-800 text-stone-100 border-b-2 border-garden-500'
-              : 'text-stone-400 hover:text-stone-200'
+            activeSubTab === "general"
+              ? "bg-stone-800 text-stone-100 border-b-2 border-garden-500"
+              : "text-stone-400 hover:text-stone-200"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -181,11 +196,11 @@ export const SettingsTab: React.FC = () => {
           </div>
         </button>
         <button
-          onClick={() => setActiveSubTab('developer')}
+          onClick={() => setActiveSubTab("developer")}
           className={`px-6 py-2 rounded-t-lg text-[11px] font-black uppercase tracking-widest transition-all ${
-            activeSubTab === 'developer'
-              ? 'bg-stone-800 text-stone-100 border-b-2 border-garden-500'
-              : 'text-stone-400 hover:text-stone-200'
+            activeSubTab === "developer"
+              ? "bg-stone-800 text-stone-100 border-b-2 border-garden-500"
+              : "text-stone-400 hover:text-stone-200"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -195,11 +210,11 @@ export const SettingsTab: React.FC = () => {
         </button>
       </div>
 
-      {activeSubTab === 'general' && (
+      {activeSubTab === "general" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 bg-stone-900 shadow-xl rounded-2xl border border-stone-800 p-6">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-6 flex items-center gap-2">
-               <Palette className="w-3 h-3 text-garden-500" /> Preferences
+              <Palette className="w-3 h-3 text-garden-500" /> Preferences
             </h2>
             <div className="space-y-6">
               {/*
@@ -243,9 +258,18 @@ export const SettingsTab: React.FC = () => {
               */}
 
               <div>
-                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Botanical Accent</label>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                  Botanical Accent
+                </label>
                 <div className="flex flex-wrap gap-3">
-                  {['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#ec4899'].map(color => (
+                  {[
+                    "#22c55e",
+                    "#3b82f6",
+                    "#f59e0b",
+                    "#ef4444",
+                    "#a855f7",
+                    "#ec4899",
+                  ].map((color) => (
                     <button
                       key={color}
                       onClick={() => {
@@ -253,7 +277,9 @@ export const SettingsTab: React.FC = () => {
                         applyTheme(color);
                       }}
                       className={`w-8 h-8 rounded-full border-2 transition-all ${
-                        accentColor === color ? 'border-stone-100 scale-110 shadow-lg' : 'border-transparent hover:scale-105'
+                        accentColor === color
+                          ? "border-stone-100 scale-110 shadow-lg"
+                          : "border-transparent hover:scale-105"
                       }`}
                       style={{ backgroundColor: color }}
                       title={`Select ${color} accent`}
@@ -277,16 +303,27 @@ export const SettingsTab: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Background Color</label>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                  Background Color
+                </label>
                 <div className="flex flex-wrap gap-3">
-                  {['#090c0a', '#0c0a09', '#1c1917', '#0f172a', '#1e293b', '#000000'].map(color => (
+                  {[
+                    "#090c0a",
+                    "#0c0a09",
+                    "#1c1917",
+                    "#0f172a",
+                    "#1e293b",
+                    "#000000",
+                  ].map((color) => (
                     <button
                       key={color}
                       onClick={() => {
                         setBackgroundColor(color);
                       }}
                       className={`w-8 h-8 rounded-full border-2 transition-all ${
-                        backgroundColor === color ? 'border-stone-100 scale-110 shadow-lg' : 'border-transparent hover:scale-105'
+                        backgroundColor === color
+                          ? "border-stone-100 scale-110 shadow-lg"
+                          : "border-transparent hover:scale-105"
                       }`}
                       style={{ backgroundColor: color }}
                       title={`Select ${color} background`}
@@ -309,7 +346,9 @@ export const SettingsTab: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Language Lexicon</label>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                  Language Lexicon
+                </label>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
@@ -322,8 +361,12 @@ export const SettingsTab: React.FC = () => {
 
               <div className="flex items-center justify-between p-3 bg-stone-950 rounded-xl border border-stone-800">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-xs font-bold text-stone-300">Alerts</span>
-                  <span className="text-[10px] text-stone-600 uppercase font-black">Environmental Notifications</span>
+                  <span className="text-xs font-bold text-stone-300">
+                    Alerts
+                  </span>
+                  <span className="text-[10px] text-stone-600 uppercase font-black">
+                    Environmental Notifications
+                  </span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -340,7 +383,7 @@ export const SettingsTab: React.FC = () => {
 
           <div className="lg:col-span-2 bg-stone-900 shadow-xl rounded-2xl border border-stone-800 p-6">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-6 flex items-center gap-2">
-               <Palette className="w-3 h-3 text-garden-500" /> Weather Location
+              <Palette className="w-3 h-3 text-garden-500" /> Weather Location
             </h2>
             <div className="space-y-6">
               <WeatherSettings />
@@ -349,94 +392,108 @@ export const SettingsTab: React.FC = () => {
         </div>
       )}
 
-      {activeSubTab === 'developer' && (
+      {activeSubTab === "developer" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 bg-stone-900 shadow-xl rounded-2xl border border-stone-800 p-6">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-6 flex items-center gap-2">
-               <Database className="w-3 h-3 text-garden-500" /> Data Transmission
+              <Database className="w-3 h-3 text-garden-500" /> Data Transmission
             </h2>
             <div className="space-y-3">
-               <button 
+              <button
                 onClick={handleExport}
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
-               >
-                 <Download className="w-3 h-3" /> Export System JSON
-               </button>
-               
-               <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".json" 
-                onChange={handleImport} 
+              >
+                <Download className="w-3 h-3" /> Export System JSON
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={handleImport}
               />
-               <button 
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
-               >
-                 <Upload className="w-3 h-3" /> Import System JSON
-               </button>
+              >
+                <Upload className="w-3 h-3" /> Import System JSON
+              </button>
 
-               <div className="h-4" />
+              <div className="h-4" />
 
-               <button 
+              <button
                 onClick={handleClearCache}
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
-               >
-                 <RefreshCw className="w-3 h-3" /> Clear Cache
-               </button>
-               
-               <button 
+              >
+                <RefreshCw className="w-3 h-3" /> Clear Cache
+              </button>
+
+              <button
                 onClick={handleFactoryReset}
                 className="w-full py-4 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 transition-all flex items-center justify-center gap-2"
-               >
-                 <Trash2 className="w-3 h-3" /> Factory Reset
-               </button>
+              >
+                <Trash2 className="w-3 h-3" /> Factory Reset
+              </button>
             </div>
           </div>
 
           <div className="lg:col-span-2 bg-stone-900 shadow-xl rounded-2xl border border-stone-800 p-6">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-6 flex items-center gap-2">
-               <Terminal className="w-3 h-3 text-garden-500" /> System Metrics
+              <Terminal className="w-3 h-3 text-garden-500" /> System Metrics
             </h2>
             <div className="space-y-4">
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
-                    <span className="text-[9px] font-black uppercase text-stone-600 block mb-1">Architecture</span>
-                    <span className="text-xs font-bold text-stone-300">Local-First (Dexie)</span>
-                  </div>
-                  <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
-                    <span className="text-[9px] font-black uppercase text-stone-600 block mb-1">Deck Version</span>
-                    <span className="text-xs font-bold text-stone-300">0.1.0-Sim</span>
-                  </div>
-               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
+                  <span className="text-[9px] font-black uppercase text-stone-600 block mb-1">
+                    Architecture
+                  </span>
+                  <span className="text-xs font-bold text-stone-300">
+                    Local-First (Dexie)
+                  </span>
+                </div>
+                <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
+                  <span className="text-[9px] font-black uppercase text-stone-600 block mb-1">
+                    Deck Version
+                  </span>
+                  <span className="text-xs font-bold text-stone-300">
+                    0.1.0-Sim
+                  </span>
+                </div>
+              </div>
 
-               <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
-                 <div className="flex items-center justify-between mb-3 border-b border-stone-800 pb-2">
-                    <span className="text-[9px] font-black uppercase text-stone-500 tracking-widest flex items-center gap-2">
-                       <Terminal className="w-3 h-3" /> Console Output
-                    </span>
-                    <span className="text-[8px] font-mono text-stone-700 uppercase">Live Transmission</span>
-                 </div>
-                 <div className="font-mono text-[10px] space-y-1 h-32 overflow-y-auto custom-scrollbar">
-                    {logs.map((log, i) => (
-                      <div key={i} className="flex gap-3">
-                        <span className={`w-12 shrink-0 ${log.type === 'ERROR' ? 'text-red-500' : log.type === 'WARN' ? 'text-amber-500' : log.type === 'SUCCESS' ? 'text-garden-500' : 'text-blue-500'}`}>
-                          [{log.type}]
-                        </span>
-                        <span className="text-stone-400">{log.msg}</span>
-                      </div>
-                    ))}
-                    <div className="text-stone-700 animate-pulse">_ Waiting for diagnostic input...</div>
-                 </div>
-               </div>
+              <div className="p-4 bg-stone-950 rounded-xl border border-stone-800 shadow-inner">
+                <div className="flex items-center justify-between mb-3 border-b border-stone-800 pb-2">
+                  <span className="text-[9px] font-black uppercase text-stone-500 tracking-widest flex items-center gap-2">
+                    <Terminal className="w-3 h-3" /> Console Output
+                  </span>
+                  <span className="text-[8px] font-mono text-stone-700 uppercase">
+                    Live Transmission
+                  </span>
+                </div>
+                <div className="font-mono text-[10px] space-y-1 h-32 overflow-y-auto custom-scrollbar">
+                  {logs.map((log, i) => (
+                    <div key={i} className="flex gap-3">
+                      <span
+                        className={`w-12 shrink-0 ${log.type === "ERROR" ? "text-red-500" : log.type === "WARN" ? "text-amber-500" : log.type === "SUCCESS" ? "text-garden-500" : "text-blue-500"}`}
+                      >
+                        [{log.type}]
+                      </span>
+                      <span className="text-stone-400">{log.msg}</span>
+                    </div>
+                  ))}
+                  <div className="text-stone-700 animate-pulse">
+                    _ Waiting for diagnostic input...
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       <div className="mt-auto pt-6 border-t border-stone-800 flex justify-end">
-        <button 
+        <button
           onClick={handleSave}
           className="px-10 py-3 bg-garden-600 hover:bg-garden-400 text-stone-950 font-black rounded-xl text-xs uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
         >
@@ -446,4 +503,3 @@ export const SettingsTab: React.FC = () => {
     </div>
   );
 };
-

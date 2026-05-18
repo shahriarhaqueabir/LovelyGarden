@@ -3,7 +3,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { BookOpen, Search, Sun, Droplets } from "lucide-react";
 import { getDatabase } from "../db";
 import { PlantKbDocument } from "../db/types";
-import Fuse from "fuse.js";
+import { buildPlantIndex, searchPlants } from "../lib/plantSearch";
 
 const GrowthGraph = React.lazy(async () => {
   const m = await import("./GrowthGraph");
@@ -60,9 +60,12 @@ export const PlantKnowledgebaseTab: React.FC = () => {
     const init = async () => {
       try {
         const db = await getDatabase();
-        sub = db.plant_kb.find().$.subscribe((docs) => {
+        sub = db.plant_kb.find().$.subscribe(async (docs) => {
           if (docs) {
-            setPlants(docs.map((doc) => doc.toJSON()));
+            const loaded = docs.map((doc) => doc.toJSON());
+            setPlants(loaded);
+            // Build (or rebuild) the Orama index whenever the plant list changes.
+            await buildPlantIndex(loaded);
           }
           setLoading(false);
         });
@@ -78,31 +81,29 @@ export const PlantKnowledgebaseTab: React.FC = () => {
     return () => sub?.unsubscribe();
   }, []);
 
-  // Debounce search query using inline effect
+  // Debounce the raw query input before triggering a search
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    const timer = setTimeout(() => setDebouncedQuery(query), 200);
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Fuse.js instance for fuzzy search
-  const fuse = useMemo(
-    () =>
-      new Fuse(plants, {
-        keys: ["common_name", "scientific_name", "type", "family", "notes"],
-        threshold: 0.3,
-        includeMatches: false,
-      }),
-    [plants],
-  );
+  // Orama search — async, runs after debounce settles or plant list changes
+  const [filtered, setFiltered] = useState<PlantKbDocument[]>([]);
 
-  const filtered = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase();
-    if (!q) return plants;
-    return fuse.search(q).map((result) => result.item);
-  }, [plants, debouncedQuery, fuse]);
+  useEffect(() => {
+    let cancelled = false;
+    searchPlants(debouncedQuery, plants).then((results) => {
+      if (!cancelled) {
+        setFiltered(results.map((r) => r.document));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery, plants]);
 
   // Virtualize ROWS instead of individual items for grid stability
   const rows = useMemo(() => {

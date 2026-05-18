@@ -1,5 +1,5 @@
-import { getDatabase } from './index';
-import type { GardenDocument, LogbookDocument } from './types';
+import { getDatabase } from "./index";
+import type { GardenDocument, LogbookDocument } from "./types";
 
 // Type for garden configuration
 interface GardenConfig {
@@ -18,7 +18,13 @@ interface GardenConfig {
  */
 // --- PLANTING LOGIC ---
 
-export const plantSeed = async (catalogId: string, x: number, y: number, inventoryId: string, gardenId: string = 'main-garden') => {
+export const plantSeed = async (
+  catalogId: string,
+  x: number,
+  y: number,
+  inventoryId: string,
+  gardenId: string = "main-garden",
+) => {
   const db = await getDatabase();
   const id = `plant-${catalogId}-${x}-${y}-${Date.now()}`;
 
@@ -30,10 +36,12 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
     }
 
     // Check if slot is already occupied
-    const existingPlant = await db.planted.findOne({
-      selector: { gridX: x, gridY: y, bedId: gardenId }
-    }).exec();
-    
+    const existingPlant = await db.planted
+      .findOne({
+        selector: { gridX: x, gridY: y, bedId: gardenId },
+      })
+      .exec();
+
     if (existingPlant) {
       throw new Error(`Slot (${x}, ${y}) is already occupied`);
     }
@@ -49,10 +57,10 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
       plantedDate: plantedTimestamp,
       lastWateredDate: plantedTimestamp,
       currentStageIndex: 0,
-      healthStatus: 'Healthy',
+      healthStatus: "Healthy",
       hydration: 100,
       stressLevel: 0,
-      nutrients: { n: 50, p: 50, k: 50 }
+      nutrients: { n: 50, p: 50, k: 50 },
     });
 
     // 2. Remove from inventory
@@ -60,12 +68,12 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
 
     // 3. Log planting activity
     const catalogItem = await db.catalog.findOne(catalogId).exec();
-    const plantName = catalogItem?.name || 'Unknown Seed';
-    await logPlanting(catalogId, plantName);
+    const plantName = catalogItem?.name || "Unknown Seed";
+    await logPlanting(catalogId, plantName, gardenId);
 
     return id;
   } catch (error) {
-    console.error('Error planting seed:', error);
+    console.error("Error planting seed:", error);
     throw error;
   }
 };
@@ -74,28 +82,35 @@ export const plantSeed = async (catalogId: string, x: number, y: number, invento
  * RELOCATION LOGIC
  * Moves a plant between grid slots. Stats remain unchanged.
  */
-export const relocatePlant = async (plantId: string, newX: number, newY: number, gardenId: string) => {
+export const relocatePlant = async (
+  plantId: string,
+  newX: number,
+  newY: number,
+  gardenId: string,
+) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
-  
+
   if (!plant) throw new Error("Plant unit not found");
-  
+
   // Check if target slot is occupied
-  const existing = await db.planted.findOne({
-    selector: { 
-      gridX: newX, 
-      gridY: newY, 
-      bedId: gardenId,
-      id: { $ne: plantId } 
-    }
-  }).exec();
+  const existing = await db.planted
+    .findOne({
+      selector: {
+        gridX: newX,
+        gridY: newY,
+        bedId: gardenId,
+        id: { $ne: plantId },
+      },
+    })
+    .exec();
 
   if (existing) throw new Error("Target coordinates occupied");
 
   await plant.patch({
     gridX: newX,
     gridY: newY,
-    bedId: gardenId
+    bedId: gardenId,
   });
 };
 
@@ -106,7 +121,7 @@ export const relocatePlant = async (plantId: string, newX: number, newY: number,
 export const unplantSeed = async (plantId: string) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
-  
+
   if (!plant) throw new Error("Plant unit not found");
 
   const catalogId = plant.catalogId;
@@ -116,23 +131,22 @@ export const unplantSeed = async (plantId: string) => {
   await db.inventory.insert({
     id: `inv-${catalogId}-${timestamp}`,
     catalogId,
-    acquiredDate: timestamp
+    acquiredDate: timestamp,
   });
 
   // 2. Remove from planted
   await plant.remove();
 };
 
-
 // --- GARDEN MANAGEMENT ---
 
 export const createGarden = async (config: GardenConfig) => {
-  console.log('Creating garden with config:', config);
+  console.log("Creating garden with config:", config);
   const db = await getDatabase();
-  
+
   if (!db.gardens) {
-    console.error('Gardens collection not found on database instance!');
-    throw new Error('Database not fully initialized. Reloading...');
+    console.error("Gardens collection not found on database instance!");
+    throw new Error("Database not fully initialized. Reloading...");
   }
 
   const id = `garden-${Date.now()}`;
@@ -146,20 +160,23 @@ export const createGarden = async (config: GardenConfig) => {
     gridHeight: Number(config.gridHeight),
     backgroundColor: config.backgroundColor,
     theme: config.theme,
-    createdDate: Date.now()
+    createdDate: Date.now(),
   };
 
   try {
     await db.gardens.insert(newGarden);
-    console.log('Garden created successfully:', id);
+    console.log("Garden created successfully:", id);
     return id;
   } catch (err) {
-    console.error('Failed to create garden:', err);
+    console.error("Failed to create garden:", err);
     throw err;
   }
 };
 
-export const updateGarden = async (id: string, updates: Partial<GardenDocument>) => {
+export const updateGarden = async (
+  id: string,
+  updates: Partial<GardenDocument>,
+) => {
   const db = await getDatabase();
   const doc = await db.gardens.findOne(id).exec();
   if (doc) {
@@ -174,57 +191,86 @@ export const deleteGarden = async (id: string) => {
     // Check if it's the last garden? Logic handled in UI, but good to ensure 1 exists.
     const allGardens = await db.gardens.find().exec();
     if (allGardens.length <= 1) {
-       throw new Error("Cannot delete the last garden.");
+      throw new Error("Cannot delete the last garden.");
     }
     await doc.remove();
     // Also remove all plants in this garden
     const plants = await db.planted.find({ selector: { bedId: id } }).exec();
-    await Promise.all(plants.map(p => p.remove()));
+    await Promise.all(plants.map((p) => p.remove()));
   }
 };
 
 /**
  * OBSERVATION & DIAGNOSTICS
  */
-export const addPlantObservation = async (plantId: string, observation: { id: string, category: string, label: string, impact: { hydration?: number; stress?: number; n?: number; p?: number; k?: number } }) => {
+export const addPlantObservation = async (
+  plantId: string,
+  observation: {
+    id: string;
+    category: string;
+    label: string;
+    impact: {
+      hydration?: number;
+      stress?: number;
+      n?: number;
+      p?: number;
+      k?: number;
+    };
+  },
+) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
-  
+
   if (!plant) throw new Error("Plant unit not found");
 
   const data = plant.toJSON();
-  const newObservations = [...(data.observations || []), {
-    id: observation.id,
-    category: observation.category,
-    label: observation.label,
-    timestamp: Date.now()
-  }];
+  const newObservations = [
+    ...(data.observations || []),
+    {
+      id: observation.id,
+      category: observation.category,
+      label: observation.label,
+      timestamp: Date.now(),
+    },
+  ];
 
   // Clear system diagnosis on manual observation (Human Override)
-  const updates: Partial<import('./types').PlantedDocument> = {
+  const updates: Partial<import("./types").PlantedDocument> = {
     observations: newObservations,
-    systemDiagnosis: undefined 
+    systemDiagnosis: undefined,
   };
 
-  if (observation.impact.hydration !== undefined) updates.hydration = observation.impact.hydration;
+  if (observation.impact.hydration !== undefined)
+    updates.hydration = observation.impact.hydration;
   if (observation.impact.stress !== undefined) {
     // Stress impact is additive
-    updates.stressLevel = Math.min(100, (data.stressLevel || 0) + observation.impact.stress);
+    updates.stressLevel = Math.min(
+      100,
+      (data.stressLevel || 0) + observation.impact.stress,
+    );
   }
-  
-  if (observation.impact.n !== undefined || observation.impact.p !== undefined || observation.impact.k !== undefined) {
+
+  if (
+    observation.impact.n !== undefined ||
+    observation.impact.p !== undefined ||
+    observation.impact.k !== undefined
+  ) {
     updates.nutrients = {
       n: observation.impact.n ?? data.nutrients?.n ?? 50,
       p: observation.impact.p ?? data.nutrients?.p ?? 50,
-      k: observation.impact.k ?? data.nutrients?.k ?? 50
+      k: observation.impact.k ?? data.nutrients?.k ?? 50,
     };
   }
 
   // Auto-set health status based on category
-  if (observation.category === 'Pests') {
-    updates.healthStatus = 'Pest Infestation';
-  } else if (observation.category === 'Moisture' && observation.impact.hydration !== undefined && observation.impact.hydration > 90) {
-    updates.healthStatus = 'Overwatered';
+  if (observation.category === "Pests") {
+    updates.healthStatus = "Pest Infestation";
+  } else if (
+    observation.category === "Moisture" &&
+    observation.impact.hydration !== undefined &&
+    observation.impact.hydration > 90
+  ) {
+    updates.healthStatus = "Overwatered";
   }
 
   await plant.patch(updates);
@@ -239,64 +285,78 @@ export const waterPlant = async (plantId: string) => {
   await plant.patch({
     hydration: 100,
     lastWateredDate: timestamp,
-    stressLevel: Math.max(0, (plant.stressLevel || 0) - 10) // Watering reduces stress
+    stressLevel: Math.max(0, (plant.stressLevel || 0) - 10), // Watering reduces stress
   });
 
   // Grant XP: +5 for watering
-  const settings = await db.settings.findOne('local-user').exec();
+  const settings = await db.settings.findOne("local-user").exec();
   if (settings) {
     await settings.patch({ xp: (settings.xp || 0) + 5 });
   }
 };
 
-export const harvestPlant = async (plantId: string, itemName?: string, notes?: string) => {
+export const harvestPlant = async (
+  plantId: string,
+  itemName?: string,
+  notes?: string,
+) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
   if (!plant) throw new Error("Plant not found");
 
   const data = plant.toJSON();
   const timestamp = Date.now();
+  const catalogId = data.catalogId || "unknown-catalog";
+  const bedId = data.bedId || "main-garden";
 
   // 1. Log to logbook
   const id = `harvest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   await db.logbook.insert({
     id,
-    type: 'harvest',
-    itemName: itemName || data.catalogId,
-    category: 'plants',
+    type: "harvest",
+    itemName: itemName || catalogId,
+    category: "plants",
     date: timestamp,
-    notes: notes || 'Harvested from garden',
-    catalogId: data.catalogId
+    notes: notes || "Harvested from garden",
+    catalogId,
+    bedId,
   });
 
   // 2. Remove from garden
   await plant.remove();
 
   // 3. Grant XP: +50 for successful harvest
-  const settings = await db.settings.findOne('local-user').exec();
+  const settings = await db.settings.findOne("local-user").exec();
   if (settings) {
     await settings.patch({ xp: (settings.xp || 0) + 50 });
   }
 };
 
-export const recordLoss = async (plantId: string, itemName?: string, reason?: string) => {
+export const recordLoss = async (
+  plantId: string,
+  itemName?: string,
+  reason?: string,
+) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
   if (!plant) throw new Error("Plant not found");
 
   const data = plant.toJSON();
   const timestamp = Date.now();
+  const catalogId = data.catalogId || "unknown-catalog";
+  const bedId = data.bedId || "main-garden";
 
   // 1. Log to logbook as lost
   const id = `loss-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   await db.logbook.insert({
     id,
-    type: 'lost_harvest',
-    itemName: itemName || data.catalogId,
-    category: 'plants',
+    type: "lost_harvest",
+    itemName: itemName || catalogId,
+    category: "plants",
     date: timestamp,
-    notes: reason || 'Plant lost/died',
-    catalogId: data.catalogId
+    notes: reason || "Plant lost/died",
+    catalogId,
+    bedId,
   });
 
   // 2. Remove from garden
@@ -311,16 +371,16 @@ export const advanceGlobalDay = async () => {
 
   try {
     // 1. Increment global day
-    const settings = await db.settings.findOne('local-user').exec();
+    const settings = await db.settings.findOne("local-user").exec();
     if (!settings) {
-      throw new Error('Settings document not found');
+      throw new Error("Settings document not found");
     }
-    
+
     const nextDay = (settings.currentDay || 0) + 1;
     await db.settings.upsert({
       ...settings.toJSON(),
-      id: 'local-user',
-      currentDay: nextDay
+      id: "local-user",
+      currentDay: nextDay,
     });
 
     // 2. Update all planted items
@@ -341,30 +401,32 @@ export const advanceGlobalDay = async () => {
         newStress = Math.max(0, newStress - 5);
       }
 
-      let health = 'Thriving';
-      if (newStress > 80) health = 'Dying';
-      else if (newStress > 50) health = 'Stressed';
-      else if (newStress > 20) health = 'Wilting';
+      let health = "Thriving";
+      if (newStress > 80) health = "Dying";
+      else if (newStress > 50) health = "Stressed";
+      else if (newStress > 20) health = "Wilting";
 
       // --- Theoretical Mortality Proposal ---
       let diagnosis = undefined;
       if (newStress >= 100 && newHydration <= 0) {
-        diagnosis = 'Theoretical Mortality: Biological functions likely ceased due to extreme stress/dehydration.';
+        diagnosis =
+          "Theoretical Mortality: Biological functions likely ceased due to extreme stress/dehydration.";
       } else if (newHydration < 10) {
-        diagnosis = 'Critical Dehydration: Immediate intervention required to prevent permanent cell damage.';
+        diagnosis =
+          "Critical Dehydration: Immediate intervention required to prevent permanent cell damage.";
       }
 
       await plant.patch({
         hydration: newHydration,
         stressLevel: newStress,
         healthStatus: health,
-        systemDiagnosis: diagnosis
+        systemDiagnosis: diagnosis,
       });
     }
 
     return nextDay;
   } catch (error) {
-    console.error('Error advancing global day:', error);
+    console.error("Error advancing global day:", error);
     throw error;
   }
 };
@@ -377,9 +439,9 @@ export const rewindGlobalDay = async () => {
 
   try {
     // 1. Decrement global day
-    const settings = await db.settings.findOne('local-user').exec();
+    const settings = await db.settings.findOne("local-user").exec();
     if (!settings) {
-      throw new Error('Settings document not found');
+      throw new Error("Settings document not found");
     }
 
     // Prevent going before day 1
@@ -391,8 +453,8 @@ export const rewindGlobalDay = async () => {
     const previousDay = currentDayValue - 1;
     await db.settings.upsert({
       ...settings.toJSON(),
-      id: 'local-user',
-      currentDay: previousDay
+      id: "local-user",
+      currentDay: previousDay,
     });
 
     // 2. Update all planted items (reverse the effects of advancing)
@@ -408,28 +470,30 @@ export const rewindGlobalDay = async () => {
       let newStress = data.stressLevel || 0;
 
       // Reverse stress changes based on previous hydration state
-      if (newHydration - 15 < 20) { // If previously hydration was low, undo stress increase
+      if (newHydration - 15 < 20) {
+        // If previously hydration was low, undo stress increase
         newStress = Math.max(0, newStress - 20);
-      } else if (newHydration - 15 > 80) { // If previously hydration was high, undo stress decrease
+      } else if (newHydration - 15 > 80) {
+        // If previously hydration was high, undo stress decrease
         newStress = Math.min(100, newStress + 5);
       }
 
       // Reverse health status changes
-      let health = 'Thriving';
-      if (newStress > 80) health = 'Dying';
-      else if (newStress > 50) health = 'Stressed';
-      else if (newStress > 20) health = 'Wilting';
+      let health = "Thriving";
+      if (newStress > 80) health = "Dying";
+      else if (newStress > 50) health = "Stressed";
+      else if (newStress > 20) health = "Wilting";
 
       await plant.patch({
         hydration: newHydration,
         stressLevel: newStress,
-        healthStatus: health
+        healthStatus: health,
       });
     }
 
     return previousDay;
   } catch (error) {
-    console.error('Error rewinding global day:', error);
+    console.error("Error rewinding global day:", error);
     throw error;
   }
 };
@@ -445,51 +509,69 @@ export const logSeedPurchase = async (catalogId: string, itemName: string) => {
 
   await db.logbook.insert({
     id,
-    type: 'seed_purchase',
+    type: "seed_purchase",
     itemName,
-    category: 'seeds',
+    category: "seeds",
     date: timestamp,
     catalogId,
-    notes: 'Purchased from Seed Store'
+    bedId: "main-garden",
+    notes: "Purchased from Seed Store",
   });
 };
 
-export const logUserPurchase = async (itemName: string, category: string, date: number, notes?: string) => {
+export const logUserPurchase = async (
+  itemName: string,
+  category: string,
+  date: number,
+  notes?: string,
+  catalogId: string = "manual-entry",
+  bedId: string = "main-garden",
+) => {
   const db = await getDatabase();
   const id = `log-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
   await db.logbook.insert({
     id,
-    type: 'user_purchase',
+    type: "user_purchase",
     itemName,
     category,
     date,
-    notes
+    notes,
+    catalogId,
+    bedId,
   });
 };
 
-export const logPlanting = async (catalogId: string, itemName: string) => {
+export const logPlanting = async (
+  catalogId: string,
+  itemName: string,
+  bedId: string = "main-garden",
+) => {
   const db = await getDatabase();
   const id = `log-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   const timestamp = Date.now();
 
   await db.logbook.insert({
     id,
-    type: 'planting',
+    type: "planting",
     itemName,
-    category: 'plants',
+    category: "plants",
     date: timestamp,
     catalogId,
-    notes: 'Planted in Main Garden'
+    bedId,
+    notes: `Planted in ${bedId}`,
   });
 };
 
 export const getLogbookEntries = async () => {
   const db = await getDatabase();
-  return db.logbook.find({ sort: [{ date: 'desc' }] }).exec();
+  return db.logbook.find({ sort: [{ date: "desc" }] }).exec();
 };
 
-export const updateLogbookEntry = async (id: string, updates: Partial<LogbookDocument>) => {
+export const updateLogbookEntry = async (
+  id: string,
+  updates: Partial<LogbookDocument>,
+) => {
   const db = await getDatabase();
   const doc = await db.logbook.findOne(id).exec();
   if (doc) {

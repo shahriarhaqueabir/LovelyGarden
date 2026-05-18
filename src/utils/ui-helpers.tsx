@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * UTILS: COLORS
  * Shared color mapping for growth stages and categories.

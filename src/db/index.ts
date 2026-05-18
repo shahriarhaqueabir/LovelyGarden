@@ -13,7 +13,6 @@ import {
   gardenSchema,
   logbookSchema,
 } from "./schemas";
-import { PlantSpeciesSchema } from "../schema/zod-schemas";
 import type {
   CatalogDocument,
   PlantKbDocument,
@@ -600,24 +599,23 @@ export const hydrateDatabase = async () => {
   const db = await getDatabase();
   const settings = await db.settings.findOne("local-user").exec();
   const currentDataVersion = 7;
+  const [existingCatalogDocs, existingKbDocs] = await Promise.all([
+    db.catalog.find().exec(),
+    db.plant_kb.find().exec(),
+  ]);
+  const hasCoreData =
+    existingCatalogDocs.length > 0 && existingKbDocs.length > 0;
 
   if (
     settings?.firstLoadComplete &&
-    (settings.dataVersion || 0) >= currentDataVersion
+    (settings.dataVersion || 0) >= currentDataVersion &&
+    hasCoreData
   ) {
     await handleDemoGardens(db);
     return;
   }
 
   console.log(`Starting data hydration (v${currentDataVersion})...`);
-
-  if (settings?.firstLoadComplete) {
-    await Promise.all([
-      db.catalog.find().remove(),
-      db.plant_kb.find().remove(),
-      db.sources.find().remove(),
-    ]);
-  }
 
   try {
     const [sourcesRes, plantCatalogRes, plantKbJsonRes] = await Promise.all([
@@ -637,15 +635,24 @@ export const hydrateDatabase = async () => {
 
     const catalogData = plantCatalogRaw
       .map((p) => synthesizePlantData(p, kbLookup))
+      .map(mapToCatalogDocument)
       .filter((plant) => {
-        const result = PlantSpeciesSchema.safeParse({
-          ...plant,
-          plant_id: plant.id,
-          common_name: plant.name,
-        });
-        return result.success;
-      })
-      .map(mapToCatalogDocument);
+        // Keep hydration resilient: validate only hard requirements here.
+        return (
+          typeof plant.id === "string" &&
+          plant.id.length > 0 &&
+          typeof plant.name === "string" &&
+          plant.name.length > 0 &&
+          Array.isArray(plant.stages) &&
+          plant.stages.length > 0
+        );
+      });
+
+    if (catalogData.length === 0) {
+      throw new Error(
+        "Hydration aborted: no valid catalog rows were produced from data files.",
+      );
+    }
 
     const rxKbData = catalogData.map((plant) => ({
       plant_id: plant.id,
@@ -680,6 +687,15 @@ export const hydrateDatabase = async () => {
     const existingSettings = existingSettingsDoc
       ? existingSettingsDoc.toJSON()
       : null;
+
+    // Only clear stale data after we have successfully prepared replacement data.
+    if (settings?.firstLoadComplete && hasCoreData) {
+      await Promise.all([
+        db.catalog.find().remove(),
+        db.plant_kb.find().remove(),
+        db.sources.find().remove(),
+      ]);
+    }
 
     await Promise.all([
       ...(sources as any[]).map((s) => db.sources.upsert(s)),

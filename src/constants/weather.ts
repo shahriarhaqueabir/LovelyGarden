@@ -1,6 +1,6 @@
 // API configuration
 export const WEATHER_API = {
-  BASE_URL: 'https://api.open-meteo.com/v1/forecast',
+  BASE_URL: "https://api.open-meteo.com/v1/forecast",
   CACHE_DURATION: 3600000, // 1 hour in milliseconds
   FORECAST_DAYS: 7,
   TIMEOUT: 10000, // 10 seconds

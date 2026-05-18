@@ -65,9 +65,26 @@ goto :start_app
 echo [INFO] Installing dependencies (this may take a minute)...
 call "!PKG!" install %PKG_FLAGS%
 
-:start_app
 :: 5. Start the Application
-echo [INFO] Handing over to Controller...
+set "TAURI_EXE=%~dp0src-tauri\target\release\LovelyGarden.exe"
+
+if exist "!TAURI_EXE!" (
+    echo [INFO] Starting Native Application...
+    start "" "!TAURI_EXE!"
+    exit /b 0
+)
+
+:: Diagnostic: Check for MSVC Linker (link.exe) if tauri build is needed
+where link.exe >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo [WARNING] Native Build Tools (MSVC) not detected in PATH.
+    echo           Tauri requires Visual Studio C++ Build Tools to compile.
+    echo           Please install them from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+    echo           (Select "Desktop development with C++")
+    echo.
+)
+
+echo [INFO] Native binary not found. Falling back to Legacy Controller...
 node scripts/launcher.js
 
 if %ERRORLEVEL% neq 0 (

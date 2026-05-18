@@ -1,8 +1,14 @@
-import React from 'react';
-import { ErrorBoundary as ReactErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import React from "react";
+import {
+  ErrorBoundary as ReactErrorBoundary,
+  FallbackProps,
+} from "react-error-boundary";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
 
-const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+const ErrorFallback: React.FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
   return (
     <div className="min-h-screen bg-[#0c0a09] flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-2xl">
@@ -31,9 +37,9 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
             <RefreshCw className="w-4 h-4" />
             Retry Operation
           </button>
-          
+
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => (window.location.href = "/")}
             className="w-full py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />
@@ -42,7 +48,8 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
         </div>
 
         <p className="mt-6 text-xs text-stone-600 text-center">
-          If this error persists, please check the console for more details or contact support.
+          If this error persists, please check the console for more details or
+          contact support.
         </p>
       </div>
     </div>
@@ -54,18 +61,21 @@ interface ErrorBoundaryProps {
   onReset?: () => void;
 }
 
-export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children, onReset }) => {
+export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({
+  children,
+  onReset,
+}) => {
   const handleReset = () => {
     onReset?.();
     // Additional cleanup if needed
-    console.log('Error boundary reset triggered');
+    console.log("Error boundary reset triggered");
   };
 
   const handleError = (error: Error, info: React.ErrorInfo) => {
     // Log error to console or send to error reporting service
-    console.error('Error caught by boundary:', error);
-    console.error('Component stack:', info.componentStack);
-    
+    console.error("Error caught by boundary:", error);
+    console.error("Component stack:", info.componentStack);
+
     // In production, you might want to send this to an error tracking service
     // like Sentry, LogRocket, etc.
   };

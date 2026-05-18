@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { getDatabase } from '../db';
-import { Subscription } from 'rxjs';
-import type { InventoryDocument } from '../db/types';
+import { useState, useEffect } from "react";
+import { getDatabase } from "../db";
+import { Subscription } from "rxjs";
+import type { InventoryDocument } from "../db/types";
 
 /**
  * HOOK: useInventory
@@ -16,17 +16,17 @@ export const useInventory = () => {
 
     const init = async () => {
       const db = await getDatabase();
-      
+
       // Ensure the collection exists (defensive)
       if (!db.inventory) {
-        console.error('Inventory collection not found in DB');
+        console.error("Inventory collection not found in DB");
         return;
       }
 
       const query = db.inventory.find();
-      
-      sub = query.$.subscribe(results => {
-        setItems(results.map(doc => doc.toJSON()));
+
+      sub = query.$.subscribe((results) => {
+        setItems(results.map((doc) => doc.toJSON()));
       });
     };
 

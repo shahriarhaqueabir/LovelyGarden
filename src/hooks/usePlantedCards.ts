@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { getDatabase } from '../db';
-import { Subscription } from 'rxjs';
-import type { PlantedDocument } from '../db/types';
+import { useState, useEffect } from "react";
+import { getDatabase } from "../db";
+import { Subscription } from "rxjs";
+import type { PlantedDocument } from "../db/types";
 
 /**
  * HOOK: usePlantedCards
@@ -24,8 +24,8 @@ export const usePlantedCards = (gardenId?: string) => {
 
       const query = db.planted.find({ selector: { bedId: gardenId } });
 
-      sub = query.$.subscribe(results => {
-        setCards(results.map(doc => doc.toJSON()));
+      sub = query.$.subscribe((results) => {
+        setCards(results.map((doc) => doc.toJSON()));
       });
     };
 

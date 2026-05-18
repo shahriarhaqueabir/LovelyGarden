@@ -1,29 +1,38 @@
-
 /**
  * Simple hex color manipulation utilities for theming.
  */
 
-export const hexToRgb = (hex: string): { r: number, g: number, b: number } | null => {
+export const hexToRgb = (
+  hex: string,
+): { r: number; g: number; b: number } | null => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 };
 
 // Mix color with white (tint) or black (shade)
 // weight: 0 to 1. 0 = original, 1 = target (white/black)
-const mix = (c1: { r: number, g: number, b: number }, c2: { r: number, g: number, b: number }, weight: number) => {
+const mix = (
+  c1: { r: number; g: number; b: number },
+  c2: { r: number; g: number; b: number },
+  weight: number,
+) => {
   return {
     r: Math.round(c1.r + (c2.r - c1.r) * weight),
     g: Math.round(c1.g + (c2.g - c1.g) * weight),
-    b: Math.round(c1.b + (c2.b - c1.b) * weight)
+    b: Math.round(c1.b + (c2.b - c1.b) * weight),
   };
 };
 
-const rgbToHex = (c: { r: number, g: number, b: number }) => {
-  return "#" + ((1 << 24) + (c.r << 16) + (c.g << 8) + c.b).toString(16).slice(1);
+const rgbToHex = (c: { r: number; g: number; b: number }) => {
+  return (
+    "#" + ((1 << 24) + (c.r << 16) + (c.g << 8) + c.b).toString(16).slice(1)
+  );
 };
 
 export const generatePalette = (baseHex: string) => {
@@ -63,23 +72,25 @@ export const applyTheme = (baseHex: string) => {
 
 export const applyBackgroundColor = (bgColor: string) => {
   const root = document.documentElement;
-  root.style.setProperty('--bg-primary', bgColor);
-  
+  root.style.setProperty("--bg-primary", bgColor);
+
   // Update all elements that use the background color
-  const elements = document.querySelectorAll('.bg-app-background, .bg-primary, [class*="bg-[#090c0a]"]');
-  elements.forEach(el => {
+  const elements = document.querySelectorAll(
+    '.bg-app-background, .bg-primary, [class*="bg-[#090c0a]"]',
+  );
+  elements.forEach((el) => {
     (el as HTMLElement).style.backgroundColor = bgColor;
   });
-  
+
   // Also update document.body if needed
   document.body.style.backgroundColor = bgColor;
 };
 
-export const toggleThemeMode = (mode: 'light' | 'dark') => {
+export const toggleThemeMode = (mode: "light" | "dark") => {
   const root = document.documentElement;
-  if (mode === 'light') {
-    root.classList.add('light');
+  if (mode === "light") {
+    root.classList.add("light");
   } else {
-    root.classList.remove('light');
+    root.classList.remove("light");
   }
 };

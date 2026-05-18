@@ -1,5 +1,9 @@
-import axios from 'axios';
-import { WEATHER_API, WATERING_CALCULATION_FACTORS, TEMPERATURE_THRESHOLDS } from '../constants/weather';
+import axios from "axios";
+import {
+  WEATHER_API,
+  WATERING_CALCULATION_FACTORS,
+  TEMPERATURE_THRESHOLDS,
+} from "../constants/weather";
 
 export interface WeatherData {
   latitude: number;
@@ -35,15 +39,20 @@ export interface WeatherData {
  * @param longitude - Longitude coordinate
  * @returns Promise<WeatherData>
  */
-export const fetchWeather = async (latitude: number, longitude: number): Promise<WeatherData> => {
+export const fetchWeather = async (
+  latitude: number,
+  longitude: number,
+): Promise<WeatherData> => {
   try {
     const params = {
       latitude,
       longitude,
-      current: 'temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m',
-      hourly: 'temperature_2m,relative_humidity_2m,precipitation,et0_fao_evapotranspiration,dew_point_2m,wind_speed_10m',
-      daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum',
-      timezone: 'auto',
+      current:
+        "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m",
+      hourly:
+        "temperature_2m,relative_humidity_2m,precipitation,et0_fao_evapotranspiration,dew_point_2m,wind_speed_10m",
+      daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
+      timezone: "auto",
       forecast_days: 7,
     };
 
@@ -56,9 +65,11 @@ export const fetchWeather = async (latitude: number, longitude: number): Promise
     return response.data as WeatherData;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(`Failed to fetch weather data: ${error.response?.data?.error || error.message}`);
+      throw new Error(
+        `Failed to fetch weather data: ${error.response?.data?.error || error.message}`,
+      );
     }
-    throw new Error('Network error: Unable to fetch weather data');
+    throw new Error("Network error: Unable to fetch weather data");
   }
 };
 
@@ -69,13 +80,16 @@ export const fetchWeather = async (latitude: number, longitude: number): Promise
  */
 export const calculateWateringScore = (weatherData: WeatherData): number => {
   const currentHour = new Date().getHours();
-  
+
   // Get current hour's data
-  const currentEt = weatherData.hourly.et0_fao_evapotranspiration[currentHour] || 0;
-  const currentHumidity = weatherData.hourly.relative_humidity_2m[currentHour] || 50;
+  const currentEt =
+    weatherData.hourly.et0_fao_evapotranspiration[currentHour] || 0;
+  const currentHumidity =
+    weatherData.hourly.relative_humidity_2m[currentHour] || 50;
   const currentWind = weatherData.hourly.wind_speed_10m[currentHour] || 0;
   const currentTemp = weatherData.hourly.temperature_2m[currentHour] || 20;
-  const currentPrecipitation = weatherData.hourly.precipitation[currentHour] || 0;
+  const currentPrecipitation =
+    weatherData.hourly.precipitation[currentHour] || 0;
 
   // Base score calculation using ET
   let score = currentEt * WATERING_CALCULATION_FACTORS.ET_MULTIPLIER;
@@ -84,7 +98,7 @@ export const calculateWateringScore = (weatherData: WeatherData): number => {
   score *= (100 - currentHumidity) / 100;
 
   // Adjust for wind (higher wind = higher need)
-  score *= 1 + (currentWind / WATERING_CALCULATION_FACTORS.WIND_DIVISOR);
+  score *= 1 + currentWind / WATERING_CALCULATION_FACTORS.WIND_DIVISOR;
 
   // Adjust for temperature (higher temp = higher need)
   if (currentTemp > TEMPERATURE_THRESHOLDS.SEVERE_HEAT) {
@@ -107,9 +121,12 @@ export const calculateWateringScore = (weatherData: WeatherData): number => {
  */
 export const hasFrostRisk = (weatherData: WeatherData): boolean => {
   const currentHour = new Date().getHours();
-  const next24Hours = weatherData.hourly.temperature_2m.slice(currentHour, currentHour + 24);
-  
-  return next24Hours.some(temp => temp < TEMPERATURE_THRESHOLDS.FROST);
+  const next24Hours = weatherData.hourly.temperature_2m.slice(
+    currentHour,
+    currentHour + 24,
+  );
+
+  return next24Hours.some((temp) => temp < TEMPERATURE_THRESHOLDS.FROST);
 };
 
 /**
@@ -120,18 +137,25 @@ export const hasFrostRisk = (weatherData: WeatherData): boolean => {
 export const getFrostTimes = (weatherData: WeatherData): string[] => {
   const currentHour = new Date().getHours();
   const frostTimes: string[] = [];
-  
-  for (let i = currentHour; i < currentHour + 24 && frostTimes.length < 3; i++) {
-    if (i < weatherData.hourly.time.length && weatherData.hourly.temperature_2m[i] < TEMPERATURE_THRESHOLDS.FROST) {
+
+  for (
+    let i = currentHour;
+    i < currentHour + 24 && frostTimes.length < 3;
+    i++
+  ) {
+    if (
+      i < weatherData.hourly.time.length &&
+      weatherData.hourly.temperature_2m[i] < TEMPERATURE_THRESHOLDS.FROST
+    ) {
       // Convert ISO time to HH:MM format
       const timeStr = weatherData.hourly.time[i];
       const date = new Date(timeStr);
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
       frostTimes.push(`${hours}:${minutes}`);
     }
   }
-  
+
   return frostTimes;
 };
 
@@ -143,45 +167,45 @@ export const getFrostTimes = (weatherData: WeatherData): string[] => {
 export const getWeatherDescription = (code: number): string => {
   switch (code) {
     case 0:
-      return 'Clear sky';
+      return "Clear sky";
     case 1:
     case 2:
     case 3:
-      return 'Cloudy';
+      return "Cloudy";
     case 45:
     case 48:
-      return 'Fog';
+      return "Fog";
     case 51:
     case 53:
     case 55:
-      return 'Drizzle';
+      return "Drizzle";
     case 56:
     case 57:
-      return 'Freezing drizzle';
+      return "Freezing drizzle";
     case 61:
     case 63:
     case 65:
-      return 'Rain';
+      return "Rain";
     case 66:
     case 67:
-      return 'Freezing rain';
+      return "Freezing rain";
     case 71:
     case 73:
     case 75:
-      return 'Snow fall';
+      return "Snow fall";
     case 80:
     case 81:
     case 82:
-      return 'Rain showers';
+      return "Rain showers";
     case 85:
     case 86:
-      return 'Snow showers';
+      return "Snow showers";
     case 95:
     case 96:
     case 97:
-      return 'Thunderstorm';
+      return "Thunderstorm";
     default:
-      return 'Variable';
+      return "Variable";
   }
 };
 
@@ -192,7 +216,13 @@ export interface OldWeatherData {
   sunlightHours: number;
   moisturePercentage: number;
   temperatureCelsius: number;
-  condition: 'sunny' | 'partly-cloudy' | 'cloudy' | 'rainy' | 'stormy' | 'snowy';
+  condition:
+    | "sunny"
+    | "partly-cloudy"
+    | "cloudy"
+    | "rainy"
+    | "stormy"
+    | "snowy";
   windSpeed: number; // km/h
   humidity: number; // percentage
   uvIndex: number;
@@ -239,34 +269,50 @@ export const getWeatherForDay = (day: number): OldWeatherData => {
   const moistureVariation = (Math.random() - 0.5) * 20; // ±10% variation
 
   // Determine condition based on moisture and other factors
-  let condition: OldWeatherData['condition'] = 'partly-cloudy'; // default
+  let condition: OldWeatherData["condition"] = "partly-cloudy"; // default
   if (baseMoisture + moistureVariation > 80) {
-    condition = Math.random() > 0.7 ? 'stormy' : 'rainy';
+    condition = Math.random() > 0.7 ? "stormy" : "rainy";
   } else if (baseMoisture + moistureVariation > 70) {
-    condition = 'cloudy';
+    condition = "cloudy";
   } else if (baseSunlight + sunlightVariation > 14) {
-    condition = 'sunny';
+    condition = "sunny";
   } else if (baseSunlight + sunlightVariation > 10) {
-    condition = 'partly-cloudy';
+    condition = "partly-cloudy";
   }
 
   return {
-    sunlightHours: Math.max(0, Math.min(24, parseFloat((baseSunlight + sunlightVariation).toFixed(1)))),
-    moisturePercentage: Math.max(0, Math.min(100, Math.round(baseMoisture + moistureVariation))),
+    sunlightHours: Math.max(
+      0,
+      Math.min(24, parseFloat((baseSunlight + sunlightVariation).toFixed(1))),
+    ),
+    moisturePercentage: Math.max(
+      0,
+      Math.min(100, Math.round(baseMoisture + moistureVariation)),
+    ),
     temperatureCelsius: parseFloat((baseTemp + tempVariation).toFixed(1)),
     condition,
     windSpeed: Math.round(Math.random() * 20), // 0-20 km/h
-    humidity: Math.max(30, Math.min(100, Math.round(baseMoisture + moistureVariation + 10))),
+    humidity: Math.max(
+      30,
+      Math.min(100, Math.round(baseMoisture + moistureVariation + 10)),
+    ),
     uvIndex: Math.max(0, Math.min(11, Math.round((baseSunlight / 16) * 10))), // UV index based on sunlight
-    precipitationChance: Math.max(0, Math.min(100, Math.round((100 - baseMoisture - moistureVariation) / 2))),
-    feelsLike: parseFloat((baseTemp + tempVariation + (Math.random() - 0.5)).toFixed(1))
+    precipitationChance: Math.max(
+      0,
+      Math.min(100, Math.round((100 - baseMoisture - moistureVariation) / 2)),
+    ),
+    feelsLike: parseFloat(
+      (baseTemp + tempVariation + (Math.random() - 0.5)).toFixed(1),
+    ),
   };
 };
 
 // Function to simulate weather updates (would connect to real API in production) - for backward compatibility
-export const updateWeather = async (currentDay: number): Promise<OldWeatherData> => {
+export const updateWeather = async (
+  currentDay: number,
+): Promise<OldWeatherData> => {
   // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   // In a real app, this would fetch from a weather API
   // For now, return generated data

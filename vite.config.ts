@@ -1,9 +1,9 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { loadEnv } from "vite";
 import dotenv from "dotenv";
+import { configDefaults } from "vitest/config";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -37,19 +37,6 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "open-meteo-weather",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 3600, // 1 hour
-              },
-            },
-          },
-        ],
         workbox: {
           navigateFallback: "/index.html",
           globPatterns: [
@@ -59,9 +46,34 @@ export default defineConfig(({ mode }) => {
             "**/vendor-*.js",
             "**/index-*.js",
           ],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
+              handler: "StaleWhileRevalidate",
+              options: {
+                cacheName: "open-meteo-weather",
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 3600, // 1 hour
+                },
+              },
+            },
+          ],
         },
       }),
     ],
+    // 1. prevent vite from obscuring rust errors
+    clearScreen: false,
+    // 2. tauri expects a fixed port, fail if that port is used
+    server: {
+      port: 1420,
+      strictPort: true,
+      host: true,
+      watch: {
+        // 3. tell vite to ignore watching `src-tauri`
+        ignored: ["**/src-tauri/**"],
+      },
+    },
     define: {
       // Make only VITE_ prefixed env variables available at runtime (security best practice)
       "process.env": Object.fromEntries(
@@ -69,6 +81,13 @@ export default defineConfig(({ mode }) => {
       ),
     },
     build: {
+      // Tauri supports modern JS features (BigInt required by Orama/RxDB)
+      target:
+        process.env.TAURI_PLATFORM === "windows" ? "chrome105" : "safari15",
+      // don't minify for debug builds
+      minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+      // produce sourcemaps for debug builds
+      sourcemap: !!process.env.TAURI_DEBUG,
       rollupOptions: {
         output: {
           manualChunks(id: string) {
@@ -94,6 +113,7 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
       globals: true,
       setupFiles: ["./tests/setup.ts"],
+      exclude: [...configDefaults.exclude, "e2e/**"],
     },
   };
 });
