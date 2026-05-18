@@ -45,6 +45,7 @@ const HarvestTab = React.lazy(() =>
 );
 import { useWeatherStore } from "./stores/weatherStore";
 import { getUserLocation } from "./services/geolocationService";
+import { listPlantCatalog } from "./services/referenceDataService";
 
 const queryClient = new QueryClient();
 
@@ -126,12 +127,25 @@ const AppContent: React.FC = () => {
       await hydrateDatabase();
       const db = await getDatabase();
 
-      // Subscribe to catalog for real-time updates (especially during hydration)
-      catalogSub = db.catalog.find().$.subscribe((docs) => {
-        if (docs) {
-          setCatalog(docs.map((doc) => doc.toJSON()));
+      let loadedRemoteCatalog = false;
+      try {
+        const remoteCatalog = await listPlantCatalog();
+        if (remoteCatalog.length > 0) {
+          setCatalog(remoteCatalog);
+          loadedRemoteCatalog = true;
         }
-      });
+      } catch (error) {
+        console.warn("Falling back to local catalog data:", error);
+      }
+
+      if (!loadedRemoteCatalog) {
+        // Subscribe to local catalog for hydration fallback/offline use.
+        catalogSub = db.catalog.find().$.subscribe((docs) => {
+          if (docs) {
+            setCatalog(docs.map((doc) => doc.toJSON()));
+          }
+        });
+      }
 
       // Apply Theme
       const savedTheme = localStorage.getItem("theme-color");

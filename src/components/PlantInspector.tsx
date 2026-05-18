@@ -45,6 +45,10 @@ import type {
   SourceDocument,
   PlantKbDocument,
 } from "../db/types";
+import {
+  getPlantKnowledgeBase,
+  listSources,
+} from "../services/referenceDataService";
 
 interface PlantInspectorProps {
   plant: PlantedDocument;
@@ -95,11 +99,19 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
   useEffect(() => {
     const loadSources = async () => {
-      const db = await getDatabase();
-      const docs = await db.sources.find().exec();
-      const map: Record<string, SourceDocument> = {};
-      for (const d of docs) map[d.get("id")] = d.toJSON() as SourceDocument;
-      setSourcesById(map);
+      try {
+        const sources = await listSources();
+        setSourcesById(
+          Object.fromEntries(sources.map((source) => [source.id, source])),
+        );
+      } catch (error) {
+        console.warn("Falling back to local source data:", error);
+        const db = await getDatabase();
+        const docs = await db.sources.find().exec();
+        const map: Record<string, SourceDocument> = {};
+        for (const d of docs) map[d.get("id")] = d.toJSON() as SourceDocument;
+        setSourcesById(map);
+      }
     };
     loadSources();
   }, []);
@@ -107,9 +119,15 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   useEffect(() => {
     const loadKb = async () => {
       if (!catalogItem) return;
-      const db = await getDatabase();
-      const doc = await db.plant_kb.findOne(catalogItem.id).exec();
-      setKb(doc ? (doc.toJSON() as PlantKbDocument) : null);
+      try {
+        const remoteKb = await getPlantKnowledgeBase(catalogItem.id);
+        setKb(remoteKb);
+      } catch (error) {
+        console.warn("Falling back to local plant KB data:", error);
+        const db = await getDatabase();
+        const doc = await db.plant_kb.findOne(catalogItem.id).exec();
+        setKb(doc ? (doc.toJSON() as PlantKbDocument) : null);
+      }
     };
     loadKb();
   }, [catalogItem]);

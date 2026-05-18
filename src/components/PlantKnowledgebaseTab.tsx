@@ -4,6 +4,7 @@ import { BookOpen, Search, Sun, Droplets } from "lucide-react";
 import { getDatabase } from "../db";
 import { PlantKbDocument } from "../db/types";
 import { buildPlantIndex, searchPlants } from "../lib/plantSearch";
+import { listPlantKnowledgeBase } from "../services/referenceDataService";
 
 const GrowthGraph = React.lazy(async () => {
   const m = await import("./GrowthGraph");
@@ -58,6 +59,18 @@ export const PlantKnowledgebaseTab: React.FC = () => {
     let sub: { unsubscribe(): void } | null = null;
 
     const init = async () => {
+      try {
+        const remotePlants = await listPlantKnowledgeBase();
+        if (remotePlants.length > 0) {
+          setPlants(remotePlants);
+          await buildPlantIndex(remotePlants);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.warn("Falling back to local plant knowledge base:", error);
+      }
+
       try {
         const db = await getDatabase();
         sub = db.plant_kb.find().$.subscribe(async (docs) => {

@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { X, Calendar, Search } from "lucide-react";
 import { PlantSpecies, Season, UserLocation } from "../schema/knowledge-graph";
 import { isSowingSeason } from "../logic/reasoning";
+import { listPlantKnowledgeBase } from "../services/referenceDataService";
 
 interface PlantKB {
   plant_id: string;
@@ -90,12 +91,20 @@ export const SowingWindowsModal: React.FC<SowingWindowsModalProps> = ({
   useEffect(() => {
     const loadPlantKB = async () => {
       try {
-        const response = await fetch("/data/plants-kb.json");
-        const data = await response.json();
-        setPlantKB(data.plants || []);
+        setPlantKB((await listPlantKnowledgeBase()) as PlantKB[]);
       } catch (error) {
-        console.error("Failed to load plant knowledge base:", error);
-        setPlantKB([]);
+        console.warn("Falling back to bundled plant knowledge base:", error);
+
+        try {
+          const response = await fetch("/data/plants-kb.json");
+          const data = await response.json();
+          setPlantKB(
+            (Array.isArray(data) ? data : data.plants || []) as PlantKB[],
+          );
+        } catch (fallbackError) {
+          console.error("Failed to load plant knowledge base:", fallbackError);
+          setPlantKB([]);
+        }
       }
     };
     loadPlantKB();
