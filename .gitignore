@@ -60,6 +60,7 @@ blackbox_mcp_settings.json
 .agent/
 .agents/
 .hooks/
+skills-lock.json
 
 # RxDB / IndexedDB local files
 *.db
