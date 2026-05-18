@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Cloud, LogOut, UserCircle } from "lucide-react";
 import { hydrateDatabase, getDatabase } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
@@ -46,6 +47,10 @@ const HarvestTab = React.lazy(() =>
 import { useWeatherStore } from "./stores/weatherStore";
 import { getUserLocation } from "./services/geolocationService";
 import { listPlantCatalog } from "./services/referenceDataService";
+import { useAuth } from "./hooks/useAuth";
+import { signOut } from "./services/authService";
+import { AuthDialog } from "./components/AuthDialog";
+import { showError, showSuccess } from "./lib/toast";
 
 const queryClient = new QueryClient();
 
@@ -54,7 +59,9 @@ const AppContent: React.FC = () => {
   const [currentDay, setCurrentDay] = useState(1);
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
+  const { user, loading: authLoading } = useAuth();
 
   // New weather store
   const {
@@ -223,6 +230,15 @@ const AppContent: React.FC = () => {
     if (xp > 0) persistXp();
   }, [xp]);
 
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      showError(error.message);
+      return;
+    }
+    showSuccess("Cloud session disconnected.");
+  };
+
   return (
     <div className="flex flex-col h-screen bg-app-background text-text-primary overflow-hidden font-sans selection:bg-garden-500/30">
       <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
@@ -233,6 +249,37 @@ const AppContent: React.FC = () => {
           </h1>
         </div>
         <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <div
+                  className="hidden md:flex items-center gap-2 rounded-full border border-garden-500/20 bg-garden-950/20 px-3 py-1.5"
+                  title={user.email ?? "Signed in"}
+                >
+                  <UserCircle className="h-4 w-4 text-garden-400" />
+                  <span className="max-w-40 truncate text-[11px] font-bold text-garden-300">
+                    {user.email}
+                  </span>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-stone-800 bg-stone-900 text-stone-500 hover:border-red-500/40 hover:text-red-400"
+                  title="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowAuthDialog(true)}
+                disabled={authLoading}
+                className="inline-flex items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:border-garden-500/40 hover:text-garden-400 disabled:opacity-60"
+              >
+                <Cloud className="h-4 w-4" />
+                {authLoading ? "Cloud..." : "Sign In"}
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-4 text-stone-500">
             {weather ? (
               <>
@@ -407,6 +454,10 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
           />
         )}
+        <AuthDialog
+          isOpen={showAuthDialog}
+          onClose={() => setShowAuthDialog(false)}
+        />
       </React.Suspense>
     </div>
   );

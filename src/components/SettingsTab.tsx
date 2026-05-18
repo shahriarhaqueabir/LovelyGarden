@@ -11,6 +11,8 @@ import {
   Trash2,
   RefreshCw,
   Palette,
+  Cloud,
+  ShieldCheck,
 } from "lucide-react";
 import { getDatabase } from "../db";
 import {
@@ -20,6 +22,7 @@ import {
 } from "../db/export-import";
 import { applyTheme, applyBackgroundColor } from "../utils/theme";
 import { WeatherSettings } from "./WeatherSettings";
+import { useAuth } from "../hooks/useAuth";
 export const SettingsTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<"general" | "developer">(
     "general",
@@ -35,6 +38,7 @@ export const SettingsTab: React.FC = () => {
   const [, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logs, setLogs] = useState<{ type: string; msg: string }[]>([]);
+  const { user, loading: authLoading } = useAuth();
 
   const addLog = (type: string, msg: string) => {
     setLogs((prev) => [{ type, msg }, ...prev].slice(0, 10));
@@ -386,6 +390,40 @@ export const SettingsTab: React.FC = () => {
               <Palette className="w-3 h-3 text-garden-500" /> Weather Location
             </h2>
             <div className="space-y-6">
+              <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl border border-garden-500/20 bg-garden-950/30 p-2">
+                      {user ? (
+                        <ShieldCheck className="h-4 w-4 text-garden-400" />
+                      ) : (
+                        <Cloud className="h-4 w-4 text-stone-500" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-stone-500">
+                        Cloud Session
+                      </div>
+                      <div className="mt-1 text-xs font-bold text-stone-300">
+                        {authLoading
+                          ? "Checking Supabase Auth..."
+                          : user
+                            ? user.email
+                            : "Not signed in"}
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    className={`rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-widest ${
+                      user
+                        ? "border-garden-500/30 bg-garden-950/30 text-garden-400"
+                        : "border-stone-800 bg-stone-900 text-stone-500"
+                    }`}
+                  >
+                    {user ? "Ready" : "Local"}
+                  </span>
+                </div>
+              </div>
               <WeatherSettings />
             </div>
           </div>
