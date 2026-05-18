@@ -2,7 +2,7 @@ import { test, expect } from "./fixtures";
 
 test.describe("Smoke", () => {
   test("boots app shell and core navigation", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect(page.getByText("Garden Deck Command")).toBeVisible({
       timeout: 45_000,
