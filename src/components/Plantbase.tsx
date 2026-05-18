@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { X, Search, BookOpen, Sun, Droplets } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from "react";
+import { X, Search, BookOpen, Sun, Droplets } from "lucide-react";
 
 interface PlantKB {
   plant_id: string;
@@ -31,7 +31,7 @@ interface PlantbaseProps {
 }
 
 export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [plants, setPlants] = useState<PlantKB[]>([]);
   const [selectedPlant, setSelectedPlant] = useState<PlantKB | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,11 +39,11 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
   useEffect(() => {
     const loadPlants = async () => {
       try {
-        const response = await fetch('/data/plants-kb.json');
+        const response = await fetch("/data/plants-kb.json");
         const data = await response.json();
         setPlants(data.plants || []);
       } catch (error) {
-        console.error('Failed to load plant knowledge base:', error);
+        console.error("Failed to load plant knowledge base:", error);
       } finally {
         setLoading(false);
       }
@@ -55,26 +55,34 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
     const q = query.trim().toLowerCase();
     if (!q) return plants;
 
-    return plants.filter(p => {
-      const haystack = `${p.common_name ?? ''} ${p.scientific_name ?? ''} ${p.type ?? ''} ${p.family ?? ''} ${p.notes ?? ''}`.toLowerCase();
+    return plants.filter((p) => {
+      const haystack =
+        `${p.common_name ?? ""} ${p.scientific_name ?? ""} ${p.type ?? ""} ${p.family ?? ""} ${p.notes ?? ""}`.toLowerCase();
       return haystack.includes(q);
     });
   }, [plants, query]);
 
   const getSunlightIcon = (sunlight: string) => {
     switch (sunlight) {
-      case 'full_sun': return <Sun className="w-4 h-4 text-amber-400" />;
-      case 'partial_sun': return <Sun className="w-4 h-4 text-yellow-300" />;
-      default: return <Sun className="w-4 h-4 text-stone-500" />;
+      case "full_sun":
+        return <Sun className="w-4 h-4 text-amber-400" />;
+      case "partial_sun":
+        return <Sun className="w-4 h-4 text-yellow-300" />;
+      default:
+        return <Sun className="w-4 h-4 text-stone-500" />;
     }
   };
 
   const getWaterIcon = (water: string) => {
     switch (water) {
-      case 'high': return <Droplets className="w-4 h-4 text-blue-400" />;
-      case 'moderate': return <Droplets className="w-4 h-4 text-blue-300" />;
-      case 'low': return <Droplets className="w-4 h-4 text-blue-200" />;
-      default: return <Droplets className="w-4 h-4 text-stone-500" />;
+      case "high":
+        return <Droplets className="w-4 h-4 text-blue-400" />;
+      case "moderate":
+        return <Droplets className="w-4 h-4 text-blue-300" />;
+      case "low":
+        return <Droplets className="w-4 h-4 text-blue-200" />;
+      default:
+        return <Droplets className="w-4 h-4 text-stone-500" />;
     }
   };
 
@@ -88,14 +96,17 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
               <BookOpen className="w-5 h-5 text-garden-400" />
               <h2 className="text-xl font-bold text-stone-100">Plantbase</h2>
             </div>
-            <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
+            <button
+              onClick={onClose}
+              className="text-stone-500 hover:text-stone-300"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Plant Detail */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            <button 
+            <button
               onClick={() => setSelectedPlant(null)}
               className="text-[10px] text-garden-400 hover:text-garden-300 uppercase tracking-widest font-bold"
             >
@@ -103,8 +114,12 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
             </button>
 
             <div>
-              <h3 className="text-2xl font-bold text-stone-100">{selectedPlant.common_name}</h3>
-              <p className="text-sm text-stone-500 italic">{selectedPlant.scientific_name}</p>
+              <h3 className="text-2xl font-bold text-stone-100">
+                {selectedPlant.common_name}
+              </h3>
+              <p className="text-sm text-stone-500 italic">
+                {selectedPlant.scientific_name}
+              </p>
               <div className="mt-2 flex gap-2">
                 <span className="text-[10px] px-2 py-1 bg-garden-900/30 text-garden-400 rounded border border-garden-700/30">
                   {selectedPlant.type}
@@ -119,43 +134,64 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
               <div className="p-3 bg-stone-800/30 rounded-xl border border-stone-700/30">
                 <div className="flex items-center gap-2 mb-1">
                   {getSunlightIcon(selectedPlant.sunlight)}
-                  <span className="text-[10px] uppercase tracking-wider text-stone-500">Sunlight</span>
+                  <span className="text-[10px] uppercase tracking-wider text-stone-500">
+                    Sunlight
+                  </span>
                 </div>
-                <p className="text-xs text-stone-300 capitalize">{selectedPlant.sunlight.replace('_', ' ')}</p>
+                <p className="text-xs text-stone-300 capitalize">
+                  {selectedPlant.sunlight.replace("_", " ")}
+                </p>
               </div>
               <div className="p-3 bg-stone-800/30 rounded-xl border border-stone-700/30">
                 <div className="flex items-center gap-2 mb-1">
                   {getWaterIcon(selectedPlant.water_requirements)}
-                  <span className="text-[10px] uppercase tracking-wider text-stone-500">Water</span>
+                  <span className="text-[10px] uppercase tracking-wider text-stone-500">
+                    Water
+                  </span>
                 </div>
-                <p className="text-xs text-stone-300 capitalize">{selectedPlant.water_requirements}</p>
+                <p className="text-xs text-stone-300 capitalize">
+                  {selectedPlant.water_requirements}
+                </p>
               </div>
             </div>
 
             <div>
-              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">Growing Season</h4>
+              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">
+                Growing Season
+              </h4>
               <div className="space-y-2">
                 {selectedPlant.seasonality.sowing && (
                   <div className="flex justify-between text-xs">
                     <span className="text-stone-400">Sowing:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.sowing.start_month} - {selectedPlant.seasonality.sowing.end_month}</span>
+                    <span className="text-stone-300">
+                      {selectedPlant.seasonality.sowing.start_month} -{" "}
+                      {selectedPlant.seasonality.sowing.end_month}
+                    </span>
                   </div>
                 )}
                 {selectedPlant.seasonality.harvest && (
                   <div className="flex justify-between text-xs">
                     <span className="text-stone-400">Harvest:</span>
-                    <span className="text-stone-300">{selectedPlant.seasonality.harvest.start_month} - {selectedPlant.seasonality.harvest.end_month}</span>
+                    <span className="text-stone-300">
+                      {selectedPlant.seasonality.harvest.start_month} -{" "}
+                      {selectedPlant.seasonality.harvest.end_month}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
             <div>
-              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">Soil Type</h4>
+              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">
+                Soil Type
+              </h4>
               <div className="flex flex-wrap gap-1">
-                {selectedPlant.soil_type.map(soil => (
-                  <span key={soil} className="text-[9px] px-2 py-1 bg-stone-800 text-stone-400 rounded">
-                    {soil.replace('_', ' ')}
+                {selectedPlant.soil_type.map((soil) => (
+                  <span
+                    key={soil}
+                    className="text-[9px] px-2 py-1 bg-stone-800 text-stone-400 rounded"
+                  >
+                    {soil.replace("_", " ")}
                   </span>
                 ))}
               </div>
@@ -163,11 +199,16 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
 
             {selectedPlant.companion_plants.length > 0 && (
               <div>
-                <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">Companion Plants</h4>
+                <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">
+                  Companion Plants
+                </h4>
                 <div className="flex flex-wrap gap-1">
-                  {selectedPlant.companion_plants.map(plant => (
-                    <span key={plant} className="text-[9px] px-2 py-1 bg-garden-900/20 text-garden-400 rounded border border-garden-700/20">
-                      {plant.replace('plant_', '').replace('_', ' ')}
+                  {selectedPlant.companion_plants.map((plant) => (
+                    <span
+                      key={plant}
+                      className="text-[9px] px-2 py-1 bg-garden-900/20 text-garden-400 rounded border border-garden-700/20"
+                    >
+                      {plant.replace("plant_", "").replace("_", " ")}
                     </span>
                   ))}
                 </div>
@@ -176,11 +217,16 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
 
             {selectedPlant.incompatible_plants.length > 0 && (
               <div>
-                <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">Incompatible With</h4>
+                <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">
+                  Incompatible With
+                </h4>
                 <div className="flex flex-wrap gap-1">
-                  {selectedPlant.incompatible_plants.map(plant => (
-                    <span key={plant} className="text-[9px] px-2 py-1 bg-red-900/20 text-red-400 rounded border border-red-700/20">
-                      {plant.replace('plant_', '').replace('_', ' ')}
+                  {selectedPlant.incompatible_plants.map((plant) => (
+                    <span
+                      key={plant}
+                      className="text-[9px] px-2 py-1 bg-red-900/20 text-red-400 rounded border border-red-700/20"
+                    >
+                      {plant.replace("plant_", "").replace("_", " ")}
                     </span>
                   ))}
                 </div>
@@ -188,8 +234,12 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
             )}
 
             <div className="p-4 bg-stone-800/20 rounded-xl border border-stone-700/30">
-              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">Notes</h4>
-              <p className="text-xs text-stone-400 leading-relaxed">{selectedPlant.notes}</p>
+              <h4 className="text-[10px] uppercase tracking-widest text-stone-500 font-bold mb-2">
+                Notes
+              </h4>
+              <p className="text-xs text-stone-400 leading-relaxed">
+                {selectedPlant.notes}
+              </p>
             </div>
           </div>
         </div>
@@ -206,7 +256,10 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
             <BookOpen className="w-5 h-5 text-garden-400" />
             <h2 className="text-xl font-bold text-stone-100">Plantbase</h2>
           </div>
-          <button onClick={onClose} className="text-stone-500 hover:text-stone-300">
+          <button
+            onClick={onClose}
+            className="text-stone-500 hover:text-stone-300"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -235,15 +288,19 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
             </div>
           ) : (
             filtered.map((plant) => (
-              <div 
+              <div
                 key={plant.plant_id}
                 onClick={() => setSelectedPlant(plant)}
                 className="p-4 bg-stone-800/20 rounded-2xl border border-stone-700/30 hover:border-garden-700/50 transition-all group cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-bold text-stone-200">{plant.common_name}</h3>
-                    <p className="text-[10px] text-stone-500 italic">{plant.scientific_name}</p>
+                    <h3 className="text-sm font-bold text-stone-200">
+                      {plant.common_name}
+                    </h3>
+                    <p className="text-[10px] text-stone-500 italic">
+                      {plant.scientific_name}
+                    </p>
                   </div>
                   <div className="flex gap-1">
                     {getSunlightIcon(plant.sunlight)}
@@ -258,7 +315,9 @@ export const Plantbase: React.FC<PlantbaseProps> = ({ onClose }) => {
                     {plant.family}
                   </span>
                 </div>
-                <p className="mt-2 text-[10px] text-stone-600 line-clamp-2">{plant.notes}</p>
+                <p className="mt-2 text-[10px] text-stone-600 line-clamp-2">
+                  {plant.notes}
+                </p>
               </div>
             ))
           )}

@@ -5,11 +5,7 @@
     "scientific_name": "Cucumis sativus",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "well_draining", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -41,18 +37,9 @@
       "plant_dill",
       "plant_corn"
     ],
-    "incompatible_plants": [
-      "plant_sage",
-      "plant_melon",
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_cucumber_beetle",
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "incompatible_plants": ["plant_sage", "plant_melon", "plant_potato"],
+    "common_pests": ["pest_cucumber_beetle", "pest_aphids"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Requires trellising for air circulation."
   },
   {
@@ -61,11 +48,7 @@
     "scientific_name": "Cucurbita pepo",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining",
-      "rich"
-    ],
+    "soil_type": ["loamy", "well_draining", "rich"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -91,21 +74,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_corn",
-      "plant_nasturtium"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_squash_bug",
-      "pest_vine_borer"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_bean", "plant_corn", "plant_nasturtium"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_squash_bug", "pest_vine_borer"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Heavy feeder; harvest regularly."
   },
   {
@@ -114,10 +86,7 @@
     "scientific_name": "Capsicum annuum",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "sandy_loam"
-    ],
+    "soil_type": ["loamy", "sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -182,10 +151,7 @@
     "scientific_name": "Phaseolus vulgaris",
     "family": "Fabaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -211,21 +177,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_cucumber",
-      "plant_squash"
-    ],
-    "incompatible_plants": [
-      "plant_onion",
-      "plant_garlic"
-    ],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_rust"
-    ],
+    "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"],
+    "incompatible_plants": ["plant_onion", "plant_garlic"],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_rust"],
     "notes": "Nitrogen-fixing legume."
   },
   {
@@ -234,10 +189,7 @@
     "scientific_name": "Brassica oleracea var. italica",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "moderate_to_high",
     "nutrient_preferences": [
@@ -262,21 +214,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_onion",
-      "plant_celery",
-      "plant_beet"
-    ],
-    "incompatible_plants": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
-    "common_pests": [
-      "pest_cabbage_worm"
-    ],
-    "common_diseases": [
-      "disease_clubroot"
-    ],
+    "companion_plants": ["plant_onion", "plant_celery", "plant_beet"],
+    "incompatible_plants": ["plant_strawberry", "plant_tomato"],
+    "common_pests": ["pest_cabbage_worm"],
+    "common_diseases": ["disease_clubroot"],
     "notes": "Cool-season crop."
   },
   {
@@ -285,10 +226,7 @@
     "scientific_name": "Brassica oleracea var. botrytis",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -313,21 +251,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_celery",
-      "plant_onion",
-      "plant_sage"
-    ],
-    "incompatible_plants": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_downy_mildew"
-    ],
+    "companion_plants": ["plant_celery", "plant_onion", "plant_sage"],
+    "incompatible_plants": ["plant_strawberry", "plant_tomato"],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_downy_mildew"],
     "notes": "Requires blanching."
   },
   {
@@ -336,10 +263,7 @@
     "scientific_name": "Beta vulgaris",
     "family": "Amaranthaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "alkaline"
-    ],
+    "soil_type": ["loamy", "alkaline"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -396,10 +320,7 @@
     "scientific_name": "Allium cepa",
     "family": "Amaryllidaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -424,21 +345,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_carrot",
-      "plant_lettuce",
-      "plant_beet"
-    ],
-    "incompatible_plants": [
-      "plant_bean",
-      "plant_pea"
-    ],
-    "common_pests": [
-      "pest_thrips"
-    ],
-    "common_diseases": [
-      "disease_downy_mildew"
-    ],
+    "companion_plants": ["plant_carrot", "plant_lettuce", "plant_beet"],
+    "incompatible_plants": ["plant_bean", "plant_pea"],
+    "common_pests": ["pest_thrips"],
+    "common_diseases": ["disease_downy_mildew"],
     "notes": "Day-length sensitive."
   },
   {
@@ -447,24 +357,11 @@
     "scientific_name": "Thymus vulgaris",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "sandy",
-      "well_draining"
-    ],
+    "soil_type": ["sandy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -475,18 +372,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_cabbage",
-      "plant_eggplant",
-      "plant_strawberry"
-    ],
+    "companion_plants": ["plant_cabbage", "plant_eggplant", "plant_strawberry"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_spider_mites"
-    ],
-    "common_diseases": [
-      "disease_root_rot"
-    ],
+    "common_pests": ["pest_spider_mites"],
+    "common_diseases": ["disease_root_rot"],
     "notes": "Drought-tolerant."
   },
   {
@@ -495,24 +384,11 @@
     "scientific_name": "Origanum vulgare",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "well_draining",
-      "sandy"
-    ],
+    "soil_type": ["well_draining", "sandy"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -523,18 +399,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_cucumber",
-      "plant_squash",
-      "plant_tomato"
-    ],
+    "companion_plants": ["plant_cucumber", "plant_squash", "plant_tomato"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_rust"
-    ],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_rust"],
     "notes": "Perennial herb."
   },
   {
@@ -543,10 +411,7 @@
     "scientific_name": "Coriandrum sativum",
     "family": "Apiaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "partial_shade",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -554,13 +419,7 @@
       "phosphorus_low",
       "potassium_low"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -571,19 +430,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_spinach",
-      "plant_tomato"
-    ],
-    "incompatible_plants": [
-      "plant_fennel"
-    ],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_spinach", "plant_tomato"],
+    "incompatible_plants": ["plant_fennel"],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Bolts quickly in heat."
   },
   {
@@ -592,10 +442,7 @@
     "scientific_name": "Petroselinum crispum",
     "family": "Apiaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "partial_shade",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -603,12 +450,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -619,18 +461,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_asparagus",
-      "plant_carrot"
-    ],
+    "companion_plants": ["plant_tomato", "plant_asparagus", "plant_carrot"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_carrot_fly"
-    ],
-    "common_diseases": [
-      "disease_crown_rot"
-    ],
+    "common_pests": ["pest_carrot_fly"],
+    "common_diseases": ["disease_crown_rot"],
     "notes": "Slow germination."
   },
   {
@@ -639,10 +473,7 @@
     "scientific_name": "Anethum graveolens",
     "family": "Apiaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -650,13 +481,7 @@
       "phosphorus_low",
       "potassium_low"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -667,21 +492,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_cucumber",
-      "plant_lettuce",
-      "plant_onion"
-    ],
-    "incompatible_plants": [
-      "plant_carrot",
-      "plant_fennel"
-    ],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_downy_mildew"
-    ],
+    "companion_plants": ["plant_cucumber", "plant_lettuce", "plant_onion"],
+    "incompatible_plants": ["plant_carrot", "plant_fennel"],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_downy_mildew"],
     "notes": "Attracts beneficial insects."
   },
   {
@@ -690,24 +504,11 @@
     "scientific_name": "Salvia officinalis",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "sandy",
-      "well_draining"
-    ],
+    "soil_type": ["sandy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -718,21 +519,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_carrot",
-      "plant_cabbage",
-      "plant_strawberry"
-    ],
-    "incompatible_plants": [
-      "plant_cucumber",
-      "plant_onion"
-    ],
-    "common_pests": [
-      "pest_spider_mites"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_carrot", "plant_cabbage", "plant_strawberry"],
+    "incompatible_plants": ["plant_cucumber", "plant_onion"],
+    "common_pests": ["pest_spider_mites"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Woody perennial."
   },
   {
@@ -741,14 +531,10 @@
     "scientific_name": "Allium schoenoprasum",
     "family": "Amaryllidaceae",
     "type": "herb",
-    "soil_type": [
-      "rich_loamy_well_drained"
-    ],
+    "soil_type": ["rich_loamy_well_drained"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate",
-    "nutrient_preferences": [
-      "nitrogen_moderate"
-    ],
+    "nutrient_preferences": ["nitrogen_moderate"],
     "growth_stage": [
       "germination",
       "seedling",
@@ -786,10 +572,7 @@
       "plant_nasturtium",
       "plant_lavender"
     ],
-    "incompatible_plants": [
-      "plant_asparagus",
-      "plant_bean"
-    ],
+    "incompatible_plants": ["plant_asparagus", "plant_bean"],
     "common_pests": [
       "pest_aphids",
       "pest_thrips",
@@ -810,10 +593,7 @@
     "scientific_name": "Helianthus annuus",
     "family": "Asteraceae",
     "type": "flower",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -821,13 +601,7 @@
       "phosphorus_high",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -838,20 +612,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_cucumber",
-      "plant_squash"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_rust"
-    ],
+    "companion_plants": ["plant_corn", "plant_cucumber", "plant_squash"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_rust"],
     "notes": "Allelopathic properties."
   },
   {
@@ -860,10 +624,7 @@
     "scientific_name": "Zinnia elegans",
     "family": "Asteraceae",
     "type": "flower",
-    "soil_type": [
-      "loamy",
-      "neutral"
-    ],
+    "soil_type": ["loamy", "neutral"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -871,12 +632,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -887,17 +643,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_cucumber"
-    ],
+    "companion_plants": ["plant_tomato", "plant_cucumber"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_japanese_beetle"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "common_pests": ["pest_japanese_beetle"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Attracts butterflies."
   },
   {
@@ -906,10 +655,7 @@
     "scientific_name": "Petunia Ã— hybrida",
     "family": "Solanaceae",
     "type": "flower",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -917,12 +663,7 @@
       "phosphorus_high",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -933,17 +674,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_bean"
-    ],
+    "companion_plants": ["plant_tomato", "plant_bean"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_botrytis"
-    ],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_botrytis"],
     "notes": "Requires deadheading."
   },
   {
@@ -952,9 +686,7 @@
     "scientific_name": "Cosmos bipinnatus",
     "family": "Asteraceae",
     "type": "flower",
-    "soil_type": [
-      "well_draining"
-    ],
+    "soil_type": ["well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "low",
     "nutrient_preferences": [
@@ -962,12 +694,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -978,17 +705,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_bean"
-    ],
+    "companion_plants": ["plant_tomato", "plant_bean"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Self-seeding annual."
   },
   {
@@ -997,23 +717,11 @@
     "scientific_name": "Tropaeolum majus",
     "family": "Tropaeolaceae",
     "type": "flower",
-    "soil_type": [
-      "well_draining",
-      "poor"
-    ],
+    "soil_type": ["well_draining", "poor"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -1024,18 +732,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_cucumber",
-      "plant_radish",
-      "plant_squash"
-    ],
+    "companion_plants": ["plant_cucumber", "plant_radish", "plant_squash"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_bacterial_wilt"
-    ],
+    "common_pests": ["pest_aphids"],
+    "common_diseases": ["disease_bacterial_wilt"],
     "notes": "Trap crop for aphids."
   },
   {
@@ -1044,9 +744,7 @@
     "scientific_name": "Pelargonium Ã— hortorum",
     "family": "Geraniaceae",
     "type": "flower",
-    "soil_type": [
-      "well_draining"
-    ],
+    "soil_type": ["well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1054,12 +752,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1070,18 +763,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_rose",
-      "plant_corn",
-      "plant_grape"
-    ],
+    "companion_plants": ["plant_rose", "plant_corn", "plant_grape"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_whitefly"
-    ],
-    "common_diseases": [
-      "disease_rust"
-    ],
+    "common_pests": ["pest_whitefly"],
+    "common_diseases": ["disease_rust"],
     "notes": "Tender perennial."
   },
   {
@@ -1090,10 +775,7 @@
     "scientific_name": "Solanum melongena",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1119,21 +801,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_thyme",
-      "plant_pepper"
-    ],
-    "incompatible_plants": [
-      "plant_fennel",
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_flea_beetle"
-    ],
-    "common_diseases": [
-      "disease_verticillium_wilt"
-    ],
+    "companion_plants": ["plant_bean", "plant_thyme", "plant_pepper"],
+    "incompatible_plants": ["plant_fennel", "plant_potato"],
+    "common_pests": ["pest_flea_beetle"],
+    "common_diseases": ["disease_verticillium_wilt"],
     "notes": "Requires warm soil."
   },
   {
@@ -1142,10 +813,7 @@
     "scientific_name": "Beta vulgaris subsp. vulgaris",
     "family": "Amaranthaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1153,12 +821,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1169,17 +832,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_onion"
-    ],
+    "companion_plants": ["plant_bean", "plant_onion"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_leaf_miner"
-    ],
-    "common_diseases": [
-      "disease_leaf_spot"
-    ],
+    "common_pests": ["pest_leaf_miner"],
+    "common_diseases": ["disease_leaf_spot"],
     "notes": "Tolerates light frost."
   },
   {
@@ -1188,10 +844,7 @@
     "scientific_name": "Eruca vesicaria",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "partial_shade_to_full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -1199,12 +852,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1228,11 +876,7 @@
       "plant_strawberry",
       "plant_bean_pole"
     ],
-    "common_pests": [
-      "pest_flea_beetle",
-      "pest_aphids",
-      "pest_slugs"
-    ],
+    "common_pests": ["pest_flea_beetle", "pest_aphids", "pest_slugs"],
     "common_diseases": [
       "disease_downy_mildew",
       "disease_bacterial_leaf_spot",
@@ -1246,10 +890,7 @@
     "scientific_name": "Brassica oleracea var. viridis",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1257,12 +898,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1273,19 +909,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_onion"
-    ],
-    "incompatible_plants": [
-      "plant_tomato"
-    ],
-    "common_pests": [
-      "pest_cabbage_worm"
-    ],
-    "common_diseases": [
-      "disease_clubroot"
-    ],
+    "companion_plants": ["plant_bean", "plant_onion"],
+    "incompatible_plants": ["plant_tomato"],
+    "common_pests": ["pest_cabbage_worm"],
+    "common_diseases": ["disease_clubroot"],
     "notes": "Cold hardy."
   },
   {
@@ -1294,10 +921,7 @@
     "scientific_name": "Brassica rapa subsp. rapa",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1322,19 +946,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_pea",
-      "plant_bean"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_root_maggot"
-    ],
-    "common_diseases": [
-      "disease_clubroot"
-    ],
+    "companion_plants": ["plant_pea", "plant_bean"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_root_maggot"],
+    "common_diseases": ["disease_clubroot"],
     "notes": "Greens edible."
   },
   {
@@ -1343,10 +958,7 @@
     "scientific_name": "Cucurbita moschata",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1354,13 +966,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -1371,19 +977,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_bean"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_squash_bug"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_corn", "plant_bean"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_squash_bug"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Long growing season."
   },
   {
@@ -1392,10 +989,7 @@
     "scientific_name": "Cucurbita pepo",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1403,13 +997,7 @@
       "phosphorus_high",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "May",
@@ -1420,20 +1008,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_bean",
-      "plant_sunflower"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_vine_borer"
-    ],
-    "common_diseases": [
-      "disease_bacterial_wilt"
-    ],
+    "companion_plants": ["plant_corn", "plant_bean", "plant_sunflower"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_vine_borer"],
+    "common_diseases": ["disease_bacterial_wilt"],
     "notes": "Requires space."
   },
   {
@@ -1442,10 +1020,7 @@
     "scientific_name": "Citrullus lanatus",
     "family": "Cucurbitaceae",
     "type": "fruit",
-    "soil_type": [
-      "sandy_loam",
-      "well_draining"
-    ],
+    "soil_type": ["sandy_loam", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1471,18 +1046,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_nasturtium"
-    ],
+    "companion_plants": ["plant_corn", "plant_nasturtium"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids",
-      "pest_cucumber_beetle"
-    ],
-    "common_diseases": [
-      "disease_fusarium_wilt"
-    ],
+    "common_pests": ["pest_aphids", "pest_cucumber_beetle"],
+    "common_diseases": ["disease_fusarium_wilt"],
     "notes": "Needs long warm season."
   },
   {
@@ -1491,9 +1058,7 @@
     "scientific_name": "Cucumis melo",
     "family": "Cucurbitaceae",
     "type": "fruit",
-    "soil_type": [
-      "sandy_loam"
-    ],
+    "soil_type": ["sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1501,13 +1066,7 @@
       "phosphorus_high",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -1518,19 +1077,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_radish"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_melon_fly"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_corn", "plant_radish"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_melon_fly"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Reduce water as it ripens."
   },
   {
@@ -1539,9 +1089,7 @@
     "scientific_name": "Capsicum frutescens",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy_rich_organic"
-    ],
+    "soil_type": ["loamy_rich_organic"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -1610,10 +1158,7 @@
     "scientific_name": "Carica papaya",
     "family": "Caricaceae",
     "type": "fruit",
-    "soil_type": [
-      "sandy_loam",
-      "rich"
-    ],
+    "soil_type": ["sandy_loam", "rich"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1621,12 +1166,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1637,16 +1177,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_banana"
-    ],
+    "companion_plants": ["plant_banana"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_whitefly"
-    ],
-    "common_diseases": [
-      "disease_ringspot_virus"
-    ],
+    "common_pests": ["pest_whitefly"],
+    "common_diseases": ["disease_ringspot_virus"],
     "notes": "Avoid waterlogging."
   },
   {
@@ -1655,9 +1189,7 @@
     "scientific_name": "Vigna unguiculata",
     "family": "Fabaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy"
-    ],
+    "soil_type": ["loamy"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1665,12 +1197,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "April",
@@ -1681,19 +1208,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_corn",
-      "plant_cucumber"
-    ],
-    "incompatible_plants": [
-      "plant_onion"
-    ],
-    "common_pests": [
-      "pest_thrips"
-    ],
-    "common_diseases": [
-      "disease_mosaic_virus"
-    ],
+    "companion_plants": ["plant_corn", "plant_cucumber"],
+    "incompatible_plants": ["plant_onion"],
+    "common_pests": ["pest_thrips"],
+    "common_diseases": ["disease_mosaic_virus"],
     "notes": "Vigorous climber."
   },
   {
@@ -1702,9 +1220,7 @@
     "scientific_name": "Annona cherimola",
     "family": "Annonaceae",
     "type": "fruit",
-    "soil_type": [
-      "medium_loamy_rich"
-    ],
+    "soil_type": ["medium_loamy_rich"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate_to_high",
     "nutrient_preferences": [
@@ -1761,9 +1277,7 @@
     "scientific_name": "Monstera deliciosa",
     "family": "Araceae",
     "type": "ornamental",
-    "soil_type": [
-      "peaty"
-    ],
+    "soil_type": ["peaty"],
     "sunlight": "bright_indirect_light",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -1771,10 +1285,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "cutting",
-      "vegetative"
-    ],
+    "growth_stage": ["cutting", "vegetative"],
     "seasonality": {
       "sowing": {
         "start_month": "January",
@@ -1785,16 +1296,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_pothos"
-    ],
+    "companion_plants": ["plant_pothos"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_thrips"
-    ],
-    "common_diseases": [
-      "disease_root_rot"
-    ],
+    "common_pests": ["pest_thrips"],
+    "common_diseases": ["disease_root_rot"],
     "notes": "Toxic to pets."
   },
   {
@@ -1803,9 +1308,7 @@
     "scientific_name": "Epipremnum aureum",
     "family": "Araceae",
     "type": "ornamental",
-    "soil_type": [
-      "potting_mix"
-    ],
+    "soil_type": ["potting_mix"],
     "sunlight": "low_indirect_light",
     "water_requirements": "low",
     "nutrient_preferences": [
@@ -1813,10 +1316,7 @@
       "phosphorus_low",
       "potassium_low"
     ],
-    "growth_stage": [
-      "cutting",
-      "vegetative"
-    ],
+    "growth_stage": ["cutting", "vegetative"],
     "seasonality": {
       "sowing": {
         "start_month": "January",
@@ -1829,12 +1329,8 @@
     },
     "companion_plants": [],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_mealybugs"
-    ],
-    "common_diseases": [
-      "disease_root_rot"
-    ],
+    "common_pests": ["pest_mealybugs"],
+    "common_diseases": ["disease_root_rot"],
     "notes": "Hardy air purifier."
   },
   {
@@ -1843,10 +1339,7 @@
     "scientific_name": "Musa acuminata",
     "family": "Musaceae",
     "type": "tree",
-    "soil_type": [
-      "rich",
-      "loamy"
-    ],
+    "soil_type": ["rich", "loamy"],
     "sunlight": "full_sun",
     "water_requirements": "very_high",
     "nutrient_preferences": [
@@ -1854,12 +1347,7 @@
       "phosphorus_moderate",
       "potassium_very_high"
     ],
-    "growth_stage": [
-      "vegetative",
-      "flowering",
-      "fruiting",
-      "harvest"
-    ],
+    "growth_stage": ["vegetative", "flowering", "fruiting", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "January",
@@ -1879,11 +1367,7 @@
       "plant_lemongrass"
     ],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_banana_weevil",
-      "pest_aphids",
-      "pest_thrips"
-    ],
+    "common_pests": ["pest_banana_weevil", "pest_aphids", "pest_thrips"],
     "common_diseases": [
       "disease_panama_disease",
       "disease_black_sigatoka",
@@ -1897,10 +1381,7 @@
     "scientific_name": "Theobroma cacao",
     "family": "Malvaceae",
     "type": "tree",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "partial_shade",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1908,12 +1389,7 @@
       "phosphorus_high",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "January",
@@ -1924,16 +1400,10 @@
         "end_month": "March"
       }
     },
-    "companion_plants": [
-      "plant_banana"
-    ],
+    "companion_plants": ["plant_banana"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_pod_borer"
-    ],
-    "common_diseases": [
-      "disease_black_pod"
-    ],
+    "common_pests": ["pest_pod_borer"],
+    "common_diseases": ["disease_black_pod"],
     "notes": "Shade tree required."
   },
   {
@@ -1942,9 +1412,7 @@
     "scientific_name": "Lagenaria siceraria",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "sandy_loam"
-    ],
+    "soil_type": ["sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1952,12 +1420,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "seed",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -1968,18 +1431,10 @@
         "end_month": "November"
       }
     },
-    "companion_plants": [
-      "plant_corn"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_fruit_fly"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_corn"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_fruit_fly"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Night flowering."
   },
   {
@@ -1988,10 +1443,7 @@
     "scientific_name": "Mentha",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "moist",
-      "rich"
-    ],
+    "soil_type": ["moist", "rich"],
     "sunlight": "partial_shade",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -1999,11 +1451,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "cutting",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["cutting", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2014,19 +1462,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_cabbage"
-    ],
-    "incompatible_plants": [
-      "plant_parsley"
-    ],
-    "common_pests": [
-      "pest_spider_mites"
-    ],
-    "common_diseases": [
-      "disease_rust"
-    ],
+    "companion_plants": ["plant_tomato", "plant_cabbage"],
+    "incompatible_plants": ["plant_parsley"],
+    "common_pests": ["pest_spider_mites"],
+    "common_diseases": ["disease_rust"],
     "notes": "Invasive roots."
   },
   {
@@ -2035,10 +1474,7 @@
     "scientific_name": "Prunus armeniaca",
     "family": "Rosaceae",
     "type": "fruit_tree",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "variable_high_during_fruiting",
     "nutrient_preferences": [
@@ -2098,9 +1534,7 @@
     "scientific_name": "Prunus domestica",
     "family": "Rosaceae",
     "type": "fruit_tree",
-    "soil_type": [
-      "loamy"
-    ],
+    "soil_type": ["loamy"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2108,11 +1542,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "sapling",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["sapling", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "November",
@@ -2123,18 +1553,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_lavender"
-    ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_scale"
-    ],
-    "common_diseases": [
-      "disease_black_knot"
-    ],
+    "companion_plants": ["plant_lavender"],
+    "incompatible_plants": ["plant_potato"],
+    "common_pests": ["pest_scale"],
+    "common_diseases": ["disease_black_knot"],
     "notes": "Needs cross pollination."
   },
   {
@@ -2143,10 +1565,7 @@
     "scientific_name": "Solanum lycopersicum",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2178,19 +1597,9 @@
       "plant_marigold",
       "plant_carrot"
     ],
-    "incompatible_plants": [
-      "plant_cabbage",
-      "plant_fennel",
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_hornworm",
-      "pest_whitefly"
-    ],
-    "common_diseases": [
-      "disease_blight",
-      "disease_blossom_end_rot"
-    ],
+    "incompatible_plants": ["plant_cabbage", "plant_fennel", "plant_potato"],
+    "common_pests": ["pest_hornworm", "pest_whitefly"],
+    "common_diseases": ["disease_blight", "disease_blossom_end_rot"],
     "notes": "Requires staking and consistent watering."
   },
   {
@@ -2199,10 +1608,7 @@
     "scientific_name": "Solanum tuberosum",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "slightly_acidic"
-    ],
+    "soil_type": ["loamy", "slightly_acidic"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2227,23 +1633,14 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_corn",
-      "plant_cabbage"
-    ],
+    "companion_plants": ["plant_bean", "plant_corn", "plant_cabbage"],
     "incompatible_plants": [
       "plant_tomato",
       "plant_cucumber",
       "plant_sunflower"
     ],
-    "common_pests": [
-      "pest_colorado_beetle"
-    ],
-    "common_diseases": [
-      "disease_scab",
-      "disease_late_blight"
-    ],
+    "common_pests": ["pest_colorado_beetle"],
+    "common_diseases": ["disease_scab", "disease_late_blight"],
     "notes": "Hill soil around stems to increase yield."
   },
   {
@@ -2252,10 +1649,7 @@
     "scientific_name": "Daucus carota subsp. sativus",
     "family": "Apiaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loose_sandy_loam",
-      "stone_free"
-    ],
+    "soil_type": ["loose_sandy_loam", "stone_free"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -2324,10 +1718,7 @@
     "scientific_name": "Allium sativum",
     "family": "Amaryllidaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2335,12 +1726,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "clove",
-      "vegetative",
-      "bulb_formation",
-      "harvest"
-    ],
+    "growth_stage": ["clove", "vegetative", "bulb_formation", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "October",
@@ -2351,21 +1737,10 @@
         "end_month": "August"
       }
     },
-    "companion_plants": [
-      "plant_tomato",
-      "plant_rose",
-      "plant_beet"
-    ],
-    "incompatible_plants": [
-      "plant_bean",
-      "plant_pea"
-    ],
-    "common_pests": [
-      "pest_onion_maggot"
-    ],
-    "common_diseases": [
-      "disease_white_rot"
-    ],
+    "companion_plants": ["plant_tomato", "plant_rose", "plant_beet"],
+    "incompatible_plants": ["plant_bean", "plant_pea"],
+    "common_pests": ["pest_onion_maggot"],
+    "common_diseases": ["disease_white_rot"],
     "notes": "Plant in fall for summer harvest."
   },
   {
@@ -2374,10 +1749,7 @@
     "scientific_name": "Spinacia oleracea",
     "family": "Amaranthaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "partial_shade",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2385,12 +1757,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2401,18 +1768,10 @@
         "end_month": "July"
       }
     },
-    "companion_plants": [
-      "plant_strawberry",
-      "plant_pea",
-      "plant_chilli"
-    ],
+    "companion_plants": ["plant_strawberry", "plant_pea", "plant_chilli"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_leaf_miner"
-    ],
-    "common_diseases": [
-      "disease_downy_mildew"
-    ],
+    "common_pests": ["pest_leaf_miner"],
+    "common_diseases": ["disease_downy_mildew"],
     "notes": "Cool season crop; bolts in heat."
   },
   {
@@ -2421,10 +1780,7 @@
     "scientific_name": "Lactuca sativa",
     "family": "Asteraceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "moist"
-    ],
+    "soil_type": ["loamy", "moist"],
     "sunlight": "partial_shade",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2432,12 +1788,7 @@
       "phosphorus_low",
       "potassium_low"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2448,21 +1799,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_carrot",
-      "plant_radish",
-      "plant_onion"
-    ],
-    "incompatible_plants": [
-      "plant_celery"
-    ],
-    "common_pests": [
-      "pest_slugs",
-      "pest_aphids"
-    ],
-    "common_diseases": [
-      "disease_leaf_spot"
-    ],
+    "companion_plants": ["plant_carrot", "plant_radish", "plant_onion"],
+    "incompatible_plants": ["plant_celery"],
+    "common_pests": ["pest_slugs", "pest_aphids"],
+    "common_diseases": ["disease_leaf_spot"],
     "notes": "Succession planting recommended."
   },
   {
@@ -2471,10 +1811,7 @@
     "scientific_name": "Brassica oleracea var. sabellica",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2482,12 +1819,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2498,21 +1830,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_onion",
-      "plant_bean",
-      "plant_beet"
-    ],
-    "incompatible_plants": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
-    "common_pests": [
-      "pest_cabbage_worm"
-    ],
-    "common_diseases": [
-      "disease_clubroot"
-    ],
+    "companion_plants": ["plant_onion", "plant_bean", "plant_beet"],
+    "incompatible_plants": ["plant_strawberry", "plant_tomato"],
+    "common_pests": ["pest_cabbage_worm"],
+    "common_diseases": ["disease_clubroot"],
     "notes": "Flavor improves after frost."
   },
   {
@@ -2521,10 +1842,7 @@
     "scientific_name": "Raphanus sativus",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "sandy",
-      "loamy"
-    ],
+    "soil_type": ["sandy", "loamy"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2532,12 +1850,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "root_development",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "root_development", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2548,20 +1861,10 @@
         "end_month": "October"
       }
     },
-    "companion_plants": [
-      "plant_cucumber",
-      "plant_lettuce",
-      "plant_pea"
-    ],
-    "incompatible_plants": [
-      "plant_hyssop"
-    ],
-    "common_pests": [
-      "pest_flea_beetle"
-    ],
-    "common_diseases": [
-      "disease_downy_mildew"
-    ],
+    "companion_plants": ["plant_cucumber", "plant_lettuce", "plant_pea"],
+    "incompatible_plants": ["plant_hyssop"],
+    "common_pests": ["pest_flea_beetle"],
+    "common_diseases": ["disease_downy_mildew"],
     "notes": "Fastest growing crop."
   },
   {
@@ -2570,10 +1873,7 @@
     "scientific_name": "Asparagus officinalis",
     "family": "Asparagaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun_tolerates_partial",
     "water_requirements": "high_first_year_moderate_after",
     "nutrient_preferences": [
@@ -2629,10 +1929,7 @@
     "scientific_name": "Fragaria Ã— ananassa",
     "family": "Rosaceae",
     "type": "fruit",
-    "soil_type": [
-      "loamy",
-      "acidic"
-    ],
+    "soil_type": ["loamy", "acidic"],
     "sunlight": "full_sun",
     "water_requirements": "moderate_to_high",
     "nutrient_preferences": [
@@ -2657,23 +1954,14 @@
         "end_month": "August"
       }
     },
-    "companion_plants": [
-      "plant_spinach",
-      "plant_bean",
-      "plant_thyme"
-    ],
+    "companion_plants": ["plant_spinach", "plant_bean", "plant_thyme"],
     "incompatible_plants": [
       "plant_cabbage",
       "plant_broccoli",
       "plant_cauliflower"
     ],
-    "common_pests": [
-      "pest_slugs",
-      "pest_birds"
-    ],
-    "common_diseases": [
-      "disease_gray_mold"
-    ],
+    "common_pests": ["pest_slugs", "pest_birds"],
+    "common_diseases": ["disease_gray_mold"],
     "notes": "Mulch with straw to keep fruit off ground."
   },
   {
@@ -2682,23 +1970,11 @@
     "scientific_name": "Salvia rosmarinus",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "sandy",
-      "well_draining"
-    ],
+    "soil_type": ["sandy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "cutting",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["cutting", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2709,18 +1985,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_cabbage",
-      "plant_carrot"
-    ],
+    "companion_plants": ["plant_bean", "plant_cabbage", "plant_carrot"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_spider_mites"
-    ],
-    "common_diseases": [
-      "disease_root_rot"
-    ],
+    "common_pests": ["pest_spider_mites"],
+    "common_diseases": ["disease_root_rot"],
     "notes": "Perennial; avoid overwatering."
   },
   {
@@ -2729,10 +1997,7 @@
     "scientific_name": "Ocimum basilicum",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -2740,13 +2005,7 @@
       "phosphorus_low",
       "potassium_low"
     ],
-    "growth_stage": [
-      "seed",
-      "seedling",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "growth_stage": ["seed", "seedling", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "start_month": "April",
       "end_month": "June"
@@ -2785,24 +2044,11 @@
     "scientific_name": "Lavandula",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "sandy",
-      "well_draining",
-      "alkaline"
-    ],
+    "soil_type": ["sandy", "well_draining", "alkaline"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "nitrogen_low",
-      "phosphorus_low",
-      "potassium_low"
-    ],
-    "growth_stage": [
-      "cutting",
-      "vegetative",
-      "flowering",
-      "harvest"
-    ],
+    "nutrient_preferences": ["nitrogen_low", "phosphorus_low", "potassium_low"],
+    "growth_stage": ["cutting", "vegetative", "flowering", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -2813,17 +2059,10 @@
         "end_month": "August"
       }
     },
-    "companion_plants": [
-      "plant_plum",
-      "plant_rose"
-    ],
+    "companion_plants": ["plant_plum", "plant_rose"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_whitefly"
-    ],
-    "common_diseases": [
-      "disease_root_rot"
-    ],
+    "common_pests": ["pest_whitefly"],
+    "common_diseases": ["disease_root_rot"],
     "notes": "Drought tolerant once established."
   },
   {
@@ -2832,10 +2071,7 @@
     "scientific_name": "Zea mays",
     "family": "Poaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "fertile"
-    ],
+    "soil_type": ["loamy", "fertile"],
     "sunlight": "full_sun",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -2861,20 +2097,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_bean",
-      "plant_squash",
-      "plant_cucumber"
-    ],
-    "incompatible_plants": [
-      "plant_tomato"
-    ],
-    "common_pests": [
-      "pest_corn_earworm"
-    ],
-    "common_diseases": [
-      "disease_smut"
-    ],
+    "companion_plants": ["plant_bean", "plant_squash", "plant_cucumber"],
+    "incompatible_plants": ["plant_tomato"],
+    "common_pests": ["pest_corn_earworm"],
+    "common_diseases": ["disease_smut"],
     "notes": "Wind pollinated; plant in blocks for better pollination."
   },
   {
@@ -2883,10 +2109,7 @@
     "scientific_name": "Pisum sativum",
     "family": "Fabaceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -2912,22 +2135,10 @@
         "end_month": "July"
       }
     },
-    "companion_plants": [
-      "plant_carrot",
-      "plant_radish",
-      "plant_turnip"
-    ],
-    "incompatible_plants": [
-      "plant_onion",
-      "plant_garlic"
-    ],
-    "common_pests": [
-      "pest_aphids",
-      "pest_pea_weevil"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew"
-    ],
+    "companion_plants": ["plant_carrot", "plant_radish", "plant_turnip"],
+    "incompatible_plants": ["plant_onion", "plant_garlic"],
+    "common_pests": ["pest_aphids", "pest_pea_weevil"],
+    "common_diseases": ["disease_powdery_mildew"],
     "notes": "Nitrogen fixer; cool season crop."
   },
   {
@@ -2936,16 +2147,10 @@
     "scientific_name": "Vaccinium corymbosum",
     "family": "Ericaceae",
     "type": "fruit",
-    "soil_type": [
-      "peaty",
-      "highly_acidic",
-      "sandy_loam"
-    ],
+    "soil_type": ["peaty", "highly_acidic", "sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "high_consistent",
-    "nutrient_preferences": [
-      "balanced_low_concentration"
-    ],
+    "nutrient_preferences": ["balanced_low_concentration"],
     "growth_stage": [
       "dormancy",
       "bud_swell",
@@ -3003,10 +2208,7 @@
     "scientific_name": "Rubus idaeus",
     "family": "Rosaceae",
     "type": "fruit",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -3014,13 +2216,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "cane",
-      "vegetative",
-      "flowering",
-      "fruiting",
-      "harvest"
-    ],
+    "growth_stage": ["cane", "vegetative", "flowering", "fruiting", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "November",
@@ -3031,20 +2227,10 @@
         "end_month": "September"
       }
     },
-    "companion_plants": [
-      "plant_garlic",
-      "plant_tansy"
-    ],
-    "incompatible_plants": [
-      "plant_blackberry",
-      "plant_potato"
-    ],
-    "common_pests": [
-      "pest_cane_borer"
-    ],
-    "common_diseases": [
-      "disease_cane_blight"
-    ],
+    "companion_plants": ["plant_garlic", "plant_tansy"],
+    "incompatible_plants": ["plant_blackberry", "plant_potato"],
+    "common_pests": ["pest_cane_borer"],
+    "common_diseases": ["disease_cane_blight"],
     "notes": "Prune second-year canes after harvest."
   },
   {
@@ -3053,11 +2239,7 @@
     "scientific_name": "Zingiber officinale",
     "family": "Zingiberaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "rich",
-      "loose"
-    ],
+    "soil_type": ["loamy", "rich", "loose"],
     "sunlight": "partial_shade",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -3065,11 +2247,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "rhizome",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["rhizome", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "February",
@@ -3080,17 +2258,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_turmeric",
-      "plant_chilli"
-    ],
+    "companion_plants": ["plant_turmeric", "plant_chilli"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_thrips"
-    ],
-    "common_diseases": [
-      "disease_rhizome_rot"
-    ],
+    "common_pests": ["pest_thrips"],
+    "common_diseases": ["disease_rhizome_rot"],
     "notes": "Tropical perennial; requires high humidity."
   },
   {
@@ -3099,10 +2270,7 @@
     "scientific_name": "Curcuma longa",
     "family": "Zingiberaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy",
-      "rich"
-    ],
+    "soil_type": ["loamy", "rich"],
     "sunlight": "partial_shade",
     "water_requirements": "high",
     "nutrient_preferences": [
@@ -3110,11 +2278,7 @@
       "phosphorus_moderate",
       "potassium_high"
     ],
-    "growth_stage": [
-      "rhizome",
-      "vegetative",
-      "harvest"
-    ],
+    "growth_stage": ["rhizome", "vegetative", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "February",
@@ -3125,16 +2289,10 @@
         "end_month": "January"
       }
     },
-    "companion_plants": [
-      "plant_ginger"
-    ],
+    "companion_plants": ["plant_ginger"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_rhizome_scale"
-    ],
-    "common_diseases": [
-      "disease_leaf_blotch"
-    ],
+    "common_pests": ["pest_rhizome_scale"],
+    "common_diseases": ["disease_leaf_blotch"],
     "notes": "Long growing season (9 months)."
   },
   {
@@ -3143,11 +2301,7 @@
     "scientific_name": "Citrus Ã— limon",
     "family": "Rutaceae",
     "type": "fruit_tree",
-    "soil_type": [
-      "loamy",
-      "well_draining",
-      "slightly_acidic"
-    ],
+    "soil_type": ["loamy", "well_draining", "slightly_acidic"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
     "nutrient_preferences": [
@@ -3172,18 +2326,10 @@
         "end_month": "December"
       }
     },
-    "companion_plants": [
-      "plant_rosemary",
-      "plant_thyme"
-    ],
+    "companion_plants": ["plant_rosemary", "plant_thyme"],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_scale",
-      "pest_citrus_miner"
-    ],
-    "common_diseases": [
-      "disease_citrus_canker"
-    ],
+    "common_pests": ["pest_scale", "pest_citrus_miner"],
+    "common_diseases": ["disease_citrus_canker"],
     "notes": "Sensitive to frost; heavy feeder."
   },
   {
@@ -3192,15 +2338,10 @@
     "scientific_name": "Apium graveolens",
     "family": "Apiaceae",
     "type": "vegetable",
-    "soil_type": [
-      "rich_loamy_moist_organic"
-    ],
+    "soil_type": ["rich_loamy_moist_organic"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_very_high",
-    "nutrient_preferences": [
-      "nitrogen_high",
-      "potassium_high"
-    ],
+    "nutrient_preferences": ["nitrogen_high", "potassium_high"],
     "growth_stage": [
       "seedling",
       "transplanting",
@@ -3257,9 +2398,7 @@
     "scientific_name": "Capsicum annuum",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "rich_sandy_loam"
-    ],
+    "soil_type": ["rich_sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -3325,10 +2464,7 @@
     "scientific_name": "Rubus fruticosus",
     "family": "Rosaceae",
     "type": "fruit",
-    "soil_type": [
-      "loamy",
-      "well_draining"
-    ],
+    "soil_type": ["loamy", "well_draining"],
     "sunlight": "full_sun",
     "water_requirements": "moderate_to_high_during_fruiting",
     "nutrient_preferences": [
@@ -3389,9 +2525,7 @@
     "scientific_name": "Brassica rapa subsp. chinensis",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "rich_loamy_well_drained"
-    ],
+    "soil_type": ["rich_loamy_well_drained"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -3427,11 +2561,7 @@
       "plant_pea",
       "plant_bean"
     ],
-    "incompatible_plants": [
-      "plant_cabbage",
-      "plant_kohlrabi",
-      "plant_radish"
-    ],
+    "incompatible_plants": ["plant_cabbage", "plant_kohlrabi", "plant_radish"],
     "common_pests": [
       "pest_flea_beetles",
       "pest_cabbage_loopers",
@@ -3452,15 +2582,10 @@
     "scientific_name": "Borago officinalis",
     "family": "Boraginaceae",
     "type": "herb",
-    "soil_type": [
-      "fertile",
-      "well_draining"
-    ],
+    "soil_type": ["fertile", "well_draining"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "low_to_moderate",
-    "nutrient_preferences": [
-      "balanced_organic"
-    ],
+    "nutrient_preferences": ["balanced_organic"],
     "growth_stage": [
       "germination",
       "leaf_production",
@@ -3486,15 +2611,8 @@
       "plant_broccoli"
     ],
     "incompatible_plants": [],
-    "common_pests": [
-      "pest_aphids",
-      "pest_slugs",
-      "pest_spider_mites"
-    ],
-    "common_diseases": [
-      "disease_powdery_mildew",
-      "disease_leaf_spot"
-    ],
+    "common_pests": ["pest_aphids", "pest_slugs", "pest_spider_mites"],
+    "common_diseases": ["disease_powdery_mildew", "disease_leaf_spot"],
     "notes": "Attracts pollinators. Deep taproot; improves soil quality."
   },
   {
@@ -3503,9 +2621,7 @@
     "scientific_name": "Brassica oleracea var. gemmifera",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "rich_loamy_moist_heavy"
-    ],
+    "soil_type": ["rich_loamy_moist_heavy"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_high",
     "nutrient_preferences": [
@@ -3573,9 +2689,7 @@
     "scientific_name": "Brassica oleracea var. capitata",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "rich_loamy_well_drained"
-    ],
+    "soil_type": ["rich_loamy_well_drained"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate_to_high",
     "nutrient_preferences": [
@@ -3583,13 +2697,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seedling",
-      "rosette",
-      "folding",
-      "heading",
-      "harvest"
-    ],
+    "growth_stage": ["seedling", "rosette", "folding", "heading", "harvest"],
     "seasonality": {
       "sowing": {
         "start_month": "February",
@@ -3645,15 +2753,10 @@
     "scientific_name": "Cucumis melo",
     "family": "Cucurbitaceae",
     "type": "fruit",
-    "soil_type": [
-      "rich_sandy_loam"
-    ],
+    "soil_type": ["rich_sandy_loam"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_high_frequent",
-    "nutrient_preferences": [
-      "potassium_high",
-      "magnesium_moderate"
-    ],
+    "nutrient_preferences": ["potassium_high", "magnesium_moderate"],
     "growth_stage": [
       "germination",
       "vegetative",
@@ -3689,10 +2792,7 @@
       "plant_nasturtium",
       "plant_sunflower"
     ],
-    "incompatible_plants": [
-      "plant_potato",
-      "plant_cucumber"
-    ],
+    "incompatible_plants": ["plant_potato", "plant_cucumber"],
     "common_pests": [
       "pest_melon_aphid",
       "pest_cucumber_beetle",
@@ -3715,9 +2815,7 @@
     "scientific_name": "Coriandrum sativum",
     "family": "Apiaceae",
     "type": "herb",
-    "soil_type": [
-      "loamy_sandy_rich"
-    ],
+    "soil_type": ["loamy_sandy_rich"],
     "sunlight": "full_sun_to_partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -3754,11 +2852,7 @@
       "plant_dill",
       "plant_bean"
     ],
-    "incompatible_plants": [
-      "plant_fennel",
-      "plant_rosemary",
-      "plant_lavender"
-    ],
+    "incompatible_plants": ["plant_fennel", "plant_rosemary", "plant_lavender"],
     "common_pests": [
       "pest_aphids",
       "pest_thrips",
@@ -3781,14 +2875,10 @@
     "scientific_name": "Cosmos bipinnatus",
     "family": "Asteraceae",
     "type": "flower",
-    "soil_type": [
-      "medium_loamy_well_drained"
-    ],
+    "soil_type": ["medium_loamy_well_drained"],
     "sunlight": "full_sun",
     "water_requirements": "low_to_moderate",
-    "nutrient_preferences": [
-      "balanced_organic_low"
-    ],
+    "nutrient_preferences": ["balanced_organic_low"],
     "growth_stage": [
       "germination",
       "seedling",
@@ -3844,9 +2934,7 @@
     "scientific_name": "Cucumis sativus",
     "family": "Cucurbitaceae",
     "type": "vegetable",
-    "soil_type": [
-      "light_textured_rich_organic"
-    ],
+    "soil_type": ["light_textured_rich_organic"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_high",
     "nutrient_preferences": [
@@ -3922,15 +3010,10 @@
     "scientific_name": "Murraya koenigii",
     "family": "Rutaceae",
     "type": "herb",
-    "soil_type": [
-      "fertile_well_drained_slightly_acidic"
-    ],
+    "soil_type": ["fertile_well_drained_slightly_acidic"],
     "sunlight": "full_sun",
     "water_requirements": "moderate",
-    "nutrient_preferences": [
-      "nitrogen_high",
-      "balanced_organic_active"
-    ],
+    "nutrient_preferences": ["nitrogen_high", "balanced_organic_active"],
     "growth_stage": [
       "seed_germination",
       "sapling_establishment",
@@ -3988,14 +3071,10 @@
     "scientific_name": "Anethum graveolens",
     "family": "Apiaceae",
     "type": "herb",
-    "soil_type": [
-      "well_draining_fertile_organic"
-    ],
+    "soil_type": ["well_draining_fertile_organic"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
-    "nutrient_preferences": [
-      "low_to_moderate_organic"
-    ],
+    "nutrient_preferences": ["low_to_moderate_organic"],
     "growth_stage": [
       "seed_germination",
       "vegetative_growth",
@@ -4027,11 +3106,7 @@
       "plant_onion",
       "plant_basil"
     ],
-    "incompatible_plants": [
-      "plant_carrot",
-      "plant_fennel",
-      "plant_coriander"
-    ],
+    "incompatible_plants": ["plant_carrot", "plant_fennel", "plant_coriander"],
     "common_pests": [
       "pest_aphids",
       "pest_cabbage_looper",
@@ -4058,9 +3133,7 @@
     "scientific_name": "Solanum melongena",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "sandy_loam_well_drained"
-    ],
+    "soil_type": ["sandy_loam_well_drained"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_high",
     "nutrient_preferences": [
@@ -4100,9 +3173,7 @@
       "plant_nasturtium",
       "plant_spinach"
     ],
-    "incompatible_plants": [
-      "plant_potato"
-    ],
+    "incompatible_plants": ["plant_potato"],
     "common_pests": [
       "pest_aphids",
       "pest_whiteflies",
@@ -4131,9 +3202,7 @@
     "scientific_name": "Allium sativum",
     "family": "Amaryllidaceae",
     "type": "vegetable",
-    "soil_type": [
-      "well_drained_fertile_organic"
-    ],
+    "soil_type": ["well_drained_fertile_organic"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -4172,10 +3241,7 @@
       "plant_marigold",
       "plant_nasturtium"
     ],
-    "incompatible_plants": [
-      "plant_pea",
-      "plant_bean"
-    ],
+    "incompatible_plants": ["plant_pea", "plant_bean"],
     "common_pests": [
       "pest_bulb_mites",
       "pest_leek_moth",
@@ -4200,9 +3266,7 @@
     "scientific_name": "Zingiber officinale",
     "family": "Zingiberaceae",
     "type": "herb",
-    "soil_type": [
-      "loose_loamy_rich_organic"
-    ],
+    "soil_type": ["loose_loamy_rich_organic"],
     "sunlight": "partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -4259,9 +3323,7 @@
     "scientific_name": "Capsicum chinense",
     "family": "Solanaceae",
     "type": "vegetable",
-    "soil_type": [
-      "well_draining_fertile_loamy"
-    ],
+    "soil_type": ["well_draining_fertile_loamy"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -4328,9 +3390,7 @@
     "scientific_name": "Brassica oleracea var. sabellica",
     "family": "Brassicaceae",
     "type": "vegetable",
-    "soil_type": [
-      "fertile_well_drained_organic"
-    ],
+    "soil_type": ["fertile_well_drained_organic"],
     "sunlight": "full_sun",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [
@@ -4338,12 +3398,7 @@
       "phosphorus_moderate",
       "potassium_moderate"
     ],
-    "growth_stage": [
-      "seedling",
-      "teenager_young_plant",
-      "maturity",
-      "bolting"
-    ],
+    "growth_stage": ["seedling", "teenager_young_plant", "maturity", "bolting"],
     "seasonality": {
       "sowing": {
         "start_month": "March",
@@ -4369,10 +3424,7 @@
       "plant_beet",
       "plant_carrot"
     ],
-    "incompatible_plants": [
-      "plant_strawberry",
-      "plant_tomato"
-    ],
+    "incompatible_plants": ["plant_strawberry", "plant_tomato"],
     "common_pests": [
       "pest_aphids",
       "pest_cabbage_worms",
@@ -4399,14 +3451,10 @@
     "scientific_name": "Lavandula",
     "family": "Lamiaceae",
     "type": "herb",
-    "soil_type": [
-      "sandy_gritty_well_drained"
-    ],
+    "soil_type": ["sandy_gritty_well_drained"],
     "sunlight": "full_sun",
     "water_requirements": "low",
-    "nutrient_preferences": [
-      "low_fertility"
-    ],
+    "nutrient_preferences": ["low_fertility"],
     "growth_stage": [
       "seed_germination",
       "seedling_care",
@@ -4458,9 +3506,7 @@
     "scientific_name": "Lactuca sativa",
     "family": "Asteraceae",
     "type": "vegetable",
-    "soil_type": [
-      "loamy_moist_well_drained"
-    ],
+    "soil_type": ["loamy_moist_well_drained"],
     "sunlight": "partial_shade",
     "water_requirements": "consistent_moderate",
     "nutrient_preferences": [

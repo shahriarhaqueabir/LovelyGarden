@@ -6,14 +6,18 @@
 
 // --- SHARED TYPES ---
 export type ConfidenceScore = number; // 0.0 to 1.0
-export type EvidenceType = 'peer_reviewed' | 'extension_guideline' | 'horticultural_consensus' | 'user_reported';
+export type EvidenceType =
+  | "peer_reviewed"
+  | "extension_guideline"
+  | "horticultural_consensus"
+  | "user_reported";
 
 export interface SourceMetadata {
   id: string;
   name: string;
-  type: 'institution' | 'academic_extension' | 'research_paper' | 'community';
+  type: "institution" | "academic_extension" | "research_paper" | "community";
   url?: string;
-  credibility_tier: 'authoritative' | 'trusted' | 'experimental';
+  credibility_tier: "authoritative" | "trusted" | "experimental";
 }
 
 export interface GroundedFact {
@@ -28,9 +32,29 @@ export interface GroundedFact {
 }
 
 // --- 1. TIME & CALENDAR ---
-export type MonthId = 'jan' | 'feb' | 'mar' | 'apr' | 'may' | 'jun' | 'jul' | 'aug' | 'sep' | 'oct' | 'nov' | 'dec';
-export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
-export type GrowthStageId = 'seed' | 'germination' | 'seedling' | 'vegetative' | 'flowering' | 'fruiting' | 'harvest' | 'dormant';
+export type MonthId =
+  | "jan"
+  | "feb"
+  | "mar"
+  | "apr"
+  | "may"
+  | "jun"
+  | "jul"
+  | "aug"
+  | "sep"
+  | "oct"
+  | "nov"
+  | "dec";
+export type Season = "Spring" | "Summer" | "Autumn" | "Winter";
+export type GrowthStageId =
+  | "seed"
+  | "germination"
+  | "seedling"
+  | "vegetative"
+  | "flowering"
+  | "fruiting"
+  | "harvest"
+  | "dormant";
 
 export interface PlantStage {
   id: GrowthStageId;
@@ -49,15 +73,26 @@ export interface PlantSpecies {
   family?: string;
   genus?: string;
   species?: string;
-  categories: ('vegetable' | 'fruit' | 'herb' | 'flower' | 'root_crop' | 'leafy_green')[];
-  life_cycle: 'annual' | 'biennial' | 'perennial';
-  growth_habit: ('upright' | 'bushy' | 'vining' | 'trailing' | 'climbing')[];
-  photosynthesis_type?: 'C3' | 'C4' | 'CAM';
+  categories: (
+    | "vegetable"
+    | "fruit"
+    | "herb"
+    | "flower"
+    | "root_crop"
+    | "leafy_green"
+  )[];
+  life_cycle: "annual" | "biennial" | "perennial";
+  growth_habit: ("upright" | "bushy" | "vining" | "trailing" | "climbing")[];
+  photosynthesis_type?: "C3" | "C4" | "CAM";
   edible_parts: string[];
   toxic_parts: string[];
-  pollination_type: 'self_pollinating' | 'cross_pollinating' | 'wind' | 'insect';
+  pollination_type:
+    | "self_pollinating"
+    | "cross_pollinating"
+    | "wind"
+    | "insect";
   sowingSeason: Season[];
-  sowingMethod: 'Direct' | 'Transplant';
+  sowingMethod: "Direct" | "Transplant";
   stages: PlantStage[];
   companions: string[]; // IDs of other CatalogPlants
   antagonists: string[]; // IDs of incompatible plants
@@ -84,28 +119,35 @@ export interface PlantSpecies {
 // --- 3. CLIMATE & LOCATION ---
 export interface ClimateZone {
   id: string;
-  system: 'USDA' | 'Koppen';
+  system: "USDA" | "Koppen";
   min_temp_c?: number;
   max_temp_c?: number;
   description: string;
 }
 
 export interface UserLocation {
-  id: 'user_location';
+  id: "user_location";
   latitude?: number;
   longitude?: number;
-  hemisphere: 'North' | 'South';
+  hemisphere: "North" | "South";
   usda_zone?: string;
   koppen_climate?: string;
   frost_data: {
-    last_spring_frost?: string; 
+    last_spring_frost?: string;
     first_fall_frost?: string;
     frost_free_days?: number;
   };
 }
 
 // --- 4. PLANT ACTION RELATIONSHIPS ---
-export type PlantAction = 'sow_direct' | 'start_indoors' | 'transplant' | 'harvest' | 'prune' | 'water' | 'fertilize';
+export type PlantAction =
+  | "sow_direct"
+  | "start_indoors"
+  | "transplant"
+  | "harvest"
+  | "prune"
+  | "water"
+  | "fertilize";
 
 export interface ActionTimingRule extends GroundedFact {
   id: string;
@@ -116,31 +158,31 @@ export interface ActionTimingRule extends GroundedFact {
     soil_temp_max?: number;
     air_temp_min?: number;
     air_temp_max?: number;
-    frost_risk: 'none' | 'low' | 'high';
+    frost_risk: "none" | "low" | "high";
   };
-  relative_window: string; 
+  relative_window: string;
 }
 
 // --- 5. SOIL ---
 export interface SoilType {
   id: string;
-  texture: 'sand' | 'silt' | 'clay' | 'loam';
-  drainage: 'poor' | 'moderate' | 'well';
-  water_retention: 'low' | 'moderate' | 'high';
+  texture: "sand" | "silt" | "clay" | "loam";
+  drainage: "poor" | "moderate" | "well";
+  water_retention: "low" | "moderate" | "high";
 }
 
 export interface PlantSoilPreference extends GroundedFact {
   plant_id: string;
   preferred_ph_range: [number, number];
   preferred_soil_types: string[];
-  compaction_tolerance: 'low' | 'moderate' | 'high';
+  compaction_tolerance: "low" | "moderate" | "high";
 }
 
 // --- 6. PESTS & DISEASES ---
 export interface PestOrDisease {
   id: string;
   name: string;
-  type: 'insect' | 'fungal' | 'bacterial' | 'viral' | 'animal';
+  type: "insect" | "fungal" | "bacterial" | "viral" | "animal";
   scientific_name?: string;
   symptoms: string[];
 }
@@ -148,8 +190,8 @@ export interface PestOrDisease {
 export interface Treatment {
   id: string;
   name: string;
-  type: 'organic' | 'chemical' | 'cultural';
-  targets: string[]; 
+  type: "organic" | "chemical" | "cultural";
+  targets: string[];
   application_notes: string;
 }
 
@@ -157,8 +199,8 @@ export interface Treatment {
 export interface PlantRelationship extends GroundedFact {
   source_plant_id: string;
   target_plant_id: string;
-  relationship: 'beneficial' | 'antagonistic' | 'neutral';
-  mechanism: string[]; 
+  relationship: "beneficial" | "antagonistic" | "neutral";
+  mechanism: string[];
 }
 
 // --- 8. CALENDAR & SEASONAL INTELLIGENCE ---
@@ -173,8 +215,8 @@ export interface SeasonalRecommendation {
 // --- 10. AI REASONING RULES ---
 export interface ReasoningRule {
   id: string;
-  type: 'recommendation' | 'constraint' | 'diagnostic' | 'intervention';
-  priority: 1 | 2 | 3 | 4 | 5; 
+  type: "recommendation" | "constraint" | "diagnostic" | "intervention";
+  priority: 1 | 2 | 3 | 4 | 5;
   description: string;
   explanation_template: string;
 }
@@ -227,7 +269,7 @@ export interface DiagnosticEvent {
   diagnosis_id: string;
   plant_id: string;
   observed_symptoms: string[];
-  suspected_cause: string; 
+  suspected_cause: string;
   confidence_score: ConfidenceScore;
   recommended_action: string;
   sources: string[];

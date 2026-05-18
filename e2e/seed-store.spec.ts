@@ -1,12 +1,26 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Seed Store", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("should open seed store", async ({ page }) => {
-    await page.click('[title="Seed Store"]');
-    await expect(page.locator("text=Seed Store")).toBeVisible();
+  test("opens seed store and handles search states", async ({ page }) => {
+    await page.getByTitle("Open Seed Store").click();
+    await expect(
+      page.getByRole("heading", { name: "Seed Store" }),
+    ).toBeVisible();
+
+    const searchBox = page.getByPlaceholder(/Search .* species/i);
+    await expect(searchBox).toBeVisible();
+    await expect(page.getByText(/Showing \d+\/\d+/)).toBeVisible();
+
+    await searchBox.fill("unlikely-query-zzzz");
+    await expect(page.getByText("No species match your search.")).toBeVisible();
+
+    await page.getByTitle("Close").click();
+    await expect(
+      page.getByRole("heading", { name: "Seed Store" }),
+    ).toBeHidden();
   });
 });

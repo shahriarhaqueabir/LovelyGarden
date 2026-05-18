@@ -10,18 +10,23 @@ output*.log
 
 # Dependencies
 node_modules/
+node_modules_broken/
 .pnpm-store/
 package-lock.json
 yarn.lock
 
 # Build artifacts
 dist/
+dist2/
+dist_probe/
+dist.locked.*/
 dist-ssr/
 /dev-dist
 .next/
 .turbo/
 .vercel/
 .netlify/
+/artifacts/
 
 # Local environment variables
 .env
@@ -53,6 +58,7 @@ blackbox_mcp_settings.json
 .qodo/
 .gemini/
 .agent/
+.agents/
 .hooks/
 
 # RxDB / IndexedDB local files

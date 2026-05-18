@@ -1,4 +1,4 @@
-import { ExplanationPayload, ConfidenceScore } from '../schema/knowledge-graph';
+import { ExplanationPayload, ConfidenceScore } from "../schema/knowledge-graph";
 
 /**
  * EXPLAINABILITY WRAPPER
@@ -11,7 +11,7 @@ export const createExplanation = (
   reasons: string[],
   rules: string[],
   facts: string[],
-  sources: string[]
+  sources: string[],
 ): ExplanationPayload => {
   return {
     decision_id: decisionId,
@@ -20,12 +20,12 @@ export const createExplanation = (
     summary: reasons[0] || "No summary available.",
     detailed: {
       reasoning: reasons,
-      rules_applied: rules
+      rules_applied: rules,
     },
     technical: {
       facts_used: facts,
-      sources: sources
-    }
+      sources: sources,
+    },
   };
 };
 
@@ -36,15 +36,15 @@ export const explainSowing = (
   isEligible: boolean,
   reason: string,
   confidence: number,
-  sources: string[]
+  sources: string[],
 ): ExplanationPayload => {
   return createExplanation(
     `sow-${Date.now()}`,
-    isEligible ? 'allow_sow' : 'block_sow',
+    isEligible ? "allow_sow" : "block_sow",
     confidence,
     [reason],
-    ['rule_sowing_season_match', 'rule_climate_safety'],
+    ["rule_sowing_season_match", "rule_climate_safety"],
     [`is_eligible = ${isEligible}`],
-    sources
+    sources,
   );
 };
