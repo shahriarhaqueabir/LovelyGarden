@@ -17,7 +17,7 @@ export const WelcomeBackdrop: React.FC<WelcomeBackdropProps> = ({
         alt=""
         aria-hidden="true"
         fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover object-[47%_center]"
+        className="absolute inset-0 h-full w-full object-cover object-[47%_top]"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-black/10 to-black/55" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
