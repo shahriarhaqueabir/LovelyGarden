@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 import App from "./App.tsx";
 import "./index.css";
 import "./lib/i18n"; // Initialize i18n
@@ -8,6 +9,7 @@ import "./lib/i18n"; // Initialize i18n
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
+    <Analytics />
     <Toaster
       position="top-right"
       toastOptions={{
