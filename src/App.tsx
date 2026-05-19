@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BookOpenCheck, Cloud, LogOut, UserCircle } from "lucide-react";
+import {
+  BookOpenCheck,
+  Cloud,
+  LogOut,
+  Sparkles,
+  UserCircle,
+} from "lucide-react";
 import { hydrateDatabase, getDatabase } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
@@ -65,6 +71,7 @@ import {
   ensureCloudUserSettings,
   upsertCloudUserSettings,
 } from "./services/userSettingsService";
+import { clearGeminiConnection, hasConnectedGemini } from "./ai/geminiSettings";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +83,7 @@ const AppContent: React.FC = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(hasConnectedGemini);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const { user, loading: authLoading } = useAuth();
 
@@ -301,6 +309,23 @@ const AppContent: React.FC = () => {
     showSuccess("Cloud session disconnected.");
   };
 
+  const handleAssistantOpen = () => {
+    const connected = hasConnectedGemini();
+    setAiEnabled(connected);
+    if (connected) {
+      setShowGardenCoach(true);
+      return;
+    }
+    setShowGardenGuide(true);
+  };
+
+  const handleGeminiConnectionLost = () => {
+    clearGeminiConnection();
+    setAiEnabled(false);
+    setShowGardenCoach(false);
+    setShowGardenGuide(true);
+  };
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
       <header className="z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
@@ -519,12 +544,16 @@ const AppContent: React.FC = () => {
         {!showGardenGuide && !showGardenCoach && (
           <button
             type="button"
-            onClick={() => setShowGardenGuide(true)}
+            onClick={handleAssistantOpen}
             className="fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 bg-garden-500 text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
-            aria-label="Open Garden Guide"
-            title="Open Garden Guide"
+            aria-label={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
+            title={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
           >
-            <BookOpenCheck className="h-5 w-5" />
+            {aiEnabled ? (
+              <Sparkles className="h-5 w-5" />
+            ) : (
+              <BookOpenCheck className="h-5 w-5" />
+            )}
           </button>
         )}
         {showGardenGuide && (
@@ -534,6 +563,7 @@ const AppContent: React.FC = () => {
             hemisphere={hemisphere}
             weather={weather}
             locationName={locationName}
+            aiEnabled={aiEnabled}
             onClose={() => setShowGardenGuide(false)}
             onOpenGeminiCoach={() => {
               setShowGardenGuide(false);
@@ -549,6 +579,7 @@ const AppContent: React.FC = () => {
             weather={weather}
             locationName={locationName}
             onClose={() => setShowGardenCoach(false)}
+            onConnectionLost={handleGeminiConnectionLost}
           />
         )}
         <AuthDialog

@@ -27,6 +27,7 @@ interface GardenGuideSheetProps {
   hemisphere: "North" | "South";
   weather: WeatherData | null;
   locationName: string | null;
+  aiEnabled: boolean;
   onClose: () => void;
   onOpenGeminiCoach: () => void;
 }
@@ -77,6 +78,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
   hemisphere,
   weather,
   locationName,
+  aiEnabled,
   onClose,
   onOpenGeminiCoach,
 }) => {
@@ -159,7 +161,9 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
                   Garden Guide
                 </h2>
                 <p className="truncate text-[11px] font-bold text-stone-500">
-                  Rule-based care, no API key needed
+                  {aiEnabled
+                    ? "Rule guide with AI available"
+                    : "Rule-based care, no API key needed"}
                 </p>
               </div>
             </div>
@@ -291,14 +295,16 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
             >
               Refresh
             </button>
-            <button
-              type="button"
-              onClick={onOpenGeminiCoach}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
-            >
-              <Sparkles className="h-4 w-4" />
-              Ask AI
-            </button>
+            {aiEnabled && (
+              <button
+                type="button"
+                onClick={onOpenGeminiCoach}
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+              >
+                <Sparkles className="h-4 w-4" />
+                Ask AI
+              </button>
+            )}
           </div>
         </footer>
       </section>

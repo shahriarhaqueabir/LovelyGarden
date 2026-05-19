@@ -12,8 +12,10 @@ import type { PlantSpecies } from "../schema/knowledge-graph";
 import type { WeatherData } from "../services/weatherService";
 import {
   DEFAULT_GEMINI_MODEL,
+  clearGeminiConnection,
   getStoredGeminiApiKey,
   getStoredGeminiModel,
+  markGeminiConnected,
   removeStoredGeminiApiKey,
   storeGeminiApiKey,
   storeGeminiModel,
@@ -29,6 +31,7 @@ interface GardenCoachSheetProps {
   weather: WeatherData | null;
   locationName: string | null;
   onClose: () => void;
+  onConnectionLost?: () => void;
 }
 
 interface CoachMessage {
@@ -49,6 +52,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
   weather,
   locationName,
   onClose,
+  onConnectionLost,
 }) => {
   const [apiKey, setApiKey] = React.useState(getStoredGeminiApiKey);
   const [draftKey, setDraftKey] = React.useState(apiKey);
@@ -84,6 +88,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
     setApiKey("");
     setDraftKey("");
     setShowSettings(true);
+    onConnectionLost?.();
   };
 
   const sendMessage = async (rawMessage: string) => {
@@ -115,6 +120,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
         context,
         history: messages,
       });
+      markGeminiConnected();
       setMessages((current) => [
         ...current,
         {
@@ -124,6 +130,8 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
         },
       ]);
     } catch (caughtError) {
+      clearGeminiConnection();
+      onConnectionLost?.();
       setError(
         caughtError instanceof Error
           ? caughtError.message
