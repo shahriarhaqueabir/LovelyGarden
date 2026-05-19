@@ -17,6 +17,8 @@ import { logSeedPurchase } from "../db/queries";
 import { isSowingSeason } from "../logic/reasoning";
 import Fuse from "fuse.js";
 import { listPlantKnowledgeBase } from "../services/referenceDataService";
+import { useAuth } from "../hooks/useAuth";
+import { upsertCloudInventoryItem } from "../services/inventoryService";
 
 const GrowthGraph = React.lazy(async () => {
   const m = await import("./GrowthGraph");
@@ -577,6 +579,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
   onClose,
   currentDay = 1,
 }) => {
+  const { user } = useAuth();
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [selectedPlant, setSelectedPlant] = useState<PlantSpecies | null>(null);
   const [expandedPlantKB, setExpandedPlantKB] = useState<
@@ -708,6 +711,11 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
     };
 
     await db.inventory.insert(bagItem);
+    if (user) {
+      upsertCloudInventoryItem(user.id, bagItem).catch((error) => {
+        console.warn("Inventory cloud upsert failed:", error);
+      });
+    }
     await logSeedPurchase(catalogId, plant.name);
 
     setJustAdded(catalogId);

@@ -126,16 +126,19 @@ export const unplantSeed = async (plantId: string) => {
 
   const catalogId = plant.catalogId;
   const timestamp = Date.now();
+  const inventoryId = `inv-${catalogId}-${timestamp}`;
 
   // 1. Re-insert into inventory
   await db.inventory.insert({
-    id: `inv-${catalogId}-${timestamp}`,
+    id: inventoryId,
     catalogId,
     acquiredDate: timestamp,
   });
 
   // 2. Remove from planted
   await plant.remove();
+
+  return inventoryId;
 };
 
 // --- GARDEN MANAGEMENT ---
