@@ -74,9 +74,16 @@ import { clearGeminiConnection, hasConnectedGemini } from "./ai/geminiSettings";
 
 const queryClient = new QueryClient();
 
+const getDayOfYear = (date: Date) => {
+  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const yearStart = new Date(date.getFullYear(), 0, 1);
+
+  return Math.floor((today.getTime() - yearStart.getTime()) / 86400000) + 1;
+};
+
 const AppContent: React.FC = () => {
   const [catalog, setCatalog] = useState<PlantSpecies[]>([]);
-  const [currentDay, setCurrentDay] = useState(1);
+  const [currentDateTime, setCurrentDateTime] = useState(() => new Date());
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
@@ -88,6 +95,21 @@ const AppContent: React.FC = () => {
   const [savingOnboarding, setSavingOnboarding] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const { user, loading: authLoading } = useAuth();
+  const currentDay = React.useMemo(
+    () => getDayOfYear(currentDateTime),
+    [currentDateTime],
+  );
+  const currentDateTimeLabel = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(currentDateTime),
+    [currentDateTime],
+  );
 
   // New weather store
   const {
@@ -132,10 +154,20 @@ const AppContent: React.FC = () => {
     return activeAlerts.length > 0 ? activeAlerts : ["✅ Conditions Normal"];
   }, [weather]);
 
+  React.useEffect(() => {
+    const interval = window.setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 60000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
   // Automatic Shutdown Heartbeat
   React.useEffect(() => {
-    // We use a relative path since the launcher now serves the app
-    // and the heartbeat endpoint on the same port.
+    const localHeartbeatHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+    if (!localHeartbeatHosts.has(window.location.hostname)) return;
+
+    // The local launcher serves the app and heartbeat endpoint on the same port.
     const sendHeartbeat = () => {
       fetch("/api/heartbeat").catch(() => {
         // Launcher likely closed
@@ -197,7 +229,6 @@ const AppContent: React.FC = () => {
 
       const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
-        setCurrentDay(settings.currentDay || 1);
         setXp(settings.xp || 0);
         setHemisphere(
           (settings.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
@@ -207,7 +238,6 @@ const AppContent: React.FC = () => {
 
       settingsSub = db.settings.findOne("local-user").$.subscribe((s) => {
         if (s) {
-          setCurrentDay(s.currentDay || 1);
           setXp(s.xp || 0);
           setHemisphere(
             (s.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
@@ -347,7 +377,6 @@ const AppContent: React.FC = () => {
         ...(settings?.toJSON() ?? {
           id: "local-user",
           hemisphere,
-          city: "Dresden",
           currentDay,
           xp,
           dataVersion: 0,
@@ -539,6 +568,8 @@ const AppContent: React.FC = () => {
               <VirtualGardenTab
                 catalog={catalog}
                 currentDay={currentDay}
+                currentDateTimeLabel={currentDateTimeLabel}
+                currentTimestamp={currentDateTime.getTime()}
                 xp={xp}
                 alerts={alerts}
                 onOpenSeedStore={() => setShowSeedStore(true)}

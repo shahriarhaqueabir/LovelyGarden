@@ -136,7 +136,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
       };
     }
 
-    // currentDay is a real ms timestamp supplied by the parent (Date.now() + scrub offset).
+    // currentDay is a real ms timestamp supplied by the parent.
     const planted = item.plantedDate || 0;
     const completed = getCompletedStages(
       planted,

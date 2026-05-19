@@ -683,7 +683,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
     return fuse.search(q).map((result) => result.item);
   }, [mergedCatalog, debouncedQuery, fuse]);
 
-  // Check if current date is outside optimal sowing window for Dresden (Zone 7b)
+  // Check if current date is outside the plant's known sowing window.
   const isRiskyTiming = (
     plant: PlantSpecies & Partial<ExpandedPlantKB>,
   ): boolean => {

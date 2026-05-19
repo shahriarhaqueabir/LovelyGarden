@@ -6,15 +6,11 @@ import { useWeatherStore } from "../stores/weatherStore";
 import { reverseGeocode, debounce, MAX_SUGGESTIONS } from "../utils/geocoding";
 import { toast } from "../lib/toast";
 
-// Constants
-const DEFAULT_LATITUDE = 52.52; // Berlin coordinates as default
-const DEFAULT_LONGITUDE = 13.41;
-
 // Types
 interface LocationState {
   cityName: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   isCitySelected: boolean;
 }
 
@@ -36,8 +32,8 @@ export const WeatherSettings: React.FC = () => {
 
   const [locationState, setLocationState] = useState<LocationState>({
     cityName: "Select",
-    latitude: DEFAULT_LATITUDE,
-    longitude: DEFAULT_LONGITUDE,
+    latitude: null,
+    longitude: null,
     isCitySelected: false,
   });
 
@@ -140,7 +136,12 @@ export const WeatherSettings: React.FC = () => {
 
   const onSubmit = async () => {
     // Use the location state which is always up to date
-    if (locationState.cityName && locationState.cityName !== "Select") {
+    if (
+      locationState.cityName &&
+      locationState.cityName !== "Select" &&
+      locationState.latitude !== null &&
+      locationState.longitude !== null
+    ) {
       // Use the coordinates from the selected city
       setLocation(
         locationState.latitude,
@@ -234,8 +235,8 @@ export const WeatherSettings: React.FC = () => {
             Save Location
           </button>
 
-          {(storeLatitude !== null || locationState.latitude) &&
-            (storeLongitude !== null || locationState.longitude) && (
+          {locationState.latitude !== null &&
+            locationState.longitude !== null && (
               <div className="text-sm text-stone-400">
                 Current: {locationState.latitude.toFixed(2)},{" "}
                 {locationState.longitude.toFixed(2)}

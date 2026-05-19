@@ -71,8 +71,6 @@ export const msToElapsedDays = (
  *                              Stored as plantedDate in the DB.
  * @param stages              - Ordered stage definitions with durationDays.
  * @param nowTimestampMs      - Real "now" timestamp (ms since epoch).
- *                              Use Date.now() for live view, or
- *                              plantedTimestampMs + simulationDays * 86_400_000 for scrubbing.
  */
 export const calculateCurrentStage = (
   plantedTimestampMs: number,
