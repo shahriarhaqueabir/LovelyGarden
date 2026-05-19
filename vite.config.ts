@@ -51,13 +51,13 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          cleanupOutdatedCaches: true,
           navigateFallback: "/index.html",
           globPatterns: [
             "**/index.html",
             "**/manifest.webmanifest",
             "**/*.css",
-            "**/vendor-*.js",
-            "**/index-*.js",
+            "**/*.js",
           ],
           runtimeCaching: [
             {

@@ -86,7 +86,7 @@ export const getDatabase = async () => {
       const db = await createRxDatabase({
         name: "raidas_garden_v10",
         storage: createStorage(),
-        ignoreDuplicate: true,
+        closeDuplicates: true,
       }).catch((err) => {
         console.error("CRITICAL: createRxDatabase rejected:", err);
         throw err;
