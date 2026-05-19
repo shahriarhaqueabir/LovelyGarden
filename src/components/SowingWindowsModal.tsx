@@ -416,8 +416,8 @@ export const SowingWindowsModal: React.FC<SowingWindowsModalProps> = ({
         </div>
 
         <div className="p-4 border-t border-stone-800 text-[10px] text-stone-600">
-          Note: Month/season is derived from the simulated day (approximation).
-          Detailed sowing windows from knowledge base. Current month highlighted
+          Note: Month/season is derived from the real calendar date. Detailed
+          sowing windows come from the knowledge base. Current month highlighted
           in sowing period.
         </div>
       </div>

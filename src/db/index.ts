@@ -35,10 +35,12 @@ if (!(window as any)._rxdbPluginsInit) {
   } catch {
     console.debug("Migration plugin already added");
   }
-  try {
-    addRxPlugin(RxDBDevModePlugin);
-  } catch {
-    console.debug("DevMode plugin already added");
+  if (import.meta.env.DEV) {
+    try {
+      addRxPlugin(RxDBDevModePlugin);
+    } catch {
+      console.debug("DevMode plugin already added");
+    }
   }
   (window as any)._rxdbPluginsInit = true;
 }
@@ -48,6 +50,16 @@ if (!(window as any)._rxdbPluginsInit) {
  */
 let dbPromise: Promise<RxDatabase> | null = null;
 let isInitializing = false;
+
+const createStorage = () => {
+  const storage = getRxStorageDexie();
+
+  return import.meta.env.DEV
+    ? wrappedValidateAjvStorage({
+        storage,
+      })
+    : storage;
+};
 
 export const getDatabase = async () => {
   // If already initializing, wait for it
@@ -73,9 +85,7 @@ export const getDatabase = async () => {
       console.log("Initializing RxDB [raidas_garden_v10]...");
       const db = await createRxDatabase({
         name: "raidas_garden_v10",
-        storage: wrappedValidateAjvStorage({
-          storage: getRxStorageDexie(),
-        }),
+        storage: createStorage(),
         ignoreDuplicate: true,
       }).catch((err) => {
         console.error("CRITICAL: createRxDatabase rejected:", err);
@@ -508,93 +518,6 @@ const mapToCatalogDocument = (plant: RawPlantData): CatalogDocument => {
   };
 };
 
-const handleDemoGardens = async (db: RxDatabase) => {
-  const existingGardens = await db.gardens.find().exec();
-  const existingIds = new Set(existingGardens.map((g) => g.get("id")));
-
-  const demoGardens = [
-    {
-      id: "main-garden",
-      name: "Garden 1",
-      type: "In-ground",
-      soilType: "Loam",
-      sunExposure: "Full Sun",
-      gridWidth: 4,
-      gridHeight: 4,
-      createdDate: 1677640000000,
-      backgroundColor: "#14532d",
-      theme: "forest",
-    },
-    {
-      id: "moon-greenhouse",
-      name: "Garden 2",
-      type: "Greenhouse",
-      soilType: "Custom Mix",
-      sunExposure: "Full Shade",
-      gridWidth: 4,
-      gridHeight: 4,
-      createdDate: 1677641000000,
-      backgroundColor: "#1e1b4b",
-      theme: "midnight",
-    },
-    {
-      id: "desert-pot",
-      name: "Garden 3",
-      type: "Container",
-      soilType: "Sandy",
-      sunExposure: "Full Sun",
-      gridWidth: 4,
-      gridHeight: 4,
-      createdDate: 1677642000000,
-      backgroundColor: "#451a03",
-      theme: "desert",
-    },
-    {
-      id: "shadow-grove",
-      name: "Garden 4",
-      type: "In-ground",
-      soilType: "Silt",
-      sunExposure: "Partial Shade",
-      gridWidth: 4,
-      gridHeight: 4,
-      createdDate: 1677643000000,
-      backgroundColor: "#14532d",
-      theme: "forest",
-    },
-    {
-      id: "vertical-haven",
-      name: "Garden 5",
-      type: "Vertical",
-      soilType: "Loam",
-      sunExposure: "Partial Sun",
-      gridWidth: 4,
-      gridHeight: 4,
-      createdDate: 1677644000000,
-      backgroundColor: "#14532d",
-      theme: "forest",
-    },
-  ];
-
-  let mainGardenCreated = false;
-  for (const garden of demoGardens) {
-    if (!existingIds.has(garden.id)) {
-      await db.gardens.upsert(garden);
-      if (garden.id === "main-garden") mainGardenCreated = true;
-    }
-  }
-
-  if (mainGardenCreated) {
-    const planted = await db.planted.find().exec();
-    const updates = planted.map((p) => {
-      if (!p.bedId || p.bedId === "main") {
-        return p.patch({ bedId: "main-garden" });
-      }
-      return Promise.resolve();
-    });
-    await Promise.all(updates);
-  }
-};
-
 export const hydrateDatabase = async () => {
   const db = await getDatabase();
   const settings = await db.settings.findOne("local-user").exec();
@@ -611,7 +534,6 @@ export const hydrateDatabase = async () => {
     (settings.dataVersion || 0) >= currentDataVersion &&
     hasCoreData
   ) {
-    await handleDemoGardens(db);
     return;
   }
 
@@ -701,24 +623,12 @@ export const hydrateDatabase = async () => {
       ...(sources as any[]).map((s) => db.sources.upsert(s)),
       ...catalogData.map((item) => db.catalog.upsert(item)),
       ...rxKbData.map((kbItem) => db.plant_kb.upsert(kbItem)),
-      db.gardens.upsert({
-        id: "main-garden",
-        name: "Garden 1",
-        type: "In-ground",
-        soilType: "Loam",
-        sunExposure: "Full Sun",
-        gridWidth: 4,
-        gridHeight: 4,
-        createdDate: existingSettings?.createdDate ?? Date.now(),
-        backgroundColor: "#14532d",
-        theme: "forest",
-      }),
       db.settings.upsert({
         id: "local-user",
         firstLoadComplete: true,
-        // Preserve user-chosen location; fall back to default only for new installs.
+        // Preserve user-chosen location; do not invent one for new installs.
         hemisphere: existingSettings?.hemisphere ?? "North",
-        city: existingSettings?.city ?? "Dresden",
+        ...(existingSettings?.city ? { city: existingSettings.city } : {}),
         // Never reset user progress fields.
         xp: existingSettings?.xp ?? 0,
         currentDay: existingSettings?.currentDay ?? 1,

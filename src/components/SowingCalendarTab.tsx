@@ -55,7 +55,7 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({
     [currentDay],
   );
 
-  // Simulation month state for scrubbing the calendar
+  // Calendar month selected for viewing seasonal windows.
   const [activeMonth, setActiveMonth] = useState(realMonth);
 
   const activeSeason = monthsNorth[activeMonth] || "Spring";
@@ -99,9 +99,6 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({
   const ineligible = filtered.filter(
     (p) => !isSowingSeason(p, location, activeMonth).eligible,
   );
-
-  // Real-time month based on current date + scrub (kept for potential future use or removed if strictly unused)
-  // const getSimulatedDate ... removed to satisfy lint
 
   return (
     <div className="flex flex-col h-full bg-[#0c0a09] text-stone-100 p-6 overflow-auto">
@@ -190,8 +187,8 @@ export const SowingCalendarTab: React.FC<SowingCalendarTabProps> = ({
               onChange={(e) =>
                 setActiveMonth(Number.parseInt(e.target.value, 10))
               }
-              title="Select simulation month"
-              aria-label="Calendar simulation month slider"
+              title="Select calendar month"
+              aria-label="Calendar month slider"
               className="w-full h-2 bg-stone-950 rounded-full appearance-none cursor-pointer border border-stone-800/50 overflow-hidden accent-garden-500 hover:accent-garden-400 transition-all"
             />
 

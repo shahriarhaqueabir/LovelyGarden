@@ -36,7 +36,7 @@ export const SettingsTab: React.FC = () => {
   const [backgroundColor, setBackgroundColor] = useState("#090c0a");
   const [language, setLanguage] = useState("en");
   const [notifications, setNotifications] = useState(true);
-  const [locationCity, setLocationCity] = useState("Dresden");
+  const [locationCity, setLocationCity] = useState("");
   const [hemisphere, setHemisphere] = useState("North");
 
   const [, setImportStatus] = useState<string | null>(null);
@@ -96,7 +96,7 @@ export const SettingsTab: React.FC = () => {
         }
 
         setConfig(data);
-        setLocationCity(data.city || "Dresden");
+        setLocationCity(data.city || "");
         setHemisphere(data.hemisphere || "North");
 
         // Load saved background color from localStorage

@@ -43,7 +43,7 @@ interface CoachMessage {
 const createMessageId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    : `${Date.now()}`;
 
 export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
   catalog,

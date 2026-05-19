@@ -55,6 +55,8 @@ const ObservationTerminal = React.lazy(async () => {
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
   currentDay: number;
+  currentDateTimeLabel: string;
+  currentTimestamp: number;
   xp: number;
   alerts: string[];
   onOpenSeedStore?: () => void;
@@ -72,6 +74,8 @@ const sortGardens = <T extends { id?: string; createdDate?: number }>(
 export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   catalog,
   currentDay,
+  currentDateTimeLabel,
+  currentTimestamp,
   xp,
   alerts,
   onOpenSeedStore,
@@ -91,7 +95,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     null,
   );
   const [plantNowMode, setPlantNowMode] = useState(false);
-  const [scrubDays, setScrubDays] = useState(0);
   const [observationPlant, setObservationPlant] =
     useState<PlantedDocument | null>(null);
 
@@ -113,12 +116,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     }
     return newSet;
   }, [plantNowMode, catalog, currentMonth]);
-
-  // Capture wall-clock time once at component mount (lazy-initializer runs outside render,
-  // so it is not flagged as an impure function call during render).
-  const [mountTimestamp] = useState<number>(() => Date.now());
-  // nowMs is a pure derivation: mount time offset by however many days the scrub slider adds.
-  const nowMs = mountTimestamp + scrubDays * 86400000;
 
   // Dialog State
   const [showGardenDialog, setShowGardenDialog] = useState(false);
@@ -419,7 +416,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             {/* 1. Cycle Day */}
             <div className="bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
               <Calendar className="w-3.5 h-3.5 text-garden-500" />{" "}
-              <span className="hidden xs:inline">Day:</span> {currentDay}
+              <span>{currentDateTimeLabel}</span>
+              <span className="text-stone-500">Day {currentDay}</span>
             </div>
 
             {/* 2. Grid Capacity */}
@@ -433,29 +431,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <LayoutGrid className="w-3 h-3" />
               <span>
                 {occupiedCells}/{totalCells}
-              </span>
-            </div>
-          </div>
-
-          {/* 3. Temporal Axis - Central and Wider */}
-          <div className="hidden flex-1 justify-center px-4 lg:flex">
-            <div className="flex items-center gap-3 bg-stone-900 px-4 py-1.5 rounded-xl border border-stone-800 shadow-inner w-full max-w-[400px]">
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-500 flex items-center gap-1 shrink-0">
-                ⏳ <span className="hidden lg:inline">Axis</span>
-              </span>
-              <input
-                type="range"
-                min={0}
-                max={30}
-                value={scrubDays}
-                onChange={(e) =>
-                  setScrubDays(Number.parseInt(e.target.value, 10) || 0)
-                }
-                className="flex-1 accent-garden-500 h-1.5 cursor-pointer"
-                aria-label="Temporal scrub slider"
-              />
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-400 min-w-[3ch] text-right">
-                +{scrubDays}d
               </span>
             </div>
           </div>
@@ -617,26 +592,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
-                      items={plantedCards.map((p: PlantedDocument) => ({
-                        ...p,
-                        hydration: Math.max(
-                          0,
-                          Math.round(
-                            (p.hydration ?? 100) * Math.pow(0.85, scrubDays),
-                          ),
-                        ),
-                        stressLevel: Math.min(
-                          100,
-                          Math.round(
-                            (p.stressLevel ?? 0) +
-                              (scrubDays > 0 &&
-                              (p.hydration ?? 100) * Math.pow(0.85, scrubDays) <
-                                20
-                                ? scrubDays * 5
-                                : 0),
-                          ),
-                        ),
-                      }))}
+                      items={plantedCards}
                       onSelect={setSelectedPlant}
                       layer={spectralLayer}
                       activeSeedCatalogId={activeSeedCatalogId}
@@ -651,7 +607,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                         showInfo("Plant removed from garden");
                       }}
                       onOpenObservation={setObservationPlant}
-                      currentDay={nowMs}
+                      currentDay={currentTimestamp}
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
@@ -693,7 +649,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                         | undefined
                     }
                     companionScore={1}
-                    currentDay={nowMs}
+                    currentDay={currentTimestamp}
                     onClose={() => setSelectedPlant(null)}
                     docked
                   />
