@@ -67,7 +67,7 @@ export const upsertCloudGarden = async (
 ): Promise<GardenDocument> => {
   const { data, error } = await supabase
     .from("gardens")
-    .upsert(toRow(ownerId, garden), { onConflict: "id" })
+    .upsert(toRow(ownerId, garden), { onConflict: "owner_id,id" })
     .select("*")
     .single();
 

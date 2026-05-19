@@ -253,9 +253,9 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
               </div>
             </div>
             <p className="text-xs leading-5 text-stone-500">
-              The key is stored only in this browser. Garden Coach reads your
-              local LovelyGarden data to answer, but it does not edit gardens,
-              inventory, settings, or logbook entries.
+              The key is kept for this browser session only. Garden Coach reads
+              your local LovelyGarden data to answer, but it does not edit
+              gardens, inventory, settings, or logbook entries.
             </p>
           </div>
         ) : (

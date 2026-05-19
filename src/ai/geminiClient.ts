@@ -39,11 +39,12 @@ export const generateGardenAdvice = async ({
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
       model,
-    )}:generateContent?key=${encodeURIComponent(trimmedKey)}`,
+    )}:generateContent`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": trimmedKey,
       },
       body: JSON.stringify({
         systemInstruction: {

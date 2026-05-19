@@ -40,6 +40,7 @@ import { GrowthTelemetry } from "./GrowthTelemetry";
 import { waterPlant, harvestPlant, recordLoss } from "../db/queries";
 import { Modal } from "./ui/Modal";
 import { showInfo } from "../lib/toast";
+import { getSafeExternalUrl } from "../lib/safeUrl";
 import type {
   PlantedDocument,
   SourceDocument,
@@ -620,19 +621,30 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                           url?: string;
                           confidence_score?: number;
                         };
-                        return (
+                        const safeUrl = getSafeExternalUrl(source.url);
+                        const label = `${source.source_name || "Source"} (${Math.round(
+                          (source.confidence_score || 0) * 100,
+                        )}%)`;
+
+                        return safeUrl ? (
                           <a
                             key={`${source.source_name || "src"}-${idx}`}
-                            href={source.url}
+                            href={safeUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center gap-1 text-[9px] text-stone-200 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50 hover:border-garden-500/40 hover:text-garden-200 transition-colors"
-                            title={source.url}
+                            title={safeUrl}
                           >
-                            {source.source_name || "Source"} (
-                            {Math.round((source.confidence_score || 0) * 100)}%)
+                            {label}
                             <ExternalLink className="w-2 h-2" />
                           </a>
+                        ) : (
+                          <div
+                            key={`${source.source_name || "src"}-${idx}`}
+                            className="flex items-center gap-1 text-[9px] text-stone-400 bg-stone-800/50 px-2 py-1 rounded-md border border-stone-700/50"
+                          >
+                            {label}
+                          </div>
                         );
                       })}
                     </div>
@@ -673,7 +685,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                   const label =
                     s?.name ||
                     sourceId.replace("source_", "").split("_").join(" ");
-                  const url = s?.url;
+                  const url = getSafeExternalUrl(s?.url);
 
                   return url ? (
                     <a
