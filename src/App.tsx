@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Cloud, LogOut, Sparkles, UserCircle } from "lucide-react";
+import { BookOpenCheck, Cloud, LogOut, UserCircle } from "lucide-react";
 import { hydrateDatabase, getDatabase } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
@@ -49,6 +49,11 @@ const GardenCoachSheet = React.lazy(() =>
     default: m.GardenCoachSheet,
   })),
 );
+const GardenGuideSheet = React.lazy(() =>
+  import("./components/GardenGuideSheet").then((m) => ({
+    default: m.GardenGuideSheet,
+  })),
+);
 import { useWeatherStore } from "./stores/weatherStore";
 import { getUserLocation } from "./services/geolocationService";
 import { listPlantCatalog } from "./services/referenceDataService";
@@ -69,6 +74,7 @@ const AppContent: React.FC = () => {
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const { user, loading: authLoading } = useAuth();
@@ -510,16 +516,30 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
           />
         )}
-        {!showGardenCoach && (
+        {!showGardenGuide && !showGardenCoach && (
           <button
             type="button"
-            onClick={() => setShowGardenCoach(true)}
+            onClick={() => setShowGardenGuide(true)}
             className="fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 bg-garden-500 text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
-            aria-label="Open Garden Coach"
-            title="Open Garden Coach"
+            aria-label="Open Garden Guide"
+            title="Open Garden Guide"
           >
-            <Sparkles className="h-5 w-5" />
+            <BookOpenCheck className="h-5 w-5" />
           </button>
+        )}
+        {showGardenGuide && (
+          <GardenGuideSheet
+            catalog={catalog}
+            currentDay={currentDay}
+            hemisphere={hemisphere}
+            weather={weather}
+            locationName={locationName}
+            onClose={() => setShowGardenGuide(false)}
+            onOpenGeminiCoach={() => {
+              setShowGardenGuide(false);
+              setShowGardenCoach(true);
+            }}
+          />
         )}
         {showGardenCoach && (
           <GardenCoachSheet
