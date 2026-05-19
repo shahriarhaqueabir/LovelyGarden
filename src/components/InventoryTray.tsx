@@ -4,6 +4,8 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useInventory } from "../hooks/useInventory";
 import { getDatabase } from "../db";
 import { showSuccess, showError } from "../lib/toast";
+import { useAuth } from "../hooks/useAuth";
+import { deleteCloudInventoryItem } from "../services/inventoryService";
 
 // ... (SeedCard component remains same) -> Restored below
 export const SeedCard: React.FC<{
@@ -101,6 +103,7 @@ export const InventoryTray: React.FC<{
   onTogglePlantNow,
   plantNowSet,
 }) => {
+  const { user } = useAuth();
   const { setNodeRef, isOver } = useDroppable({
     id: "inventory-tray",
   });
@@ -142,6 +145,11 @@ export const InventoryTray: React.FC<{
       const item = await db.inventory.findOne(inventoryId).exec();
       if (item) {
         await item.remove();
+        if (user) {
+          deleteCloudInventoryItem(user.id, inventoryId).catch((error) => {
+            console.warn("Inventory cloud delete failed:", error);
+          });
+        }
         showSuccess("Item removed from Bag");
       }
     } catch (error) {

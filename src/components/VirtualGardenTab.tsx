@@ -42,6 +42,10 @@ import {
   syncGardensWithCloud,
   upsertCloudGarden,
 } from "../services/gardenService";
+import {
+  deleteCloudInventoryItem,
+  upsertCloudInventoryItem,
+} from "../services/inventoryService";
 
 const ObservationTerminal = React.lazy(async () => {
   const m = await import("./ObservationTerminal");
@@ -255,6 +259,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
       try {
         await plantSeed(catalogId, x, y, inventoryId, activeGarden.id);
+        if (user) {
+          deleteCloudInventoryItem(user.id, inventoryId).catch((error) => {
+            console.warn("Inventory cloud delete failed:", error);
+          });
+        }
         showSuccess("Plant added to garden");
       } catch {
         showError("Failed to plant seed");
@@ -307,7 +316,18 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
 
       try {
-        await unplantSeed(plant.id);
+        const inventoryId = await unplantSeed(plant.id);
+        if (user) {
+          const db = await getDatabase();
+          const inventoryItem = await db.inventory.findOne(inventoryId).exec();
+          if (inventoryItem) {
+            upsertCloudInventoryItem(user.id, inventoryItem.toJSON()).catch(
+              (error) => {
+                console.warn("Inventory cloud upsert failed:", error);
+              },
+            );
+          }
+        }
         showSuccess("Plant returned to Bag");
       } catch {
         showError("Failed to unplant");
