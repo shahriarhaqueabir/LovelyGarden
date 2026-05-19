@@ -133,3 +133,7 @@ export const buildGardenCoachContext = async ({
     relevantPlants,
   };
 };
+
+export type GardenCoachContext = Awaited<
+  ReturnType<typeof buildGardenCoachContext>
+>;
