@@ -89,5 +89,12 @@ export const ensureCloudUserSettings = async (
   const cloudSettings = await getCloudUserSettings(ownerId);
   if (cloudSettings) return cloudSettings;
 
-  return upsertCloudUserSettings(ownerId, localSettings, preferences);
+  return upsertCloudUserSettings(
+    ownerId,
+    {
+      ...localSettings,
+      firstLoadComplete: false,
+    },
+    preferences,
+  );
 };

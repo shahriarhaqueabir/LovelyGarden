@@ -62,6 +62,12 @@ blackbox_mcp_settings.json
 .hooks/
 skills-lock.json
 
+# Removed local/dev surfaces
+.storybook/
+src/stories/
+src-tauri/
+sprint/
+
 # RxDB / IndexedDB local files
 *.db
 *.sqlite

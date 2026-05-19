@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  BookOpenCheck,
-  Cloud,
-  LogOut,
-  Sparkles,
-  UserCircle,
-} from "lucide-react";
+import { BookOpenCheck, LogOut, Sparkles, UserCircle } from "lucide-react";
 import { hydrateDatabase, getDatabase } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
@@ -65,7 +59,9 @@ import { getUserLocation } from "./services/geolocationService";
 import { listPlantCatalog } from "./services/referenceDataService";
 import { useAuth } from "./hooks/useAuth";
 import { signOut } from "./services/authService";
-import { AuthDialog } from "./components/AuthDialog";
+import { AuthScreen } from "./components/AuthScreen";
+import { OnboardingScreen } from "./components/OnboardingScreen";
+import { SplashScreen } from "./components/SplashScreen";
 import { showError, showSuccess } from "./lib/toast";
 import {
   ensureCloudUserSettings,
@@ -80,10 +76,13 @@ const AppContent: React.FC = () => {
   const [currentDay, setCurrentDay] = useState(1);
   const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(hasConnectedGemini);
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
+    null,
+  );
+  const [savingOnboarding, setSavingOnboarding] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const { user, loading: authLoading } = useAuth();
 
@@ -150,6 +149,8 @@ const AppContent: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    if (authLoading || !user) return;
+
     // Hold subscription references so we can clean them up on unmount.
     let catalogSub: { unsubscribe(): void } | null = null;
     let settingsSub: { unsubscribe(): void } | null = null;
@@ -240,7 +241,7 @@ const AppContent: React.FC = () => {
       catalogSub?.unsubscribe();
       settingsSub?.unsubscribe();
     };
-  }, [setLocation, fetchWeatherData]);
+  }, [authLoading, user, setLocation, fetchWeatherData]);
 
   React.useEffect(() => {
     if (!user) return;
@@ -249,9 +250,13 @@ const AppContent: React.FC = () => {
 
     const syncSettingsFromCloud = async () => {
       try {
+        await hydrateDatabase();
         const db = await getDatabase();
         const localSettingsDoc = await db.settings.findOne("local-user").exec();
-        if (!localSettingsDoc || cancelled) return;
+        if (!localSettingsDoc || cancelled) {
+          setOnboardingComplete(true);
+          return;
+        }
 
         const localSettings = localSettingsDoc.toJSON();
         const cloudSettings = await ensureCloudUserSettings(
@@ -270,8 +275,10 @@ const AppContent: React.FC = () => {
           xp: cloudSettings.xp ?? localSettings.xp,
           dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
         });
+        setOnboardingComplete(cloudSettings.firstLoadComplete);
       } catch (error) {
         console.warn("Cloud settings sync skipped:", error);
+        setOnboardingComplete(true);
       }
     };
 
@@ -326,6 +333,58 @@ const AppContent: React.FC = () => {
     setShowGardenGuide(true);
   };
 
+  const handleCompleteOnboarding = async () => {
+    if (!user) return;
+    setSavingOnboarding(true);
+
+    try {
+      const db = await getDatabase();
+      const settings = await db.settings.findOne("local-user").exec();
+      const nextSettings = {
+        ...(settings?.toJSON() ?? {
+          id: "local-user",
+          hemisphere,
+          city: "Dresden",
+          currentDay,
+          xp,
+          dataVersion: 0,
+        }),
+        firstLoadComplete: true,
+      };
+
+      await db.settings.upsert(nextSettings);
+      await upsertCloudUserSettings(user.id, nextSettings);
+      setOnboardingComplete(true);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Could not finish onboarding.";
+      showError(message);
+    } finally {
+      setSavingOnboarding(false);
+    }
+  };
+
+  if (authLoading) {
+    return <SplashScreen />;
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
+
+  if (onboardingComplete === null) {
+    return <SplashScreen />;
+  }
+
+  if (!onboardingComplete) {
+    return (
+      <OnboardingScreen
+        isSaving={savingOnboarding}
+        onComplete={handleCompleteOnboarding}
+      />
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
       <header className="z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
@@ -356,16 +415,7 @@ const AppContent: React.FC = () => {
                   <LogOut className="h-4 w-4" />
                 </button>
               </>
-            ) : (
-              <button
-                onClick={() => setShowAuthDialog(true)}
-                disabled={authLoading}
-                className="inline-flex items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:border-garden-500/40 hover:text-garden-400 disabled:opacity-60"
-              >
-                <Cloud className="h-4 w-4" />
-                {authLoading ? "Cloud..." : "Sign In"}
-              </button>
-            )}
+            ) : null}
           </div>
           <div className="hidden items-center gap-4 text-stone-500 lg:flex">
             {weather ? (
@@ -582,10 +632,6 @@ const AppContent: React.FC = () => {
             onConnectionLost={handleGeminiConnectionLost}
           />
         )}
-        <AuthDialog
-          isOpen={showAuthDialog}
-          onClose={() => setShowAuthDialog(false)}
-        />
       </React.Suspense>
     </div>
   );
