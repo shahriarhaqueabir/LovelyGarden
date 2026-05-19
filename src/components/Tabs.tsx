@@ -56,15 +56,31 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const tabs = [
-    { id: "virtual-garden" as TabType, label: "🏡 Virtual Garden" },
-    { id: "sowing-calendar" as TabType, label: "📅 Sowing Calendar" },
-    { id: "plant-knowledgebase" as TabType, label: "📖 Knowledgebase" },
-    { id: "seed-inventory" as TabType, label: "📦 Seed Vault" },
+    {
+      id: "virtual-garden" as TabType,
+      label: "🏡 Virtual Garden",
+      short: "Garden",
+    },
+    {
+      id: "sowing-calendar" as TabType,
+      label: "📅 Sowing Calendar",
+      short: "Sow",
+    },
+    {
+      id: "plant-knowledgebase" as TabType,
+      label: "📖 Knowledgebase",
+      short: "Plants",
+    },
+    { id: "seed-inventory" as TabType, label: "📦 Seed Vault", short: "Seeds" },
     // { id: 'seeds-in-hand' as TabType, label: '🧺 Bag' },
-    { id: "weather-forecast" as TabType, label: "🌈 Weather" },
-    { id: "logbook" as TabType, label: "📜 Logbook" },
-    { id: "harvest" as TabType, label: "🧺 Harvest" },
-    { id: "settings" as TabType, label: "⚙️ Settings" },
+    {
+      id: "weather-forecast" as TabType,
+      label: "🌈 Weather",
+      short: "Weather",
+    },
+    { id: "logbook" as TabType, label: "📜 Logbook", short: "Log" },
+    { id: "harvest" as TabType, label: "🧺 Harvest", short: "Harvest" },
+    { id: "settings" as TabType, label: "⚙️ Settings", short: "Settings" },
   ];
 
   const childrenArray = React.Children.toArray(children);
@@ -90,13 +106,13 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       className="flex flex-col h-full"
     >
       {/* Tab Navigation */}
-      <Tab.List className="flex gap-1 p-2 bg-stone-900/50 border-b border-stone-800 flex-wrap">
+      <Tab.List className="fixed inset-x-0 bottom-0 z-50 flex gap-1 overflow-x-auto border-t border-stone-800 bg-stone-950/95 p-2 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] backdrop-blur lg:static lg:flex-wrap lg:border-b lg:border-t-0 lg:bg-stone-900/50 lg:shadow-none">
         {tabs.map((tab) => (
           <Tab
             key={tab.id}
             className={({ selected }) =>
               cn(
-                "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all outline-none focus:ring-2 focus:ring-garden-500/50",
+                "relative flex min-w-[4.5rem] flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold transition-all outline-none focus:ring-2 focus:ring-garden-500/50 lg:min-w-0 lg:flex-none lg:px-4 lg:text-sm lg:font-medium",
                 selected
                   ? "text-white"
                   : "text-stone-400 hover:text-stone-200 hover:bg-stone-800/50",
@@ -112,7 +128,8 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <span>{tab.label}</span>
+                <span className="lg:hidden">{tab.short}</span>
+                <span className="hidden lg:inline">{tab.label}</span>
               </>
             )}
           </Tab>
@@ -120,7 +137,7 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       </Tab.List>
 
       {/* Tab Content — view-transition-name hooks into @keyframes in index.css */}
-      <Tab.Panels className="flex-1 overflow-auto relative">
+      <Tab.Panels className="relative flex-1 overflow-auto pb-[4.5rem] lg:pb-0">
         <Tab.Panel
           key={tabs[selectedIndex]?.id || selectedIndex}
           static
