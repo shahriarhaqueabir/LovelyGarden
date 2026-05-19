@@ -103,7 +103,7 @@ export const upsertCloudUserSettings = async (
 ): Promise<CloudUserSettings> => {
   const { data, error } = await supabase
     .from("user_settings")
-    .upsert(toRow(ownerId, settings, preferences), { onConflict: "id" })
+    .upsert(toRow(ownerId, settings, preferences), { onConflict: "owner_id" })
     .select("*")
     .single();
 

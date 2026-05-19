@@ -98,7 +98,7 @@ model Source {
 
 model UserSettings {
   id                String   @id
-  ownerId           String?  @map("owner_id") @db.Uuid
+  ownerId           String   @unique @map("owner_id") @db.Uuid
   firstLoadComplete Boolean  @default(false) @map("first_load_complete")
   hemisphere        String?
   city              String?
@@ -109,13 +109,13 @@ model UserSettings {
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([ownerId])
   @@map("user_settings")
 }
 
 model Garden {
-  id              String         @id
-  ownerId         String?        @map("owner_id") @db.Uuid
+  dbId            String         @id @default(dbgenerated("gen_random_uuid()")) @map("db_id") @db.Uuid
+  id              String
+  ownerId         String         @map("owner_id") @db.Uuid
   name            String
   type            String
   soilType        String?        @map("soil_type")
@@ -126,16 +126,17 @@ model Garden {
   theme           String?
   createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  logbookEntries  LogbookEntry[]
   plantedPlants   PlantedPlant[]
 
+  @@unique([ownerId, id])
   @@index([ownerId])
   @@map("gardens")
 }
 
 model InventoryItem {
-  id           String       @id
-  ownerId      String?      @map("owner_id") @db.Uuid
+  dbId         String       @id @default(dbgenerated("gen_random_uuid()")) @map("db_id") @db.Uuid
+  id           String
+  ownerId      String       @map("owner_id") @db.Uuid
   catalogId    String       @map("catalog_id")
   acquiredAt   DateTime     @default(now()) @map("acquired_at") @db.Timestamptz(6)
   notes        String?
@@ -143,14 +144,16 @@ model InventoryItem {
   updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   plantCatalog PlantCatalog @relation(fields: [catalogId], references: [id])
 
+  @@unique([ownerId, id])
   @@index([catalogId])
   @@index([ownerId])
   @@map("inventory_items")
 }
 
 model PlantedPlant {
-  id                String       @id
-  ownerId           String?      @map("owner_id") @db.Uuid
+  dbId              String       @id @default(dbgenerated("gen_random_uuid()")) @map("db_id") @db.Uuid
+  id                String
+  ownerId           String       @map("owner_id") @db.Uuid
   gardenId          String       @map("garden_id")
   catalogId         String       @map("catalog_id")
   gridX             Int          @map("grid_x")
@@ -168,17 +171,19 @@ model PlantedPlant {
   createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   plantCatalog      PlantCatalog @relation(fields: [catalogId], references: [id])
-  garden            Garden       @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+  garden            Garden       @relation(fields: [ownerId, gardenId], references: [ownerId, id], onDelete: Cascade)
 
-  @@unique([gardenId, gridX, gridY])
+  @@unique([ownerId, id])
+  @@unique([ownerId, gardenId, gridX, gridY])
   @@index([catalogId])
   @@index([ownerId])
   @@map("planted_plants")
 }
 
 model LogbookEntry {
-  id           String        @id
-  ownerId      String?       @map("owner_id") @db.Uuid
+  dbId         String        @id @default(dbgenerated("gen_random_uuid()")) @map("db_id") @db.Uuid
+  id           String
+  ownerId      String        @map("owner_id") @db.Uuid
   type         String
   itemName     String        @map("item_name")
   category     String?
@@ -193,8 +198,8 @@ model LogbookEntry {
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   plantCatalog PlantCatalog? @relation(fields: [catalogId], references: [id])
-  garden       Garden?       @relation(fields: [gardenId], references: [id])
 
+  @@unique([ownerId, id])
   @@index([catalogId])
   @@index([gardenId])
   @@index([occurredAt])

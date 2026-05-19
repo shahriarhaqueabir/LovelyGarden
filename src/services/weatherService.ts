@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   WEATHER_API,
   WATERING_CALCULATION_FACTORS,
@@ -43,33 +42,50 @@ export const fetchWeather = async (
   latitude: number,
   longitude: number,
 ): Promise<WeatherData> => {
+  const params = new URLSearchParams({
+    latitude: String(latitude),
+    longitude: String(longitude),
+    current:
+      "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m",
+    hourly:
+      "temperature_2m,relative_humidity_2m,precipitation,et0_fao_evapotranspiration,dew_point_2m,wind_speed_10m",
+    daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
+    timezone: "auto",
+    forecast_days: "7",
+  });
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    WEATHER_API.TIMEOUT,
+  );
+
   try {
-    const params = {
-      latitude,
-      longitude,
-      current:
-        "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m",
-      hourly:
-        "temperature_2m,relative_humidity_2m,precipitation,et0_fao_evapotranspiration,dew_point_2m,wind_speed_10m",
-      daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
-      timezone: "auto",
-      forecast_days: 7,
+    const response = await fetch(`${WEATHER_API.BASE_URL}?${params}`, {
+      signal: controller.signal,
+    });
+    const payload = (await response.json()) as WeatherData & {
+      error?: string;
+      reason?: string;
     };
 
-    const response = await axios.get(WEATHER_API.BASE_URL, {
-      params,
-      timeout: WEATHER_API.TIMEOUT,
-      headers: {},
-    });
-
-    return response.data as WeatherData;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (!response.ok) {
       throw new Error(
-        `Failed to fetch weather data: ${error.response?.data?.error || error.message}`,
+        payload.error || payload.reason || response.statusText || "API error",
       );
     }
+
+    return payload;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("Failed to fetch weather data: request timed out");
+    }
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch weather data: ${error.message}`);
+    }
     throw new Error("Network error: Unable to fetch weather data");
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 };
 

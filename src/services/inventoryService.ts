@@ -44,7 +44,7 @@ export const upsertCloudInventoryItem = async (
 ): Promise<InventoryDocument> => {
   const { data, error } = await supabase
     .from("inventory_items")
-    .upsert(toRow(ownerId, item), { onConflict: "id" })
+    .upsert(toRow(ownerId, item), { onConflict: "owner_id,id" })
     .select("*")
     .single();
 
