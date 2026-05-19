@@ -62,17 +62,11 @@ export default defineConfig(({ mode }) => {
         },
       }),
     ],
-    // 1. prevent vite from obscuring rust errors
     clearScreen: false,
-    // 2. tauri expects a fixed port, fail if that port is used
     server: {
       port: 1420,
       strictPort: true,
       host: true,
-      watch: {
-        // 3. tell vite to ignore watching `src-tauri`
-        ignored: ["**/src-tauri/**"],
-      },
     },
     define: {
       // Make only VITE_ prefixed env variables available at runtime (security best practice)
@@ -81,13 +75,8 @@ export default defineConfig(({ mode }) => {
       ),
     },
     build: {
-      // Tauri supports modern JS features (BigInt required by Orama/RxDB)
-      target:
-        process.env.TAURI_PLATFORM === "windows" ? "chrome105" : "safari15",
-      // don't minify for debug builds
-      minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-      // produce sourcemaps for debug builds
-      sourcemap: !!process.env.TAURI_DEBUG,
+      target: "safari15",
+      minify: "esbuild",
       rollupOptions: {
         output: {
           manualChunks(id: string) {
@@ -120,7 +109,6 @@ export default defineConfig(({ mode }) => {
         "dist/**",
         "dist2/**",
         "dist_probe/**",
-        "src-tauri/target/**",
       ],
     },
   };

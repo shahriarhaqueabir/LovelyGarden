@@ -38,17 +38,16 @@ LovelyGarden treats a garden as a **Reasoned Knowledge Graph** where plants, sea
 
 ### Components
 
-- **UI**: React 19 + Tailwind CSS + Motion. Native View Transitions API for seamless navigation.
+- **UI**: React 19 + Tailwind CSS + Motion.
 - **Logic**: XState state machines for lifecycle tracking; custom reasoning engine for horticulture rules.
 - **Intelligence**: Orama vector-ready search engine for sub-millisecond plant knowledgebase indexing.
-- **Data layer**: RxDB (IndexedDB) with Dexie.js adapter. Local-first persistence.
-- **Desktop**: Tauri v2 (Rust backend) for native shell integration and premium desktop features.
+- **Data layer**: RxDB (IndexedDB) with Dexie.js adapter plus Supabase sync for authenticated users.
 
 ### Data Flow
 
 1. **Input**: User logs a planting event or searches the knowledgebase.
 2. **Processing**: Orama indexes rank results by horticultural relevance; reasoning engine evaluates the knowledge graph.
-3. **Output**: Native system notifications (Tauri), hardware-accelerated UI transitions, and updated garden grid state.
+3. **Output**: Updated garden grid state, logbook entries, and synced cloud records.
 
 ### Diagram
 
@@ -59,7 +58,7 @@ graph TD
     Store --> Engine[Reasoning Engine]
     Engine --> Search[Orama Search Engine]
     Search --> Result[Ranked Plant Insights]
-    UI --> Native[Tauri v2 Native Shell]
+    Store --> Sync[Supabase Sync]
 ```
 
 ---
@@ -70,19 +69,18 @@ graph TD
 
 - **Modernization**: Migrating the stack to React 19 and implementing the Native View Transitions API.
 - **Search Engineering**: Swapping legacy Fuse.js for Orama, implementing a custom indexing module with typings.
-- **Native Integration**: Scaffolding the Tauri v2 Rust backend and manual plugin registration for notifications and OS info.
 - **Architecture Refactoring**: Identifying and rejecting over-engineered patterns (like Effect-TS) in favor of pragmatic, high-performance logic.
 
 ### Prompt Strategy
 
 - **Chain of Thought**: Using sequential thinking to evaluate library trade-offs (e.g., Orama vs Fuse.js) before implementation.
-- **Phase-Based Execution**: Breaking the modernization into 4 distinct sprints (Core, Performance, Intelligence, Packaging).
+- **Phase-Based Execution**: Breaking the modernization into focused phases (Core, Performance, Intelligence, Deployment).
 - **Skeptical Pre-Flight**: Forcing the AI to verify dependencies and linker paths before making broad destructive changes.
 
 ### What worked
 
 - **Local-First Search**: Orama's performance in the browser exceeded expectations for fuzzy-search relevance.
-- **Native Compositor Animations**: Moving from JS-based AnimatePresence to native View Transitions reduced main-thread load during navigation.
+- **Mobile-first flow**: Moving auth, onboarding, and assistant interactions into responsive screens clarified the hosted app experience.
 
 ---
 
@@ -108,10 +106,10 @@ graph TD
 - **Change**: Integrated Orama search module to replace Fuse.js.
 - **Result**: Significantly better search relevance and ranking for the plant knowledgebase.
 
-### Iteration 8: Premium Packaging (Phase 4)
+### Iteration 8: Hosted Web App (Phase 4)
 
-- **Change**: Initialized Tauri v2, configured native notifications, and modernized the launcher.
-- **Result**: Ready for native desktop distribution with system-level integration.
+- **Change**: Connected Supabase auth/sync and prepared Vercel deployment.
+- **Result**: Ready for cross-platform browser use with account-backed garden data.
 
 ---
 
@@ -122,7 +120,7 @@ graph TD
 - **Virtual Garden**: Grid-based layout with 6-stage growth visualization.
 - **Harmony Scoring**: Real-time companion planting compatibility alerts.
 - **Weather Command**: Open-Meteo integration with watering scores and frost warnings.
-- **Native Notifications**: Desktop system alerts for garden events (via Tauri).
+- **Garden Guide**: Built-in rule-based assistant for non-AI users, with optional Gemini integration.
 
 ---
 
@@ -134,9 +132,6 @@ pnpm install
 
 # Start development server (Web/PWA)
 pnpm dev
-
-# Start development mode (Native Desktop)
-pnpm tauri dev
 
 # Run unit tests
 pnpm test:unit
@@ -150,12 +145,9 @@ pnpm test:e2e
 # Run full diagnostics bundle (logs + build + tests)
 pnpm test:diagnostics
 
-# Build for Native Production
-pnpm tauri build
+# Build for production
+pnpm build
 ```
-
-> [!IMPORTANT]
-> To build the native desktop app (`pnpm tauri build`), you must have the **Visual Studio C++ Build Tools (MSVC)** installed on your system.
 
 `pnpm test:diagnostics` stores timestamped logs in `artifacts/diagnostics/<run-id>/` for deep debugging.
 
@@ -163,10 +155,8 @@ pnpm tauri build
 
 ### 📁 Project Structure
 
-- `/src-tauri`: Native Rust backend and Tauri configuration.
 - `/src/lib`: Core modules like Orama search (`plantSearch.ts`).
-- `/src/utils`: Unified UI helpers and native API wrappers (`native.ts`).
-- `/sprint`: Detailed logs of the modernization phases.
+- `/src/utils`: Shared UI and integration helpers.
 
 ---
 
@@ -180,5 +170,5 @@ pnpm tauri build
 ## 📌 TL;DR
 
 - **Problem**: Cloud-dependent, slow gardening tools.
-- **Solution**: React 19 + Tauri v2 powered local-first command deck with Orama intelligence.
-- **Why it’s interesting**: Shows the evolution of an AI-assisted project from a simple PWA to a high-end, native desktop application using state-of-the-art web APIs.
+- **Solution**: React 19 + Supabase powered garden workspace with local-first storage and Orama intelligence.
+- **Why it’s interesting**: Shows a mobile-first gardening app that combines offline-friendly state, cloud sync, and explainable garden guidance.

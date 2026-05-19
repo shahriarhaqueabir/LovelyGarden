@@ -1,18 +1,17 @@
 import { test, expect } from "./fixtures";
 
 test.describe("Smoke", () => {
-  test("boots app shell and core navigation", async ({ page }) => {
+  test("boots auth-first entry flow", async ({ page }) => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
-    await expect(page.getByText("Garden Deck Command")).toBeVisible({
+    await expect(
+      page.getByRole("heading", { name: "Lovely Garden" }),
+    ).toBeVisible({
       timeout: 45_000,
     });
-    await expect(
-      page.getByRole("tab", { name: /Virtual Garden/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("tab", { name: /Knowledgebase/i }),
-    ).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Settings/i })).toBeVisible();
+    await expect(page.getByText("Sign in to continue")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
   });
 });
