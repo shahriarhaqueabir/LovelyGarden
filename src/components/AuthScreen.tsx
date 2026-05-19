@@ -40,8 +40,8 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <WelcomeBackdrop contentClassName="flex min-h-dvh items-end justify-center px-4 py-5 sm:py-10">
-      <section className="w-full max-w-md rounded-lg border border-white/70 bg-white/90 p-5 text-stone-950 shadow-2xl shadow-black/35 backdrop-blur-sm sm:p-6">
+    <WelcomeBackdrop contentClassName="flex min-h-dvh items-center justify-center px-4 py-6 sm:py-8">
+      <section className="w-full max-w-md translate-y-[8vh] rounded-lg border border-white/55 bg-white/65 p-5 text-stone-950 shadow-2xl shadow-black/35 backdrop-blur-md sm:translate-y-[10vh] sm:p-6">
         <div className="mb-5 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-full border border-garden-700/20 bg-garden-100 text-garden-800">
             <Leaf className="h-5 w-5" />
@@ -60,9 +60,9 @@ export const AuthScreen: React.FC = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-stone-200 bg-white/85 p-4 shadow-inner sm:p-5"
+          className="rounded-lg border border-white/45 bg-white/55 p-4 shadow-inner shadow-white/20 backdrop-blur-sm sm:p-5"
         >
-          <div className="mb-5 rounded-lg border border-garden-700/15 bg-garden-50 p-4">
+          <div className="mb-5 rounded-lg border border-garden-700/15 bg-garden-50/70 p-4">
             <div className="flex items-center gap-3">
               <ShieldCheck className="h-5 w-5 shrink-0 text-garden-700" />
               <p className="text-xs font-semibold leading-5 text-stone-700">
@@ -82,7 +82,7 @@ export const AuthScreen: React.FC = () => {
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 required
-                className="h-12 w-full rounded-lg border border-stone-300 bg-white px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
+                className="h-12 w-full rounded-lg border border-stone-300 bg-white/80 px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="you@example.com"
               />
             </label>
@@ -100,7 +100,7 @@ export const AuthScreen: React.FC = () => {
                 }
                 minLength={6}
                 required
-                className="h-12 w-full rounded-lg border border-stone-300 bg-white px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
+                className="h-12 w-full rounded-lg border border-stone-300 bg-white/80 px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="Minimum 6 characters"
               />
             </label>
