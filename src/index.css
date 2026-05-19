@@ -225,6 +225,18 @@ body {
   }
 }
 
+@keyframes welcome-progress {
+  0% {
+    transform: translateX(-100%) scaleX(0.35);
+  }
+  45% {
+    transform: translateX(-12%) scaleX(0.7);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.35);
+  }
+}
+
 .animate-healthy {
   animation: pulse-healthy 4s ease-in-out infinite;
 }
@@ -246,6 +258,11 @@ body {
   );
   background-size: 200% 100%;
   animation: subtle-shimmer 8s linear infinite;
+}
+
+.welcome-progress {
+  transform-origin: left center;
+  animation: welcome-progress 1.6s ease-in-out infinite;
 }
 
 button {
