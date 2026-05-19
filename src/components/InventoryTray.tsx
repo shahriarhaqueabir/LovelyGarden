@@ -92,6 +92,7 @@ export const InventoryTray: React.FC<{
   catalog: CatalogDocument[];
   onOpenStore: () => void;
   isVertical?: boolean;
+  droppableId?: string;
   plantNowMode?: boolean;
   onTogglePlantNow?: () => void;
   plantNowSet?: Set<string>;
@@ -99,13 +100,14 @@ export const InventoryTray: React.FC<{
   catalog,
   onOpenStore,
   isVertical,
+  droppableId = "inventory-tray",
   plantNowMode,
   onTogglePlantNow,
   plantNowSet,
 }) => {
   const { user } = useAuth();
   const { setNodeRef, isOver } = useDroppable({
-    id: "inventory-tray",
+    id: droppableId,
   });
   const inventory = useInventory();
   const [collapsed, setCollapsed] = useState(false);
@@ -160,11 +162,11 @@ export const InventoryTray: React.FC<{
 
   const wrapperClass = isVertical
     ? `h-full transition-all duration-300 ${collapsed ? "w-20" : "w-80"} border-r border-stone-800 glass-panel flex flex-col relative z-40`
-    : "fixed bottom-0 left-0 right-0";
+    : "shrink-0";
 
   const containerClass = isVertical
     ? "flex-1 overflow-y-auto overflow-x-hidden p-4 grid grid-cols-3 gap-3 auto-rows-max scrollbar-hide"
-    : "p-6 glass-panel border-t border-stone-800 flex items-center gap-6 overflow-x-auto";
+    : "p-3 glass-panel border-t border-stone-800 flex items-center gap-3 overflow-x-auto";
 
   return (
     <div

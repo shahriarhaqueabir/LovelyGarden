@@ -203,7 +203,7 @@ const AppContent: React.FC = () => {
           await fetchWeatherData();
         }
       } catch (err) {
-        console.error("Location/Weather initialization failed:", err);
+        console.warn("Location/Weather initialization skipped:", err);
         // Fallback or handle error - store already handles error states
         fetchWeatherData();
       }
@@ -290,16 +290,16 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-app-background text-text-primary overflow-hidden font-sans selection:bg-garden-500/30">
-      <header className="h-16 flex items-center justify-between px-8 glass z-30 border-b border-stone-800">
-        <div className="flex items-center gap-3">
+    <div className="flex h-screen flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
+      <header className="z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
-          <h1 className="font-black text-xs uppercase tracking-tighter text-garden-500">
+          <h1 className="truncate text-[11px] font-black uppercase tracking-tighter text-garden-500 sm:text-xs">
             Garden Deck Command
           </h1>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-4 lg:gap-6">
+          <div className="flex min-w-0 items-center gap-2">
             {user ? (
               <>
                 <div
@@ -330,7 +330,7 @@ const AppContent: React.FC = () => {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-4 text-stone-500">
+          <div className="hidden items-center gap-4 text-stone-500 lg:flex">
             {weather ? (
               <>
                 {locationName && (
@@ -414,7 +414,7 @@ const AppContent: React.FC = () => {
               </>
             )}
           </div>
-          <div className="flex items-center gap-2 bg-stone-900 px-3 py-1 rounded-full border border-stone-800 shadow-inner">
+          <div className="hidden items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-3 py-1 shadow-inner sm:flex">
             <span className="text-[12px] font-bold text-garden-400">
               ⭐ {xp} XP
             </span>
