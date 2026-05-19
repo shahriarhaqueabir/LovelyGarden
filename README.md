@@ -2,6 +2,10 @@
 
 > A local-first, AI-assisted gardening command deck that blends horticulture science with gamified tracking.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="Lovely Garden logo artwork" width="420" />
+</p>
+
 ---
 
 ## 🧩 Problem

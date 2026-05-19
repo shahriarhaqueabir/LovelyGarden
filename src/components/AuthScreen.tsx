@@ -40,14 +40,14 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <WelcomeBackdrop contentClassName="flex min-h-dvh items-center justify-center px-4 py-6 sm:py-8">
-      <section className="w-full max-w-md translate-y-[8vh] rounded-lg border border-white/55 bg-white/65 p-5 text-stone-950 shadow-2xl shadow-black/35 backdrop-blur-md sm:translate-y-[10vh] sm:p-6">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-garden-700/20 bg-garden-100 text-garden-800">
-            <Leaf className="h-5 w-5" />
+    <WelcomeBackdrop contentClassName="flex min-h-dvh items-start justify-center px-4 pb-6 pt-[11vh] sm:pt-[14vh] lg:pt-[16vh]">
+      <section className="w-full max-w-[21rem] rounded-lg border border-white/50 bg-white/55 p-4 text-stone-950 shadow-2xl shadow-black/30 backdrop-blur-md">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-garden-700/20 bg-garden-100/80 text-garden-800">
+            <Leaf className="h-4 w-4" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-lg font-black uppercase tracking-tight text-garden-900">
+            <h1 className="text-base font-black uppercase tracking-tight text-garden-900">
               Lovely Garden
             </h1>
             <p className="text-xs font-bold text-stone-600">
@@ -60,20 +60,20 @@ export const AuthScreen: React.FC = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-white/45 bg-white/55 p-4 shadow-inner shadow-white/20 backdrop-blur-sm sm:p-5"
+          className="rounded-lg border border-white/45 bg-white/50 p-3 shadow-inner shadow-white/20 backdrop-blur-sm"
         >
-          <div className="mb-5 rounded-lg border border-garden-700/15 bg-garden-50/70 p-4">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 shrink-0 text-garden-700" />
-              <p className="text-xs font-semibold leading-5 text-stone-700">
+          <div className="mb-3 rounded-lg border border-garden-700/15 bg-garden-50/65 p-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-garden-700" />
+              <p className="text-[11px] font-semibold leading-4 text-stone-700">
                 Your garden opens after authentication.
               </p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <label className="block">
-              <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-stone-500">
+              <span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-stone-500">
                 Email
               </span>
               <input
@@ -82,13 +82,13 @@ export const AuthScreen: React.FC = () => {
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 required
-                className="h-12 w-full rounded-lg border border-stone-300 bg-white/80 px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
+                className="h-10 w-full rounded-lg border border-stone-300 bg-white/80 px-3 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="you@example.com"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-stone-500">
+              <span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-stone-500">
                 Password
               </span>
               <input
@@ -100,7 +100,7 @@ export const AuthScreen: React.FC = () => {
                 }
                 minLength={6}
                 required
-                className="h-12 w-full rounded-lg border border-stone-300 bg-white/80 px-4 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
+                className="h-10 w-full rounded-lg border border-stone-300 bg-white/80 px-3 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="Minimum 6 characters"
               />
             </label>
@@ -109,7 +109,7 @@ export const AuthScreen: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-garden-700 px-5 text-xs font-black uppercase tracking-widest text-white shadow-[0_12px_30px_rgba(21,128,61,0.28)] transition-all hover:bg-garden-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-garden-700 px-4 text-xs font-black uppercase tracking-widest text-white shadow-[0_12px_30px_rgba(21,128,61,0.28)] transition-all hover:bg-garden-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <LogIn className="h-4 w-4" />
             {isSubmitting
@@ -126,7 +126,7 @@ export const AuthScreen: React.FC = () => {
                 current === "sign-in" ? "sign-up" : "sign-in",
               )
             }
-            className="mt-4 w-full text-center text-xs font-bold text-stone-600 transition-colors hover:text-garden-700"
+            className="mt-3 w-full text-center text-xs font-bold text-stone-600 transition-colors hover:text-garden-700"
           >
             {mode === "sign-in"
               ? "Need an account? Create one"

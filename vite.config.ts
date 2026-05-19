@@ -17,12 +17,16 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
+        includeAssets: [
+          "favicon.png",
+          "apple-touch-icon.png",
+          "screenshot.png",
+        ],
         manifest: {
-          name: "Garden Deck",
-          short_name: "GardenDeck",
+          name: "Lovely Garden",
+          short_name: "LovelyGarden",
           description:
-            "An offline-first card-based gardening game and manager.",
+            "A mobile-first garden workspace with local-first storage, Supabase sync, and optional AI guidance.",
           theme_color: "#0c0a09", // stone-950
           icons: [
             {
@@ -34,6 +38,15 @@ export default defineConfig(({ mode }) => {
               src: "pwa-512x512.png",
               sizes: "512x512",
               type: "image/png",
+            },
+          ],
+          screenshots: [
+            {
+              src: "screenshot.png",
+              sizes: "540x582",
+              type: "image/png",
+              form_factor: "narrow",
+              label: "Lovely Garden logo artwork",
             },
           ],
         },
