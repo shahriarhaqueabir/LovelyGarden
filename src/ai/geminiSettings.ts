@@ -1,5 +1,6 @@
 const GEMINI_API_KEY_STORAGE_KEY = "lovelygarden.geminiApiKey";
 const GEMINI_MODEL_STORAGE_KEY = "lovelygarden.geminiModel";
+const GEMINI_CONNECTED_AT_STORAGE_KEY = "lovelygarden.geminiConnectedAt";
 
 export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 
@@ -14,6 +15,7 @@ export const storeGeminiApiKey = (apiKey: string) => {
 
 export const removeStoredGeminiApiKey = () => {
   localStorage.removeItem(GEMINI_API_KEY_STORAGE_KEY);
+  localStorage.removeItem(GEMINI_CONNECTED_AT_STORAGE_KEY);
 };
 
 export const getStoredGeminiModel = (): string => {
@@ -23,4 +25,20 @@ export const getStoredGeminiModel = (): string => {
 
 export const storeGeminiModel = (model: string) => {
   localStorage.setItem(GEMINI_MODEL_STORAGE_KEY, model.trim());
+};
+
+export const markGeminiConnected = () => {
+  localStorage.setItem(GEMINI_CONNECTED_AT_STORAGE_KEY, Date.now().toString());
+};
+
+export const clearGeminiConnection = () => {
+  localStorage.removeItem(GEMINI_CONNECTED_AT_STORAGE_KEY);
+};
+
+export const hasConnectedGemini = (): boolean => {
+  if (typeof localStorage === "undefined") return false;
+  return (
+    Boolean(localStorage.getItem(GEMINI_CONNECTED_AT_STORAGE_KEY)) &&
+    Boolean(localStorage.getItem(GEMINI_API_KEY_STORAGE_KEY)?.trim())
+  );
 };
