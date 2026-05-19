@@ -33,10 +33,15 @@ import { calculateCurrentStage } from "../logic/lifecycle";
 import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
 import { isSowingSeason } from "../logic/reasoning";
 import { showSuccess, showError, showInfo } from "../lib/toast";
-import { PlantedDocument, GridLayer } from "../db/types";
+import { PlantedDocument, GridLayer, GardenDocument } from "../db/types";
 import { PlantSpecies } from "../schema/knowledge-graph";
 import { Subscription } from "rxjs";
 import { ObservationPattern } from "../logic/diagnostics";
+import { useAuth } from "../hooks/useAuth";
+import {
+  syncGardensWithCloud,
+  upsertCloudGarden,
+} from "../services/gardenService";
 
 const ObservationTerminal = React.lazy(async () => {
   const m = await import("./ObservationTerminal");
@@ -51,6 +56,15 @@ interface VirtualGardenTabProps {
   onOpenSeedStore?: () => void;
 }
 
+const sortGardens = <T extends { id?: string; createdDate?: number }>(
+  gardenList: T[],
+): T[] =>
+  [...gardenList].sort((a, b) => {
+    if (a.id === "main-garden") return -1;
+    if (b.id === "main-garden") return 1;
+    return (a.createdDate || 0) - (b.createdDate || 0);
+  });
+
 export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   catalog,
   currentDay,
@@ -58,8 +72,9 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   alerts,
   onOpenSeedStore,
 }) => {
+  const { user } = useAuth();
   // Garden State
-  const [gardens, setGardens] = useState<GardenConfig[]>([]);
+  const [gardens, setGardens] = useState<GardenDocument[]>([]);
   const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
   const activeGarden = gardens.find((g) => g.id === activeGardenId);
 
@@ -111,18 +126,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     const initSub = async () => {
       const db = await getDatabase();
       sub = db.gardens.find().$.subscribe((docs) => {
-        const gardensData = docs.map((d) => d.toJSON());
-        gardensData.sort((a, b) => {
-          if (a.id === "main-garden") return -1;
-          if (b.id === "main-garden") return 1;
-          return (a.createdDate || 0) - (b.createdDate || 0);
-        });
+        const gardensData = sortGardens(docs.map((d) => d.toJSON()));
         setGardens(gardensData);
 
         // Auto-select first garden if none selected
         if (gardensData.length > 0) {
           setActiveGardenId((prev) => {
-            if (prev) return prev;
+            if (prev && gardensData.some((garden) => garden.id === prev)) {
+              return prev;
+            }
             return gardensData[0].id;
           });
         }
@@ -132,17 +144,59 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     return () => sub && sub.unsubscribe();
   }, []); // Run once to setup subscription
 
+  useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+
+    const syncUserGardens = async () => {
+      const db = await getDatabase();
+      const localGardens = (await db.gardens.find().exec()).map((doc) =>
+        doc.toJSON(),
+      );
+      const syncedGardens = await syncGardensWithCloud(user.id, localGardens);
+
+      if (cancelled) return;
+
+      await Promise.all(
+        syncedGardens.map((garden) => db.gardens.upsert(garden)),
+      );
+
+      const sortedGardens = sortGardens(syncedGardens);
+      setGardens(sortedGardens);
+      setActiveGardenId((prev) => {
+        if (prev && sortedGardens.some((garden) => garden.id === prev)) {
+          return prev;
+        }
+        return sortedGardens[0]?.id ?? null;
+      });
+    };
+
+    syncUserGardens().catch((error) => {
+      console.warn("Garden cloud sync failed:", error);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   // Sync garden list periodically or subscribe? For now, fetch on updates.
   const refreshGardens = async () => {
     const db = await getDatabase();
     const docs = await db.gardens.find().exec();
-    const gardensData = docs.map((d) => d.toJSON());
-    gardensData.sort((a, b) => {
-      if (a.id === "main-garden") return -1;
-      if (b.id === "main-garden") return 1;
-      return (a.createdDate || 0) - (b.createdDate || 0);
-    });
+    const gardensData = sortGardens(docs.map((d) => d.toJSON()));
     setGardens(gardensData);
+  };
+
+  const syncLocalGardenToCloud = async (gardenId: string) => {
+    if (!user) return;
+
+    const db = await getDatabase();
+    const garden = await db.gardens.findOne(gardenId).exec();
+    if (garden) {
+      await upsertCloudGarden(user.id, garden.toJSON());
+    }
   };
 
   const sensors = useSensors(
@@ -265,6 +319,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     try {
       if (dialogMode === "create") {
         const newId = await createGarden(config);
+        await syncLocalGardenToCloud(newId);
         await refreshGardens();
         setActiveGardenId(newId); // Immediately switch to new garden
         showSuccess("New garden sector established");
@@ -281,6 +336,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           backgroundColor: config.backgroundColor,
           theme: config.theme,
         });
+        await syncLocalGardenToCloud(config.id);
         await refreshGardens();
         showSuccess("Garden specs updated");
       }
@@ -308,6 +364,13 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     : 0;
   const occupiedCells = plantedCards.length;
   const isGridFull = occupiedCells >= totalCells;
+  const activeGardenConfig: GardenConfig | null = activeGarden
+    ? {
+        ...activeGarden,
+        soilType: activeGarden.soilType ?? "Loam",
+        sunExposure: activeGarden.sunExposure ?? "Full Sun",
+      }
+    : null;
 
   return (
     <DndContext
@@ -320,7 +383,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         {showGardenDialog && (
           <GardenConfigDialog
             mode={dialogMode}
-            initialConfig={dialogMode === "edit" ? activeGarden : null}
+            initialConfig={dialogMode === "edit" ? activeGardenConfig : null}
             onClose={() => setShowGardenDialog(false)}
             onSave={handleSaveGarden}
             isGardenEmpty={plantedCards.length === 0}
