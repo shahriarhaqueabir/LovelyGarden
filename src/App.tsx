@@ -51,6 +51,10 @@ import { useAuth } from "./hooks/useAuth";
 import { signOut } from "./services/authService";
 import { AuthDialog } from "./components/AuthDialog";
 import { showError, showSuccess } from "./lib/toast";
+import {
+  ensureCloudUserSettings,
+  upsertCloudUserSettings,
+} from "./services/userSettingsService";
 
 const queryClient = new QueryClient();
 
@@ -218,6 +222,46 @@ const AppContent: React.FC = () => {
     };
   }, [setLocation, fetchWeatherData]);
 
+  React.useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+
+    const syncSettingsFromCloud = async () => {
+      try {
+        const db = await getDatabase();
+        const localSettingsDoc = await db.settings.findOne("local-user").exec();
+        if (!localSettingsDoc || cancelled) return;
+
+        const localSettings = localSettingsDoc.toJSON();
+        const cloudSettings = await ensureCloudUserSettings(
+          user.id,
+          localSettings,
+        );
+        if (cancelled) return;
+
+        await db.settings.upsert({
+          ...localSettings,
+          id: "local-user",
+          firstLoadComplete: cloudSettings.firstLoadComplete,
+          hemisphere: cloudSettings.hemisphere ?? localSettings.hemisphere,
+          city: cloudSettings.city ?? localSettings.city,
+          currentDay: cloudSettings.currentDay ?? localSettings.currentDay,
+          xp: cloudSettings.xp ?? localSettings.xp,
+          dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
+        });
+      } catch (error) {
+        console.warn("Cloud settings sync skipped:", error);
+      }
+    };
+
+    syncSettingsFromCloud();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   // Persist XP changes
   React.useEffect(() => {
     const persistXp = async () => {
@@ -226,9 +270,15 @@ const AppContent: React.FC = () => {
       if (settings && settings.xp !== xp) {
         await settings.patch({ xp });
       }
+      if (settings && user) {
+        await upsertCloudUserSettings(user.id, {
+          ...settings.toJSON(),
+          xp,
+        });
+      }
     };
     if (xp > 0) persistXp();
-  }, [xp]);
+  }, [xp, user]);
 
   const handleSignOut = async () => {
     const { error } = await signOut();

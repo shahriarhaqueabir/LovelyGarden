@@ -23,6 +23,10 @@ import {
 import { applyTheme, applyBackgroundColor } from "../utils/theme";
 import { WeatherSettings } from "./WeatherSettings";
 import { useAuth } from "../hooks/useAuth";
+import {
+  ensureCloudUserSettings,
+  upsertCloudUserSettings,
+} from "../services/userSettingsService";
 export const SettingsTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<"general" | "developer">(
     "general",
@@ -54,7 +58,43 @@ export const SettingsTab: React.FC = () => {
       const db = await getDatabase();
       const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
-        const data = settings.toJSON();
+        let data = settings.toJSON();
+        if (user) {
+          const cloudSettings = await ensureCloudUserSettings(user.id, data, {
+            accentColor: localStorage.getItem("theme-color") || "#22c55e",
+            backgroundColor: localStorage.getItem("bg-color") || "#090c0a",
+            language: "en",
+            notifications: true,
+          });
+
+          data = {
+            ...data,
+            firstLoadComplete: cloudSettings.firstLoadComplete,
+            hemisphere: cloudSettings.hemisphere ?? data.hemisphere,
+            city: cloudSettings.city ?? data.city,
+            currentDay: cloudSettings.currentDay ?? data.currentDay,
+            xp: cloudSettings.xp ?? data.xp,
+            dataVersion: cloudSettings.dataVersion ?? data.dataVersion,
+          };
+
+          await db.settings.upsert({ ...data, id: "local-user" });
+
+          if (cloudSettings.preferences?.accentColor) {
+            setAccentColor(cloudSettings.preferences.accentColor);
+            applyTheme(cloudSettings.preferences.accentColor);
+          }
+          if (cloudSettings.preferences?.backgroundColor) {
+            setBackgroundColor(cloudSettings.preferences.backgroundColor);
+            applyBackgroundColor(cloudSettings.preferences.backgroundColor);
+          }
+          if (cloudSettings.preferences?.language) {
+            setLanguage(cloudSettings.preferences.language);
+          }
+          if (cloudSettings.preferences?.notifications !== undefined) {
+            setNotifications(cloudSettings.preferences.notifications);
+          }
+        }
+
         setConfig(data);
         setLocationCity(data.city || "Dresden");
         setHemisphere(data.hemisphere || "North");
@@ -78,25 +118,41 @@ export const SettingsTab: React.FC = () => {
           setAccentColor(savedAccent);
         }
         */
-        addLog("INFO", "User configuration synchronized.");
+        addLog(
+          "INFO",
+          user
+            ? "Cloud configuration synchronized."
+            : "User configuration synchronized.",
+        );
       }
     };
     fetchSettings();
     setTimeout(() => {
       addLog("INFO", "Database initialized successfully.");
     }, 0);
-  }, []);
+  }, [user]);
 
   const handleSave = async () => {
     try {
       const db = await getDatabase();
-      await db.settings.upsert({
+      const savedSettings = {
         ...config,
         id: "local-user",
         city: locationCity,
         hemisphere: hemisphere,
         firstLoadComplete: true,
-      });
+      };
+
+      await db.settings.upsert(savedSettings);
+
+      if (user) {
+        await upsertCloudUserSettings(user.id, savedSettings, {
+          accentColor,
+          backgroundColor,
+          language,
+          notifications,
+        });
+      }
 
       localStorage.setItem("theme-color", accentColor);
       localStorage.setItem("bg-color", backgroundColor);
@@ -104,8 +160,17 @@ export const SettingsTab: React.FC = () => {
       applyBackgroundColor(backgroundColor);
       // Logic for autoSave/notifications would go here in a real app
 
-      addLog("SUCCESS", "Configuration persisted to disk.");
-      alert("Settings saved successfully!");
+      addLog(
+        "SUCCESS",
+        user
+          ? "Configuration persisted locally and to Supabase."
+          : "Configuration persisted to disk.",
+      );
+      alert(
+        user
+          ? "Settings saved locally and to Supabase!"
+          : "Settings saved successfully!",
+      );
     } catch (e) {
       addLog("ERROR", "Failed to persist configuration.");
       console.error(e);
