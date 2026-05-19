@@ -6,6 +6,26 @@ export interface UserSettingsPreferences {
   backgroundColor?: string;
   language?: string;
   notifications?: boolean;
+  profile?: PersonalGardenProfile;
+}
+
+export type GardenExperienceLevel =
+  | "beginner"
+  | "learning"
+  | "confident"
+  | "expert";
+
+export interface PersonalGardenProfile {
+  displayName?: string;
+  avatar?: string;
+  gardenNickname?: string;
+  experienceLevel?: GardenExperienceLevel;
+  locationLabel?: string;
+  hardinessZone?: string;
+  growingStyle?: string;
+  preferredUnits?: "metric" | "imperial";
+  favoritePlants?: string;
+  gardenGoals?: string;
 }
 
 export interface CloudUserSettings extends SettingsDocument {
@@ -41,17 +61,27 @@ const toRow = (
   ownerId: string,
   settings: Partial<SettingsDocument>,
   preferences?: UserSettingsPreferences,
-) => ({
-  id: ownerId,
-  owner_id: ownerId,
-  first_load_complete: settings.firstLoadComplete ?? true,
-  hemisphere: settings.hemisphere ?? null,
-  city: settings.city ?? null,
-  current_day: settings.currentDay ?? 1,
-  xp: settings.xp ?? 0,
-  data_version: settings.dataVersion ?? 0,
-  preferences: preferences ?? null,
-});
+) => {
+  const row = {
+    id: ownerId,
+    owner_id: ownerId,
+    first_load_complete: settings.firstLoadComplete ?? true,
+    hemisphere: settings.hemisphere ?? null,
+    city: settings.city ?? null,
+    current_day: settings.currentDay ?? 1,
+    xp: settings.xp ?? 0,
+    data_version: settings.dataVersion ?? 0,
+  };
+
+  if (preferences === undefined) {
+    return row;
+  }
+
+  return {
+    ...row,
+    preferences,
+  };
+};
 
 export const getCloudUserSettings = async (
   ownerId: string,
@@ -81,6 +111,41 @@ export const upsertCloudUserSettings = async (
   return mapRowToSettings(data as UserSettingsRow);
 };
 
+const mergePreferences = (
+  current: UserSettingsPreferences | undefined,
+  patch: UserSettingsPreferences,
+): UserSettingsPreferences => {
+  const merged: UserSettingsPreferences = {
+    ...current,
+    ...patch,
+  };
+
+  if (current?.profile || patch.profile) {
+    merged.profile = {
+      ...current?.profile,
+      ...patch.profile,
+    };
+  }
+
+  return merged;
+};
+
+export const updateCloudUserPreferences = async (
+  ownerId: string,
+  settings: Partial<SettingsDocument>,
+  preferences: UserSettingsPreferences,
+): Promise<CloudUserSettings> => {
+  const current = await getCloudUserSettings(ownerId);
+  return upsertCloudUserSettings(
+    ownerId,
+    {
+      ...(current ?? settings),
+      ...settings,
+    },
+    mergePreferences(current?.preferences, preferences),
+  );
+};
+
 export const ensureCloudUserSettings = async (
   ownerId: string,
   localSettings: SettingsDocument,
@@ -89,12 +154,5 @@ export const ensureCloudUserSettings = async (
   const cloudSettings = await getCloudUserSettings(ownerId);
   if (cloudSettings) return cloudSettings;
 
-  return upsertCloudUserSettings(
-    ownerId,
-    {
-      ...localSettings,
-      firstLoadComplete: false,
-    },
-    preferences,
-  );
+  return upsertCloudUserSettings(ownerId, localSettings, preferences);
 };
