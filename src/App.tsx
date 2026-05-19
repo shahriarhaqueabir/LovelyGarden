@@ -12,6 +12,9 @@ const VirtualGardenTab = React.lazy(() =>
     default: m.VirtualGardenTab,
   })),
 );
+const ProfileTab = React.lazy(() =>
+  import("./components/ProfileTab").then((m) => ({ default: m.ProfileTab })),
+);
 const SowingCalendarTab = React.lazy(() =>
   import("./components/SowingCalendarTab").then((m) => ({
     default: m.SowingCalendarTab,
@@ -259,10 +262,10 @@ const AppContent: React.FC = () => {
         }
 
         const localSettings = localSettingsDoc.toJSON();
-        const cloudSettings = await ensureCloudUserSettings(
-          user.id,
-          localSettings,
-        );
+        const cloudSettings = await ensureCloudUserSettings(user.id, {
+          ...localSettings,
+          firstLoadComplete: false,
+        });
         if (cancelled) return;
 
         await db.settings.upsert({
@@ -540,6 +543,11 @@ const AppContent: React.FC = () => {
                 alerts={alerts}
                 onOpenSeedStore={() => setShowSeedStore(true)}
               />
+            </ErrorBoundary>
+          </TabPanel>
+          <TabPanel id="profile">
+            <ErrorBoundary>
+              <ProfileTab />
             </ErrorBoundary>
           </TabPanel>
           <TabPanel id="sowing-calendar">

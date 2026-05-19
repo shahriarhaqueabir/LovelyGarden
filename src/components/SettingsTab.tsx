@@ -25,7 +25,7 @@ import { WeatherSettings } from "./WeatherSettings";
 import { useAuth } from "../hooks/useAuth";
 import {
   ensureCloudUserSettings,
-  upsertCloudUserSettings,
+  updateCloudUserPreferences,
 } from "../services/userSettingsService";
 export const SettingsTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<"general" | "developer">(
@@ -146,7 +146,7 @@ export const SettingsTab: React.FC = () => {
       await db.settings.upsert(savedSettings);
 
       if (user) {
-        await upsertCloudUserSettings(user.id, savedSettings, {
+        await updateCloudUserPreferences(user.id, savedSettings, {
           accentColor,
           backgroundColor,
           language,

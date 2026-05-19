@@ -87,6 +87,7 @@ sprint/
 /Guidebook/
 
 # Playwright
+.playwright-cli/
 /playwright-report/
 /test-results/
 /test-results/

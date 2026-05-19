@@ -5,6 +5,7 @@ import { cn } from "../lib/utils";
 
 export type TabType =
   | "virtual-garden"
+  | "profile"
   | "sowing-calendar"
   | "plant-knowledgebase"
   | "seed-inventory"
@@ -60,6 +61,11 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       id: "virtual-garden" as TabType,
       label: "🏡 Virtual Garden",
       short: "Garden",
+    },
+    {
+      id: "profile" as TabType,
+      label: "👤 Profile",
+      short: "Profile",
     },
     {
       id: "sowing-calendar" as TabType,
