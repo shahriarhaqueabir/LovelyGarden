@@ -29,5 +29,6 @@ Date: 2026-05-20
 
 - `pnpm build`: passed.
 - Pending-local unit test added for sync status service.
+- Live smoke check after deployment `6081c02`: HTTP 200, title `Lovely Garden`, no console errors on unauthenticated load.
 - `test:rls` was not run because it requires two configured Supabase test accounts in environment variables.
 - Remaining gap: browser DevTools offline/online retry should be tested in a real signed-in account to verify Supabase reconnect behavior and badge messaging.
