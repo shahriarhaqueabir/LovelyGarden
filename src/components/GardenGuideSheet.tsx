@@ -218,9 +218,30 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
               {error}
             </div>
           ) : filteredInsights.length === 0 ? (
-            <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 text-sm text-stone-400">
-              No guide cards in this window yet. Add plants, inventory, weather,
-              or logbook entries and refresh.
+            <div className="space-y-3">
+              <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 text-sm text-stone-400">
+                {insights.length === 0
+                  ? "No garden signals yet. Start with one garden action and the guide will begin building care cards."
+                  : "No guide cards in this window yet. Try All, or refresh after your next garden action."}
+              </div>
+              {insights.length === 0 && (
+                <div className="grid gap-2">
+                  {[
+                    "Add seeds to your bag",
+                    "Create or open a garden sector",
+                    "Place one in-season seed",
+                    "Log the next watering or harvest",
+                  ].map((action) => (
+                    <div
+                      key={action}
+                      className="flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-950/70 px-3 py-2 text-xs font-bold text-stone-300"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5 text-garden-400" />
+                      {action}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-3">

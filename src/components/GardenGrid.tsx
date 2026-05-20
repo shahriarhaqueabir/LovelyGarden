@@ -417,6 +417,23 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
           <span className="text-[11px] font-black tracking-widest uppercase">
             {x},{y}
           </span>
+          {activeSeedCatalogId && (
+            <span
+              className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${
+                seedSynergy > 10
+                  ? "border-garden-400/60 bg-garden-950/60 text-garden-300"
+                  : seedSynergy < -10
+                    ? "border-red-500/60 bg-red-950/60 text-red-300"
+                    : "border-stone-700 bg-stone-900/70 text-stone-500"
+              }`}
+            >
+              {seedSynergy > 10
+                ? "Good Fit"
+                : seedSynergy < -10
+                  ? "Avoid"
+                  : "Open"}
+            </span>
+          )}
         </div>
       )}
 
