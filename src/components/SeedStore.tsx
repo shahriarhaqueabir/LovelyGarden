@@ -588,6 +588,8 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
 
   // Load expanded plant knowledge base from plants-kb.json
   useEffect(() => {
+    let cancelled = false;
+
     const loadExpandedPlantKB = async () => {
       try {
         const plantsArray = await listPlantKnowledgeBase();
@@ -597,25 +599,41 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
           kbMap[plant.plant_id] = plant as ExpandedPlantKB;
         });
 
-        setExpandedPlantKB(kbMap);
+        if (!cancelled) setExpandedPlantKB(kbMap);
       } catch (error) {
         console.warn(
           "Falling back to bundled expanded plant knowledge base:",
           error,
         );
 
-        const response = await fetch("/data/plants-kb.json");
-        const data = await response.json();
-        const plantsArray = Array.isArray(data) ? data : data.plants || [];
-        const kbMap: Record<string, ExpandedPlantKB> = {};
-        plantsArray.forEach((plant: ExpandedPlantKB) => {
-          kbMap[plant.plant_id] = plant;
-        });
-        setExpandedPlantKB(kbMap);
+        try {
+          const response = await fetch("/data/plants-kb.json");
+          if (!response.ok) {
+            throw new Error(`Bundled plant KB returned ${response.status}`);
+          }
+
+          const data = await response.json();
+          const plantsArray = Array.isArray(data) ? data : data.plants || [];
+          const kbMap: Record<string, ExpandedPlantKB> = {};
+          plantsArray.forEach((plant: ExpandedPlantKB) => {
+            kbMap[plant.plant_id] = plant;
+          });
+          if (!cancelled) setExpandedPlantKB(kbMap);
+        } catch (fallbackError) {
+          console.warn("Bundled expanded plant knowledge base unavailable:", {
+            error,
+            fallbackError,
+          });
+          if (!cancelled) setExpandedPlantKB({});
+        }
       }
     };
 
     loadExpandedPlantKB();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Calculate current month from day (approximate)

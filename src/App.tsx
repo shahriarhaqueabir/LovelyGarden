@@ -45,9 +45,6 @@ const WeatherForecastTab = React.lazy(() =>
 const SettingsTab = React.lazy(() =>
   import("./components/SettingsTab").then((m) => ({ default: m.SettingsTab })),
 );
-const SeedStore = React.lazy(() =>
-  import("./components/SeedStore").then((m) => ({ default: m.SeedStore })),
-);
 const LogbookTab = React.lazy(() =>
   import("./components/LogbookTab").then((m) => ({ default: m.LogbookTab })),
 );
@@ -72,6 +69,7 @@ import { signOut } from "./services/authService";
 import { AuthScreen } from "./components/AuthScreen";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
+import { SeedStore } from "./components/SeedStore";
 import { showError, showSuccess } from "./lib/toast";
 import {
   ensureCloudUserSettings,
@@ -666,11 +664,13 @@ const AppContent: React.FC = () => {
 
         {/* Seed Store Modal */}
         {showSeedStore && (
-          <SeedStore
-            catalog={catalog}
-            onClose={() => setShowSeedStore(false)}
-            currentDay={currentDay}
-          />
+          <ErrorBoundary>
+            <SeedStore
+              catalog={catalog}
+              onClose={() => setShowSeedStore(false)}
+              currentDay={currentDay}
+            />
+          </ErrorBoundary>
         )}
         {!showGardenGuide && !showGardenCoach && (
           <button
