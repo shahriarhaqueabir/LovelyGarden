@@ -6,6 +6,9 @@ import {
   Sprout,
   Plus,
   Edit,
+  Activity,
+  Droplets,
+  Undo2,
 } from "lucide-react";
 import {
   DndContext,
@@ -32,7 +35,7 @@ import {
 import { calculateCurrentStage } from "../logic/lifecycle";
 import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
 import { isSowingSeason } from "../logic/reasoning";
-import { showSuccess, showError, showInfo } from "../lib/toast";
+import { showSuccess, showError, showInfo, toast } from "../lib/toast";
 import { PlantedDocument, GridLayer, GardenDocument } from "../db/types";
 import { PlantSpecies } from "../schema/knowledge-graph";
 import { Subscription } from "rxjs";
@@ -275,13 +278,39 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
 
       try {
-        await plantSeed(catalogId, x, y, inventoryId, activeGarden.id);
+        const plantId = await plantSeed(
+          catalogId,
+          x,
+          y,
+          inventoryId,
+          activeGarden.id,
+        );
         if (user) {
           deleteCloudInventoryItem(user.id, inventoryId).catch((error) => {
             console.warn("Inventory cloud delete failed:", error);
           });
         }
-        showSuccess("Plant added to garden");
+        showUndoAction("Plant added to garden", async () => {
+          try {
+            const restoredInventoryId = await unplantSeed(plantId);
+            if (user) {
+              const db = await getDatabase();
+              const inventoryItem = await db.inventory
+                .findOne(restoredInventoryId)
+                .exec();
+              if (inventoryItem) {
+                upsertCloudInventoryItem(user.id, inventoryItem.toJSON()).catch(
+                  (error) => {
+                    console.warn("Inventory cloud upsert failed:", error);
+                  },
+                );
+              }
+            }
+            showSuccess("Planting undone");
+          } catch {
+            showError("Could not undo planting");
+          }
+        });
       } catch {
         showError("Failed to plant seed");
       }
@@ -304,7 +333,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
       try {
         await relocatePlant(plant.id, x, y, activeGarden?.id || "main-garden");
-        showSuccess("Plant unit relocated");
+        showUndoAction("Plant unit relocated", async () => {
+          try {
+            await relocatePlant(
+              plant.id,
+              plant.gridX,
+              plant.gridY,
+              activeGarden?.id || "main-garden",
+            );
+            showSuccess("Move undone");
+          } catch {
+            showError("Could not undo move");
+          }
+        });
       } catch {
         showError("Failed to relocate plant");
       }
@@ -411,6 +452,66 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         sunExposure: activeGarden.sunExposure ?? "Full Sun",
       }
     : null;
+  const gardenHealth = useMemo(() => {
+    if (plantedCards.length === 0) {
+      return {
+        score: 100,
+        thirstyCount: 0,
+        stressedCount: 0,
+        label: "Ready",
+        tone: "text-garden-400",
+      };
+    }
+
+    const avgHydration =
+      plantedCards.reduce((sum, plant) => sum + (plant.hydration ?? 100), 0) /
+      plantedCards.length;
+    const avgStress =
+      plantedCards.reduce((sum, plant) => sum + (plant.stressLevel ?? 0), 0) /
+      plantedCards.length;
+    const score = Math.max(0, Math.round(avgHydration - avgStress * 0.65));
+    const thirstyCount = plantedCards.filter(
+      (plant) => (plant.hydration ?? 100) < 35,
+    ).length;
+    const stressedCount = plantedCards.filter(
+      (plant) => (plant.stressLevel ?? 0) > 60,
+    ).length;
+
+    return {
+      score,
+      thirstyCount,
+      stressedCount,
+      label: score >= 80 ? "Stable" : score >= 55 ? "Watch" : "Care",
+      tone:
+        score >= 80
+          ? "text-garden-400"
+          : score >= 55
+            ? "text-amber-400"
+            : "text-red-400",
+    };
+  }, [plantedCards]);
+
+  const showUndoAction = (message: string, onUndo: () => Promise<void>) => {
+    toast.custom(
+      (toastInstance) => (
+        <div className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 px-4 py-3 text-sm font-semibold text-stone-100 shadow-xl">
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => {
+              toast.dismiss(toastInstance.id);
+              void onUndo();
+            }}
+            className="inline-flex h-8 items-center gap-1 rounded-lg bg-garden-500 px-3 text-xs font-black uppercase tracking-wide text-stone-950 hover:bg-garden-400"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+            Undo
+          </button>
+        </div>
+      ),
+      { duration: 6000, position: "top-right" },
+    );
+  };
 
   return (
     <DndContext
@@ -452,6 +553,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <span>
                 {occupiedCells}/{totalCells}
               </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest shadow-inner sm:px-3">
+              <Activity className={`h-3.5 w-3.5 ${gardenHealth.tone}`} />
+              <span className={gardenHealth.tone}>{gardenHealth.score}</span>
+              <span className="text-stone-500">{gardenHealth.label}</span>
+            </div>
+            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest text-stone-500 shadow-inner sm:flex sm:px-3">
+              <Droplets className="h-3.5 w-3.5 text-blue-400" />
+              <span>{gardenHealth.thirstyCount} Water</span>
+              <span className="text-stone-700">/</span>
+              <span>{gardenHealth.stressedCount} Watch</span>
             </div>
           </div>
 

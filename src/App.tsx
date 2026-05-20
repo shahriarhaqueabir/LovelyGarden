@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BookOpenCheck, LogOut, Sparkles, UserCircle } from "lucide-react";
+import {
+  BookOpenCheck,
+  Cloud,
+  CloudOff,
+  LogOut,
+  Sparkles,
+  UserCircle,
+} from "lucide-react";
 import { hydrateDatabase, getDatabase } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
@@ -94,6 +101,9 @@ const AppContent: React.FC = () => {
   );
   const [savingOnboarding, setSavingOnboarding] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
+  const [isOnline, setIsOnline] = useState(() =>
+    typeof navigator === "undefined" ? true : navigator.onLine,
+  );
   const { user, loading: authLoading } = useAuth();
   const currentDay = React.useMemo(
     () => getDayOfYear(currentDateTime),
@@ -160,6 +170,17 @@ const AppContent: React.FC = () => {
     }, 60000);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
+    const updateOnlineState = () => setIsOnline(navigator.onLine);
+    window.addEventListener("online", updateOnlineState);
+    window.addEventListener("offline", updateOnlineState);
+
+    return () => {
+      window.removeEventListener("online", updateOnlineState);
+      window.removeEventListener("offline", updateOnlineState);
+    };
   }, []);
 
   // Automatic Shutdown Heartbeat
@@ -430,6 +451,27 @@ const AppContent: React.FC = () => {
           <div className="flex min-w-0 items-center gap-2">
             {user ? (
               <>
+                <div
+                  className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 md:flex ${
+                    isOnline
+                      ? "border-garden-500/20 bg-garden-950/20 text-garden-300"
+                      : "border-amber-500/30 bg-amber-950/20 text-amber-300"
+                  }`}
+                  title={
+                    isOnline
+                      ? "Online. Changes can sync to your account."
+                      : "Offline. Changes are saved locally and will be available to sync when the connection returns."
+                  }
+                >
+                  {isOnline ? (
+                    <Cloud className="h-4 w-4" />
+                  ) : (
+                    <CloudOff className="h-4 w-4" />
+                  )}
+                  <span className="text-[11px] font-black uppercase tracking-wide">
+                    {isOnline ? "Online" : "Saved Local"}
+                  </span>
+                </div>
                 <div
                   className="hidden md:flex items-center gap-2 rounded-full border border-garden-500/20 bg-garden-950/20 px-3 py-1.5"
                   title={user.email ?? "Signed in"}
