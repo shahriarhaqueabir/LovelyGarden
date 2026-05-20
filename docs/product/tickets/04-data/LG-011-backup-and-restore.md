@@ -38,4 +38,5 @@ As a gardener, I want to export and import my data so I can recover from mistake
 
 - Export payload version is now `2`.
 - Import uses collection-specific Zod object schemas and `bulkUpsert`.
-- Remaining work: add UI import preview before merge and browser-test a populated round trip.
+- Settings UI explains export contents and merge behavior.
+- Remaining work: add a true pre-import preview before merge and browser-test a populated round trip.
