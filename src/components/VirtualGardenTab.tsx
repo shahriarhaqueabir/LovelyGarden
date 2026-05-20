@@ -18,6 +18,7 @@ import {
   useSensors,
   PointerSensor,
   DragOverlay,
+  Modifier,
 } from "@dnd-kit/core";
 import { GardenField } from "./GardenGrid";
 import { InventoryTray } from "./InventoryTray";
@@ -54,6 +55,52 @@ const ObservationTerminal = React.lazy(async () => {
   const m = await import("./ObservationTerminal");
   return { default: m.ObservationTerminal };
 });
+
+const getActivatorPoint = (event: Event | null) => {
+  if (!event) return null;
+  if (event instanceof MouseEvent || event instanceof PointerEvent) {
+    return { x: event.clientX, y: event.clientY };
+  }
+  if (event instanceof TouchEvent) {
+    const touch = event.touches[0] || event.changedTouches[0];
+    return touch ? { x: touch.clientX, y: touch.clientY } : null;
+  }
+  return null;
+};
+
+const shouldCenterDragOverlay = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(orientation: landscape)").matches;
+
+const snapOverlayCenterToCursor: Modifier = ({
+  activatorEvent,
+  activeNodeRect,
+  overlayNodeRect,
+  transform,
+}) => {
+  if (!shouldCenterDragOverlay()) {
+    return transform;
+  }
+
+  const activatorPoint = getActivatorPoint(activatorEvent);
+  if (!activatorPoint || !activeNodeRect || !overlayNodeRect) {
+    return transform;
+  }
+
+  return {
+    ...transform,
+    x:
+      transform.x +
+      activatorPoint.x -
+      activeNodeRect.left -
+      overlayNodeRect.width / 2,
+    y:
+      transform.y +
+      activatorPoint.y -
+      activeNodeRect.top -
+      overlayNodeRect.height / 2,
+  };
+};
 
 interface VirtualGardenTabProps {
   catalog: PlantSpecies[];
@@ -720,7 +767,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
                 {/* THE FIELD */}
 
-                <main className="flex flex-1 items-center justify-center overflow-auto p-4 pt-16 sm:p-8 sm:pt-20 lg:p-12">
+                <main className="flex flex-1 items-center justify-center overflow-auto px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 lg:p-12">
                   {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
@@ -814,7 +861,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
         </div>
 
-        <DragOverlay dropAnimation={null} adjustScale={false}>
+        <DragOverlay
+          dropAnimation={null}
+          adjustScale={false}
+          modifiers={[snapOverlayCenterToCursor]}
+        >
           {activeDragPreview ? (
             <div
               className={

@@ -522,7 +522,7 @@ export const GardenField: React.FC<{
     <div className="relative group/field w-full">
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
       <div
-        className="grid place-items-center gap-2 sm:gap-4 lg:gap-8 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.5rem,11vw,10rem)]"
+        className="grid justify-center place-items-center gap-2 sm:gap-3 xl:gap-8 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.75rem,18vmin,10rem)] landscape:[--garden-cell-size:clamp(4.5rem,11vw,10rem)]"
         style={{
           gridTemplateColumns: `repeat(${cols}, var(--garden-cell-size))`,
           gridTemplateRows: `repeat(${rows}, var(--garden-cell-size))`,
