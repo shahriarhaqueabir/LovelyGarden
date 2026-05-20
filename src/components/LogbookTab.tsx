@@ -17,10 +17,16 @@ import {
   deleteLogbookEntry,
 } from "../db/queries";
 import { useLogbook } from "../hooks/useLogbook";
-import { showSuccess, showError, showInfo } from "../lib/toast";
+import { showSuccess, showError, showInfo, showWarning } from "../lib/toast";
 import { ShoppingBasket, Skull } from "lucide-react";
 import { format } from "date-fns";
 import type { LogbookDocument } from "../db/types";
+import { useAuth } from "../hooks/useAuth";
+import {
+  deleteCloudLogbookEntry,
+  upsertCloudLogbookEntry,
+} from "../services/logbookService";
+import { setSyncStatus } from "../services/syncStatusService";
 
 interface LogbookFormState {
   name: string;
@@ -38,6 +44,7 @@ const INITIAL_FORM_STATE: LogbookFormState = {
 
 export const LogbookTab: React.FC = () => {
   const entries = useLogbook();
+  const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -71,23 +78,49 @@ export const LogbookTab: React.FC = () => {
     e.preventDefault();
     try {
       const timestamp = new Date(formData.date).getTime();
+      let savedEntry: LogbookDocument | null = null;
 
       if (modalMode === "add") {
-        await logUserPurchase(
+        const id = await logUserPurchase(
           formData.name,
           formData.category,
           timestamp,
           formData.notes,
         );
+        savedEntry = {
+          id,
+          type: "user_purchase",
+          itemName: formData.name,
+          category: formData.category,
+          date: timestamp,
+          notes: formData.notes,
+          catalogId: "manual-entry",
+          bedId: "main-garden",
+        };
         showSuccess("Entry added to Logbook");
       } else if (modalMode === "edit" && editingId) {
-        await updateLogbookEntry(editingId, {
+        savedEntry = await updateLogbookEntry(editingId, {
           itemName: formData.name,
           category: formData.category,
           date: timestamp,
           notes: formData.notes,
         });
         showSuccess("Entry updated");
+      }
+
+      if (user && savedEntry) {
+        setSyncStatus("syncing", "Syncing logbook entry...");
+        try {
+          await upsertCloudLogbookEntry(user.id, savedEntry);
+          setSyncStatus("synced", "Logbook entry synced.");
+        } catch (error) {
+          console.warn("Logbook entry cloud sync failed:", error);
+          setSyncStatus(
+            "error",
+            "Logbook entry sync failed. Changes are saved locally.",
+          );
+          showWarning("Logbook entry sync failed. Saved locally for now.");
+        }
       }
 
       setShowModal(false);
@@ -106,6 +139,20 @@ export const LogbookTab: React.FC = () => {
     ) {
       try {
         await deleteLogbookEntry(id);
+        if (user) {
+          setSyncStatus("syncing", "Syncing logbook delete...");
+          try {
+            await deleteCloudLogbookEntry(user.id, id);
+            setSyncStatus("synced", "Logbook delete synced.");
+          } catch (error) {
+            console.warn("Logbook delete cloud sync failed:", error);
+            setSyncStatus(
+              "error",
+              "Logbook delete sync failed. Changes are saved locally.",
+            );
+            showWarning("Logbook delete sync failed. Saved locally for now.");
+          }
+        }
         showInfo("Entry deleted");
       } catch (err) {
         console.error(err);

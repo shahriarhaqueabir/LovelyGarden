@@ -3,9 +3,10 @@ import { Trash2, Sprout, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useInventory } from "../hooks/useInventory";
 import { getDatabase } from "../db";
-import { showSuccess, showError } from "../lib/toast";
+import { showSuccess, showError, showWarning } from "../lib/toast";
 import { useAuth } from "../hooks/useAuth";
 import { deleteCloudInventoryItem } from "../services/inventoryService";
+import { setSyncStatus } from "../services/syncStatusService";
 
 // ... (SeedCard component remains same) -> Restored below
 export const SeedCard: React.FC<{
@@ -139,9 +140,18 @@ export const InventoryTray: React.FC<{
       if (item) {
         await item.remove();
         if (user) {
-          deleteCloudInventoryItem(user.id, inventoryId).catch((error) => {
+          setSyncStatus("syncing", "Syncing bag change...");
+          try {
+            await deleteCloudInventoryItem(user.id, inventoryId);
+            setSyncStatus("synced", "Bag change synced.");
+          } catch (error) {
             console.warn("Inventory cloud delete failed:", error);
-          });
+            setSyncStatus(
+              "error",
+              "Bag sync failed. Changes are saved locally.",
+            );
+            showWarning("Bag sync failed. Saved locally for now.");
+          }
         }
         showSuccess("Item removed from Bag");
       }

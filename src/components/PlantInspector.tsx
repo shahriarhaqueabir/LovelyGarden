@@ -39,7 +39,7 @@ import { getStageColor } from "../utils/ui-helpers";
 import { GrowthTelemetry } from "./GrowthTelemetry";
 import { waterPlant, harvestPlant, recordLoss } from "../db/queries";
 import { Modal } from "./ui/Modal";
-import { showInfo } from "../lib/toast";
+import { showInfo, showWarning } from "../lib/toast";
 import { getSafeExternalUrl } from "../lib/safeUrl";
 import type {
   PlantedDocument,
@@ -50,6 +50,13 @@ import {
   getPlantKnowledgeBase,
   listSources,
 } from "../services/referenceDataService";
+import { useAuth } from "../hooks/useAuth";
+import {
+  deleteCloudPlantedPlant,
+  upsertCloudPlantedPlant,
+} from "../services/plantedPlantService";
+import { upsertCloudLogbookEntry } from "../services/logbookService";
+import { setSyncStatus } from "../services/syncStatusService";
 
 interface PlantInspectorProps {
   plant: PlantedDocument;
@@ -72,6 +79,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   onClose,
   docked,
 }) => {
+  const { user } = useAuth();
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [sourcesById, setSourcesById] = useState<
     Record<string, SourceDocument>
@@ -81,6 +89,55 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   // Modal states
   const [modalType, setModalType] = useState<"harvest" | "loss" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const syncUpdatedPlant = async (message: string) => {
+    if (!user) return;
+
+    setSyncStatus("syncing", message);
+    try {
+      const db = await getDatabase();
+      const updatedPlant = await db.planted.findOne(plant.id).exec();
+      if (updatedPlant) {
+        await upsertCloudPlantedPlant(user.id, updatedPlant.toJSON());
+      }
+      setSyncStatus("synced", "Plant update synced.");
+    } catch (error) {
+      console.warn("Plant update cloud sync failed:", error);
+      setSyncStatus(
+        "error",
+        "Plant update sync failed. Changes are saved locally.",
+      );
+      showWarning("Plant update sync failed. Saved locally for now.");
+    }
+  };
+
+  const syncRemovedPlantEvent = async (
+    logbookId: string,
+    plantId: string,
+    message: string,
+  ) => {
+    if (!user) return;
+
+    setSyncStatus("syncing", message);
+    try {
+      const db = await getDatabase();
+      const entry = await db.logbook.findOne(logbookId).exec();
+      await Promise.all([
+        deleteCloudPlantedPlant(user.id, plantId),
+        entry
+          ? upsertCloudLogbookEntry(user.id, entry.toJSON())
+          : Promise.resolve(),
+      ]);
+      setSyncStatus("synced", "Garden event synced.");
+    } catch (error) {
+      console.warn("Garden event cloud sync failed:", error);
+      setSyncStatus(
+        "error",
+        "Garden event sync failed. Changes are saved locally.",
+      );
+      showWarning("Garden event sync failed. Saved locally for now.");
+    }
+  };
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -731,9 +788,15 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <button
                 onClick={async () => {
                   setIsProcessing(true);
-                  await harvestPlant(plant.id, catalogItem.name);
+                  const result = await harvestPlant(plant.id, catalogItem.name);
+                  await syncRemovedPlantEvent(
+                    result.logbookId,
+                    result.removedPlant.id,
+                    "Syncing harvest...",
+                  );
                   showInfo(`Successfully harvested ${catalogItem.name}`);
                   setModalType(null);
+                  setIsProcessing(false);
                   onClose();
                 }}
                 className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-xl text-sm font-black uppercase tracking-widest transition-all"
@@ -799,13 +862,19 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <button
                 onClick={async () => {
                   setIsProcessing(true);
-                  await recordLoss(
+                  const result = await recordLoss(
                     plant.id,
                     catalogItem.name,
                     "Manually marked as lost",
                   );
+                  await syncRemovedPlantEvent(
+                    result.logbookId,
+                    result.removedPlant.id,
+                    "Syncing plant loss...",
+                  );
                   showInfo(`Logged ${catalogItem.name} as a casualty`);
                   setModalType(null);
+                  setIsProcessing(false);
                   onClose();
                 }}
                 className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-black uppercase tracking-widest transition-all"
@@ -847,6 +916,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             <button
               onClick={async () => {
                 await waterPlant(plant.id);
+                await syncUpdatedPlant("Syncing watering...");
                 // The query now handles XP (+5)
               }}
               className="py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-2"

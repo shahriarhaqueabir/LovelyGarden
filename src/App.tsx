@@ -8,7 +8,7 @@ import {
   Sparkles,
   UserCircle,
 } from "lucide-react";
-import { hydrateDatabase, getDatabase } from "./db";
+import { hydrateDatabase, getDatabase, setDatabaseOwnerScope } from "./db";
 import { applyTheme, applyBackgroundColor } from "./utils/theme";
 import type { PlantSpecies } from "./schema/knowledge-graph";
 import { Tabs, TabPanel } from "./components/Tabs";
@@ -71,6 +71,9 @@ import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
 import { SeedStore } from "./components/SeedStore";
 import { showError, showSuccess } from "./lib/toast";
+import { useSyncStatus } from "./hooks/useSyncStatus";
+import { setSyncStatus } from "./services/syncStatusService";
+import { retryPendingAccountSync } from "./services/syncRetryService";
 import {
   ensureCloudUserSettings,
   upsertCloudUserSettings,
@@ -103,6 +106,8 @@ const AppContent: React.FC = () => {
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
   const { user, loading: authLoading } = useAuth();
+  const userId = user?.id;
+  const syncStatus = useSyncStatus();
   const currentDay = React.useMemo(
     () => getDayOfYear(currentDateTime),
     [currentDateTime],
@@ -181,6 +186,15 @@ const AppContent: React.FC = () => {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (!userId || !isOnline || syncStatus.pendingLocalCount === 0) return;
+
+    retryPendingAccountSync(userId).catch((error) => {
+      console.warn("Retry sync failed:", error);
+      setSyncStatus("error", "Retry failed. Changes are still saved locally.");
+    });
+  }, [isOnline, syncStatus.pendingLocalCount, userId]);
+
   // Automatic Shutdown Heartbeat
   React.useEffect(() => {
     const localHeartbeatHosts = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -203,7 +217,11 @@ const AppContent: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
-    if (authLoading || !user) return;
+    setDatabaseOwnerScope(userId ?? null);
+  }, [userId]);
+
+  React.useEffect(() => {
+    if (authLoading || !userId) return;
 
     // Hold subscription references so we can clean them up on unmount.
     let catalogSub: { unsubscribe(): void } | null = null;
@@ -293,10 +311,10 @@ const AppContent: React.FC = () => {
       catalogSub?.unsubscribe();
       settingsSub?.unsubscribe();
     };
-  }, [authLoading, user, setLocation, fetchWeatherData]);
+  }, [authLoading, userId, setLocation, fetchWeatherData]);
 
   React.useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
     let cancelled = false;
 
@@ -311,7 +329,7 @@ const AppContent: React.FC = () => {
         }
 
         const localSettings = localSettingsDoc.toJSON();
-        const cloudSettings = await ensureCloudUserSettings(user.id, {
+        const cloudSettings = await ensureCloudUserSettings(userId, {
           ...localSettings,
           firstLoadComplete: false,
         });
@@ -330,6 +348,7 @@ const AppContent: React.FC = () => {
         setOnboardingComplete(cloudSettings.firstLoadComplete);
       } catch (error) {
         console.warn("Cloud settings sync skipped:", error);
+        setSyncStatus("error", "Settings sync failed. Changes stay local.");
         setOnboardingComplete(true);
       }
     };
@@ -339,7 +358,7 @@ const AppContent: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [userId]);
 
   // Persist XP changes
   React.useEffect(() => {
@@ -349,22 +368,26 @@ const AppContent: React.FC = () => {
       if (settings && settings.xp !== xp) {
         await settings.patch({ xp });
       }
-      if (settings && user) {
-        await upsertCloudUserSettings(user.id, {
+      if (settings && userId) {
+        await upsertCloudUserSettings(userId, {
           ...settings.toJSON(),
           xp,
         });
       }
     };
     if (xp > 0) persistXp();
-  }, [xp, user]);
+  }, [xp, userId]);
 
   const handleSignOut = async () => {
+    setSyncStatus("syncing", "Signing out...");
     const { error } = await signOut();
     if (error) {
+      setSyncStatus("error", "Sign-out failed.");
       showError(error.message);
       return;
     }
+    setDatabaseOwnerScope(null);
+    setSyncStatus("local", "Signed out. Local account data is separated.");
     showSuccess("Cloud session disconnected.");
   };
 
@@ -451,23 +474,34 @@ const AppContent: React.FC = () => {
               <>
                 <div
                   className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 md:flex ${
-                    isOnline
-                      ? "border-garden-500/20 bg-garden-950/20 text-garden-300"
-                      : "border-amber-500/30 bg-amber-950/20 text-amber-300"
+                    syncStatus.state === "error"
+                      ? "border-red-500/30 bg-red-950/20 text-red-300"
+                      : isOnline
+                        ? "border-garden-500/20 bg-garden-950/20 text-garden-300"
+                        : "border-amber-500/30 bg-amber-950/20 text-amber-300"
                   }`}
                   title={
-                    isOnline
+                    syncStatus.message ||
+                    (isOnline
                       ? "Online. Changes can sync to your account."
-                      : "Offline. Changes are saved locally and will be available to sync when the connection returns."
+                      : "Offline. Changes are saved locally and will be available to sync when the connection returns.")
                   }
                 >
-                  {isOnline ? (
+                  {syncStatus.state === "error" ? (
+                    <CloudOff className="h-4 w-4" />
+                  ) : isOnline ? (
                     <Cloud className="h-4 w-4" />
                   ) : (
                     <CloudOff className="h-4 w-4" />
                   )}
                   <span className="text-[11px] font-black uppercase tracking-wide">
-                    {isOnline ? "Online" : "Saved Local"}
+                    {syncStatus.state === "error"
+                      ? "Needs Retry"
+                      : syncStatus.state === "syncing"
+                        ? "Syncing"
+                        : isOnline
+                          ? "Online"
+                          : "Saved Local"}
                   </span>
                 </div>
                 <div
