@@ -396,12 +396,12 @@ export const PlantKnowledgebaseTab: React.FC = () => {
                 </section>
               </div>
 
-              {/* Right Column: Environmental Intelligence */}
+              {/* Right Column: Environmental Guidance */}
               <div className="space-y-6">
                 {/* SEASONALITY */}
                 <section className="bg-stone-800/20 p-4 rounded-xl border border-stone-700/30">
                   <h4 className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2 border-b border-stone-700 pb-2">
-                    📅 Diagnostics Intel
+                    Growing Notes
                   </h4>
                   {selectedPlant.seasonality && (
                     <div className="space-y-4">
@@ -588,7 +588,7 @@ export const PlantKnowledgebaseTab: React.FC = () => {
               <div className="flex flex-col gap-4">
                 <div>
                   <h5 className="text-xs font-black uppercase tracking-[0.2em] text-stone-500 mb-2">
-                    KB Intelligence Sources
+                    Knowledge Sources
                   </h5>
                   <div className="flex gap-4 flex-wrap">
                     {selectedPlant.source_metadata?.map((s, i) => (

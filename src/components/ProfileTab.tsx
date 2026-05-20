@@ -118,7 +118,6 @@ export const ProfileTab: React.FC = () => {
             hemisphere: cloudSettings.hemisphere ?? localSettings.hemisphere,
             city: cloudSettings.city ?? localSettings.city,
             currentDay: cloudSettings.currentDay ?? localSettings.currentDay,
-            xp: cloudSettings.xp ?? localSettings.xp,
             dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
           };
           await db.settings.upsert({ ...nextSettings, id: "local-user" });

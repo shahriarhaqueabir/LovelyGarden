@@ -73,7 +73,6 @@ export const SettingsTab: React.FC = () => {
             hemisphere: cloudSettings.hemisphere ?? data.hemisphere,
             city: cloudSettings.city ?? data.city,
             currentDay: cloudSettings.currentDay ?? data.currentDay,
-            xp: cloudSettings.xp ?? data.xp,
             dataVersion: cloudSettings.dataVersion ?? data.dataVersion,
           };
 
@@ -242,11 +241,11 @@ export const SettingsTab: React.FC = () => {
         <div className="flex items-center gap-3 mb-4">
           <Settings className="w-6 h-6 text-garden-400" />
           <h1 className="text-xl font-bold text-stone-100 uppercase tracking-tighter">
-            ⚙️ Deck Controller
+            Settings
           </h1>
         </div>
         <p className="text-stone-400 text-sm tracking-tight">
-          Configure your botanical command center
+          Configure your garden workspace
         </p>
       </div>
 
@@ -511,7 +510,7 @@ export const SettingsTab: React.FC = () => {
                 onClick={handleExport}
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
               >
-                <Download className="w-3 h-3" /> Export System JSON
+                <Download className="w-3 h-3" /> Export Backup JSON
               </button>
 
               <input
@@ -596,7 +595,7 @@ export const SettingsTab: React.FC = () => {
                     </div>
                   ))}
                   <div className="text-stone-700 animate-pulse">
-                    _ Waiting for diagnostic input...
+                    _ Waiting for input...
                   </div>
                 </div>
               </div>

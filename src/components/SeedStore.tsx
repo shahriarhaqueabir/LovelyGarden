@@ -154,7 +154,7 @@ export const DetailModal: React.FC<{
           </div>
         </div>
 
-        {/* Intelligence Grid */}
+        {/* Plant Details Grid */}
         <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {/* Left Column: Core Identity */}
           <div className="space-y-8">
@@ -350,12 +350,12 @@ export const DetailModal: React.FC<{
             </section>
           </div>
 
-          {/* Right Column: Environmental Intelligence */}
+          {/* Right Column: Environmental Guidance */}
           <div className="space-y-8">
             {/* SEASONALITY */}
             <section className="bg-stone-950/50 p-4 rounded-xl border border-stone-800/50 shadow-inner">
               <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
-                📅 Diagnostics Intel
+                Growing Notes
               </h4>
               {plant.seasonality && (
                 <div className="space-y-6">
@@ -530,7 +530,7 @@ export const DetailModal: React.FC<{
         <div className="p-8 border-t border-stone-800 bg-stone-900/50 flex flex-col sm:flex-row gap-6 items-center justify-between">
           <div className="flex flex-col gap-2">
             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600">
-              KB Intelligence Sources
+              Knowledge Sources
             </h5>
             <div className="flex gap-4">
               {plant.source_metadata?.map((s, i) => (

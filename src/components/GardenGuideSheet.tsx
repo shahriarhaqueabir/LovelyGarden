@@ -225,7 +225,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
                 <div className="grid gap-2">
                   {[
                     "Add seeds to your bag",
-                    "Create or open a garden sector",
+                    "Create or open a garden",
                     "Place one in-season seed",
                     "Log the next watering or harvest",
                   ].map((action) => (

@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Trash2, Sprout, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  PackagePlus,
+  ShoppingBag,
+  Sparkles,
+  Sprout,
+  Trash2,
+} from "lucide-react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useInventory } from "../hooks/useInventory";
 import { getDatabase } from "../db";
@@ -16,6 +24,13 @@ export const SeedCard: React.FC<{
   type: string;
   plantNowEligible?: boolean;
   plantNowMode?: boolean;
+  selected?: boolean;
+  onSelect?: (seed: {
+    inventoryId: string;
+    catalogId: string;
+    name: string;
+    type: string;
+  }) => void;
   onDelete?: (id: string) => void;
 }> = ({
   id,
@@ -24,6 +39,8 @@ export const SeedCard: React.FC<{
   type,
   plantNowEligible,
   plantNowMode,
+  selected,
+  onSelect,
   onDelete,
 }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -48,9 +65,11 @@ export const SeedCard: React.FC<{
       {...attributes}
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
+      onClick={() => onSelect?.({ inventoryId: id, catalogId, name, type })}
       className={`
         relative w-[80px] h-[100px] rounded-3xl border p-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing depth-3d transition-all
         ${isDragging ? "opacity-50 scale-95" : "opacity-100"}
+        ${selected ? "ring-2 ring-garden-300 border-garden-300 shadow-[0_0_24px_rgba(74,222,128,0.28)]" : ""}
         ${plantNowMode ? (plantNowEligible ? "bg-garden-800 border-garden-400 animate-healthy shadow-[0_0_20px_rgba(34,197,94,0.25)]" : "bg-stone-900/60 border-stone-800 opacity-40 glass-panel") : "bg-stone-900/40 glass-panel border-stone-800"}
       `}
     >
@@ -88,6 +107,13 @@ export const InventoryTray: React.FC<{
   plantNowMode?: boolean;
   onTogglePlantNow?: () => void;
   plantNowSet?: Set<string>;
+  selectedSeedInventoryId?: string | null;
+  onSelectSeed?: (seed: {
+    inventoryId: string;
+    catalogId: string;
+    name: string;
+    type: string;
+  }) => void;
 }> = ({
   catalog,
   onOpenStore,
@@ -96,6 +122,8 @@ export const InventoryTray: React.FC<{
   plantNowMode,
   onTogglePlantNow,
   plantNowSet,
+  selectedSeedInventoryId,
+  onSelectSeed,
 }) => {
   const { user } = useAuth();
   const { setNodeRef, isOver } = useDroppable({
@@ -186,11 +214,7 @@ export const InventoryTray: React.FC<{
             hover:border-garden-500/50 transition-all z-40 shadow-2xl
             group cursor-pointer
           `}
-          title={
-            collapsed
-              ? "Expand Intelligence Node"
-              : "Collapse Intelligence Node"
-          }
+          title={collapsed ? "Expand seed bag" : "Collapse seed bag"}
         >
           <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
             <div className="w-0.5 h-4 bg-stone-500 rounded-full" />
@@ -211,7 +235,7 @@ export const InventoryTray: React.FC<{
         <div
           className={`flex flex-col items-center gap-1 text-stone-500 ${collapsed ? "scale-75" : ""} transition-transform`}
         >
-          <div className="text-2xl">🧺</div>
+          <ShoppingBag className="h-6 w-6 text-amber-300" />
           {!collapsed && (
             <span className="text-[13px] uppercase font-bold tracking-widest text-stone-400">
               Bag
@@ -227,7 +251,8 @@ export const InventoryTray: React.FC<{
             `}
             title="Highlight seeds that are in-season"
           >
-            ✨ In Season
+            <Sparkles className="h-3.5 w-3.5" />
+            In Season
           </button>
         )}
       </div>
@@ -276,6 +301,8 @@ export const InventoryTray: React.FC<{
                   plantNowEligible={
                     plantNowSet ? plantNowSet.has(item.catalogId) : false
                   }
+                  selected={selectedSeedInventoryId === item.id}
+                  onSelect={onSelectSeed}
                   onDelete={handleDeleteItem}
                 />
               );
@@ -293,9 +320,7 @@ export const InventoryTray: React.FC<{
               `}
               title="Open Seed Store"
             >
-              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">
-                📦
-              </div>
+              <PackagePlus className="h-7 w-7 transition-transform duration-300 group-hover:scale-110" />
               {!collapsed && (
                 <span className="text-[13px] font-bold uppercase tracking-widest">
                   Add Seeds
@@ -331,6 +356,8 @@ export const InventoryTray: React.FC<{
                   plantNowEligible={
                     plantNowSet ? plantNowSet.has(item.catalogId) : false
                   }
+                  selected={selectedSeedInventoryId === item.id}
+                  onSelect={onSelectSeed}
                   onDelete={handleDeleteItem}
                 />
               );
@@ -342,9 +369,7 @@ export const InventoryTray: React.FC<{
               className="w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner"
               title="Open Seed Store"
             >
-              <div className="text-2xl group-hover:scale-125 transition-transform duration-300">
-                📦
-              </div>
+              <PackagePlus className="h-7 w-7 transition-transform duration-300 group-hover:scale-110" />
               {!collapsed && (
                 <span className="text-[13px] font-bold uppercase tracking-widest">
                   Add Seeds

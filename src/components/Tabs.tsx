@@ -1,6 +1,17 @@
 import React from "react";
 import { Tab } from "@headlessui/react";
 import { motion } from "motion/react";
+import {
+  BookOpen,
+  CalendarDays,
+  CloudSun,
+  Flower2,
+  Home,
+  NotebookTabs,
+  Settings,
+  Sprout,
+  UserRound,
+} from "lucide-react";
 import { cn } from "../lib/utils";
 
 export type TabType =
@@ -59,34 +70,58 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
   const tabs = [
     {
       id: "virtual-garden" as TabType,
-      label: "🏡 Virtual Garden",
+      label: "Virtual Garden",
       short: "Garden",
+      icon: Home,
     },
     {
       id: "profile" as TabType,
-      label: "👤 Profile",
+      label: "Profile",
       short: "Profile",
+      icon: UserRound,
     },
     {
       id: "sowing-calendar" as TabType,
-      label: "📅 Sowing Calendar",
+      label: "Sowing Calendar",
       short: "Sow",
+      icon: CalendarDays,
     },
     {
       id: "plant-knowledgebase" as TabType,
-      label: "📖 Knowledgebase",
+      label: "Knowledgebase",
       short: "Plants",
+      icon: BookOpen,
     },
-    { id: "seed-inventory" as TabType, label: "📦 Seed Vault", short: "Seeds" },
-    // { id: 'seeds-in-hand' as TabType, label: '🧺 Bag' },
+    {
+      id: "seed-inventory" as TabType,
+      label: "Seed Vault",
+      short: "Seeds",
+      icon: Sprout,
+    },
     {
       id: "weather-forecast" as TabType,
-      label: "🌈 Weather",
+      label: "Weather",
       short: "Weather",
+      icon: CloudSun,
     },
-    { id: "logbook" as TabType, label: "📜 Logbook", short: "Log" },
-    { id: "harvest" as TabType, label: "🧺 Harvest", short: "Harvest" },
-    { id: "settings" as TabType, label: "⚙️ Settings", short: "Settings" },
+    {
+      id: "logbook" as TabType,
+      label: "Logbook",
+      short: "Log",
+      icon: NotebookTabs,
+    },
+    {
+      id: "harvest" as TabType,
+      label: "Harvest",
+      short: "Harvest",
+      icon: Flower2,
+    },
+    {
+      id: "settings" as TabType,
+      label: "Settings",
+      short: "Settings",
+      icon: Settings,
+    },
   ];
 
   const childrenArray = React.Children.toArray(children);
@@ -112,13 +147,13 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       className="flex min-h-0 flex-1 flex-col"
     >
       {/* Tab Navigation */}
-      <Tab.List className="fixed inset-x-0 bottom-0 z-50 flex gap-1 overflow-x-auto border-t border-stone-800 bg-stone-950/95 p-2 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] backdrop-blur lg:static lg:flex-wrap lg:border-b lg:border-t-0 lg:bg-stone-900/50 lg:shadow-none">
+      <Tab.List className="fixed inset-x-0 bottom-0 z-50 flex gap-1 overflow-hidden border-t border-stone-800 bg-stone-950/95 p-2 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] backdrop-blur lg:static lg:flex-wrap lg:border-b lg:border-t-0 lg:bg-stone-900/50 lg:shadow-none">
         {tabs.map((tab) => (
           <Tab
             key={tab.id}
             className={({ selected }) =>
               cn(
-                "relative flex min-w-[4.5rem] flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold transition-all outline-none focus:ring-2 focus:ring-garden-500/50 lg:min-w-0 lg:flex-none lg:px-4 lg:text-sm lg:font-medium",
+                "relative flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold transition-all outline-none focus:ring-2 focus:ring-garden-500/50 lg:min-w-0 lg:flex-none lg:gap-2 lg:px-4 lg:text-sm lg:font-medium",
                 selected
                   ? "text-white"
                   : "text-stone-400 hover:text-stone-200 hover:bg-stone-800/50",
@@ -134,7 +169,18 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <span className="lg:hidden">{tab.short}</span>
+                <tab.icon
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    selected ? "text-white" : "text-stone-500",
+                  )}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn("lg:hidden", selected ? "inline" : "sr-only")}
+                >
+                  {tab.short}
+                </span>
                 <span className="hidden lg:inline">{tab.label}</span>
               </>
             )}

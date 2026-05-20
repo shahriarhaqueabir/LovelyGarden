@@ -1,5 +1,4 @@
 import React from "react";
-import welcomeArtwork from "../../docs/lovelygarden.png";
 
 interface WelcomeBackdropProps {
   children: React.ReactNode;
@@ -13,7 +12,7 @@ export const WelcomeBackdrop: React.FC<WelcomeBackdropProps> = ({
   return (
     <main className="relative min-h-dvh overflow-hidden bg-stone-950 text-stone-950">
       <img
-        src={welcomeArtwork}
+        src="/assets/lovelygarden.png"
         alt=""
         aria-hidden="true"
         fetchPriority="high"
