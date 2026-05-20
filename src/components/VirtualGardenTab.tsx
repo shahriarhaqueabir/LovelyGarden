@@ -36,7 +36,13 @@ import {
 import { calculateCurrentStage } from "../logic/lifecycle";
 import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
 import { isSowingSeason } from "../logic/reasoning";
-import { showSuccess, showError, showInfo, toast } from "../lib/toast";
+import {
+  showSuccess,
+  showError,
+  showInfo,
+  showWarning,
+  toast,
+} from "../lib/toast";
 import { PlantedDocument, GridLayer, GardenDocument } from "../db/types";
 import { PlantSpecies } from "../schema/knowledge-graph";
 import { Subscription } from "rxjs";
@@ -50,6 +56,12 @@ import {
   deleteCloudInventoryItem,
   upsertCloudInventoryItem,
 } from "../services/inventoryService";
+import {
+  deleteCloudPlantedPlant,
+  upsertCloudPlantedPlant,
+} from "../services/plantedPlantService";
+import { syncLogbookWithCloud } from "../services/logbookService";
+import { setSyncStatus } from "../services/syncStatusService";
 
 const ObservationTerminal = React.lazy(async () => {
   const m = await import("./ObservationTerminal");
@@ -131,6 +143,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   onOpenSeedStore,
 }) => {
   const { user } = useAuth();
+  const userId = user?.id;
   // Garden State
   const [gardens, setGardens] = useState<GardenDocument[]>([]);
   const [activeGardenId, setActiveGardenId] = useState<string | null>(null);
@@ -201,7 +214,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   }, []); // Run once to setup subscription
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
     let cancelled = false;
 
@@ -210,7 +223,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       const localGardens = (await db.gardens.find().exec()).map((doc) =>
         doc.toJSON(),
       );
-      const syncedGardens = await syncGardensWithCloud(user.id, localGardens);
+      const syncedGardens = await syncGardensWithCloud(userId, localGardens);
 
       if (cancelled) return;
 
@@ -230,12 +243,14 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
     syncUserGardens().catch((error) => {
       console.warn("Garden cloud sync failed:", error);
+      setSyncStatus("error", "Garden sync failed. Changes are saved locally.");
+      showWarning("Garden sync failed. Saved locally for now.");
     });
 
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [userId]);
 
   // Sync garden list periodically or subscribe? For now, fetch on updates.
   const refreshGardens = async () => {
@@ -246,13 +261,45 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   };
 
   const syncLocalGardenToCloud = async (gardenId: string) => {
-    if (!user) return;
+    if (!userId) return;
 
     const db = await getDatabase();
     const garden = await db.gardens.findOne(gardenId).exec();
     if (garden) {
-      await upsertCloudGarden(user.id, garden.toJSON());
+      await upsertCloudGarden(userId, garden.toJSON());
     }
+  };
+
+  const syncLocalPlantToCloud = async (plantId: string) => {
+    if (!userId) return;
+
+    const db = await getDatabase();
+    const plant = await db.planted.findOne(plantId).exec();
+    if (plant) {
+      await upsertCloudPlantedPlant(userId, plant.toJSON());
+    }
+  };
+
+  const syncLocalLogbookToCloud = async () => {
+    if (!userId) return;
+
+    const db = await getDatabase();
+    const entries = (await db.logbook.find().exec()).map((doc) => doc.toJSON());
+    await syncLogbookWithCloud(userId, entries);
+  };
+
+  const markSyncing = (message: string) => {
+    if (userId) setSyncStatus("syncing", message);
+  };
+
+  const markSynced = (message: string) => {
+    if (userId) setSyncStatus("synced", message);
+  };
+
+  const handleCloudSyncError = (message: string, error: unknown) => {
+    console.warn(message, error);
+    setSyncStatus("error", `${message} Saved locally.`);
+    showWarning(`${message} Saved locally for now.`);
   };
 
   const sensors = useSensors(
@@ -333,24 +380,37 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           activeGarden.id,
         );
         if (user) {
-          deleteCloudInventoryItem(user.id, inventoryId).catch((error) => {
-            console.warn("Inventory cloud delete failed:", error);
-          });
+          markSyncing("Syncing planting...");
+          try {
+            await Promise.all([
+              deleteCloudInventoryItem(user.id, inventoryId),
+              syncLocalPlantToCloud(plantId),
+              syncLocalLogbookToCloud(),
+            ]);
+            markSynced("Planting synced.");
+          } catch (error) {
+            handleCloudSyncError("Planting cloud sync failed.", error);
+          }
         }
         showUndoAction("Plant added to garden", async () => {
           try {
             const restoredInventoryId = await unplantSeed(plantId);
             if (user) {
+              markSyncing("Syncing undo...");
               const db = await getDatabase();
               const inventoryItem = await db.inventory
                 .findOne(restoredInventoryId)
                 .exec();
-              if (inventoryItem) {
-                upsertCloudInventoryItem(user.id, inventoryItem.toJSON()).catch(
-                  (error) => {
-                    console.warn("Inventory cloud upsert failed:", error);
-                  },
-                );
+              try {
+                await Promise.all([
+                  deleteCloudPlantedPlant(user.id, plantId),
+                  inventoryItem
+                    ? upsertCloudInventoryItem(user.id, inventoryItem.toJSON())
+                    : Promise.resolve(),
+                ]);
+                markSynced("Undo synced.");
+              } catch (error) {
+                handleCloudSyncError("Undo cloud sync failed.", error);
               }
             }
             showSuccess("Planting undone");
@@ -380,6 +440,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
       try {
         await relocatePlant(plant.id, x, y, activeGarden?.id || "main-garden");
+        if (user) {
+          markSyncing("Syncing plant move...");
+          try {
+            await syncLocalPlantToCloud(plant.id);
+            markSynced("Plant move synced.");
+          } catch (error) {
+            handleCloudSyncError("Plant move cloud sync failed.", error);
+          }
+        }
         showUndoAction("Plant unit relocated", async () => {
           try {
             await relocatePlant(
@@ -388,6 +457,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plant.gridY,
               activeGarden?.id || "main-garden",
             );
+            if (user) {
+              markSyncing("Syncing undo...");
+              try {
+                await syncLocalPlantToCloud(plant.id);
+                markSynced("Undo synced.");
+              } catch (error) {
+                handleCloudSyncError("Undo cloud sync failed.", error);
+              }
+            }
             showSuccess("Move undone");
           } catch {
             showError("Could not undo move");
@@ -426,14 +504,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       try {
         const inventoryId = await unplantSeed(plant.id);
         if (user) {
+          markSyncing("Syncing unplant...");
           const db = await getDatabase();
           const inventoryItem = await db.inventory.findOne(inventoryId).exec();
-          if (inventoryItem) {
-            upsertCloudInventoryItem(user.id, inventoryItem.toJSON()).catch(
-              (error) => {
-                console.warn("Inventory cloud upsert failed:", error);
-              },
-            );
+          try {
+            await Promise.all([
+              deleteCloudPlantedPlant(user.id, plant.id),
+              inventoryItem
+                ? upsertCloudInventoryItem(user.id, inventoryItem.toJSON())
+                : Promise.resolve(),
+            ]);
+            markSynced("Unplant synced.");
+          } catch (error) {
+            handleCloudSyncError("Unplant cloud sync failed.", error);
           }
         }
         showSuccess("Plant returned to Bag");
@@ -478,6 +561,15 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     if (!observationPlant) return;
     try {
       await addPlantObservation(observationPlant.id, pattern);
+      if (user) {
+        markSyncing("Syncing observation...");
+        try {
+          await syncLocalPlantToCloud(observationPlant.id);
+          markSynced("Observation synced.");
+        } catch (error) {
+          handleCloudSyncError("Observation cloud sync failed.", error);
+        }
+      }
       showSuccess(`Status updated: ${pattern.label}`);
       setObservationPlant(null);
     } catch (err) {
@@ -783,6 +875,18 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                           m.getDatabase(),
                         );
                         await db.planted.findOne(item.id).remove();
+                        if (user) {
+                          markSyncing("Syncing plant removal...");
+                          try {
+                            await deleteCloudPlantedPlant(user.id, item.id);
+                            markSynced("Plant removal synced.");
+                          } catch (error) {
+                            handleCloudSyncError(
+                              "Plant removal cloud sync failed.",
+                              error,
+                            );
+                          }
+                        }
                         showInfo("Plant removed from garden");
                       }}
                       onOpenObservation={setObservationPlant}

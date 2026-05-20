@@ -4,6 +4,8 @@ import { Subscription } from "rxjs";
 import type { InventoryDocument } from "../db/types";
 import { useAuth } from "./useAuth";
 import { syncInventoryWithCloud } from "../services/inventoryService";
+import { setSyncStatus } from "../services/syncStatusService";
+import { showWarning } from "../lib/toast";
 
 /**
  * HOOK: useInventory
@@ -13,6 +15,7 @@ import { syncInventoryWithCloud } from "../services/inventoryService";
 export const useInventory = () => {
   const [items, setItems] = useState<InventoryDocument[]>([]);
   const { user } = useAuth();
+  const userId = user?.id;
 
   useEffect(() => {
     let sub: Subscription;
@@ -41,31 +44,38 @@ export const useInventory = () => {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
     let cancelled = false;
 
     const syncUserInventory = async () => {
+      setSyncStatus("syncing", "Syncing seed bag...");
       const db = await getDatabase();
       const localItems = (await db.inventory.find().exec()).map((doc) =>
         doc.toJSON(),
       );
-      const syncedItems = await syncInventoryWithCloud(user.id, localItems);
+      const syncedItems = await syncInventoryWithCloud(userId, localItems);
 
       if (cancelled) return;
 
       await Promise.all(syncedItems.map((item) => db.inventory.upsert(item)));
       setItems(syncedItems);
+      setSyncStatus("synced", "Seed bag synced.");
     };
 
     syncUserInventory().catch((error) => {
       console.warn("Inventory cloud sync failed:", error);
+      setSyncStatus(
+        "error",
+        "Seed bag sync failed. Changes are saved locally.",
+      );
+      showWarning("Seed bag sync failed. Saved locally for now.");
     });
 
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [userId]);
 
   return items;
 };

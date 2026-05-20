@@ -11,9 +11,12 @@ import {
 } from "lucide-react";
 import { useLogbook } from "../hooks/useLogbook";
 import { format } from "date-fns";
-import { showInfo } from "../lib/toast";
+import { showInfo, showWarning } from "../lib/toast";
 import { deleteLogbookEntry } from "../db/queries";
 import type { LogbookDocument } from "../db/types";
+import { useAuth } from "../hooks/useAuth";
+import { deleteCloudLogbookEntry } from "../services/logbookService";
+import { setSyncStatus } from "../services/syncStatusService";
 
 interface HarvestCardProps {
   entry: LogbookDocument;
@@ -86,6 +89,7 @@ const HarvestCard: React.FC<HarvestCardProps> = ({
 
 export const HarvestTab: React.FC = () => {
   const entries = useLogbook();
+  const { user } = useAuth();
 
   const { harvests, losses } = useMemo(
     () => ({
@@ -98,6 +102,20 @@ export const HarvestTab: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (globalThis.confirm("Delete this record?")) {
       await deleteLogbookEntry(id);
+      if (user) {
+        setSyncStatus("syncing", "Syncing harvest log delete...");
+        try {
+          await deleteCloudLogbookEntry(user.id, id);
+          setSyncStatus("synced", "Harvest log delete synced.");
+        } catch (error) {
+          console.warn("Harvest log delete cloud sync failed:", error);
+          setSyncStatus(
+            "error",
+            "Harvest log delete sync failed. Changes are saved locally.",
+          );
+          showWarning("Harvest log delete sync failed. Saved locally for now.");
+        }
+      }
       showInfo("Record removed");
     }
   };

@@ -341,6 +341,8 @@ export const harvestPlant = async (
   if (settings) {
     await settings.patch({ xp: (settings.xp || 0) + 50 });
   }
+
+  return { removedPlant: data, logbookId: id };
 };
 
 export const recordLoss = async (
@@ -372,6 +374,8 @@ export const recordLoss = async (
 
   // 2. Remove from garden
   await plant.remove();
+
+  return { removedPlant: data, logbookId: id };
 };
 
 /**
@@ -393,6 +397,8 @@ export const logSeedPurchase = async (catalogId: string, itemName: string) => {
     bedId: "main-garden",
     notes: "Purchased from Seed Store",
   });
+
+  return id;
 };
 
 export const logUserPurchase = async (
@@ -416,6 +422,8 @@ export const logUserPurchase = async (
     catalogId,
     bedId,
   });
+
+  return id;
 };
 
 export const logPlanting = async (
@@ -437,6 +445,8 @@ export const logPlanting = async (
     bedId,
     notes: `Planted in ${bedId}`,
   });
+
+  return id;
 };
 
 export const getLogbookEntries = async () => {
@@ -452,7 +462,9 @@ export const updateLogbookEntry = async (
   const doc = await db.logbook.findOne(id).exec();
   if (doc) {
     await doc.patch(updates);
+    return doc.toJSON();
   }
+  return null;
 };
 
 export const deleteLogbookEntry = async (id: string) => {
@@ -460,7 +472,9 @@ export const deleteLogbookEntry = async (id: string) => {
   const doc = await db.logbook.findOne(id).exec();
   if (doc) {
     await doc.remove();
+    return true;
   }
+  return false;
 };
 
 /**

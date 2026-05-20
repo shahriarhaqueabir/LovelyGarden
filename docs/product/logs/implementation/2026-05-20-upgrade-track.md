@@ -41,3 +41,13 @@ LG-011 Backup And Restore hardening:
 - Added regression coverage for malformed backup rejection.
 - Settings UI now explains what JSON backups contain and that import merges rather than wipes.
 - Import result status is visible in the Settings developer panel.
+
+## LG-001 Slice Completed
+
+- Added pending-local tracking to the shared sync status snapshot.
+- Added an account-level retry service that upserts local gardens, inventory, planted crops, logbook entries, and settings to Supabase.
+- Wired browser online recovery to retry pending local sync work automatically.
+- Updated the header error state label from `Sync Issue` to `Needs Retry`.
+- Added unit coverage for pending-local status clearing after successful sync.
+- Added an optional `test:rls` verification script for cross-account Supabase row isolation.
+- Known limitation: offline deletes still need durable tombstones before they can retry after reconnect.

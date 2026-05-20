@@ -56,6 +56,28 @@ if (!(window as any)._rxdbPluginsInit) {
  */
 let dbPromise: Promise<RxDatabase> | null = null;
 let isInitializing = false;
+let databaseOwnerScope = "anonymous";
+
+const getDatabaseName = () => `raidas_garden_v10_${databaseOwnerScope}`;
+
+const normalizeDatabaseScope = (ownerId: string | null | undefined) =>
+  ownerId ? ownerId.replace(/[^a-zA-Z0-9_]/g, "_") : "anonymous";
+
+export const setDatabaseOwnerScope = (ownerId: string | null | undefined) => {
+  const nextScope = normalizeDatabaseScope(ownerId);
+  if (nextScope === databaseOwnerScope) return;
+
+  const previousDbPromise = dbPromise;
+  databaseOwnerScope = nextScope;
+  dbPromise = null;
+  isInitializing = false;
+
+  previousDbPromise
+    ?.then((db) => db.close())
+    .catch((error) => {
+      console.warn("Could not close previous local database scope:", error);
+    });
+};
 
 const createStorage = () => {
   const storage = getRxStorageDexie();
@@ -88,9 +110,10 @@ export const getDatabase = async () => {
   isInitializing = true;
   dbPromise = (async () => {
     try {
-      console.log("Initializing RxDB [raidas_garden_v10]...");
+      const databaseName = getDatabaseName();
+      console.log(`Initializing RxDB [${databaseName}]...`);
       const db = await createRxDatabase({
-        name: "raidas_garden_v10",
+        name: databaseName,
         storage: createStorage(),
         closeDuplicates: true,
       }).catch((err) => {

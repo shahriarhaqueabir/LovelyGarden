@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "test:e2e:chromium": "playwright test --project=chromium",
     "test:diagnostics": "node scripts/run-diagnostics.js",
+    "test:rls": "node scripts/verify-rls.mjs",
     "test:ui": "vitest --ui",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",

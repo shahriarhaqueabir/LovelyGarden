@@ -24,3 +24,10 @@ Date: 2026-05-20
 - `pnpm vitest --run src/db/__tests__/export-import.test.ts`: passed.
 - `pnpm build`: passed.
 - Remaining gap: full browser import/export round trip with a populated signed-in account should be tested in a real session.
+
+## LG-001 QA
+
+- `pnpm build`: passed.
+- Pending-local unit test added for sync status service.
+- `test:rls` was not run because it requires two configured Supabase test accounts in environment variables.
+- Remaining gap: browser DevTools offline/online retry should be tested in a real signed-in account to verify Supabase reconnect behavior and badge messaging.

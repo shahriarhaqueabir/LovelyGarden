@@ -19,6 +19,9 @@ import Fuse from "fuse.js";
 import { listPlantKnowledgeBase } from "../services/referenceDataService";
 import { useAuth } from "../hooks/useAuth";
 import { upsertCloudInventoryItem } from "../services/inventoryService";
+import { syncLogbookWithCloud } from "../services/logbookService";
+import { setSyncStatus } from "../services/syncStatusService";
+import { showWarning } from "../lib/toast";
 
 const GrowthGraph = React.lazy(async () => {
   const m = await import("./GrowthGraph");
@@ -729,12 +732,27 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
     };
 
     await db.inventory.insert(bagItem);
+    const logbookId = await logSeedPurchase(catalogId, plant.name);
     if (user) {
-      upsertCloudInventoryItem(user.id, bagItem).catch((error) => {
-        console.warn("Inventory cloud upsert failed:", error);
-      });
+      setSyncStatus("syncing", "Syncing seed purchase...");
+      try {
+        const entries = (await db.logbook.find().exec()).map((doc) =>
+          doc.toJSON(),
+        );
+        await Promise.all([
+          upsertCloudInventoryItem(user.id, bagItem),
+          syncLogbookWithCloud(user.id, entries),
+        ]);
+        setSyncStatus("synced", "Seed purchase synced.");
+      } catch (error) {
+        console.warn("Seed purchase cloud sync failed:", { error, logbookId });
+        setSyncStatus(
+          "error",
+          "Seed purchase sync failed. Changes are saved locally.",
+        );
+        showWarning("Seed purchase sync failed. Saved locally for now.");
+      }
     }
-    await logSeedPurchase(catalogId, plant.name);
 
     setJustAdded(catalogId);
     setTimeout(() => setJustAdded(null), 900);
