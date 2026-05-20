@@ -41,23 +41,14 @@ const DraggablePlant: React.FC<{
   item: PlantedDocument;
   children: React.ReactNode;
 }> = ({ item, children }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: `planted-${item.id}`,
-      data: { item },
-    });
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 1000,
-      }
-    : undefined;
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `planted-${item.id}`,
+    data: { item },
+  });
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...listeners}
       {...attributes}
       className={`w-full h-full relative cursor-grab active:cursor-grabbing transition-transform ${isDragging ? "opacity-30 scale-90" : ""}`}
@@ -338,7 +329,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       className={`
-        relative w-full aspect-square max-w-[80px] sm:max-w-[100px] md:max-w-[120px] lg:max-w-[140px] xl:max-w-[160px] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
+        relative size-[var(--garden-cell-size)] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
         ${item ? "glass-panel" : "bg-app-background/40"}
         ${activeSeedCatalogId ? (seedSynergy > 0 ? "ring-2 ring-garden-400/80" : seedSynergy < 0 ? "ring-2 ring-red-500/70" : "ring-1 ring-stone-700/60") : ""}
@@ -511,13 +502,13 @@ export const GardenField: React.FC<{
   }, [catalog]);
 
   return (
-    <div className="relative group/field">
+    <div className="relative group/field w-full">
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
       <div
-        className="grid gap-2 sm:gap-4 lg:gap-8 relative z-10 w-full max-w-5xl mx-auto"
+        className="grid place-items-center gap-2 sm:gap-4 lg:gap-8 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.5rem,11vw,10rem)]"
         style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${cols}, var(--garden-cell-size))`,
+          gridTemplateRows: `repeat(${rows}, var(--garden-cell-size))`,
         }}
       >
         {Array.from({ length: rows * cols }).map((_, i) => {
