@@ -1,6 +1,5 @@
 import { getDatabase } from "./index";
 import { z } from "zod";
-import { PlantSpeciesSchema } from "../schema/zod-schemas";
 
 /**
  * EXPORT / IMPORT UTILITIES
@@ -12,13 +11,17 @@ export const exportDatabaseToJson = async () => {
 
   const inventory = await db.inventory.find().exec();
   const planted = await db.planted.find().exec();
+  const gardens = await db.gardens.find().exec();
+  const logbook = await db.logbook.find().exec();
   const settings = await db.settings.find().exec();
 
   const data = {
-    version: 1,
+    version: 2,
     timestamp: new Date().toISOString(),
+    gardens: gardens.map((d) => d.toJSON()),
     inventory: inventory.map((d) => d.toJSON()),
     planted: planted.map((d) => d.toJSON()),
+    logbook: logbook.map((d) => d.toJSON()),
     settings: settings.map((d) => d.toJSON()),
   };
 
@@ -63,10 +66,51 @@ export const exportCollectionToCsv = async (
 };
 
 // 3. Import / Restore from JSON
+const InventoryImportSchema = z
+  .object({
+    id: z.string(),
+    catalogId: z.string(),
+    acquiredDate: z.number(),
+  })
+  .passthrough();
+
+const PlantedImportSchema = z
+  .object({
+    id: z.string(),
+    bedId: z.string(),
+    catalogId: z.string(),
+    gridX: z.number(),
+    gridY: z.number(),
+    plantedDate: z.number(),
+  })
+  .passthrough();
+
+const GardenImportSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    type: z.string(),
+    gridWidth: z.number(),
+    gridHeight: z.number(),
+  })
+  .passthrough();
+
+const LogbookImportSchema = z
+  .object({
+    id: z.string(),
+    type: z.string(),
+    itemName: z.string(),
+    category: z.string(),
+    date: z.number(),
+  })
+  .passthrough();
+
 const ImportPayloadSchema = z.object({
   version: z.number(),
-  inventory: z.array(PlantSpeciesSchema),
-  planted: z.array(z.object({}).passthrough()),
+  gardens: z.array(GardenImportSchema).optional(),
+  inventory: z.array(InventoryImportSchema),
+  planted: z.array(PlantedImportSchema),
+  logbook: z.array(LogbookImportSchema).optional(),
   settings: z.array(z.object({}).passthrough()).optional(),
 });
 
@@ -90,11 +134,21 @@ export const importDatabaseFromJson = async (jsonString: string) => {
     // Let's settle on Upsert for safety against wiping, but maybe prompt user?
     // For now, simple Upsert.
 
+    // Gardens
+    if (result.data.gardens && result.data.gardens.length > 0) {
+      await db.gardens.bulkUpsert(result.data.gardens);
+    }
+
     // Inventory
     await db.inventory.bulkUpsert(result.data.inventory);
 
     // Planted
     await db.planted.bulkUpsert(result.data.planted);
+
+    // Logbook
+    if (result.data.logbook && result.data.logbook.length > 0) {
+      await db.logbook.bulkUpsert(result.data.logbook);
+    }
 
     // Settings
     if (result.data.settings && result.data.settings.length > 0) {
