@@ -12,6 +12,7 @@ import {
   History,
   CheckCircle2,
   ClipboardList,
+  SunMedium,
 } from "lucide-react";
 import {
   DndContext,
@@ -124,7 +125,6 @@ interface VirtualGardenTabProps {
   currentDay: number;
   currentDateTimeLabel: string;
   currentTimestamp: number;
-  xp: number;
   alerts: string[];
   onOpenSeedStore?: () => void;
 }
@@ -143,7 +143,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   currentDay,
   currentDateTimeLabel,
   currentTimestamp,
-  xp,
   alerts,
   onOpenSeedStore,
 }) => {
@@ -164,6 +163,12 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(
     null,
   );
+  const [selectedSeed, setSelectedSeed] = useState<{
+    inventoryId: string;
+    catalogId: string;
+    name: string;
+    type: string;
+  } | null>(null);
   const [activeDragPreview, setActiveDragPreview] = useState<{
     kind: "seed" | "plant";
     name: string;
@@ -341,6 +346,82 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     }
   };
 
+  const handleTapPlant = async (x: number, y: number) => {
+    if (!selectedSeed) return;
+    if (!activeGarden) {
+      showError("Create a garden before planting.");
+      return;
+    }
+
+    const totalCells = activeGarden.gridWidth * activeGarden.gridHeight;
+    if (plantedCards.length >= totalCells) {
+      showError("No open planting space");
+      return;
+    }
+
+    const existingPlant = plantedCards.find(
+      (plant) => plant.gridX === x && plant.gridY === y,
+    );
+    if (existingPlant) {
+      showError("That spot already has a plant.");
+      return;
+    }
+
+    try {
+      const plantId = await plantSeed(
+        selectedSeed.catalogId,
+        x,
+        y,
+        selectedSeed.inventoryId,
+        activeGarden.id,
+      );
+      if (user) {
+        markSyncing("Syncing planting...");
+        try {
+          await Promise.all([
+            deleteCloudInventoryItem(user.id, selectedSeed.inventoryId),
+            syncLocalPlantToCloud(plantId),
+            syncLocalLogbookToCloud(),
+          ]);
+          markSynced("Planting synced.");
+        } catch (error) {
+          handleCloudSyncError("Planting cloud sync failed.", error);
+        }
+      }
+      const plantedName = selectedSeed.name;
+      setSelectedSeed(null);
+      setActiveSeedCatalogId(null);
+      showUndoAction(`${plantedName} planted`, async () => {
+        try {
+          const restoredInventoryId = await unplantSeed(plantId);
+          if (user) {
+            markSyncing("Syncing undo...");
+            const db = await getDatabase();
+            const inventoryItem = await db.inventory
+              .findOne(restoredInventoryId)
+              .exec();
+            try {
+              await Promise.all([
+                deleteCloudPlantedPlant(user.id, plantId),
+                inventoryItem
+                  ? upsertCloudInventoryItem(user.id, inventoryItem.toJSON())
+                  : Promise.resolve(),
+              ]);
+              markSynced("Undo synced.");
+            } catch (error) {
+              handleCloudSyncError("Undo cloud sync failed.", error);
+            }
+          }
+          showSuccess("Planting undone");
+        } catch {
+          showError("Could not undo planting");
+        }
+      });
+    } catch {
+      showError("Failed to plant seed");
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveSeedCatalogId(null);
@@ -366,7 +447,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       const occupiedCells = plantedCards.length;
 
       if (occupiedCells >= totalCells) {
-        showError("Expand Grid to Plant");
+        showError("No open planting space");
         return;
       }
 
@@ -457,7 +538,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             handleCloudSyncError("Plant move cloud sync failed.", error);
           }
         }
-        showUndoAction("Plant unit relocated", async () => {
+        showUndoAction("Plant moved", async () => {
           try {
             await relocatePlant(
               plant.id,
@@ -543,7 +624,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         await syncLocalGardenToCloud(newId);
         await refreshGardens();
         setActiveGardenId(newId); // Immediately switch to new garden
-        showSuccess("New garden sector established");
+        showSuccess("New garden created");
       } else {
         // Edit
         if (!config.id) return;
@@ -966,10 +1047,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         )}
 
         {/* HUD OVERLAY */}
-        <header className="z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800 px-2 glass sm:px-4 lg:px-6">
+        <header className="z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800/80 bg-stone-950/88 px-2 shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-4 lg:px-6">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar sm:gap-4">
             {/* 1. Cycle Day */}
-            <div className="bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
+            <div className="bg-stone-900/80 px-2 sm:px-3 py-1.5 rounded-full border border-stone-700/80 text-xs font-black text-garden-300 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
               <Calendar className="w-3.5 h-3.5 text-garden-500" />{" "}
               <span>{currentDateTimeLabel}</span>
               <span className="text-stone-500">Day {currentDay}</span>
@@ -980,7 +1061,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
                 isGridFull
                   ? "bg-red-900/30 border-red-700 text-red-400"
-                  : "bg-stone-900 border-stone-800 text-stone-400"
+                  : "bg-stone-900/80 border-stone-700/80 text-stone-300"
               }`}
             >
               <LayoutGrid className="w-3 h-3" />
@@ -988,12 +1069,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 {occupiedCells}/{totalCells}
               </span>
             </div>
-            <div className="flex shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest shadow-inner sm:px-3">
+            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-700/80 bg-stone-900/80 px-2 py-1.5 text-xs font-bold uppercase tracking-widest shadow-inner sm:flex sm:px-3">
               <Activity className={`h-3.5 w-3.5 ${gardenHealth.tone}`} />
-              <span className={gardenHealth.tone}>{gardenHealth.score}</span>
               <span className="text-stone-500">{gardenHealth.label}</span>
             </div>
-            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest text-stone-500 shadow-inner sm:flex sm:px-3">
+            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-700/80 bg-stone-900/80 px-2 py-1.5 text-xs font-bold uppercase tracking-widest text-stone-400 shadow-inner sm:flex sm:px-3">
               <Droplets className="h-3.5 w-3.5 text-blue-400" />
               <span>{gardenHealth.thirstyCount} Water</span>
               <span className="text-stone-700">/</span>
@@ -1018,7 +1098,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
 
             {/* 6. Spectral Layer Toggle - Hidden below lg */}
-            <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 origin-right">
+            <div className="hidden xl:flex bg-stone-900/85 p-1 rounded-xl border border-stone-700/80 shadow-inner shrink-0 scale-90 origin-right">
               <button
                 onClick={() => setSpectralLayer("normal")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "normal" ? "bg-stone-800 text-white shadow-md" : "text-stone-500"}`}
@@ -1035,40 +1115,27 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 onClick={() => setSpectralLayer("health")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "health" ? "bg-red-900/40 text-red-400 shadow-md" : "text-stone-500"}`}
               >
-                Blight
+                Health
               </button>
               <button
                 onClick={() => setSpectralLayer("nutrients")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "nutrients" ? "bg-purple-900/40 text-purple-400 shadow-md" : "text-stone-500"}`}
               >
-                N-P-K
+                Nutrients
               </button>
               <button
                 onClick={() => setSpectralLayer("companions")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "companions" ? "bg-garden-900/40 text-garden-400 shadow-md" : "text-stone-500"}`}
               >
-                Companions
+                Companion Fit
               </button>
-            </div>
-
-            {/* 7. XP/Level Tracker - Hidden below sm */}
-            <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 shrink-0">
-              <span className="text-[10px] font-bold text-garden-400">
-                XP: {xp}
-              </span>
-              <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-garden-500 rounded-full"
-                  style={{ width: `${((xp % 100) / 100) * 100}%` }}
-                ></div>
-              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
+        <div className="flex flex-1 flex-col overflow-hidden xl:flex-row">
           {/* LEFT SIDEBAR: BAG */}
-          <div className="hidden lg:flex">
+          <div className="hidden xl:flex">
             <InventoryTray
               catalog={catalog}
               onOpenStore={onOpenSeedStore || (() => {})}
@@ -1076,12 +1143,23 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plantNowMode={plantNowMode}
               onTogglePlantNow={() => setPlantNowMode((v) => !v)}
               plantNowSet={plantNowSet}
+              selectedSeedInventoryId={selectedSeed?.inventoryId}
+              onSelectSeed={(seed) => {
+                if (selectedSeed?.inventoryId === seed.inventoryId) {
+                  setSelectedSeed(null);
+                  setActiveSeedCatalogId(null);
+                  return;
+                }
+                setSelectedSeed(seed);
+                setActiveSeedCatalogId(seed.catalogId);
+                showInfo(`Tap an open garden space to plant ${seed.name}.`);
+              }}
             />
           </div>
 
           {/* MAIN CONTENT COLUMN */}
           <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-primary/20">
-            <div className="relative flex h-12 items-center gap-2 overflow-x-auto border-b border-stone-800 px-2 shadow-lg glass-panel no-scrollbar sm:px-4">
+            <div className="relative flex h-11 items-center gap-2 overflow-x-auto border-b border-stone-800/80 bg-stone-950/76 px-2 shadow-lg backdrop-blur-md no-scrollbar sm:h-12 sm:px-4">
               <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
               {Array.from({ length: 5 }).map((_, i) => {
                 const garden = gardens[i];
@@ -1122,7 +1200,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                     {i === 0 && garden && (
                       <span
                         className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]"
-                        title="Primary Axis"
+                        title="Primary garden"
                       />
                     )}
                   </button>
@@ -1136,15 +1214,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 {/* Garden Config Controls (Edit/Delete Active) */}
                 {activeGarden && (
                   <div className="absolute left-2 right-2 top-2 z-20 flex flex-col gap-2 sm:left-4 sm:right-auto sm:top-4">
-                    <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-stone-800 bg-stone-900/80 p-2 shadow-lg backdrop-blur-sm no-scrollbar sm:gap-2">
+                    <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-stone-700/80 bg-stone-950/82 p-2 shadow-lg backdrop-blur-md no-scrollbar sm:gap-2">
                       <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
                         {activeGarden.type}
                       </div>
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        ☀️ {activeGarden.sunExposure}
+                      <div className="flex shrink-0 items-center gap-1 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
+                        <SunMedium className="h-3.5 w-3.5 text-amber-300" />
+                        {activeGarden.sunExposure}
                       </div>
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        💧 {activeGarden.soilType}
+                      <div className="flex shrink-0 items-center gap-1 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
+                        <Droplets className="h-3.5 w-3.5 text-blue-300" />
+                        {activeGarden.soilType}
                       </div>
                       <button
                         onClick={() => {
@@ -1157,11 +1237,29 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                         <Edit className="w-4 h-4" />
                       </button>
                     </div>
+                    {selectedSeed && (
+                      <div className="flex max-w-full items-center gap-2 rounded-xl border border-garden-500/30 bg-garden-950/80 px-3 py-2 text-xs font-semibold text-garden-100 shadow-lg backdrop-blur-md">
+                        <Sprout className="h-4 w-4 text-garden-300" />
+                        <span className="truncate">
+                          Tap an open space to plant {selectedSeed.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedSeed(null);
+                            setActiveSeedCatalogId(null);
+                          }}
+                          className="ml-auto rounded-lg border border-garden-400/20 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-garden-200 hover:bg-garden-500/10"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/45 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                  <div className="hidden shrink-0 border-b border-stone-800 bg-stone-950/45 px-3 py-2 backdrop-blur-sm sm:px-5 xl:block lg:px-6">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
                       <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
                         <History className="h-3.5 w-3.5 text-garden-400" />
@@ -1196,7 +1294,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 )}
 
                 {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/35 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                  <div className="shrink-0 border-b border-stone-800/80 bg-stone-950/48 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
                       <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
                         <ClipboardList className="h-3.5 w-3.5 text-garden-400" />
@@ -1237,7 +1335,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 )}
 
                 {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/25 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                  <div className="shrink-0 border-b border-stone-800/80 bg-stone-950/42 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
                       <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
                         <Activity
@@ -1268,7 +1366,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
                 {/* THE FIELD */}
 
-                <main className="flex flex-1 items-center justify-center overflow-auto px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 lg:p-12">
+                <main className="flex flex-1 items-center justify-center overflow-y-auto overflow-x-hidden px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 xl:p-12">
                   {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
@@ -1299,16 +1397,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                         showInfo("Plant removed from garden");
                       }}
                       onOpenObservation={setObservationPlant}
+                      onPlantAt={handleTapPlant}
                       currentDay={currentTimestamp}
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
                       <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
                       <h3 className="text-center text-[21px] font-bold uppercase tracking-widest text-stone-400">
-                        No Sector Online
+                        No Garden Yet
                       </h3>
                       <p className="text-stone-500 text-[15px] mt-2">
-                        Initialize a garden sector to begin operations.
+                        Create a garden bed to begin planting.
                       </p>
                       <button
                         onClick={() => {
@@ -1317,7 +1416,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                         }}
                         className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
                       >
-                        Initialize Sector
+                        Create Garden
                       </button>
                     </div>
                   )}
@@ -1326,10 +1425,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
               {/* RIGHT PANE: INTELLIGENCE (Inspector stays docked if plant selected) */}
               <aside
-                className={`fixed inset-x-3 bottom-24 top-24 z-40 flex flex-col overflow-hidden rounded-2xl border border-border-primary glass transition-all duration-500 lg:static lg:inset-auto lg:bottom-auto lg:top-auto lg:rounded-none lg:border-l ${
+                className={`fixed inset-x-3 bottom-24 top-24 z-40 flex flex-col overflow-hidden rounded-2xl border border-border-primary glass transition-all duration-500 xl:static xl:inset-auto xl:bottom-auto xl:top-auto xl:rounded-none xl:border-l ${
                   selectedPlant
-                    ? "translate-y-0 opacity-100 lg:w-[26rem]"
-                    : "pointer-events-none translate-y-8 opacity-0 lg:w-0 lg:translate-y-0 lg:opacity-100"
+                    ? "translate-y-0 opacity-100 xl:w-[26rem]"
+                    : "pointer-events-none translate-y-8 opacity-0 xl:w-0 xl:translate-y-0 xl:opacity-100"
                 }`}
               >
                 {selectedPlant && (
@@ -1350,11 +1449,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-20">
                     <span className="text-2xl">ℹ️</span>
                     <p className="text-[13px] font-bold uppercase tracking-widest text-stone-500">
-                      Intelligence Node Inactive
+                      Plant Details
                     </p>
                     <p className="text-[12px] text-stone-600 italic">
-                      Select a plant unit from the tactical field to initialize
-                      link...
+                      Select a plant to see care history, lifecycle, and notes.
                     </p>
                   </div>
                 )}
@@ -1362,7 +1460,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
           </div>
 
-          <div className="lg:hidden">
+          <div className="xl:hidden">
             <InventoryTray
               catalog={catalog}
               onOpenStore={onOpenSeedStore || (() => {})}
@@ -1370,6 +1468,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plantNowMode={plantNowMode}
               onTogglePlantNow={() => setPlantNowMode((v) => !v)}
               plantNowSet={plantNowSet}
+              selectedSeedInventoryId={selectedSeed?.inventoryId}
+              onSelectSeed={(seed) => {
+                if (selectedSeed?.inventoryId === seed.inventoryId) {
+                  setSelectedSeed(null);
+                  setActiveSeedCatalogId(null);
+                  return;
+                }
+                setSelectedSeed(seed);
+                setActiveSeedCatalogId(seed.catalogId);
+                showInfo(`Tap an open garden space to plant ${seed.name}.`);
+              }}
             />
           </div>
         </div>

@@ -14,6 +14,7 @@ import {
   Heart,
 } from "lucide-react";
 import { PlantedCardView } from "./PlantedCard";
+import { formatPlantName } from "../lib/formatPlantName";
 import { calculateCompanionScore } from "../logic/reasoning";
 import {
   calculateCurrentStage,
@@ -33,6 +34,7 @@ interface GridSlotProps {
   relationships?: import("../schema/knowledge-graph").PlantRelationship[];
   onDelete?: (item: PlantedDocument) => void;
   onOpenObservation?: (item: PlantedDocument) => void;
+  onPlantAt?: (x: number, y: number) => void;
   catalog?: CatalogDocument[];
   currentDay: number;
 }
@@ -70,6 +72,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
     relationships,
     onDelete,
     onOpenObservation,
+    onPlantAt,
     catalog,
     currentDay,
   } = props;
@@ -85,6 +88,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
     () => catalog?.find((c) => c.id === item?.catalogId),
     [catalog, item],
   );
+  const displayName = catalogItem?.name ?? formatPlantName(item?.catalogId);
 
   const nutrientRequirements = useMemo(() => {
     if (!catalogItem?.nutrient_preferences) return { n: 2, p: 2, k: 2 };
@@ -281,7 +285,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
       return (
         <span className="flex items-center gap-1">
           <FlaskConical className="w-3 h-3" />
-          N-P-K: {nutrientRequirements.n}-{nutrientRequirements.p}-
+          Nutrients: {nutrientRequirements.n}-{nutrientRequirements.p}-
           {nutrientRequirements.k}
         </span>
       );
@@ -325,13 +329,16 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
   return (
     <div
       ref={setNodeRef}
-      onClick={() => item && onSelect?.(item)}
+      onClick={() => {
+        if (item) onSelect?.(item);
+        else onPlantAt?.(x, y);
+      }}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       className={`
         relative size-[var(--garden-cell-size)] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
         ${getBorderColor()}
-        ${item ? "glass-panel" : "bg-app-background/40"}
+        ${item ? "bg-[#3c2b18]/92 border-amber-900/50 shadow-[0_18px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)]" : "bg-stone-950/18"}
         ${activeSeedCatalogId ? (seedSynergy > 0 ? "ring-2 ring-garden-400/80" : seedSynergy < 0 ? "ring-2 ring-red-500/70" : "ring-1 ring-stone-700/60") : ""}
         ${contagionRisk && !isPestInfested ? "pulse-red border-amber-500/30" : ""}
         group
@@ -339,7 +346,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
     >
       {item ? (
         <DraggablePlant item={item}>
-          <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden shimmer-bg rounded-3xl">
+          <div className="w-full h-full p-3 flex flex-col items-center justify-between relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-b from-amber-900/18 via-transparent to-black/20">
             {layer !== "normal" && !isDead && (
               <div
                 className={`
@@ -350,8 +357,11 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
             )}
 
             <div className="z-10 w-full flex justify-between items-start">
-              <span className="text-[11px] font-black uppercase text-stone-500">
-                {item.catalogId}
+              <span
+                className="max-w-[78%] truncate text-[11px] font-black uppercase tracking-wide text-stone-200/85"
+                title={displayName}
+              >
+                {displayName}
               </span>
               <div className="flex gap-1">
                 {stressLevel > 70 && (
@@ -369,6 +379,7 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
             <div className="z-10 group-hover:scale-110 transition-transform duration-500 my-auto">
               <PlantedCardView
                 catalogId={item.catalogId}
+                displayName={displayName}
                 stage={growthData.stage}
                 completedStages={growthData.completedStages}
                 daysElapsed={growthData.daysElapsed}
@@ -411,10 +422,10 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
           </div>
         </DraggablePlant>
       ) : (
-        <div className="flex flex-col items-center gap-2 opacity-20 group-hover:opacity-60 transition-opacity">
-          <Zap className="w-8 h-8 text-stone-700" />
-          <Plus className="w-10 h-10 text-stone-500" />
-          <span className="text-[11px] font-black tracking-widest uppercase">
+        <div className="flex flex-col items-center gap-2 opacity-30 group-hover:opacity-70 transition-opacity">
+          <Zap className="w-6 h-6 text-stone-200/30" />
+          <Plus className="w-8 h-8 text-stone-100/50" />
+          <span className="text-[11px] font-black tracking-widest uppercase text-stone-100/45">
             {x},{y}
           </span>
           {activeSeedCatalogId && (
@@ -473,6 +484,7 @@ export const GardenField: React.FC<{
   cols?: number;
   onDelete?: (item: PlantedDocument) => void;
   onOpenObservation?: (item: PlantedDocument) => void;
+  onPlantAt?: (x: number, y: number) => void;
   currentDay: number;
 }> = ({
   items,
@@ -484,6 +496,7 @@ export const GardenField: React.FC<{
   cols = 4,
   onDelete,
   onOpenObservation,
+  onPlantAt,
   currentDay,
 }) => {
   const getItemAt = (x: number, y: number) =>
@@ -522,7 +535,7 @@ export const GardenField: React.FC<{
     <div className="relative group/field w-full">
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
       <div
-        className="grid justify-center place-items-center gap-2 sm:gap-3 xl:gap-8 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.75rem,18vmin,10rem)] landscape:[--garden-cell-size:clamp(4.5rem,11vw,10rem)]"
+        className="grid justify-center place-items-center gap-3 sm:gap-4 xl:gap-7 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.9rem,20vw,8.75rem)] sm:[--garden-cell-size:clamp(6.5rem,17vmin,10rem)] landscape:[--garden-cell-size:clamp(4.5rem,10vw,9rem)]"
         style={{
           gridTemplateColumns: `repeat(${cols}, var(--garden-cell-size))`,
           gridTemplateRows: `repeat(${rows}, var(--garden-cell-size))`,
@@ -545,6 +558,7 @@ export const GardenField: React.FC<{
               relationships={relationships}
               onDelete={onDelete}
               onOpenObservation={onOpenObservation}
+              onPlantAt={onPlantAt}
               currentDay={currentDay}
               catalog={catalog}
             />

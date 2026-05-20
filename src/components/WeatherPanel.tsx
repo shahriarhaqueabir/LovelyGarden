@@ -34,7 +34,7 @@ export const WeatherPanel: React.FC = () => {
     }
   }, [hasFrost, t]);
 
-  // Show watering alert when watering score is high
+  // Show watering alert when weather suggests a higher watering need.
   useEffect(() => {
     if (wateringScore >= 80) {
       toast(t("weather.wateringUrgent"), {
@@ -55,8 +55,16 @@ export const WeatherPanel: React.FC = () => {
     fetchWeatherData();
   };
 
-  // Determine watering score color
-  const scoreColor =
+  const wateringNeedLabel =
+    wateringScore >= 80
+      ? "Urgent"
+      : wateringScore >= 60
+        ? "High"
+        : wateringScore >= 40
+          ? "Moderate"
+          : "Low";
+
+  const wateringNeedColor =
     wateringScore >= 80
       ? "bg-red-500"
       : wateringScore >= 60
@@ -154,7 +162,7 @@ export const WeatherPanel: React.FC = () => {
                 {t("weather.wateringNeed")}
               </h4>
               <span className="text-sm font-bold text-stone-400">
-                {wateringScore}/100
+                {wateringNeedLabel}
               </span>
             </div>
             <div
@@ -165,7 +173,7 @@ export const WeatherPanel: React.FC = () => {
               aria-valuemax={100}
             >
               <div
-                className={`h-2.5 rounded-full ${scoreColor}`}
+                className={`h-2.5 rounded-full ${wateringNeedColor}`}
                 style={{ width: `${wateringScore}%` }}
               ></div>
             </div>

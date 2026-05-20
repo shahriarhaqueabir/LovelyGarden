@@ -1,9 +1,9 @@
 # LovelyGarden
 
-> A local-first, AI-assisted gardening command deck that blends horticulture science with gamified tracking.
+> A local-first, AI-assisted gardening app that blends horticulture science with practical care tracking.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Lovely Garden logo artwork" width="420" />
+  <img src="public/screenshot.png" alt="Lovely Garden app screenshot" width="420" />
 </p>
 
 ---
@@ -31,7 +31,7 @@ Gardeners face a fragmented toolchain: weather apps don’t understand sowing wi
 LovelyGarden treats a garden as a **Reasoned Knowledge Graph** where plants, seasons, and climate are nodes with scientific relationships.
 
 - **Core idea**: Local-first architecture using RxDB + Dexie.js for extreme reliability and privacy.
-- **Design philosophy**: "Command Deck" UI that surfaces complex horticultural insights through a clean, gamified interface.
+- **Design philosophy**: A calm garden workspace that surfaces complex horticultural insights through clear, practical guidance.
 - **Key decisions**:
   - **Strict Schema Enforcement**: Every plant field is validated at the storage level to prevent data corruption.
   - **Reasoning Engine**: A decoupled logic layer that calculates companion compatibility and seasonal eligibility in real-time.
@@ -122,8 +122,8 @@ graph TD
 - **Native Search**: Orama-powered plant knowledgebase with ranked horticultural results.
 - **Fluid Navigation**: Compositor-level View Transitions for tab switching.
 - **Virtual Garden**: Grid-based layout with 6-stage growth visualization.
-- **Harmony Scoring**: Real-time companion planting compatibility alerts.
-- **Weather Command**: Open-Meteo integration with watering scores and frost warnings.
+- **Companion Guidance**: Real-time companion planting compatibility alerts.
+- **Weather Guidance**: Open-Meteo integration with watering guidance and frost warnings.
 - **Garden Guide**: Built-in rule-based assistant for non-AI users, with optional Gemini integration.
 
 ---

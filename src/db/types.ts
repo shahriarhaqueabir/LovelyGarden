@@ -128,7 +128,6 @@ export interface SettingsDocument {
   hemisphere?: string;
   city?: string;
   currentDay?: number;
-  xp?: number;
   dataVersion?: number;
 }
 

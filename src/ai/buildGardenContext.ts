@@ -37,7 +37,7 @@ export const buildGardenCoachContext = async ({
   weather,
 }: BuildGardenContextOptions) => {
   const db = await getDatabase();
-  const [gardens, inventory, planted, logbook, settings] = await Promise.all([
+  const [gardens, inventory, planted, logbook] = await Promise.all([
     db.gardens.find().exec(),
     db.inventory.find().exec(),
     db.planted.find().exec(),
@@ -45,7 +45,6 @@ export const buildGardenCoachContext = async ({
       .find({ sort: [{ date: "desc" }] })
       .limit(8)
       .exec(),
-    db.settings.findOne("local-user").exec(),
   ]);
 
   const plantIds = new Set<string>();
@@ -67,7 +66,6 @@ export const buildGardenCoachContext = async ({
     user: {
       currentDay,
       hemisphere,
-      xp: settings?.xp ?? 0,
     },
     weather: weather
       ? {

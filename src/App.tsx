@@ -4,9 +4,13 @@ import {
   BookOpenCheck,
   Cloud,
   CloudOff,
+  CloudSun,
+  Droplets,
   LogOut,
+  MapPin,
   RefreshCw,
   Sparkles,
+  Thermometer,
   UserCircle,
 } from "lucide-react";
 import { hydrateDatabase, getDatabase, setDatabaseOwnerScope } from "./db";
@@ -93,7 +97,6 @@ const getDayOfYear = (date: Date) => {
 const AppContent: React.FC = () => {
   const [catalog, setCatalog] = useState<PlantSpecies[]>([]);
   const [currentDateTime, setCurrentDateTime] = useState(() => new Date());
-  const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
@@ -267,7 +270,6 @@ const AppContent: React.FC = () => {
 
       const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
-        setXp(settings.xp || 0);
         setHemisphere(
           (settings.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
             "North",
@@ -276,7 +278,6 @@ const AppContent: React.FC = () => {
 
       settingsSub = db.settings.findOne("local-user").$.subscribe((s) => {
         if (s) {
-          setXp(s.xp || 0);
           setHemisphere(
             (s.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
               "North",
@@ -343,7 +344,6 @@ const AppContent: React.FC = () => {
           hemisphere: cloudSettings.hemisphere ?? localSettings.hemisphere,
           city: cloudSettings.city ?? localSettings.city,
           currentDay: cloudSettings.currentDay ?? localSettings.currentDay,
-          xp: cloudSettings.xp ?? localSettings.xp,
           dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
         });
         setOnboardingComplete(cloudSettings.firstLoadComplete);
@@ -360,24 +360,6 @@ const AppContent: React.FC = () => {
       cancelled = true;
     };
   }, [userId]);
-
-  // Persist XP changes
-  React.useEffect(() => {
-    const persistXp = async () => {
-      const db = await getDatabase();
-      const settings = await db.settings.findOne("local-user").exec();
-      if (settings && settings.xp !== xp) {
-        await settings.patch({ xp });
-      }
-      if (settings && userId) {
-        await upsertCloudUserSettings(userId, {
-          ...settings.toJSON(),
-          xp,
-        });
-      }
-    };
-    if (xp > 0) persistXp();
-  }, [xp, userId]);
 
   const handleSignOut = async () => {
     setSyncStatus("syncing", "Signing out...");
@@ -438,7 +420,6 @@ const AppContent: React.FC = () => {
           id: "local-user",
           hemisphere,
           currentDay,
-          xp,
           dataVersion: 0,
         }),
         firstLoadComplete: true,
@@ -483,7 +464,8 @@ const AppContent: React.FC = () => {
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
           <h1 className="truncate text-[11px] font-black uppercase tracking-tighter text-garden-500 sm:text-xs">
-            Garden Deck Command
+            <span className="sm:hidden">LovelyGarden</span>
+            <span className="hidden sm:inline">LovelyGarden</span>
           </h1>
         </div>
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-4 lg:gap-6">
@@ -569,7 +551,7 @@ const AppContent: React.FC = () => {
                     className="hidden sm:flex items-center gap-1.5 border-r border-stone-800 pr-4 mr-2"
                     title="Location"
                   >
-                    <span className="text-sm">📍</span>
+                    <MapPin className="h-3.5 w-3.5 text-red-300" />
                     <span className="text-[13px] font-black uppercase tracking-tight text-stone-300">
                       {locationName}
                     </span>
@@ -579,7 +561,7 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.weather_code < 3
                       ? "Sunny"
@@ -589,13 +571,13 @@ const AppContent: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.relative_humidity_2m}%
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.temperature_2m}°C
                   </span>
@@ -607,15 +589,15 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold">--</span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold">--%</span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold">--°C</span>
                 </div>
               </>
@@ -625,39 +607,25 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
               </>
             )}
-          </div>
-          <div className="hidden items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-3 py-1 shadow-inner sm:flex">
-            <span className="text-[12px] font-bold text-garden-400">
-              ⭐ {xp} XP
-            </span>
-            <div className="h-2 w-16 bg-stone-800 rounded-full overflow-hidden border border-stone-700">
-              <div
-                className="h-full bg-gradient-to-r from-garden-600 to-garden-400 rounded-full"
-                style={{ width: `${((xp % 100) / 100) * 100}%` }}
-              ></div>
-            </div>
-            <span className="text-[13px] font-bold text-stone-300">
-              Lv.{Math.floor(xp / 100) + 1}
-            </span>
           </div>
         </div>
       </header>
@@ -682,7 +650,6 @@ const AppContent: React.FC = () => {
                 currentDay={currentDay}
                 currentDateTimeLabel={currentDateTimeLabel}
                 currentTimestamp={currentDateTime.getTime()}
-                xp={xp}
                 alerts={alerts}
                 onOpenSeedStore={() => setShowSeedStore(true)}
               />
