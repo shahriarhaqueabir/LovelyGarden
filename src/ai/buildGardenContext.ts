@@ -84,6 +84,8 @@ export const buildGardenCoachContext = async ({
       const plantsInGarden = planted.filter((plant) => plant.bedId === data.id);
 
       return {
+        id: data.id,
+        name: data.name,
         type: data.type,
         soilType: data.soilType,
         sunExposure: data.sunExposure,
@@ -96,10 +98,16 @@ export const buildGardenCoachContext = async ({
       };
     }),
     inventory: inventory.slice(0, 20).map((item) => ({
+      id: item.id,
+      catalogId: item.catalogId,
       plantName: catalogById.get(item.catalogId)?.name ?? item.catalogId,
       acquiredDate: item.acquiredDate,
     })),
     plantedPlants: planted.slice(0, 30).map((plant) => ({
+      id: plant.id,
+      gardenId: plant.bedId,
+      bedId: plant.bedId,
+      catalogId: plant.catalogId,
       plantName: catalogById.get(plant.catalogId)?.name ?? plant.catalogId,
       plantedDate: plant.plantedDate,
       healthStatus: plant.healthStatus,

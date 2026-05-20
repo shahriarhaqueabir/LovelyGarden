@@ -12,11 +12,7 @@ import {
   LineChart as ChartIcon,
   History,
 } from "lucide-react";
-import {
-  PlantSpecies,
-  PlantStage,
-  UserLocation,
-} from "../schema/knowledge-graph";
+import { PlantSpecies, UserLocation } from "../schema/knowledge-graph";
 
 const monthNames = [
   "Jan",
@@ -208,7 +204,9 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     ? calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay)
     : null;
   const currentStage = catalogItem
-    ? (catalogItem.stages.find((s) => s.id === currentStageId) as PlantStage)
+    ? (catalogItem.stages.find((s) => s.id === currentStageId) ??
+      catalogItem.stages[0] ??
+      null)
     : null;
   const confidenceLevel = catalogItem
     ? getConfidenceThreshold(catalogItem.confidence_score)
@@ -241,16 +239,6 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
         label: "Watered",
         detail: "Hydration refreshed",
         tone: "border-blue-500/30 text-blue-300",
-      });
-    }
-
-    if (plant.harvestedDate) {
-      events.push({
-        id: "harvested",
-        timestamp: plant.harvestedDate,
-        label: "Harvested",
-        detail: "Harvest completed",
-        tone: "border-yellow-500/30 text-yellow-300",
       });
     }
 
@@ -292,7 +280,6 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   }, [
     currentStage,
     plant.bedId,
-    plant.harvestedDate,
     plant.lastWateredDate,
     plant.observations,
     plant.plantedDate,
@@ -413,41 +400,52 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
           {/* Lifecycle Progress */}
           <section className="space-y-4">
-            {(() => {
-              const colors = getStageColor(currentStage.id);
-              return (
-                <>
-                  <div className="flex justify-between items-end">
-                    <h3
-                      className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}
-                    >
-                      🌱 Lifecycle: {currentStage.name}
-                    </h3>
-                    <span className="text-[10px] text-stone-600 font-mono">
-                      Stage {catalogItem.stages.indexOf(currentStage) + 1}/
-                      {catalogItem.stages.length}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full bg-stone-800 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${colors.bar} shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000`}
-                      style={{
-                        width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-stone-400 leading-relaxed">
-                    Currently in the{" "}
-                    <span className={colors.text}>{currentStage.name}</span>{" "}
-                    stage. Requires watering 💧 every{" "}
-                    <span className={colors.text}>
-                      {currentStage.waterFrequencyDays} days
-                    </span>
-                    .
-                  </p>
-                </>
-              );
-            })()}
+            {currentStage ? (
+              (() => {
+                const colors = getStageColor(currentStage.id);
+                return (
+                  <>
+                    <div className="flex justify-between items-end">
+                      <h3
+                        className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}
+                      >
+                        🌱 Lifecycle: {currentStage.name}
+                      </h3>
+                      <span className="text-[10px] text-stone-600 font-mono">
+                        Stage {catalogItem.stages.indexOf(currentStage) + 1}/
+                        {catalogItem.stages.length}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-stone-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${colors.bar} shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000`}
+                        style={{
+                          width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-stone-400 leading-relaxed">
+                      Currently in the{" "}
+                      <span className={colors.text}>{currentStage.name}</span>{" "}
+                      stage. Requires watering 💧 every{" "}
+                      <span className={colors.text}>
+                        {currentStage.waterFrequencyDays} days
+                      </span>
+                      .
+                    </p>
+                  </>
+                );
+              })()
+            ) : (
+              <div className="rounded-2xl border border-stone-800 bg-stone-950/30 p-4">
+                <h3 className="text-xs uppercase font-bold tracking-widest text-stone-500">
+                  Lifecycle unavailable
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-stone-400">
+                  This plant does not have stage data yet.
+                </p>
+              </div>
+            )}
 
             <div className="pt-4 border-t border-stone-800">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">
@@ -944,27 +942,28 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                   {catalogItem.name}
                 </div>
                 <div className="text-[10px] text-garden-500 uppercase font-black tracking-widest">
-                  {currentStage.name} Stage
+                  {currentStage?.name ?? "Unknown"} Stage
                 </div>
               </div>
             </div>
 
-            {catalogItem.stages.indexOf(currentStage) <
-              catalogItem.stages.length - 2 && (
-              <div className="p-4 bg-amber-950/20 border border-amber-900/30 rounded-2xl flex gap-3 items-start">
-                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                <div className="space-y-1">
-                  <div className="text-xs font-bold text-amber-200">
-                    Premature Harvest Warning
+            {currentStage &&
+              catalogItem.stages.indexOf(currentStage) <
+                catalogItem.stages.length - 2 && (
+                <div className="p-4 bg-amber-950/20 border border-amber-900/30 rounded-2xl flex gap-3 items-start">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                  <div className="space-y-1">
+                    <div className="text-xs font-bold text-amber-200">
+                      Premature Harvest Warning
+                    </div>
+                    <p className="text-[10px] text-amber-500/80 leading-relaxed">
+                      This plant has not yet reached its peak maturation.
+                      Harvesting now may result in reduced yield quality or
+                      quantity.
+                    </p>
                   </div>
-                  <p className="text-[10px] text-amber-500/80 leading-relaxed">
-                    This plant has not yet reached its peak maturation.
-                    Harvesting now may result in reduced yield quality or
-                    quantity.
-                  </p>
                 </div>
-              </div>
-            )}
+              )}
 
             <p className="text-sm text-stone-400 leading-relaxed">
               Are you sure you want to harvest this plant? It will be removed
