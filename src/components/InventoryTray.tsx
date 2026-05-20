@@ -25,20 +25,12 @@ export const SeedCard: React.FC<{
   plantNowMode,
   onDelete,
 }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: `seed-${id}`, // The unique inventory item id
-      data: { id: catalogId, name, type }, // The catalog data for planting
-    });
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `seed-${id}`, // The unique inventory item id
+    data: { id: catalogId, name, type }, // The catalog data for planting
+  });
 
   const [showDelete, setShowDelete] = useState(false);
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 1000,
-      }
-    : undefined;
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -51,7 +43,6 @@ export const SeedCard: React.FC<{
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...listeners}
       {...attributes}
       onMouseEnter={() => setShowDelete(true)}

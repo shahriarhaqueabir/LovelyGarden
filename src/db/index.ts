@@ -2,6 +2,7 @@ import { createRxDatabase, RxDatabase, addRxPlugin } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema";
 import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
 import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
 import {
   catalogSchema,
@@ -34,6 +35,11 @@ if (!(window as any)._rxdbPluginsInit) {
     addRxPlugin(RxDBMigrationSchemaPlugin);
   } catch {
     console.debug("Migration plugin already added");
+  }
+  try {
+    addRxPlugin(RxDBQueryBuilderPlugin);
+  } catch {
+    console.debug("Query builder plugin already added");
   }
   if (import.meta.env.DEV) {
     try {

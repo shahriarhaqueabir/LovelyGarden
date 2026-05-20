@@ -94,6 +94,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(
     null,
   );
+  const [activeDragPreview, setActiveDragPreview] = useState<{
+    kind: "seed" | "plant";
+    name: string;
+    type?: string;
+  } | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
   const [observationPlant, setObservationPlant] =
     useState<PlantedDocument | null>(null);
@@ -211,16 +216,31 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     const idStr = active.id.toString();
     if (idStr.startsWith("seed-")) {
       const catalogId = active.data.current?.id as string | undefined;
+      const name = active.data.current?.name as string | undefined;
+      const type = active.data.current?.type as string | undefined;
       setActiveSeedCatalogId(catalogId || null);
+      setActiveDragPreview({
+        kind: "seed",
+        name: name || catalogId || "Seed",
+        type,
+      });
     } else if (idStr.startsWith("planted-")) {
       const plant = active.data.current?.item as PlantedDocument;
       setActiveSeedCatalogId(plant?.catalogId || null);
+      setActiveDragPreview({
+        kind: "plant",
+        name:
+          catalog.find((item) => item.id === plant?.catalogId)?.name ||
+          plant?.catalogId ||
+          "Plant",
+      });
     }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveSeedCatalogId(null);
+    setActiveDragPreview(null);
 
     if (!over) return;
 
@@ -682,13 +702,32 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
         </div>
 
-        <DragOverlay dropAnimation={null}>
-          <div className="w-40 h-40 bg-garden-800 rounded-3xl border-2 border-garden-500 shadow-[0_0_30px_rgba(34,197,94,0.4)] flex flex-col items-center justify-center p-4">
-            <Sprout className="w-16 h-16 text-garden-300" />
-            <div className="mt-4 text-[13px] font-black uppercase text-garden-400">
-              Deploying...
+        <DragOverlay dropAnimation={null} adjustScale={false}>
+          {activeDragPreview ? (
+            <div
+              className={
+                activeDragPreview.kind === "seed"
+                  ? "pointer-events-none flex h-[100px] w-[80px] flex-col items-center justify-center rounded-3xl border border-garden-400 bg-stone-900/95 p-2 text-center shadow-[0_0_30px_rgba(34,197,94,0.35)]"
+                  : "pointer-events-none flex size-[120px] flex-col items-center justify-center rounded-3xl border-2 border-garden-400 bg-stone-900/95 p-3 text-center shadow-[0_0_30px_rgba(34,197,94,0.35)]"
+              }
+            >
+              <Sprout
+                className={
+                  activeDragPreview.kind === "seed"
+                    ? "h-5 w-5 text-garden-300"
+                    : "h-10 w-10 text-garden-300"
+                }
+              />
+              <div className="mt-2 line-clamp-2 text-[11px] font-black leading-tight text-garden-200">
+                {activeDragPreview.name}
+              </div>
+              {activeDragPreview.type && (
+                <div className="mt-1 line-clamp-1 text-[10px] italic text-garden-400">
+                  {activeDragPreview.type.replace("_", " ")}
+                </div>
+              )}
             </div>
-          </div>
+          ) : null}
         </DragOverlay>
 
         {observationPlant && (
