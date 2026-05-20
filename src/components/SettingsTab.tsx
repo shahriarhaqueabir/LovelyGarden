@@ -39,7 +39,7 @@ export const SettingsTab: React.FC = () => {
   const [locationCity, setLocationCity] = useState("");
   const [hemisphere, setHemisphere] = useState("North");
 
-  const [, setImportStatus] = useState<string | null>(null);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logs, setLogs] = useState<{ type: string; msg: string }[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -502,6 +502,11 @@ export const SettingsTab: React.FC = () => {
               <Database className="w-3 h-3 text-garden-500" /> Data Transmission
             </h2>
             <div className="space-y-3">
+              <div className="rounded-xl border border-garden-500/20 bg-garden-950/20 p-3 text-xs leading-5 text-stone-400">
+                JSON backups include gardens, planted crops, inventory, logbook,
+                and settings. Import merges matching records instead of wiping
+                your current garden.
+              </div>
               <button
                 onClick={handleExport}
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
@@ -522,6 +527,11 @@ export const SettingsTab: React.FC = () => {
               >
                 <Upload className="w-3 h-3" /> Import System JSON
               </button>
+              {importStatus && (
+                <div className="rounded-xl border border-stone-800 bg-stone-950 px-3 py-2 text-xs font-semibold leading-5 text-stone-300">
+                  {importStatus}
+                </div>
+              )}
 
               <div className="h-4" />
 
