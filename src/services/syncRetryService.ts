@@ -26,38 +26,33 @@ export const retryPendingAccountSync = async (ownerId: string) => {
     db.logbook.find().exec(),
     db.settings.findOne("local-user").exec(),
   ]);
+  const localGardens = gardens.map((garden) => garden.toJSON());
+  const localInventory = inventory.map((item) => item.toJSON());
+  const localPlanted = planted.map((plant) => plant.toJSON());
+  const localLogbook = logbook.map((entry) => entry.toJSON());
 
   await Promise.all([
-    ...gardens.map((garden) => upsertCloudGarden(ownerId, garden.toJSON())),
-    ...inventory.map((item) =>
-      upsertCloudInventoryItem(ownerId, item.toJSON()),
-    ),
-    ...planted.map((plant) => upsertCloudPlantedPlant(ownerId, plant.toJSON())),
-    ...logbook.map((entry) => upsertCloudLogbookEntry(ownerId, entry.toJSON())),
+    ...localGardens.map((garden) => upsertCloudGarden(ownerId, garden)),
+    ...localInventory.map((item) => upsertCloudInventoryItem(ownerId, item)),
+    ...localLogbook.map((entry) => upsertCloudLogbookEntry(ownerId, entry)),
     settings
       ? upsertCloudUserSettings(ownerId, settings.toJSON())
       : Promise.resolve(),
   ]);
 
-  const [syncedGardens, syncedInventory, syncedPlanted, syncedLogbook] =
-    await Promise.all([
-      syncGardensWithCloud(
-        ownerId,
-        gardens.map((garden) => garden.toJSON()),
-      ),
-      syncInventoryWithCloud(
-        ownerId,
-        inventory.map((item) => item.toJSON()),
-      ),
-      syncPlantedPlantsWithCloud(
-        ownerId,
-        planted.map((plant) => plant.toJSON()),
-      ),
-      syncLogbookWithCloud(
-        ownerId,
-        logbook.map((entry) => entry.toJSON()),
-      ),
-    ]);
+  // Planted rows have an owner-scoped FK to gardens, so retry gardens first.
+  await Promise.all(
+    localPlanted.map((plant) => upsertCloudPlantedPlant(ownerId, plant)),
+  );
+
+  const syncedGardens = await syncGardensWithCloud(ownerId, localGardens);
+
+  const [syncedInventory, syncedLogbook] = await Promise.all([
+    syncInventoryWithCloud(ownerId, localInventory),
+    syncLogbookWithCloud(ownerId, localLogbook),
+  ]);
+
+  const syncedPlanted = await syncPlantedPlantsWithCloud(ownerId, localPlanted);
 
   await Promise.all([
     ...syncedGardens.map((garden) => db.gardens.upsert(garden)),
@@ -66,5 +61,7 @@ export const retryPendingAccountSync = async (ownerId: string) => {
     ...syncedLogbook.map((entry) => db.logbook.upsert(entry)),
   ]);
 
-  setSyncStatus("synced", "Saved local changes synced.");
+  setSyncStatus("synced", "Saved local changes synced.", {
+    clearPending: true,
+  });
 };

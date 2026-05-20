@@ -26,7 +26,6 @@ interface GardenGuideSheetProps {
   currentDay: number;
   hemisphere: "North" | "South";
   weather: WeatherData | null;
-  locationName: string | null;
   aiEnabled: boolean;
   onClose: () => void;
   onOpenGeminiCoach: () => void;
@@ -77,7 +76,6 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
   currentDay,
   hemisphere,
   weather,
-  locationName,
   aiEnabled,
   onClose,
   onOpenGeminiCoach,
@@ -98,7 +96,6 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
         currentDay,
         hemisphere,
         weather,
-        locationName,
       });
       setInsights(generateGardenGuideInsights(context));
     } catch (caughtError) {
@@ -110,7 +107,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [catalog, currentDay, hemisphere, locationName, weather]);
+  }, [catalog, currentDay, hemisphere, weather]);
 
   React.useEffect(() => {
     void refreshInsights();

@@ -5,6 +5,7 @@ import {
   Cloud,
   CloudOff,
   LogOut,
+  RefreshCw,
   Sparkles,
   UserCircle,
 } from "lucide-react";
@@ -391,6 +392,23 @@ const AppContent: React.FC = () => {
     showSuccess("Cloud session disconnected.");
   };
 
+  const handleRetrySync = async () => {
+    if (!userId) return;
+    if (!isOnline) {
+      showError("You are offline. Retry when the connection returns.");
+      return;
+    }
+
+    try {
+      await retryPendingAccountSync(userId);
+      showSuccess("Saved local changes synced.");
+    } catch (error) {
+      console.warn("Manual retry sync failed:", error);
+      setSyncStatus("error", "Retry failed. Changes are still saved locally.");
+      showError("Retry failed. Changes are still saved locally.");
+    }
+  };
+
   const handleAssistantOpen = () => {
     const connected = hasConnectedGemini();
     setAiEnabled(connected);
@@ -473,7 +491,7 @@ const AppContent: React.FC = () => {
             {user ? (
               <>
                 <div
-                  className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 md:flex ${
+                  className={`inline-flex items-center gap-2 rounded-full border py-1.5 pl-2 pr-1.5 sm:pl-3 sm:pr-2 ${
                     syncStatus.state === "error"
                       ? "border-red-500/30 bg-red-950/20 text-red-300"
                       : isOnline
@@ -494,7 +512,7 @@ const AppContent: React.FC = () => {
                   ) : (
                     <CloudOff className="h-4 w-4" />
                   )}
-                  <span className="text-[11px] font-black uppercase tracking-wide">
+                  <span className="hidden text-[11px] font-black uppercase tracking-wide sm:inline">
                     {syncStatus.state === "error"
                       ? "Needs Retry"
                       : syncStatus.state === "syncing"
@@ -503,6 +521,26 @@ const AppContent: React.FC = () => {
                           ? "Online"
                           : "Saved Local"}
                   </span>
+                  {syncStatus.pendingLocalCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleRetrySync}
+                      disabled={!isOnline || syncStatus.state === "syncing"}
+                      className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-current/20 bg-black/10 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      title={
+                        isOnline
+                          ? "Retry saved local changes now"
+                          : "Retry when you are back online"
+                      }
+                      aria-label="Retry sync"
+                    >
+                      <RefreshCw
+                        className={`h-3.5 w-3.5 ${
+                          syncStatus.state === "syncing" ? "animate-spin" : ""
+                        }`}
+                      />
+                    </button>
+                  )}
                 </div>
                 <div
                   className="hidden md:flex items-center gap-2 rounded-full border border-garden-500/20 bg-garden-950/20 px-3 py-1.5"
@@ -727,7 +765,6 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
             hemisphere={hemisphere}
             weather={weather}
-            locationName={locationName}
             aiEnabled={aiEnabled}
             onClose={() => setShowGardenGuide(false)}
             onOpenGeminiCoach={() => {
@@ -742,7 +779,6 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
             hemisphere={hemisphere}
             weather={weather}
-            locationName={locationName}
             onClose={() => setShowGardenCoach(false)}
             onConnectionLost={handleGeminiConnectionLost}
           />

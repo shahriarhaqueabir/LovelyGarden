@@ -29,7 +29,6 @@ interface GardenCoachSheetProps {
   currentDay: number;
   hemisphere: "North" | "South";
   weather: WeatherData | null;
-  locationName: string | null;
   onClose: () => void;
   onConnectionLost?: () => void;
 }
@@ -50,7 +49,6 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
   currentDay,
   hemisphere,
   weather,
-  locationName,
   onClose,
   onConnectionLost,
 }) => {
@@ -111,7 +109,6 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
         currentDay,
         hemisphere,
         weather,
-        locationName,
       });
       const answer = await generateGardenAdvice({
         apiKey,
@@ -217,7 +214,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                   type="password"
                   value={draftKey}
                   onChange={(event) => setDraftKey(event.target.value)}
-                  placeholder="AIza..."
+                  placeholder="Paste your Gemini API key"
                   className="h-11 w-full rounded-lg border border-stone-800 bg-stone-950 px-3 text-sm text-stone-100 outline-none focus:border-garden-500"
                 />
               </label>
@@ -253,9 +250,10 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
               </div>
             </div>
             <p className="text-xs leading-5 text-stone-500">
-              The key is kept for this browser session only. Garden Coach reads
-              your local LovelyGarden data to answer, but it does not edit
-              gardens, inventory, settings, or logbook entries.
+              The key is kept for this browser session only. Garden Coach sends
+              a minimal, sanitized summary of your garden and weather data to
+              Gemini to generate advice. It does not modify your saved gardens,
+              inventory, settings, or logbook entries.
             </p>
           </div>
         ) : (

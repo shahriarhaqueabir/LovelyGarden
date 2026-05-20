@@ -11,14 +11,14 @@ LovelyGarden is a connected PWA first. The normal experience assumes internet an
 | ID | Upgrade | Status | Track |
 | --- | --- | --- | --- |
 | LG-001 | Connected sync resilience | In progress | Sync |
-| LG-002 | Garden timeline | Backlog | Guidance |
+| LG-002 | Garden timeline | In progress: plant and garden activity timelines added | Guidance |
 | LG-003 | Smart empty states | In progress | Guidance |
 | LG-004 | Placement preview | In progress | Interaction |
 | LG-005 | Undo actions | In progress | Interaction |
 | LG-006 | Drag and tap placement UX | In progress | Interaction |
 | LG-007 | No-key local assistant | In progress | Guidance |
-| LG-008 | Garden health score | In progress | Guidance |
-| LG-009 | Daily care dashboard | Backlog | Guidance |
+| LG-008 | Garden health score | In progress: explainable factor strip added | Guidance |
+| LG-009 | Daily care dashboard | In progress: Today care strip added | Guidance |
 | LG-010 | Visual plant growth | Backlog | Interaction |
 | LG-011 | Backup and restore | In progress: export/import schema hardened | Data |
 | LG-012 | Local notifications | Backlog | Sync |

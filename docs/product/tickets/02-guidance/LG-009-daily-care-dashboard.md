@@ -17,12 +17,20 @@ As a gardener, I want one daily dashboard for watering, planting, checking, and 
 
 ## Definition of Done
 
-- A daily care surface exists.
-- Tasks are grouped by priority.
-- Tasks link to the relevant action surface.
+- [x] A daily care surface exists.
+- [x] Tasks are grouped by priority.
+- [x] Tasks link to the relevant action surface.
+- [ ] Signed-in desktop/mobile visual QA completed.
 
 ## Acceptance Criteria
 
-- Given a thirsty plant exists, Today shows a watering task.
-- Given seeds are in season and cells are open, Today shows planting task.
-- Given no tasks exist, Today shows a calm all-clear state.
+- [x] Given a thirsty plant exists, Today shows a watering task.
+- [x] Given seeds are in season and cells are open, Today shows planting task.
+- [x] Given no tasks exist, Today shows a calm all-clear state.
+
+## Implementation Notes
+
+- Today strip lives in the active garden view below recent activity.
+- `Now` tasks include low hydration, high stress/pest checks, and weather alerts.
+- `Next` tasks include harvest-ready plants and seasonal seeds when grid cells are open.
+- Task buttons open the relevant plant inspector, enable Plant Now filtering, or switch to the health layer.

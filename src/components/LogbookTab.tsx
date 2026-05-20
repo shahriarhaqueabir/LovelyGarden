@@ -10,6 +10,7 @@ import {
   Edit,
   Trash,
   X,
+  Move,
 } from "lucide-react";
 import {
   logUserPurchase,
@@ -213,7 +214,11 @@ export const LogbookTab: React.FC = () => {
                               ? "bg-amber-500/10 text-amber-500"
                               : entry.type === "lost_harvest"
                                 ? "bg-red-500/10 text-red-500"
-                                : "bg-stone-500/10 text-stone-500"
+                                : entry.type === "move_undo"
+                                  ? "bg-cyan-500/10 text-cyan-500"
+                                  : entry.type === "move"
+                                    ? "bg-blue-500/10 text-blue-500"
+                                    : "bg-stone-500/10 text-stone-500"
                       }`}
                     >
                       {entry.type === "seed_purchase" ? (
@@ -224,6 +229,10 @@ export const LogbookTab: React.FC = () => {
                         <ShoppingBasket className="w-6 h-6" />
                       ) : entry.type === "lost_harvest" ? (
                         <Skull className="w-6 h-6" />
+                      ) : entry.type === "move_undo" ? (
+                        <Move className="w-6 h-6" />
+                      ) : entry.type === "move" ? (
+                        <Move className="w-6 h-6" />
                       ) : (
                         <ShoppingCart className="w-6 h-6" />
                       )}
@@ -258,7 +267,11 @@ export const LogbookTab: React.FC = () => {
                                   ? "border-amber-500/20 text-amber-400 bg-amber-500/5"
                                   : entry.type === "lost_harvest"
                                     ? "border-red-500/20 text-red-400 bg-red-500/5"
-                                    : "border-stone-700 text-stone-500 bg-stone-900/40"
+                                    : entry.type === "move_undo"
+                                      ? "border-cyan-500/20 text-cyan-400 bg-cyan-500/5"
+                                      : entry.type === "move"
+                                        ? "border-blue-500/20 text-blue-400 bg-blue-500/5"
+                                        : "border-stone-700 text-stone-500 bg-stone-900/40"
                           }`}
                         >
                           {entry.type === "seed_purchase"
@@ -269,7 +282,11 @@ export const LogbookTab: React.FC = () => {
                                 ? "Success"
                                 : entry.type === "lost_harvest"
                                   ? "Casualty"
-                                  : "Manual Entry"}
+                                  : entry.type === "move_undo"
+                                    ? "Undo"
+                                    : entry.type === "move"
+                                      ? "Moved"
+                                      : "Manual Entry"}
                         </span>
                       </div>
                       {entry.notes && (
