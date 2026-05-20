@@ -117,3 +117,5 @@ blackbox_mcp_settings.json
 *storybook.log
 storybook-static
 /session-logs
+.agent.md
+/docs

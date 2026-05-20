@@ -7,7 +7,6 @@ interface BuildGardenContextOptions {
   currentDay: number;
   hemisphere: "North" | "South";
   weather: WeatherData | null;
-  locationName: string | null;
 }
 
 const compactPlant = (plant: PlantSpecies | undefined) =>
@@ -36,7 +35,6 @@ export const buildGardenCoachContext = async ({
   currentDay,
   hemisphere,
   weather,
-  locationName,
 }: BuildGardenContextOptions) => {
   const db = await getDatabase();
   const [gardens, inventory, planted, logbook, settings] = await Promise.all([
@@ -69,30 +67,23 @@ export const buildGardenCoachContext = async ({
     user: {
       currentDay,
       hemisphere,
-      city: settings?.city,
       xp: settings?.xp ?? 0,
     },
     weather: weather
       ? {
-          locationName,
           temperatureC: weather.current.temperature_2m,
           humidityPercent: weather.current.relative_humidity_2m,
           precipitation: weather.current.precipitation,
           weatherCode: weather.current.weather_code,
         }
       : {
-          locationName,
           note: "Weather is unavailable or location permission was denied.",
         },
     gardens: gardens.map((garden) => {
       const data = garden.toJSON();
-      const plantsInGarden = planted
-        .filter((plant) => plant.bedId === data.id)
-        .map((plant) => plant.toJSON());
+      const plantsInGarden = planted.filter((plant) => plant.bedId === data.id);
 
       return {
-        id: data.id,
-        name: data.name,
         type: data.type,
         soilType: data.soilType,
         sunExposure: data.sunExposure,
@@ -105,18 +96,11 @@ export const buildGardenCoachContext = async ({
       };
     }),
     inventory: inventory.slice(0, 20).map((item) => ({
-      id: item.id,
-      catalogId: item.catalogId,
       plantName: catalogById.get(item.catalogId)?.name ?? item.catalogId,
       acquiredDate: item.acquiredDate,
     })),
     plantedPlants: planted.slice(0, 30).map((plant) => ({
-      id: plant.id,
-      gardenId: plant.bedId,
-      catalogId: plant.catalogId,
       plantName: catalogById.get(plant.catalogId)?.name ?? plant.catalogId,
-      gridX: plant.gridX,
-      gridY: plant.gridY,
       plantedDate: plant.plantedDate,
       healthStatus: plant.healthStatus,
       hydration: plant.hydration,

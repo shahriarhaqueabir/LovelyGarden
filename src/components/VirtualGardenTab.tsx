@@ -9,6 +9,9 @@ import {
   Activity,
   Droplets,
   Undo2,
+  History,
+  CheckCircle2,
+  ClipboardList,
 } from "lucide-react";
 import {
   DndContext,
@@ -24,6 +27,8 @@ import { GardenField } from "./GardenGrid";
 import { InventoryTray } from "./InventoryTray";
 import { PlantInspector } from "./PlantInspector";
 import { usePlantedCards } from "../hooks/usePlantedCards";
+import { useLogbook } from "../hooks/useLogbook";
+import { useInventory } from "../hooks/useInventory";
 import { getDatabase } from "../db";
 import {
   createGarden,
@@ -150,6 +155,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const activeGarden = gardens.find((g) => g.id === activeGardenId);
 
   const plantedCards = usePlantedCards(activeGardenId || undefined);
+  const logbookEntries = useLogbook();
+  const inventoryItems = useInventory();
   const [selectedPlant, setSelectedPlant] = useState<PlantedDocument | null>(
     null,
   );
@@ -444,6 +451,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           markSyncing("Syncing plant move...");
           try {
             await syncLocalPlantToCloud(plant.id);
+            await syncLocalLogbookToCloud();
             markSynced("Plant move synced.");
           } catch (error) {
             handleCloudSyncError("Plant move cloud sync failed.", error);
@@ -456,11 +464,13 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plant.gridX,
               plant.gridY,
               activeGarden?.id || "main-garden",
+              { logType: "move_undo" },
             );
             if (user) {
               markSyncing("Syncing undo...");
               try {
                 await syncLocalPlantToCloud(plant.id);
+                await syncLocalLogbookToCloud();
                 markSynced("Undo synced.");
               } catch (error) {
                 handleCloudSyncError("Undo cloud sync failed.", error);
@@ -592,13 +602,27 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       }
     : null;
   const gardenHealth = useMemo(() => {
+    const capacityRatio = totalCells > 0 ? occupiedCells / totalCells : 0;
+
     if (plantedCards.length === 0) {
       return {
         score: 100,
         thirstyCount: 0,
         stressedCount: 0,
+        pestCount: 0,
         label: "Ready",
         tone: "text-garden-400",
+        factors: [
+          {
+            label: "Capacity",
+            detail:
+              totalCells > 0
+                ? `${totalCells} open cells ready`
+                : "Create a garden",
+            impact: "Good",
+            tone: "border-garden-500/20 text-garden-300",
+          },
+        ],
       };
     }
 
@@ -608,18 +632,38 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     const avgStress =
       plantedCards.reduce((sum, plant) => sum + (plant.stressLevel ?? 0), 0) /
       plantedCards.length;
-    const score = Math.max(0, Math.round(avgHydration - avgStress * 0.65));
     const thirstyCount = plantedCards.filter(
       (plant) => (plant.hydration ?? 100) < 35,
     ).length;
     const stressedCount = plantedCards.filter(
       (plant) => (plant.stressLevel ?? 0) > 60,
     ).length;
+    const pestCount = plantedCards.filter(
+      (plant) => plant.healthStatus === "Pest Infestation",
+    ).length;
+    const hydrationPenalty = Math.max(0, 100 - avgHydration) * 0.45;
+    const stressPenalty = avgStress * 0.3;
+    const pestPenalty = pestCount * 12;
+    const capacityPenalty = capacityRatio > 0.92 ? 6 : 0;
+    const score = Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(
+          100 -
+            hydrationPenalty -
+            stressPenalty -
+            pestPenalty -
+            capacityPenalty,
+        ),
+      ),
+    );
 
     return {
       score,
       thirstyCount,
       stressedCount,
+      pestCount,
       label: score >= 80 ? "Stable" : score >= 55 ? "Watch" : "Care",
       tone:
         score >= 80
@@ -627,8 +671,259 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           : score >= 55
             ? "text-amber-400"
             : "text-red-400",
+      factors: [
+        {
+          label: "Hydration",
+          detail:
+            thirstyCount > 0
+              ? `${thirstyCount} thirsty`
+              : `${Math.round(avgHydration)}% avg`,
+          impact: hydrationPenalty > 12 ? "Drag" : "Good",
+          tone:
+            hydrationPenalty > 12
+              ? "border-blue-500/30 text-blue-200"
+              : "border-garden-500/20 text-garden-300",
+        },
+        {
+          label: "Stress",
+          detail:
+            stressedCount > 0
+              ? `${stressedCount} high stress`
+              : `${Math.round(avgStress)}% avg`,
+          impact: stressPenalty > 15 ? "Drag" : "Good",
+          tone:
+            stressPenalty > 15
+              ? "border-amber-500/30 text-amber-200"
+              : "border-garden-500/20 text-garden-300",
+        },
+        {
+          label: "Pests",
+          detail: pestCount > 0 ? `${pestCount} flagged` : "Clear",
+          impact: pestPenalty > 0 ? "Risk" : "Good",
+          tone:
+            pestPenalty > 0
+              ? "border-red-500/30 text-red-200"
+              : "border-garden-500/20 text-garden-300",
+        },
+        {
+          label: "Capacity",
+          detail: `${occupiedCells}/${totalCells || 0} cells`,
+          impact: capacityPenalty > 0 ? "Full" : "Open",
+          tone:
+            capacityPenalty > 0
+              ? "border-amber-500/30 text-amber-200"
+              : "border-garden-500/20 text-garden-300",
+        },
+      ],
     };
-  }, [plantedCards]);
+  }, [occupiedCells, plantedCards, totalCells]);
+  const gardenActivityEvents = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+
+    const plantEvents = plantedCards.flatMap((plant) => {
+      const plantName =
+        catalog.find((item) => item.id === plant.catalogId)?.name ||
+        plant.catalogId;
+      const events: Array<{
+        id: string;
+        timestamp: number;
+        label: string;
+        detail: string;
+      }> = [];
+
+      if (plant.plantedDate) {
+        events.push({
+          id: `${plant.id}-planted`,
+          timestamp: plant.plantedDate,
+          label: "Planted",
+          detail: plantName,
+        });
+      }
+
+      if (plant.lastWateredDate) {
+        events.push({
+          id: `${plant.id}-watered`,
+          timestamp: plant.lastWateredDate,
+          label: "Watered",
+          detail: plantName,
+        });
+      }
+
+      for (const observation of plant.observations ?? []) {
+        events.push({
+          id: observation.id,
+          timestamp: observation.timestamp,
+          label: observation.label,
+          detail: plantName,
+        });
+      }
+
+      return events;
+    });
+    const logbookEvents = logbookEntries
+      .filter((entry) => !activeGardenId || entry.bedId === activeGardenId)
+      .filter((entry) =>
+        ["planting", "move", "move_undo", "harvest", "lost_harvest"].includes(
+          entry.type,
+        ),
+      )
+      .map((entry) => ({
+        id: entry.id,
+        timestamp: entry.date,
+        label:
+          entry.type === "lost_harvest"
+            ? "Lost"
+            : entry.type === "move_undo"
+              ? "Undo"
+              : entry.type === "move"
+                ? "Moved"
+                : entry.type === "planting"
+                  ? "Planted"
+                  : "Harvested",
+        detail: entry.itemName,
+      }));
+
+    return [...plantEvents, ...logbookEvents]
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .filter(
+        (event, index, events) =>
+          index ===
+          events.findIndex(
+            (candidate) =>
+              candidate.label === event.label &&
+              candidate.detail === event.detail &&
+              Math.abs(candidate.timestamp - event.timestamp) < 1000,
+          ),
+      )
+      .slice(0, 6)
+      .map((event) => ({
+        ...event,
+        dateLabel: Number.isFinite(event.timestamp)
+          ? formatter.format(new Date(event.timestamp))
+          : "Now",
+      }));
+  }, [activeGardenId, catalog, logbookEntries, plantedCards]);
+  const dailyCareGroups = useMemo(() => {
+    type CareTask = {
+      id: string;
+      label: string;
+      detail: string;
+      priority: "Now" | "Next";
+      tone: string;
+      onAction: () => void;
+    };
+
+    const now: CareTask[] = [];
+    const next: CareTask[] = [];
+
+    for (const plant of plantedCards) {
+      const catalogItem = catalog.find((item) => item.id === plant.catalogId);
+      const plantName = catalogItem?.name || plant.catalogId;
+
+      if ((plant.hydration ?? 100) < 35) {
+        now.push({
+          id: `${plant.id}-water`,
+          label: "Water",
+          detail: `${plantName} is at ${Math.round(plant.hydration ?? 0)}% hydration.`,
+          priority: "Now",
+          tone: "border-blue-500/30 bg-blue-950/20 text-blue-200",
+          onAction: () => setSelectedPlant(plant),
+        });
+      }
+
+      if (
+        (plant.stressLevel ?? 0) > 60 ||
+        plant.healthStatus === "Pest Infestation"
+      ) {
+        now.push({
+          id: `${plant.id}-check`,
+          label: "Check",
+          detail: `${plantName} needs a closer look.`,
+          priority: "Now",
+          tone: "border-amber-500/30 bg-amber-950/20 text-amber-200",
+          onAction: () => setSelectedPlant(plant),
+        });
+      }
+
+      if (catalogItem?.stages?.length) {
+        const currentStageId = calculateCurrentStage(
+          plant.plantedDate,
+          catalogItem.stages,
+          currentTimestamp,
+        );
+        const currentStageIndex = catalogItem.stages.findIndex(
+          (stage) => stage.id === currentStageId,
+        );
+        if (currentStageIndex >= catalogItem.stages.length - 1) {
+          next.push({
+            id: `${plant.id}-harvest`,
+            label: "Harvest",
+            detail: `${plantName} is in ${catalogItem.stages[currentStageIndex]?.name || "final"} stage.`,
+            priority: "Next",
+            tone: "border-garden-500/30 bg-garden-950/20 text-garden-200",
+            onAction: () => setSelectedPlant(plant),
+          });
+        }
+      }
+    }
+
+    const openCells = Math.max(0, totalCells - occupiedCells);
+    const seasonalSeedNames = inventoryItems
+      .map((item) => catalog.find((plant) => plant.id === item.catalogId))
+      .filter((plant): plant is PlantSpecies => Boolean(plant))
+      .filter(
+        (plant) =>
+          isSowingSeason(
+            plant,
+            { id: "user_location", hemisphere: "North", frost_data: {} },
+            currentMonth,
+          ).eligible,
+      )
+      .map((plant) => plant.name);
+
+    if (openCells > 0 && seasonalSeedNames.length > 0) {
+      next.push({
+        id: "seasonal-planting",
+        label: "Plant",
+        detail: `${seasonalSeedNames.slice(0, 2).join(", ")} ${seasonalSeedNames.length > 2 ? `+${seasonalSeedNames.length - 2}` : ""} in season.`,
+        priority: "Next",
+        tone: "border-garden-500/30 bg-garden-950/20 text-garden-200",
+        onAction: () => setPlantNowMode(true),
+      });
+    }
+
+    const weatherAlerts = alerts.filter(
+      (alert) => !alert.toLowerCase().includes("conditions normal"),
+    );
+    if (weatherAlerts.length > 0) {
+      now.push({
+        id: "weather-alert",
+        label: "Weather",
+        detail: weatherAlerts[0],
+        priority: "Now",
+        tone: "border-red-500/30 bg-red-950/20 text-red-200",
+        onAction: () => setSpectralLayer("health"),
+      });
+    }
+
+    return {
+      Now: now.slice(0, 3),
+      Next: next.slice(0, 3),
+      count: now.length + next.length,
+    };
+  }, [
+    alerts,
+    catalog,
+    currentMonth,
+    currentTimestamp,
+    inventoryItems,
+    occupiedCells,
+    plantedCards,
+    totalCells,
+  ]);
 
   const showUndoAction = (message: string, onUndo: () => Promise<void>) => {
     toast.custom(
@@ -703,6 +998,14 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               <span>{gardenHealth.thirstyCount} Water</span>
               <span className="text-stone-700">/</span>
               <span>{gardenHealth.stressedCount} Watch</span>
+              {gardenHealth.pestCount > 0 && (
+                <>
+                  <span className="text-stone-700">/</span>
+                  <span className="text-red-400">
+                    {gardenHealth.pestCount} Pest
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -853,6 +1156,112 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       >
                         <Edit className="w-4 h-4" />
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {activeGarden && (
+                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/45 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
+                        <History className="h-3.5 w-3.5 text-garden-400" />
+                        Recent
+                      </div>
+                      {gardenActivityEvents.length > 0 ? (
+                        gardenActivityEvents.map((event) => (
+                          <button
+                            key={event.id}
+                            type="button"
+                            className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-stone-800 bg-stone-900/80 px-3 text-left text-[11px] text-stone-300"
+                            title={`${event.label}: ${event.detail}`}
+                          >
+                            <span className="font-black uppercase text-garden-300">
+                              {event.label}
+                            </span>
+                            <span className="max-w-28 truncate text-stone-500">
+                              {event.detail}
+                            </span>
+                            <span className="text-[10px] font-bold uppercase text-stone-600">
+                              {event.dateLabel}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="h-9 rounded-lg border border-dashed border-stone-800 px-3 py-2 text-[11px] font-semibold text-stone-600">
+                          Plant, water, or observe to start the garden timeline.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeGarden && (
+                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/35 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
+                        <ClipboardList className="h-3.5 w-3.5 text-garden-400" />
+                        Today
+                      </div>
+                      {dailyCareGroups.count === 0 ? (
+                        <div className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-garden-500/20 bg-garden-950/10 px-3 text-[11px] font-semibold text-garden-300">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          All clear for now
+                        </div>
+                      ) : (
+                        <>
+                          {(["Now", "Next"] as const).flatMap((group) =>
+                            dailyCareGroups[group].map((task) => (
+                              <button
+                                key={task.id}
+                                type="button"
+                                onClick={task.onAction}
+                                className={`flex h-10 max-w-[18rem] shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-[11px] ${task.tone}`}
+                                title={`${task.label}: ${task.detail}`}
+                              >
+                                <span className="rounded bg-stone-950/50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
+                                  {task.priority}
+                                </span>
+                                <span className="font-black uppercase">
+                                  {task.label}
+                                </span>
+                                <span className="truncate text-stone-400">
+                                  {task.detail}
+                                </span>
+                              </button>
+                            )),
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeGarden && (
+                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/25 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
+                        <Activity
+                          className={`h-3.5 w-3.5 ${gardenHealth.tone}`}
+                        />
+                        Health
+                      </div>
+                      {gardenHealth.factors.map((factor) => (
+                        <div
+                          key={factor.label}
+                          className={`flex h-9 shrink-0 items-center gap-2 rounded-lg border bg-stone-900/70 px-3 text-[11px] ${factor.tone}`}
+                          title={`${factor.label}: ${factor.detail}`}
+                        >
+                          <span className="font-black uppercase">
+                            {factor.label}
+                          </span>
+                          <span className="text-stone-500">
+                            {factor.detail}
+                          </span>
+                          <span className="rounded bg-stone-950/60 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
+                            {factor.impact}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

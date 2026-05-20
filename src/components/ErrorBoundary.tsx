@@ -25,7 +25,9 @@ const ErrorFallback: React.FC<FallbackProps> = ({
         <div className="bg-stone-950 rounded-xl p-4 mb-6 border border-stone-800">
           <p className="text-sm text-red-400 font-mono mb-2">Error Message:</p>
           <p className="text-xs text-stone-400 font-mono break-words">
-            {error.message}
+            {import.meta.env.DEV
+              ? error.message
+              : "An unexpected error occurred. Please try again or refresh the page."}
           </p>
         </div>
 
@@ -68,16 +70,15 @@ export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({
   const handleReset = () => {
     onReset?.();
     // Additional cleanup if needed
-    console.log("Error boundary reset triggered");
   };
 
   const handleError = (error: Error, info: React.ErrorInfo) => {
-    // Log error to console or send to error reporting service
-    console.error("Error caught by boundary:", error);
-    console.error("Component stack:", info.componentStack);
+    if (import.meta.env.DEV) {
+      console.error("Error caught by boundary:", error);
+      console.error("Component stack:", info.componentStack);
+    }
 
-    // In production, you might want to send this to an error tracking service
-    // like Sentry, LogRocket, etc.
+    // In production, send this to a monitoring service if available.
   };
 
   return (

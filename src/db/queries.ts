@@ -95,6 +95,7 @@ export const relocatePlant = async (
   newX: number,
   newY: number,
   gardenId: string,
+  options: { logType?: "move" | "move_undo" } = {},
 ) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
@@ -115,11 +116,30 @@ export const relocatePlant = async (
 
   if (existing) throw new Error("Target coordinates occupied");
 
+  const previousX = plant.gridX;
+  const previousY = plant.gridY;
+  const previousGardenId = plant.bedId;
+  const catalogId = plant.catalogId;
+
   await plant.patch({
     gridX: newX,
     gridY: newY,
     bedId: gardenId,
   });
+
+  const catalogItem = await db.catalog.findOne(catalogId).exec();
+  const plantName = catalogItem?.name || "Plant";
+  await logMove(
+    catalogId,
+    plantName,
+    gardenId,
+    previousX,
+    previousY,
+    newX,
+    newY,
+    previousGardenId,
+    options.logType ?? "move",
+  );
 };
 
 /**
@@ -444,6 +464,36 @@ export const logPlanting = async (
     catalogId,
     bedId,
     notes: `Planted in ${bedId}`,
+  });
+
+  return id;
+};
+
+export const logMove = async (
+  catalogId: string,
+  itemName: string,
+  bedId: string,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  fromBedId?: string,
+  type: "move" | "move_undo" = "move",
+) => {
+  const db = await getDatabase();
+  const id = createId(type);
+  await db.logbook.insert({
+    id,
+    type,
+    itemName,
+    category: "garden",
+    date: Date.now(),
+    catalogId,
+    bedId,
+    notes:
+      fromBedId && fromBedId !== bedId
+        ? `${type === "move_undo" ? "Undo move" : "Moved"} from ${fromBedId} (${fromX}, ${fromY}) to ${bedId} (${toX}, ${toY})`
+        : `${type === "move_undo" ? "Undo move" : "Moved"} from (${fromX}, ${fromY}) to (${toX}, ${toY})`,
   });
 
   return id;

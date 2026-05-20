@@ -10,6 +10,7 @@ import {
   FlaskConical,
   Users,
   LineChart as ChartIcon,
+  History,
 } from "lucide-react";
 import {
   PlantSpecies,
@@ -203,17 +204,101 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
     ? "h-full w-full bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300"
     : "fixed inset-y-0 right-0 w-96 bg-stone-900/40 backdrop-blur-2xl border-l border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 animate-in slide-in-from-right duration-300";
 
-  if (!catalogItem) return null;
+  const currentStageId = catalogItem
+    ? calculateCurrentStage(plant.plantedDate, catalogItem.stages, currentDay)
+    : null;
+  const currentStage = catalogItem
+    ? (catalogItem.stages.find((s) => s.id === currentStageId) as PlantStage)
+    : null;
+  const confidenceLevel = catalogItem
+    ? getConfidenceThreshold(catalogItem.confidence_score)
+    : 0;
 
-  const currentStageId = calculateCurrentStage(
+  const timelineEvents = useMemo(() => {
+    const events: Array<{
+      id: string;
+      timestamp: number;
+      label: string;
+      detail: string;
+      tone: string;
+      dateLabel?: string;
+    }> = [];
+
+    if (plant.plantedDate) {
+      events.push({
+        id: "planted",
+        timestamp: plant.plantedDate,
+        label: "Planted",
+        detail: `Placed in ${plant.bedId}`,
+        tone: "border-garden-500/30 text-garden-300",
+      });
+    }
+
+    if (plant.lastWateredDate) {
+      events.push({
+        id: "watered",
+        timestamp: plant.lastWateredDate,
+        label: "Watered",
+        detail: "Hydration refreshed",
+        tone: "border-blue-500/30 text-blue-300",
+      });
+    }
+
+    if (plant.harvestedDate) {
+      events.push({
+        id: "harvested",
+        timestamp: plant.harvestedDate,
+        label: "Harvested",
+        detail: "Harvest completed",
+        tone: "border-yellow-500/30 text-yellow-300",
+      });
+    }
+
+    events.push({
+      id: "stage-current",
+      timestamp: Date.now(),
+      label: "Current stage",
+      detail: currentStage
+        ? `${currentStage.name}, water every ${currentStage.waterFrequencyDays} days`
+        : "Lifecycle stage pending",
+      tone: "border-amber-500/30 text-amber-300",
+    });
+
+    for (const observation of plant.observations ?? []) {
+      events.push({
+        id: observation.id,
+        timestamp: observation.timestamp,
+        label: observation.label,
+        detail: observation.category.replace("_", " "),
+        tone: "border-stone-600 text-stone-300",
+      });
+    }
+
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return events
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map((event) => ({
+        ...event,
+        dateLabel: Number.isFinite(event.timestamp)
+          ? formatter.format(new Date(event.timestamp))
+          : "Unknown date",
+      }));
+  }, [
+    currentStage,
+    plant.bedId,
+    plant.harvestedDate,
+    plant.lastWateredDate,
+    plant.observations,
     plant.plantedDate,
-    catalogItem.stages,
-    currentDay,
-  );
-  const currentStage = catalogItem.stages.find(
-    (s) => s.id === currentStageId,
-  ) as PlantStage;
-  const confidenceLevel = getConfidenceThreshold(catalogItem.confidence_score);
+  ]);
+
+  if (!catalogItem) return null;
 
   const currentMonth = new Date().getMonth();
   const seasonalAdvice = userLocation
@@ -370,6 +455,48 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               </h4>
               <GrowthGraph stages={catalogItem.stages} />
             </div>
+          </section>
+
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="h-4 w-4 text-garden-400" />
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-400">
+                  Timeline
+                </h3>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-stone-600">
+                {timelineEvents.length} events
+              </span>
+            </div>
+
+            {timelineEvents.length > 0 ? (
+              <div className="space-y-2">
+                {timelineEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="grid grid-cols-[5.5rem_1fr] gap-3 rounded-xl border border-stone-800 bg-stone-950/30 p-3"
+                  >
+                    <div className="text-[10px] font-bold uppercase leading-tight tracking-wide text-stone-500">
+                      {event.dateLabel}
+                    </div>
+                    <div className={`border-l pl-3 ${event.tone}`}>
+                      <div className="text-xs font-black uppercase tracking-wide">
+                        {event.label}
+                      </div>
+                      <div className="mt-1 text-[11px] leading-relaxed text-stone-400">
+                        {event.detail}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-stone-800 bg-stone-950/30 p-4 text-xs leading-relaxed text-stone-500">
+                Water, observe, harvest, or move this plant to build its
+                timeline.
+              </div>
+            )}
           </section>
 
           {/* Knowledge Base (surfacing seed fields) */}
