@@ -40,7 +40,6 @@ type UserSettingsRow = {
   hemisphere: string | null;
   city: string | null;
   current_day: number;
-  xp?: number;
   data_version: number;
   preferences: UserSettingsPreferences | null;
 };
@@ -68,9 +67,6 @@ const toRow = (
     hemisphere: settings.hemisphere ?? null,
     city: settings.city ?? null,
     current_day: settings.currentDay ?? 1,
-    // Kept only for compatibility with existing Supabase projects that still
-    // have the legacy column.
-    xp: 0,
     data_version: settings.dataVersion ?? 0,
   };
 

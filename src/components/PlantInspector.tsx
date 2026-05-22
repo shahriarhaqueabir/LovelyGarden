@@ -969,7 +969,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                   setIsProcessing(false);
                   onClose();
                 }}
-                className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-xl text-sm font-black uppercase tracking-widest transition-all"
+                className="px-6 py-2 btn-primary text-sm font-black uppercase tracking-widest transition-all"
                 disabled={isProcessing}
               >
                 {isProcessing ? "Harvesting..." : "Harvest Now"}
@@ -1089,14 +1089,14 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 await waterPlant(plant.id);
                 await syncUpdatedPlant("Syncing watering...");
               }}
-              className="py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-2"
+              className="py-3 btn-primary text-xs font-bold transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
             >
               <Droplets className="w-4 h-4" />
               Water Now
             </button>
             <button
               onClick={() => setModalType("harvest")}
-              className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95 flex items-center justify-center gap-2"
+              className="py-3 btn-primary text-xs font-bold transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
             >
               Harvest
             </button>

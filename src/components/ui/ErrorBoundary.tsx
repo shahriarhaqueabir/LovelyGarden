@@ -18,7 +18,7 @@ const ErrorFallback: React.FC<FallbackProps> = ({
         <p className="text-sm text-stone-400 mb-4">{error.message}</p>
         <button
           onClick={resetErrorBoundary}
-          className="px-4 py-2 bg-garden-500 text-white rounded-lg hover:bg-garden-600 transition-colors"
+          className="px-4 py-2 btn-primary rounded-lg transition-colors"
         >
           Reload Component
         </button>

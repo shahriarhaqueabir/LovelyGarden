@@ -316,7 +316,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
             <button
               type="button"
               onClick={onOpenGeminiCoach}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest"
             >
               <Sparkles className="h-4 w-4" />
               {aiEnabled ? "Ask AI" : "Add AI Key"}

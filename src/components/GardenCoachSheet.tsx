@@ -234,7 +234,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                 <button
                   type="button"
                   onClick={handleSaveSettings}
-                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest"
                 >
                   Save
                 </button>
@@ -318,7 +318,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowSettings(true)}
-                  className="h-11 w-full rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+                  className="h-11 w-full rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest"
                 >
                   Add Gemini Key
                 </button>
@@ -340,7 +340,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                   <button
                     type="submit"
                     disabled={!input.trim() || isSending}
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-garden-500 text-stone-950 hover:bg-garden-400 disabled:opacity-50"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg btn-primary disabled:opacity-50"
                     aria-label="Send message"
                     title="Send message"
                   >

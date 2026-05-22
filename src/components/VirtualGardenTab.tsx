@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ClipboardList,
   SunMedium,
+  X,
 } from "lucide-react";
 import {
   DndContext,
@@ -175,6 +176,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     type?: string;
   } | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
+  const [showCarePanel, setShowCarePanel] = useState(false);
   const [observationPlant, setObservationPlant] =
     useState<PlantedDocument | null>(null);
 
@@ -1017,7 +1019,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               toast.dismiss(toastInstance.id);
               void onUndo();
             }}
-            className="inline-flex h-8 items-center gap-1 rounded-lg bg-garden-500 px-3 text-xs font-black uppercase tracking-wide text-stone-950 hover:bg-garden-400"
+            className="inline-flex h-8 items-center gap-1 rounded-lg btn-primary px-3 text-xs font-black uppercase tracking-wide"
           >
             <Undo2 className="h-3.5 w-3.5" />
             Undo
@@ -1034,7 +1036,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full flex-col overflow-hidden bg-app-background font-sans text-stone-100">
+      <div className="garden-screen flex h-full flex-col overflow-hidden bg-app-background font-sans text-stone-100">
         {/* Garden Configuration Dialog */}
         {showGardenDialog && (
           <GardenConfigDialog
@@ -1047,7 +1049,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         )}
 
         {/* HUD OVERLAY */}
-        <header className="z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800/80 bg-stone-950/88 px-2 shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-4 lg:px-6">
+        <header className="garden-hud z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800/80 bg-stone-950/88 px-2 shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-4 lg:px-6">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar sm:gap-4">
             {/* 1. Cycle Day */}
             <div className="bg-stone-900/80 px-2 sm:px-3 py-1.5 rounded-full border border-stone-700/80 text-xs font-black text-garden-300 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
@@ -1133,7 +1135,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col overflow-hidden xl:flex-row">
+        <div className="garden-body flex flex-1 flex-col overflow-hidden xl:flex-row">
           {/* LEFT SIDEBAR: BAG */}
           <div className="hidden xl:flex">
             <InventoryTray
@@ -1158,8 +1160,8 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
 
           {/* MAIN CONTENT COLUMN */}
-          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-primary/20">
-            <div className="relative flex h-11 items-center gap-2 overflow-x-auto border-b border-stone-800/80 bg-stone-950/76 px-2 shadow-lg backdrop-blur-md no-scrollbar sm:h-12 sm:px-4">
+          <div className="garden-main-column relative flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-primary/20">
+            <div className="garden-tabs-row relative flex h-11 items-center gap-2 overflow-x-auto border-b border-stone-800/80 bg-stone-950/76 px-2 shadow-lg backdrop-blur-md no-scrollbar sm:h-12 sm:px-4">
               <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
               {Array.from({ length: 5 }).map((_, i) => {
                 const garden = gardens[i];
@@ -1208,38 +1210,67 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               })}
             </div>
 
-            <div className="relative flex min-h-0 flex-1 overflow-hidden">
-              {/* CENTER PANE: TACTICAL FIELD */}
-              <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden terrain-texture">
+            <div className="garden-workspace relative flex min-h-0 flex-1 overflow-hidden">
+              {/* CENTER PANE: GARDEN FIELD */}
+              <div className="garden-field-pane relative flex min-w-0 flex-1 flex-col overflow-hidden terrain-texture">
                 {/* Garden Config Controls (Edit/Delete Active) */}
                 {activeGarden && (
-                  <div className="absolute left-2 right-2 top-2 z-20 flex flex-col gap-2 sm:left-4 sm:right-auto sm:top-4">
-                    <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-stone-700/80 bg-stone-950/82 p-2 shadow-lg backdrop-blur-md no-scrollbar sm:gap-2">
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        {activeGarden.type}
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
+                  <div className="garden-status-rail absolute left-2 right-2 top-2 z-20 flex min-w-0 items-center gap-2 overflow-x-auto rounded-xl border border-stone-700/55 bg-stone-950/76 p-2 shadow-lg backdrop-blur-md no-scrollbar sm:left-4 sm:right-4 sm:top-4">
+                    <div className="garden-config-pill flex shrink-0 items-center gap-1 border-r border-stone-700/70 pr-2 text-[11px] font-semibold text-stone-400 sm:gap-2 sm:text-[13px]">
+                      <span className="shrink-0 px-1">{activeGarden.type}</span>
+                      <span className="flex shrink-0 items-center gap-1 px-1">
                         <SunMedium className="h-3.5 w-3.5 text-amber-300" />
                         {activeGarden.sunExposure}
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
+                      </span>
+                      <span className="flex shrink-0 items-center gap-1 px-1">
                         <Droplets className="h-3.5 w-3.5 text-blue-300" />
                         {activeGarden.soilType}
-                      </div>
+                      </span>
                       <button
                         onClick={() => {
                           setDialogMode("edit");
                           setShowGardenDialog(true);
                         }}
-                        className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
+                        className="rounded-lg p-1.5 text-stone-500 transition-colors hover:bg-stone-800 hover:text-garden-400"
                         title="Configure Garden"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="h-4 w-4" />
                       </button>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCarePanel((open) => !open)}
+                      className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-stone-700/60 bg-stone-900/56 px-2.5 text-[11px] font-semibold text-stone-200 hover:border-garden-500/35 hover:text-garden-200"
+                      aria-expanded={showCarePanel}
+                      title="Open care details"
+                    >
+                      {dailyCareGroups.count === 0 ? (
+                        <CheckCircle2 className="h-4 w-4 text-garden-300" />
+                      ) : (
+                        <ClipboardList className="h-4 w-4 text-amber-300" />
+                      )}
+                      <span>
+                        {dailyCareGroups.count === 0
+                          ? "Care clear"
+                          : `${dailyCareGroups.count} care`}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCarePanel((open) => !open)}
+                      className={`inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-stone-700/60 bg-stone-900/56 px-2.5 text-[11px] font-semibold hover:border-garden-500/35 ${gardenHealth.tone}`}
+                      aria-expanded={showCarePanel}
+                      title="Open garden health"
+                    >
+                      <Activity className="h-4 w-4" />
+                      <span>{gardenHealth.label}</span>
+                    </button>
+
                     {selectedSeed && (
-                      <div className="flex max-w-full items-center gap-2 rounded-xl border border-garden-500/30 bg-garden-950/80 px-3 py-2 text-xs font-semibold text-garden-100 shadow-lg backdrop-blur-md">
-                        <Sprout className="h-4 w-4 text-garden-300" />
+                      <div className="flex min-w-48 flex-1 items-center gap-2 rounded-lg border border-garden-500/30 bg-garden-950/65 px-2.5 py-1.5 text-xs font-semibold text-garden-100">
+                        <Sprout className="h-4 w-4 shrink-0 text-garden-300" />
                         <span className="truncate">
                           Tap an open space to plant {selectedSeed.name}
                         </span>
@@ -1249,7 +1280,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                             setSelectedSeed(null);
                             setActiveSeedCatalogId(null);
                           }}
-                          className="ml-auto rounded-lg border border-garden-400/20 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-garden-200 hover:bg-garden-500/10"
+                          className="ml-auto shrink-0 btn-primary btn-sm text-stone-900 font-black uppercase tracking-widest"
                         >
                           Cancel
                         </button>
@@ -1258,115 +1289,128 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   </div>
                 )}
 
-                {activeGarden && (
-                  <div className="hidden shrink-0 border-b border-stone-800 bg-stone-950/45 px-3 py-2 backdrop-blur-sm sm:px-5 xl:block lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <History className="h-3.5 w-3.5 text-garden-400" />
-                        Recent
+                {activeGarden && showCarePanel && (
+                  <div className="garden-care-panel absolute right-2 top-14 z-30 w-[min(22rem,calc(100vw-1rem))] rounded-2xl border border-stone-800/80 bg-stone-950/90 p-3 shadow-2xl backdrop-blur-md sm:right-4 sm:top-16">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-stone-100">
+                          Garden Care
+                        </h3>
+                        <p className="text-xs text-stone-500">
+                          {dailyCareGroups.count === 0
+                            ? "No urgent tasks right now."
+                            : "Tasks that need attention."}
+                        </p>
                       </div>
-                      {gardenActivityEvents.length > 0 ? (
-                        gardenActivityEvents.map((event) => (
-                          <button
-                            key={event.id}
-                            type="button"
-                            className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-stone-800 bg-stone-900/80 px-3 text-left text-[11px] text-stone-300"
-                            title={`${event.label}: ${event.detail}`}
-                          >
-                            <span className="font-black uppercase text-garden-300">
-                              {event.label}
-                            </span>
-                            <span className="max-w-28 truncate text-stone-500">
-                              {event.detail}
-                            </span>
-                            <span className="text-[10px] font-bold uppercase text-stone-600">
-                              {event.dateLabel}
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="h-9 rounded-lg border border-dashed border-stone-800 px-3 py-2 text-[11px] font-semibold text-stone-600">
-                          Plant, water, or observe to start the garden timeline.
-                        </div>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowCarePanel(false)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-800 text-stone-500 hover:text-stone-200"
+                        aria-label="Close care panel"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
                     </div>
-                  </div>
-                )}
 
-                {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800/80 bg-stone-950/48 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <ClipboardList className="h-3.5 w-3.5 text-garden-400" />
-                        Today
-                      </div>
-                      {dailyCareGroups.count === 0 ? (
-                        <div className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-garden-500/20 bg-garden-950/10 px-3 text-[11px] font-semibold text-garden-300">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          All clear for now
+                    <div className="space-y-3">
+                      <section className="rounded-xl border border-stone-800/75 bg-stone-900/40 p-3">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <ClipboardList className="h-4 w-4 text-garden-300" />
+                          Today
                         </div>
-                      ) : (
-                        <>
-                          {(["Now", "Next"] as const).flatMap((group) =>
-                            dailyCareGroups[group].map((task) => (
-                              <button
-                                key={task.id}
-                                type="button"
-                                onClick={task.onAction}
-                                className={`flex h-10 max-w-[18rem] shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-[11px] ${task.tone}`}
-                                title={`${task.label}: ${task.detail}`}
+                        {dailyCareGroups.count === 0 ? (
+                          <div className="flex items-center gap-2 text-sm text-garden-200">
+                            <CheckCircle2 className="h-4 w-4" />
+                            All clear for now
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {(["Now", "Next"] as const).flatMap((group) =>
+                              dailyCareGroups[group].map((task) => (
+                                <button
+                                  key={task.id}
+                                  type="button"
+                                  onClick={task.onAction}
+                                  className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs ${task.tone}`}
+                                >
+                                  <span className="rounded bg-stone-950/50 px-1.5 py-0.5 text-[9px] font-bold">
+                                    {task.priority}
+                                  </span>
+                                  <span className="font-semibold">
+                                    {task.label}
+                                  </span>
+                                  <span className="truncate text-stone-400">
+                                    {task.detail}
+                                  </span>
+                                </button>
+                              )),
+                            )}
+                          </div>
+                        )}
+                      </section>
+
+                      <section className="rounded-xl border border-stone-800/75 bg-stone-900/40 p-3">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <Activity
+                            className={`h-4 w-4 ${gardenHealth.tone}`}
+                          />
+                          Health
+                        </div>
+                        <div className="grid gap-2">
+                          {gardenHealth.factors.map((factor) => (
+                            <div
+                              key={factor.label}
+                              className={`flex items-center justify-between gap-3 rounded-lg border border-stone-800 bg-stone-950/50 px-3 py-2 text-xs ${factor.tone}`}
+                              title={`${factor.label}: ${factor.detail}`}
+                            >
+                              <span className="font-semibold">
+                                {factor.label}
+                              </span>
+                              <span className="truncate text-stone-500">
+                                {factor.detail}
+                              </span>
+                              <span className="rounded bg-stone-900 px-1.5 py-0.5 text-[9px] font-bold">
+                                {factor.impact}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+
+                      <section className="hidden rounded-xl border border-stone-800/75 bg-stone-900/40 p-3 sm:block">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <History className="h-4 w-4 text-garden-300" />
+                          Recent
+                        </div>
+                        {gardenActivityEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {gardenActivityEvents.slice(0, 4).map((event) => (
+                              <div
+                                key={event.id}
+                                className="flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-950/50 px-3 py-2 text-xs"
                               >
-                                <span className="rounded bg-stone-950/50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
-                                  {task.priority}
+                                <span className="font-semibold text-garden-300">
+                                  {event.label}
                                 </span>
-                                <span className="font-black uppercase">
-                                  {task.label}
+                                <span className="truncate text-stone-500">
+                                  {event.detail}
                                 </span>
-                                <span className="truncate text-stone-400">
-                                  {task.detail}
-                                </span>
-                              </button>
-                            )),
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800/80 bg-stone-950/42 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <Activity
-                          className={`h-3.5 w-3.5 ${gardenHealth.tone}`}
-                        />
-                        Health
-                      </div>
-                      {gardenHealth.factors.map((factor) => (
-                        <div
-                          key={factor.label}
-                          className={`flex h-9 shrink-0 items-center gap-2 rounded-lg border bg-stone-900/70 px-3 text-[11px] ${factor.tone}`}
-                          title={`${factor.label}: ${factor.detail}`}
-                        >
-                          <span className="font-black uppercase">
-                            {factor.label}
-                          </span>
-                          <span className="text-stone-500">
-                            {factor.detail}
-                          </span>
-                          <span className="rounded bg-stone-950/60 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
-                            {factor.impact}
-                          </span>
-                        </div>
-                      ))}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-stone-500">
+                            Plant, water, or observe to start the timeline.
+                          </p>
+                        )}
+                      </section>
                     </div>
                   </div>
                 )}
 
                 {/* THE FIELD */}
 
-                <main className="flex flex-1 items-center justify-center overflow-y-auto overflow-x-hidden px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 xl:p-12">
+                <main className="garden-board-main flex flex-1 items-center justify-center overflow-hidden px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 xl:p-8">
                   {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
@@ -1414,7 +1458,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                           setDialogMode("create");
                           setShowGardenDialog(true);
                         }}
-                        className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
+                        className="mt-6 px-6 py-2 btn-primary text-stone-900 rounded-lg font-bold uppercase tracking-widest transition-colors"
                       >
                         Create Garden
                       </button>
@@ -1460,7 +1504,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
           </div>
 
-          <div className="xl:hidden">
+          <div className="mobile-inventory-wrap xl:hidden">
             <InventoryTray
               catalog={catalog}
               onOpenStore={onOpenSeedStore || (() => {})}

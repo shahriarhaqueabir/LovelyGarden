@@ -34,7 +34,7 @@ const ErrorFallback: React.FC<FallbackProps> = ({
         <div className="space-y-3">
           <button
             onClick={resetErrorBoundary}
-            className="w-full py-3 bg-garden-600 hover:bg-garden-500 text-stone-950 font-bold rounded-xl text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 btn-primary text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
             Retry Operation

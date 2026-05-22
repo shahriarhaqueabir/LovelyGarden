@@ -3,7 +3,6 @@ import { useDroppable, useDraggable } from "@dnd-kit/core";
 import {
   Droplets,
   AlertTriangle,
-  Zap,
   Plus,
   Activity,
   Bug,
@@ -239,9 +238,10 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
       return "border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.5)]";
     }
 
+    if (!item) return "border-stone-100/20 shadow-none";
     if (stressLevel > 80) return "border-red-500/50";
     if (stressLevel > 40) return "border-amber-500/40";
-    return "border-garden-900/40 shadow-xl";
+    return "border-amber-900/35 shadow-xl";
   };
 
   const getOverlayLabel = () => {
@@ -336,7 +336,8 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       className={`
-        relative size-[var(--garden-cell-size)] border-2 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-500 cursor-pointer depth-3d
+        relative size-[var(--garden-cell-size)] rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
+        ${item ? "border-2 depth-3d" : "border"}
         ${getBorderColor()}
         ${item ? "bg-[#3c2b18]/92 border-amber-900/50 shadow-[0_18px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)]" : "bg-stone-950/18"}
         ${activeSeedCatalogId ? (seedSynergy > 0 ? "ring-2 ring-garden-400/80" : seedSynergy < 0 ? "ring-2 ring-red-500/70" : "ring-1 ring-stone-700/60") : ""}
@@ -422,12 +423,8 @@ export const GridSlot: React.FC<GridSlotProps> = (props) => {
           </div>
         </DraggablePlant>
       ) : (
-        <div className="flex flex-col items-center gap-2 opacity-30 group-hover:opacity-70 transition-opacity">
-          <Zap className="w-6 h-6 text-stone-200/30" />
-          <Plus className="w-8 h-8 text-stone-100/50" />
-          <span className="text-[11px] font-black tracking-widest uppercase text-stone-100/45">
-            {x},{y}
-          </span>
+        <div className="flex flex-col items-center gap-2 opacity-0 transition-opacity group-hover:opacity-60 group-focus-within:opacity-70">
+          <Plus className="w-7 h-7 text-stone-100/60" />
           {activeSeedCatalogId && (
             <span
               className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${
@@ -499,6 +496,42 @@ export const GardenField: React.FC<{
   onPlantAt,
   currentDay,
 }) => {
+  const stageRef = React.useRef<HTMLDivElement>(null);
+  const [cellSize, setCellSize] = React.useState(104);
+
+  React.useEffect(() => {
+    const node = stageRef.current;
+    if (!node) return;
+
+    const resize = (entry: ResizeObserverEntry) => {
+      const { width, height } = entry.contentRect;
+      if (width <= 0 || height <= 0) return;
+
+      const gap = width >= 1280 ? 28 : width >= 640 ? 16 : 12;
+      const maxCell = width >= 1280 ? 150 : width >= 640 ? 132 : 112;
+      const availableWidth = width - Math.max(0, cols - 1) * gap;
+      const availableHeight = height - Math.max(0, rows - 1) * gap;
+      const nextSize = Math.max(
+        44,
+        Math.floor(
+          Math.min(availableWidth / cols, availableHeight / rows, maxCell),
+        ),
+      );
+
+      setCellSize((current) =>
+        Math.abs(current - nextSize) > 1 ? nextSize : current,
+      );
+    };
+
+    const observer = new ResizeObserver((entries) => {
+      const [entry] = entries;
+      if (entry) resize(entry);
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [cols, rows]);
+
   const getItemAt = (x: number, y: number) =>
     items.find((item) => item.gridX === x && item.gridY === y);
 
@@ -532,14 +565,20 @@ export const GardenField: React.FC<{
   }, [catalog]);
 
   return (
-    <div className="relative group/field w-full">
+    <div
+      ref={stageRef}
+      className="relative flex h-full min-h-0 w-full min-w-0 items-center justify-center overflow-hidden group/field"
+    >
       <div className="absolute -inset-10 bg-garden-500/5 blur-[100px] rounded-full pointer-events-none opacity-0 group-hover/field:opacity-100 transition-opacity duration-1000" />
       <div
-        className="grid justify-center place-items-center gap-3 sm:gap-4 xl:gap-7 relative z-10 w-full max-w-5xl mx-auto [--garden-cell-size:clamp(4.9rem,20vw,8.75rem)] sm:[--garden-cell-size:clamp(6.5rem,17vmin,10rem)] landscape:[--garden-cell-size:clamp(4.5rem,10vw,9rem)]"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, var(--garden-cell-size))`,
-          gridTemplateRows: `repeat(${rows}, var(--garden-cell-size))`,
-        }}
+        className="garden-field-grid relative z-10 grid place-items-center justify-center gap-3 sm:gap-4 xl:gap-7"
+        style={
+          {
+            "--garden-cell-size": `${cellSize}px`,
+            gridTemplateColumns: `repeat(${cols}, var(--garden-cell-size))`,
+            gridTemplateRows: `repeat(${rows}, var(--garden-cell-size))`,
+          } as React.CSSProperties
+        }
       >
         {Array.from({ length: rows * cols }).map((_, i) => {
           const x = i % cols;

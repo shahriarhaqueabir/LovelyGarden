@@ -181,7 +181,7 @@ export const LogbookTab: React.FC = () => {
         </div>
         <button
           onClick={openAddModal}
-          className="px-6 py-3 bg-garden-600 hover:bg-garden-500 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center gap-2"
+          className="px-6 py-3 btn-primary text-xs uppercase tracking-widest transition-all shadow-lg flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> Add Purchase
         </button>
@@ -440,7 +440,7 @@ export const LogbookTab: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-garden-600 hover:bg-garden-500 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-garden-500/20"
+                  className="flex-1 py-3 btn-primary text-xs uppercase tracking-widest transition-all shadow-lg"
                 >
                   {modalMode === "add" ? "Save Record" : "Update Record"}
                 </button>
