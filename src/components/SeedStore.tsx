@@ -559,7 +559,7 @@ export const DetailModal: React.FC<{
                   onBuy();
                   onClose();
                 }}
-                className="flex-1 sm:flex-none px-8 py-3 bg-garden-600 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-garden-400 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-8 py-3 btn-primary text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="w-4 h-4" /> Add to Bag
               </button>
@@ -830,7 +830,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
                       </button>
                       <button
                         onClick={() => addToInventory(plant.id)}
-                        className="p-2 bg-garden-900/50 rounded-lg text-garden-400 hover:bg-garden-500 hover:text-white transition-all"
+                        className="p-2 btn-primary text-stone-950 rounded-lg transition-all flex items-center justify-center"
                         title="Add to Bag"
                       >
                         {justAdded === plant.id ? (

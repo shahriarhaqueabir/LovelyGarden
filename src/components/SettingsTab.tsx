@@ -607,7 +607,7 @@ export const SettingsTab: React.FC = () => {
       <div className="mt-auto pt-6 border-t border-stone-800 flex justify-end">
         <button
           onClick={handleSave}
-          className="px-10 py-3 bg-garden-600 hover:bg-garden-400 text-stone-950 font-black rounded-xl text-xs uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
+          className="px-10 py-3 btn-primary text-stone-950 font-black rounded-xl text-xs uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
         >
           Save
         </button>

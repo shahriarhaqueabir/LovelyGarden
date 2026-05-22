@@ -109,7 +109,7 @@ export const AuthScreen: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-garden-700 px-4 text-xs font-black uppercase tracking-widest text-white shadow-[0_12px_30px_rgba(21,128,61,0.28)] transition-all hover:bg-garden-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
             <LogIn className="h-4 w-4" />
             {isSubmitting

@@ -67,7 +67,7 @@ export const SeedCard: React.FC<{
       onMouseLeave={() => setShowDelete(false)}
       onClick={() => onSelect?.({ inventoryId: id, catalogId, name, type })}
       className={`
-        relative w-[80px] h-[100px] rounded-3xl border p-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing depth-3d transition-all
+        seed-card relative w-[80px] h-[100px] rounded-3xl border p-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing depth-3d transition-all
         ${isDragging ? "opacity-50 scale-95" : "opacity-100"}
         ${selected ? "ring-2 ring-garden-300 border-garden-300 shadow-[0_0_24px_rgba(74,222,128,0.28)]" : ""}
         ${plantNowMode ? (plantNowEligible ? "bg-garden-800 border-garden-400 animate-healthy shadow-[0_0_20px_rgba(34,197,94,0.25)]" : "bg-stone-900/60 border-stone-800 opacity-40 glass-panel") : "bg-stone-900/40 glass-panel border-stone-800"}
@@ -195,7 +195,7 @@ export const InventoryTray: React.FC<{
 
   const containerClass = isVertical
     ? "flex-1 overflow-y-auto overflow-x-hidden p-4 grid grid-cols-3 gap-3 auto-rows-max scrollbar-hide"
-    : "p-3 glass-panel border-t border-stone-800 flex items-center gap-3 overflow-x-auto";
+    : "mobile-seed-tray p-3 glass-panel border-t border-stone-800 flex items-center gap-3 overflow-x-auto";
 
   return (
     <div
@@ -246,9 +246,11 @@ export const InventoryTray: React.FC<{
         {onTogglePlantNow && !collapsed && (
           <button
             onClick={onTogglePlantNow}
-            className={`px-3 py-2 rounded-lg border text-[12px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 w-full justify-center
-              ${plantNowMode ? "bg-garden-500/10 border-garden-500/30 text-garden-400 shadow-inner" : "bg-stone-900/30 border-stone-800 text-stone-500 hover:text-stone-300"}
-            `}
+            className={`px-3 py-2 rounded-lg border text-[12px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 w-full justify-center ${
+              plantNowMode
+                ? "btn-primary text-stone-950 shadow-inner"
+                : "bg-stone-900/30 border-stone-800 text-stone-500 hover:text-stone-300"
+            }`}
             title="Highlight seeds that are in-season"
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -333,7 +335,7 @@ export const InventoryTray: React.FC<{
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="overflow-x-auto flex gap-4 pb-2"
+            className="seed-scroll-row overflow-x-auto flex gap-4 pb-2"
           >
             {!collapsed && inventory.length === 0 && (
               <div className="text-center py-8 opacity-30 text-[13px] uppercase tracking-widest font-bold col-span-3">

@@ -147,7 +147,7 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       className="flex min-h-0 flex-1 flex-col"
     >
       {/* Tab Navigation */}
-      <Tab.List className="fixed inset-x-0 bottom-0 z-50 flex gap-1 overflow-hidden border-t border-stone-800 bg-stone-950/95 p-2 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] backdrop-blur lg:static lg:flex-wrap lg:border-b lg:border-t-0 lg:bg-stone-900/50 lg:shadow-none">
+      <Tab.List className="app-tab-list fixed inset-x-0 bottom-0 z-50 flex gap-1 overflow-x-auto overflow-y-hidden border-t border-stone-800 bg-stone-950/95 p-2 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] backdrop-blur no-scrollbar lg:static lg:flex-wrap lg:border-b lg:border-t-0 lg:bg-stone-900/50 lg:shadow-none">
         {tabs.map((tab) => (
           <Tab
             key={tab.id}
@@ -189,7 +189,7 @@ export const Tabs: React.FC<TabsProps> = ({ children }) => {
       </Tab.List>
 
       {/* Tab Content — view-transition-name hooks into @keyframes in index.css */}
-      <Tab.Panels className="relative min-h-0 flex-1 overflow-auto pb-[4.5rem] lg:pb-0">
+      <Tab.Panels className="app-tab-panels relative min-h-0 flex-1 overflow-auto pb-[4.5rem] lg:pb-0">
         <Tab.Panel
           key={tabs[selectedIndex]?.id || selectedIndex}
           static

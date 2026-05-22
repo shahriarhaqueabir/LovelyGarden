@@ -459,8 +459,8 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
-      <header className="z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
+    <div className="app-shell flex h-dvh flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
+      <header className="app-header z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
           <h1 className="truncate text-[11px] font-black uppercase tracking-tighter text-garden-500 sm:text-xs">
@@ -715,7 +715,7 @@ const AppContent: React.FC = () => {
           <button
             type="button"
             onClick={handleAssistantOpen}
-            className="fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 bg-garden-500 text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
+            className="assistant-fab fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 btn-primary text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
             aria-label={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
             title={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
           >

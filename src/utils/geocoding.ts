@@ -51,12 +51,64 @@ export const reverseGeocode = async (
     return cityName;
   }
 
-  // 2. Open-Meteo search endpoint does not natively support lat/lng reverse lookups
-  // For a production app, we would use a real reverse geocoding service here.
-  // Using 'Unknown Location' so the UI can decide how to handle it.
-  const cityName = "Unknown Location";
-  reverseGeocodingCache.set(cacheKey, { cityName, timestamp: Date.now() });
-  return cityName;
+  // 2. Try a lightweight OpenStreetMap Nominatim reverse lookup (client-side).
+  //    This improves location display for most users while remaining optional.
+  //    Respect Nominatim usage: keep responses cached and the request minimal.
+  try {
+    const params = new URLSearchParams({
+      format: "jsonv2",
+      lat: String(lat),
+      lon: String(lng),
+      addressdetails: "1",
+      zoom: "10",
+    });
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 8000);
+
+    const url = `https://nominatim.openstreetmap.org/reverse?${params.toString()}`;
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        // `User-Agent` cannot be set from browsers; keep request minimal.
+        "Accept-Language": "en",
+      },
+    });
+
+    window.clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const address = data?.address ?? {};
+      const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.hamlet ||
+        address.municipality ||
+        address.county;
+
+      const display =
+        city ||
+        (data?.display_name ? String(data.display_name).split(",")[0] : null);
+
+      const cityName = display ? `${display}` : "Unknown Location";
+      reverseGeocodingCache.set(cacheKey, { cityName, timestamp: Date.now() });
+      return cityName;
+    }
+  } catch (error) {
+    // Silent fallback — keep the UI resilient when the network or service fails.
+    // Nominatim may reject high-volume usage; this is a best-effort client-side attempt.
+
+    console.warn("Reverse geocode failed:", error);
+  }
+
+  const fallbackName = "Unknown Location";
+  reverseGeocodingCache.set(cacheKey, {
+    cityName: fallbackName,
+    timestamp: Date.now(),
+  });
+  return fallbackName;
 };
 
 // Simple geocoding function using Open-Meteo's geocoding API

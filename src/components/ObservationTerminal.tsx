@@ -268,7 +268,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
                   </button>
                   <button
                     onClick={handleConfirm}
-                    className="flex-[2] py-4 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-2xl font-black uppercase tracking-widest shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2"
+                    className="flex-[2] py-4 btn-primary text-stone-950 rounded-2xl font-black uppercase tracking-widest shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="w-5 h-5" /> Commit Status
                   </button>

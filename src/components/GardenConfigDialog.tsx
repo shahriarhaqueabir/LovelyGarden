@@ -264,7 +264,7 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-lg text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 btn-primary text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {mode === "create" ? "Create Garden" : "Update Garden"}
               </button>
