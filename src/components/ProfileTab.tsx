@@ -118,7 +118,6 @@ export const ProfileTab: React.FC = () => {
             hemisphere: cloudSettings.hemisphere ?? localSettings.hemisphere,
             city: cloudSettings.city ?? localSettings.city,
             currentDay: cloudSettings.currentDay ?? localSettings.currentDay,
-            xp: cloudSettings.xp ?? localSettings.xp,
             dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
           };
           await db.settings.upsert({ ...nextSettings, id: "local-user" });
@@ -221,7 +220,7 @@ export const ProfileTab: React.FC = () => {
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-garden-500 px-5 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400 disabled:opacity-60"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl btn-primary px-5 text-xs font-black uppercase tracking-widest disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
             {isSaving ? "Saving" : "Save Profile"}

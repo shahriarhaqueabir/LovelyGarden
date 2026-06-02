@@ -230,7 +230,7 @@ export const WeatherSettings: React.FC = () => {
         <div className="flex items-center gap-4 pt-2">
           <button
             onClick={onSubmit}
-            className="px-4 py-2 bg-garden-600 hover:bg-garden-500 rounded-lg text-white font-medium transition-colors"
+            className="px-4 py-2 btn-primary rounded-lg text-white font-medium transition-colors"
           >
             Save Location
           </button>

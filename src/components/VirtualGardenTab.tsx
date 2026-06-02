@@ -12,6 +12,8 @@ import {
   History,
   CheckCircle2,
   ClipboardList,
+  SunMedium,
+  X,
 } from "lucide-react";
 import {
   DndContext,
@@ -37,6 +39,7 @@ import {
   relocatePlant,
   unplantSeed,
   addPlantObservation,
+  recordLoss,
 } from "../db/queries";
 import { calculateCurrentStage } from "../logic/lifecycle";
 import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
@@ -124,7 +127,6 @@ interface VirtualGardenTabProps {
   currentDay: number;
   currentDateTimeLabel: string;
   currentTimestamp: number;
-  xp: number;
   alerts: string[];
   onOpenSeedStore?: () => void;
 }
@@ -143,7 +145,6 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   currentDay,
   currentDateTimeLabel,
   currentTimestamp,
-  xp,
   alerts,
   onOpenSeedStore,
 }) => {
@@ -164,12 +165,19 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
   const [activeSeedCatalogId, setActiveSeedCatalogId] = useState<string | null>(
     null,
   );
+  const [selectedSeed, setSelectedSeed] = useState<{
+    inventoryId: string;
+    catalogId: string;
+    name: string;
+    type: string;
+  } | null>(null);
   const [activeDragPreview, setActiveDragPreview] = useState<{
     kind: "seed" | "plant";
     name: string;
     type?: string;
   } | null>(null);
   const [plantNowMode, setPlantNowMode] = useState(false);
+  const [showCarePanel, setShowCarePanel] = useState(false);
   const [observationPlant, setObservationPlant] =
     useState<PlantedDocument | null>(null);
 
@@ -341,6 +349,82 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
     }
   };
 
+  const handleTapPlant = async (x: number, y: number) => {
+    if (!selectedSeed) return;
+    if (!activeGarden) {
+      showError("Create a garden before planting.");
+      return;
+    }
+
+    const totalCells = activeGarden.gridWidth * activeGarden.gridHeight;
+    if (plantedCards.length >= totalCells) {
+      showError("No open planting space");
+      return;
+    }
+
+    const existingPlant = plantedCards.find(
+      (plant) => plant.gridX === x && plant.gridY === y,
+    );
+    if (existingPlant) {
+      showError("That spot already has a plant.");
+      return;
+    }
+
+    try {
+      const plantId = await plantSeed(
+        selectedSeed.catalogId,
+        x,
+        y,
+        selectedSeed.inventoryId,
+        activeGarden.id,
+      );
+      if (user) {
+        markSyncing("Syncing planting...");
+        try {
+          await Promise.all([
+            deleteCloudInventoryItem(user.id, selectedSeed.inventoryId),
+            syncLocalPlantToCloud(plantId),
+            syncLocalLogbookToCloud(),
+          ]);
+          markSynced("Planting synced.");
+        } catch (error) {
+          handleCloudSyncError("Planting cloud sync failed.", error);
+        }
+      }
+      const plantedName = selectedSeed.name;
+      setSelectedSeed(null);
+      setActiveSeedCatalogId(null);
+      showUndoAction(`${plantedName} planted`, async () => {
+        try {
+          const restoredInventoryId = await unplantSeed(plantId);
+          if (user) {
+            markSyncing("Syncing undo...");
+            const db = await getDatabase();
+            const inventoryItem = await db.inventory
+              .findOne(restoredInventoryId)
+              .exec();
+            try {
+              await Promise.all([
+                deleteCloudPlantedPlant(user.id, plantId),
+                inventoryItem
+                  ? upsertCloudInventoryItem(user.id, inventoryItem.toJSON())
+                  : Promise.resolve(),
+              ]);
+              markSynced("Undo synced.");
+            } catch (error) {
+              handleCloudSyncError("Undo cloud sync failed.", error);
+            }
+          }
+          showSuccess("Planting undone");
+        } catch {
+          showError("Could not undo planting");
+        }
+      });
+    } catch {
+      showError("Failed to plant seed");
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveSeedCatalogId(null);
@@ -366,7 +450,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       const occupiedCells = plantedCards.length;
 
       if (occupiedCells >= totalCells) {
-        showError("Expand Grid to Plant");
+        showError("No open planting space");
         return;
       }
 
@@ -457,7 +541,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             handleCloudSyncError("Plant move cloud sync failed.", error);
           }
         }
-        showUndoAction("Plant unit relocated", async () => {
+        showUndoAction("Plant moved", async () => {
           try {
             await relocatePlant(
               plant.id,
@@ -543,7 +627,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         await syncLocalGardenToCloud(newId);
         await refreshGardens();
         setActiveGardenId(newId); // Immediately switch to new garden
-        showSuccess("New garden sector established");
+        showSuccess("New garden created");
       } else {
         // Edit
         if (!config.id) return;
@@ -936,7 +1020,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               toast.dismiss(toastInstance.id);
               void onUndo();
             }}
-            className="inline-flex h-8 items-center gap-1 rounded-lg bg-garden-500 px-3 text-xs font-black uppercase tracking-wide text-stone-950 hover:bg-garden-400"
+            className="inline-flex h-8 items-center gap-1 rounded-lg btn-primary px-3 text-xs font-black uppercase tracking-wide"
           >
             <Undo2 className="h-3.5 w-3.5" />
             Undo
@@ -953,7 +1037,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full flex-col overflow-hidden bg-app-background font-sans text-stone-100">
+      <div className="garden-screen flex h-full flex-col overflow-hidden bg-app-background font-sans text-stone-100">
         {/* Garden Configuration Dialog */}
         {showGardenDialog && (
           <GardenConfigDialog
@@ -966,10 +1050,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
         )}
 
         {/* HUD OVERLAY */}
-        <header className="z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800 px-2 glass sm:px-4 lg:px-6">
+        <header className="garden-hud z-30 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-stone-800/80 bg-stone-950/88 px-2 shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-4 lg:px-6">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar sm:gap-4">
             {/* 1. Cycle Day */}
-            <div className="bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 text-xs font-black text-garden-400 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
+            <div className="bg-stone-900/80 px-2 sm:px-3 py-1.5 rounded-full border border-stone-700/80 text-xs font-black text-garden-300 uppercase tracking-widest shadow-inner flex items-center gap-1 sm:gap-2 shrink-0">
               <Calendar className="w-3.5 h-3.5 text-garden-500" />{" "}
               <span>{currentDateTimeLabel}</span>
               <span className="text-stone-500">Day {currentDay}</span>
@@ -980,7 +1064,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest shadow-inner shrink-0 ${
                 isGridFull
                   ? "bg-red-900/30 border-red-700 text-red-400"
-                  : "bg-stone-900 border-stone-800 text-stone-400"
+                  : "bg-stone-900/80 border-stone-700/80 text-stone-300"
               }`}
             >
               <LayoutGrid className="w-3 h-3" />
@@ -988,12 +1072,11 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 {occupiedCells}/{totalCells}
               </span>
             </div>
-            <div className="flex shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest shadow-inner sm:px-3">
+            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-700/80 bg-stone-900/80 px-2 py-1.5 text-xs font-bold uppercase tracking-widest shadow-inner sm:flex sm:px-3">
               <Activity className={`h-3.5 w-3.5 ${gardenHealth.tone}`} />
-              <span className={gardenHealth.tone}>{gardenHealth.score}</span>
               <span className="text-stone-500">{gardenHealth.label}</span>
             </div>
-            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-2 py-1.5 text-xs font-bold uppercase tracking-widest text-stone-500 shadow-inner sm:flex sm:px-3">
+            <div className="hidden shrink-0 items-center gap-2 rounded-full border border-stone-700/80 bg-stone-900/80 px-2 py-1.5 text-xs font-bold uppercase tracking-widest text-stone-400 shadow-inner sm:flex sm:px-3">
               <Droplets className="h-3.5 w-3.5 text-blue-400" />
               <span>{gardenHealth.thirstyCount} Water</span>
               <span className="text-stone-700">/</span>
@@ -1018,7 +1101,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
 
             {/* 6. Spectral Layer Toggle - Hidden below lg */}
-            <div className="hidden xl:flex bg-stone-900 p-1 rounded-xl border border-stone-800 shadow-inner shrink-0 scale-90 origin-right">
+            <div className="hidden xl:flex bg-stone-900/85 p-1 rounded-xl border border-stone-700/80 shadow-inner shrink-0 scale-90 origin-right">
               <button
                 onClick={() => setSpectralLayer("normal")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "normal" ? "bg-stone-800 text-white shadow-md" : "text-stone-500"}`}
@@ -1035,40 +1118,27 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                 onClick={() => setSpectralLayer("health")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "health" ? "bg-red-900/40 text-red-400 shadow-md" : "text-stone-500"}`}
               >
-                Blight
+                Health
               </button>
               <button
                 onClick={() => setSpectralLayer("nutrients")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "nutrients" ? "bg-purple-900/40 text-purple-400 shadow-md" : "text-stone-500"}`}
               >
-                N-P-K
+                Nutrients
               </button>
               <button
                 onClick={() => setSpectralLayer("companions")}
                 className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all ${spectralLayer === "companions" ? "bg-garden-900/40 text-garden-400 shadow-md" : "text-stone-500"}`}
               >
-                Companions
+                Companion Fit
               </button>
-            </div>
-
-            {/* 7. XP/Level Tracker - Hidden below sm */}
-            <div className="hidden sm:flex items-center gap-2 bg-stone-900 px-2 sm:px-3 py-1.5 rounded-full border border-stone-800 shrink-0">
-              <span className="text-[10px] font-bold text-garden-400">
-                XP: {xp}
-              </span>
-              <div className="h-1.5 w-12 bg-stone-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-garden-500 rounded-full"
-                  style={{ width: `${((xp % 100) / 100) * 100}%` }}
-                ></div>
-              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
+        <div className="garden-body flex flex-1 flex-col overflow-hidden xl:flex-row">
           {/* LEFT SIDEBAR: BAG */}
-          <div className="hidden lg:flex">
+          <div className="hidden xl:flex">
             <InventoryTray
               catalog={catalog}
               onOpenStore={onOpenSeedStore || (() => {})}
@@ -1076,12 +1146,23 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plantNowMode={plantNowMode}
               onTogglePlantNow={() => setPlantNowMode((v) => !v)}
               plantNowSet={plantNowSet}
+              selectedSeedInventoryId={selectedSeed?.inventoryId}
+              onSelectSeed={(seed) => {
+                if (selectedSeed?.inventoryId === seed.inventoryId) {
+                  setSelectedSeed(null);
+                  setActiveSeedCatalogId(null);
+                  return;
+                }
+                setSelectedSeed(seed);
+                setActiveSeedCatalogId(seed.catalogId);
+                showInfo(`Tap an open garden space to plant ${seed.name}.`);
+              }}
             />
           </div>
 
           {/* MAIN CONTENT COLUMN */}
-          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-primary/20">
-            <div className="relative flex h-12 items-center gap-2 overflow-x-auto border-b border-stone-800 px-2 shadow-lg glass-panel no-scrollbar sm:px-4">
+          <div className="garden-main-column relative flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-primary/20">
+            <div className="garden-tabs-row relative flex h-11 items-center gap-2 overflow-x-auto border-b border-stone-800/80 bg-stone-950/76 px-2 shadow-lg backdrop-blur-md no-scrollbar sm:h-12 sm:px-4">
               <div className="absolute inset-0 shimmer-bg opacity-30 pointer-events-none" />
               {Array.from({ length: 5 }).map((_, i) => {
                 const garden = gardens[i];
@@ -1122,7 +1203,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                     {i === 0 && garden && (
                       <span
                         className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.5)]"
-                        title="Primary Axis"
+                        title="Primary garden"
                       />
                     )}
                   </button>
@@ -1130,145 +1211,207 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               })}
             </div>
 
-            <div className="relative flex min-h-0 flex-1 overflow-hidden">
-              {/* CENTER PANE: TACTICAL FIELD */}
-              <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden terrain-texture">
+            <div className="garden-workspace relative flex min-h-0 flex-1 overflow-hidden">
+              {/* CENTER PANE: GARDEN FIELD */}
+              <div className="garden-field-pane relative flex min-w-0 flex-1 flex-col overflow-hidden terrain-texture">
                 {/* Garden Config Controls (Edit/Delete Active) */}
                 {activeGarden && (
-                  <div className="absolute left-2 right-2 top-2 z-20 flex flex-col gap-2 sm:left-4 sm:right-auto sm:top-4">
-                    <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-stone-800 bg-stone-900/80 p-2 shadow-lg backdrop-blur-sm no-scrollbar sm:gap-2">
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        {activeGarden.type}
-                      </div>
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        ☀️ {activeGarden.sunExposure}
-                      </div>
-                      <div className="shrink-0 border-r border-stone-700 px-2 text-[11px] font-bold uppercase text-stone-400 sm:text-[13px]">
-                        💧 {activeGarden.soilType}
-                      </div>
+                  <div className="garden-status-rail absolute left-2 right-2 top-2 z-20 flex min-w-0 items-center gap-2 overflow-x-auto rounded-xl border border-stone-700/55 bg-stone-950/76 p-2 shadow-lg backdrop-blur-md no-scrollbar sm:left-4 sm:right-4 sm:top-4">
+                    <div className="garden-config-pill flex shrink-0 items-center gap-1 border-r border-stone-700/70 pr-2 text-[11px] font-semibold text-stone-400 sm:gap-2 sm:text-[13px]">
+                      <span className="shrink-0 px-1">{activeGarden.type}</span>
+                      <span className="flex shrink-0 items-center gap-1 px-1">
+                        <SunMedium className="h-3.5 w-3.5 text-amber-300" />
+                        {activeGarden.sunExposure}
+                      </span>
+                      <span className="flex shrink-0 items-center gap-1 px-1">
+                        <Droplets className="h-3.5 w-3.5 text-blue-300" />
+                        {activeGarden.soilType}
+                      </span>
                       <button
                         onClick={() => {
                           setDialogMode("edit");
                           setShowGardenDialog(true);
                         }}
-                        className="p-1.5 hover:bg-stone-800 rounded-lg text-stone-500 hover:text-garden-400 transition-colors"
+                        className="rounded-lg p-1.5 text-stone-500 transition-colors hover:bg-stone-800 hover:text-garden-400"
                         title="Configure Garden"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="h-4 w-4" />
                       </button>
                     </div>
-                  </div>
-                )}
 
-                {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/45 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <History className="h-3.5 w-3.5 text-garden-400" />
-                        Recent
-                      </div>
-                      {gardenActivityEvents.length > 0 ? (
-                        gardenActivityEvents.map((event) => (
-                          <button
-                            key={event.id}
-                            type="button"
-                            className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-stone-800 bg-stone-900/80 px-3 text-left text-[11px] text-stone-300"
-                            title={`${event.label}: ${event.detail}`}
-                          >
-                            <span className="font-black uppercase text-garden-300">
-                              {event.label}
-                            </span>
-                            <span className="max-w-28 truncate text-stone-500">
-                              {event.detail}
-                            </span>
-                            <span className="text-[10px] font-bold uppercase text-stone-600">
-                              {event.dateLabel}
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="h-9 rounded-lg border border-dashed border-stone-800 px-3 py-2 text-[11px] font-semibold text-stone-600">
-                          Plant, water, or observe to start the garden timeline.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/35 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <ClipboardList className="h-3.5 w-3.5 text-garden-400" />
-                        Today
-                      </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowCarePanel((open) => !open)}
+                      className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-stone-700/60 bg-stone-900/56 px-2.5 text-[11px] font-semibold text-stone-200 hover:border-garden-500/35 hover:text-garden-200"
+                      aria-expanded={showCarePanel}
+                      title="Open care details"
+                    >
                       {dailyCareGroups.count === 0 ? (
-                        <div className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-garden-500/20 bg-garden-950/10 px-3 text-[11px] font-semibold text-garden-300">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          All clear for now
-                        </div>
+                        <CheckCircle2 className="h-4 w-4 text-garden-300" />
                       ) : (
-                        <>
-                          {(["Now", "Next"] as const).flatMap((group) =>
-                            dailyCareGroups[group].map((task) => (
-                              <button
-                                key={task.id}
-                                type="button"
-                                onClick={task.onAction}
-                                className={`flex h-10 max-w-[18rem] shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-[11px] ${task.tone}`}
-                                title={`${task.label}: ${task.detail}`}
-                              >
-                                <span className="rounded bg-stone-950/50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
-                                  {task.priority}
-                                </span>
-                                <span className="font-black uppercase">
-                                  {task.label}
-                                </span>
-                                <span className="truncate text-stone-400">
-                                  {task.detail}
-                                </span>
-                              </button>
-                            )),
-                          )}
-                        </>
+                        <ClipboardList className="h-4 w-4 text-amber-300" />
                       )}
-                    </div>
+                      <span>
+                        {dailyCareGroups.count === 0
+                          ? "Care clear"
+                          : `${dailyCareGroups.count} care`}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCarePanel((open) => !open)}
+                      className={`inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-stone-700/60 bg-stone-900/56 px-2.5 text-[11px] font-semibold hover:border-garden-500/35 ${gardenHealth.tone}`}
+                      aria-expanded={showCarePanel}
+                      title="Open garden health"
+                    >
+                      <Activity className="h-4 w-4" />
+                      <span>{gardenHealth.label}</span>
+                    </button>
+
+                    {selectedSeed && (
+                      <div className="flex min-w-48 flex-1 items-center gap-2 rounded-lg border border-garden-500/30 bg-garden-950/65 px-2.5 py-1.5 text-xs font-semibold text-garden-100">
+                        <Sprout className="h-4 w-4 shrink-0 text-garden-300" />
+                        <span className="truncate">
+                          Tap an open space to plant {selectedSeed.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedSeed(null);
+                            setActiveSeedCatalogId(null);
+                          }}
+                          className="ml-auto shrink-0 btn-primary btn-sm text-stone-900 font-black uppercase tracking-widest"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {activeGarden && (
-                  <div className="shrink-0 border-b border-stone-800 bg-stone-950/25 px-3 py-2 backdrop-blur-sm sm:px-5 lg:px-6">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                      <div className="flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-500">
-                        <Activity
-                          className={`h-3.5 w-3.5 ${gardenHealth.tone}`}
-                        />
-                        Health
+                {activeGarden && showCarePanel && (
+                  <div className="garden-care-panel absolute right-2 top-14 z-30 w-[min(22rem,calc(100vw-1rem))] rounded-2xl border border-stone-800/80 bg-stone-950/90 p-3 shadow-2xl backdrop-blur-md sm:right-4 sm:top-16">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-stone-100">
+                          Garden Care
+                        </h3>
+                        <p className="text-xs text-stone-500">
+                          {dailyCareGroups.count === 0
+                            ? "No urgent tasks right now."
+                            : "Tasks that need attention."}
+                        </p>
                       </div>
-                      {gardenHealth.factors.map((factor) => (
-                        <div
-                          key={factor.label}
-                          className={`flex h-9 shrink-0 items-center gap-2 rounded-lg border bg-stone-900/70 px-3 text-[11px] ${factor.tone}`}
-                          title={`${factor.label}: ${factor.detail}`}
-                        >
-                          <span className="font-black uppercase">
-                            {factor.label}
-                          </span>
-                          <span className="text-stone-500">
-                            {factor.detail}
-                          </span>
-                          <span className="rounded bg-stone-950/60 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest">
-                            {factor.impact}
-                          </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowCarePanel(false)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-800 text-stone-500 hover:text-stone-200"
+                        aria-label="Close care panel"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <section className="rounded-xl border border-stone-800/75 bg-stone-900/40 p-3">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <ClipboardList className="h-4 w-4 text-garden-300" />
+                          Today
                         </div>
-                      ))}
+                        {dailyCareGroups.count === 0 ? (
+                          <div className="flex items-center gap-2 text-sm text-garden-200">
+                            <CheckCircle2 className="h-4 w-4" />
+                            All clear for now
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {(["Now", "Next"] as const).flatMap((group) =>
+                              dailyCareGroups[group].map((task) => (
+                                <button
+                                  key={task.id}
+                                  type="button"
+                                  onClick={task.onAction}
+                                  className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs ${task.tone}`}
+                                >
+                                  <span className="rounded bg-stone-950/50 px-1.5 py-0.5 text-[9px] font-bold">
+                                    {task.priority}
+                                  </span>
+                                  <span className="font-semibold">
+                                    {task.label}
+                                  </span>
+                                  <span className="truncate text-stone-400">
+                                    {task.detail}
+                                  </span>
+                                </button>
+                              )),
+                            )}
+                          </div>
+                        )}
+                      </section>
+
+                      <section className="rounded-xl border border-stone-800/75 bg-stone-900/40 p-3">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <Activity
+                            className={`h-4 w-4 ${gardenHealth.tone}`}
+                          />
+                          Health
+                        </div>
+                        <div className="grid gap-2">
+                          {gardenHealth.factors.map((factor) => (
+                            <div
+                              key={factor.label}
+                              className={`flex items-center justify-between gap-3 rounded-lg border border-stone-800 bg-stone-950/50 px-3 py-2 text-xs ${factor.tone}`}
+                              title={`${factor.label}: ${factor.detail}`}
+                            >
+                              <span className="font-semibold">
+                                {factor.label}
+                              </span>
+                              <span className="truncate text-stone-500">
+                                {factor.detail}
+                              </span>
+                              <span className="rounded bg-stone-900 px-1.5 py-0.5 text-[9px] font-bold">
+                                {factor.impact}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+
+                      <section className="hidden rounded-xl border border-stone-800/75 bg-stone-900/40 p-3 sm:block">
+                        <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-stone-300">
+                          <History className="h-4 w-4 text-garden-300" />
+                          Recent
+                        </div>
+                        {gardenActivityEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {gardenActivityEvents.slice(0, 4).map((event) => (
+                              <div
+                                key={event.id}
+                                className="flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-950/50 px-3 py-2 text-xs"
+                              >
+                                <span className="font-semibold text-garden-300">
+                                  {event.label}
+                                </span>
+                                <span className="truncate text-stone-500">
+                                  {event.detail}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-stone-500">
+                            Plant, water, or observe to start the timeline.
+                          </p>
+                        )}
+                      </section>
                     </div>
                   </div>
                 )}
 
                 {/* THE FIELD */}
 
-                <main className="flex flex-1 items-center justify-center overflow-auto px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 lg:p-12">
+                <main className="garden-board-main flex flex-1 items-center justify-center overflow-hidden px-3 pb-4 pt-16 sm:px-5 sm:pb-5 sm:pt-20 xl:p-8">
                   {activeGarden ? (
                     <GardenField
                       key={activeGarden.id} // Force remount on garden switch to clear grid state
@@ -1280,14 +1423,29 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
                       onDelete={async (item: PlantedDocument) => {
-                        const db = await import("../db").then((m) =>
-                          m.getDatabase(),
+                        const catalogItem = catalog.find(
+                          (c) => c.id === item.catalogId,
                         );
-                        await db.planted.findOne(item.id).remove();
+                        const result = await recordLoss(
+                          item.id,
+                          catalogItem?.name || item.catalogId,
+                          "Removed from garden grid",
+                        );
                         if (user) {
                           markSyncing("Syncing plant removal...");
                           try {
-                            await deleteCloudPlantedPlant(user.id, item.id);
+                            const db = await getDatabase();
+                            const entry = await db.logbook
+                              .findOne(result.logbookId)
+                              .exec();
+                            await Promise.all([
+                              deleteCloudPlantedPlant(user.id, item.id),
+                              entry
+                                ? syncLogbookWithCloud(user.id, [
+                                    entry.toJSON(),
+                                  ])
+                                : Promise.resolve(),
+                            ]);
                             markSynced("Plant removal synced.");
                           } catch (error) {
                             handleCloudSyncError(
@@ -1296,28 +1454,31 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                             );
                           }
                         }
-                        showInfo("Plant removed from garden");
+                        showInfo(
+                          `${catalogItem?.name || "Plant"} removed from garden`,
+                        );
                       }}
                       onOpenObservation={setObservationPlant}
+                      onPlantAt={handleTapPlant}
                       currentDay={currentTimestamp}
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center opacity-30">
                       <AlertCircle className="w-12 h-12 text-stone-500 mb-4" />
                       <h3 className="text-center text-[21px] font-bold uppercase tracking-widest text-stone-400">
-                        No Sector Online
+                        No Garden Yet
                       </h3>
                       <p className="text-stone-500 text-[15px] mt-2">
-                        Initialize a garden sector to begin operations.
+                        Create a garden bed to begin planting.
                       </p>
                       <button
                         onClick={() => {
                           setDialogMode("create");
                           setShowGardenDialog(true);
                         }}
-                        className="mt-6 px-6 py-2 bg-garden-600 text-stone-900 rounded-lg font-bold uppercase tracking-widest hover:bg-garden-500 transition-colors"
+                        className="mt-6 px-6 py-2 btn-primary text-stone-900 rounded-lg font-bold uppercase tracking-widest transition-colors"
                       >
-                        Initialize Sector
+                        Create Garden
                       </button>
                     </div>
                   )}
@@ -1326,10 +1487,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
 
               {/* RIGHT PANE: INTELLIGENCE (Inspector stays docked if plant selected) */}
               <aside
-                className={`fixed inset-x-3 bottom-24 top-24 z-40 flex flex-col overflow-hidden rounded-2xl border border-border-primary glass transition-all duration-500 lg:static lg:inset-auto lg:bottom-auto lg:top-auto lg:rounded-none lg:border-l ${
+                className={`fixed inset-x-3 bottom-24 top-24 z-40 flex flex-col overflow-hidden rounded-2xl border border-border-primary glass transition-all duration-500 xl:static xl:inset-auto xl:bottom-auto xl:top-auto xl:rounded-none xl:border-l ${
                   selectedPlant
-                    ? "translate-y-0 opacity-100 lg:w-[26rem]"
-                    : "pointer-events-none translate-y-8 opacity-0 lg:w-0 lg:translate-y-0 lg:opacity-100"
+                    ? "translate-y-0 opacity-100 xl:w-[26rem]"
+                    : "pointer-events-none translate-y-8 opacity-0 xl:w-0 xl:translate-y-0 xl:opacity-100"
                 }`}
               >
                 {selectedPlant && (
@@ -1350,11 +1511,10 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                   <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-20">
                     <span className="text-2xl">ℹ️</span>
                     <p className="text-[13px] font-bold uppercase tracking-widest text-stone-500">
-                      Intelligence Node Inactive
+                      Plant Details
                     </p>
                     <p className="text-[12px] text-stone-600 italic">
-                      Select a plant unit from the tactical field to initialize
-                      link...
+                      Select a plant to see care history, lifecycle, and notes.
                     </p>
                   </div>
                 )}
@@ -1362,7 +1522,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
             </div>
           </div>
 
-          <div className="lg:hidden">
+          <div className="mobile-inventory-wrap xl:hidden">
             <InventoryTray
               catalog={catalog}
               onOpenStore={onOpenSeedStore || (() => {})}
@@ -1370,6 +1530,17 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
               plantNowMode={plantNowMode}
               onTogglePlantNow={() => setPlantNowMode((v) => !v)}
               plantNowSet={plantNowSet}
+              selectedSeedInventoryId={selectedSeed?.inventoryId}
+              onSelectSeed={(seed) => {
+                if (selectedSeed?.inventoryId === seed.inventoryId) {
+                  setSelectedSeed(null);
+                  setActiveSeedCatalogId(null);
+                  return;
+                }
+                setSelectedSeed(seed);
+                setActiveSeedCatalogId(seed.catalogId);
+                showInfo(`Tap an open garden space to plant ${seed.name}.`);
+              }}
             />
           </div>
         </div>

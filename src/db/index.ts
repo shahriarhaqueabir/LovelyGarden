@@ -111,7 +111,6 @@ export const getDatabase = async () => {
   dbPromise = (async () => {
     try {
       const databaseName = getDatabaseName();
-      console.log(`Initializing RxDB [${databaseName}]...`);
       const db = await createRxDatabase({
         name: databaseName,
         storage: createStorage(),
@@ -120,7 +119,6 @@ export const getDatabase = async () => {
         console.error("CRITICAL: createRxDatabase rejected:", err);
         throw err;
       });
-      console.log("RxDB Database created.");
 
       try {
         await db.addCollections({
@@ -167,16 +165,22 @@ export const getDatabase = async () => {
             schema: settingsSchema,
             migrationStrategies: {
               "1": (oldDoc: MigrationDoc<SettingsDocument>) => {
-                return {
-                  ...oldDoc,
-                  xp: 0, // Initialize xp for existing users
-                };
+                return oldDoc;
               },
               "2": (oldDoc: MigrationDoc<SettingsDocument>) => {
                 return {
                   ...oldDoc,
                   dataVersion: 0, // Initialize dataVersion for existing users
                 };
+              },
+              "3": (oldDoc: MigrationDoc<SettingsDocument>) => {
+                const settings = {
+                  ...(oldDoc as MigrationDoc<SettingsDocument> & {
+                    xp?: number;
+                  }),
+                };
+                delete settings.xp;
+                return settings;
               },
             },
           },
@@ -214,7 +218,6 @@ export const getDatabase = async () => {
           },
           logbook: { schema: logbookSchema },
         });
-        console.log("Collections added.");
       } catch (colErr: any) {
         console.error("FAILED TO ADD COLLECTIONS:", colErr);
         if (colErr.parameters)
@@ -566,8 +569,6 @@ export const hydrateDatabase = async () => {
     return;
   }
 
-  console.log(`Starting data hydration (v${currentDataVersion})...`);
-
   try {
     const [sourcesRes, plantCatalogRes, plantKbJsonRes] = await Promise.all([
       fetch("/data/sources.json"),
@@ -632,7 +633,7 @@ export const hydrateDatabase = async () => {
       source_metadata: plant.source_metadata,
     }));
 
-    // Read existing settings so we can preserve user-progress fields (xp, currentDay)
+    // Read existing settings so we can preserve user progress fields.
     // across data-version bumps. Only seed defaults for brand-new installs.
     const existingSettingsDoc = await db.settings.findOne("local-user").exec();
     const existingSettings = existingSettingsDoc
@@ -658,14 +659,10 @@ export const hydrateDatabase = async () => {
         // Preserve user-chosen location; do not invent one for new installs.
         hemisphere: existingSettings?.hemisphere ?? "North",
         ...(existingSettings?.city ? { city: existingSettings.city } : {}),
-        // Never reset user progress fields.
-        xp: existingSettings?.xp ?? 0,
         currentDay: existingSettings?.currentDay ?? 1,
         dataVersion: currentDataVersion,
       }),
     ]);
-
-    console.log("Hydration complete!");
   } catch (error) {
     console.error("Hydration failed:", error);
   }

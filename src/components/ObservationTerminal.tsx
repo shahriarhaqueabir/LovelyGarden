@@ -34,7 +34,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
   const [selectedCategory, setSelectedCategory] =
     useState<DiagnosticCategory>("Moisture");
   const [selectedObsId, setSelectedObsId] = useState<string | null>(null);
-  const [view, setView] = useState<"browse" | "diagnostic">("browse");
+  const [view, setView] = useState<"browse" | "detail">("browse");
 
   const categories: {
     id: DiagnosticCategory;
@@ -83,7 +83,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
 
   const handleSelectObservation = (obs: ObservationPattern) => {
     setSelectedObsId(obs.id);
-    setView("diagnostic");
+    setView("detail");
   };
 
   const handleConfirm = () => {
@@ -103,11 +103,11 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
                 <Activity className="w-5 h-5 text-garden-400" />
               </div>
               <h2 className="text-2xl font-black text-stone-100 uppercase tracking-tighter">
-                Diagnostics Terminal
+                Plant Observation
               </h2>
             </div>
             <p className="text-xs text-stone-500 font-bold uppercase tracking-widest mt-1">
-              Analyzing:{" "}
+              Recording for:{" "}
               <span className="text-stone-300">{plant.catalogId}</span> at{" "}
               {plant.gridX},{plant.gridY}
             </p>
@@ -115,7 +115,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
           <button
             onClick={onClose}
             className="p-2 hover:bg-stone-800 rounded-full text-stone-500 transition-all"
-            title="Close Diagnostics"
+            title="Close observations"
           >
             <X className="w-6 h-6" />
           </button>
@@ -125,7 +125,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
           {/* SIDEBAR: CATEGORIES */}
           <div className="w-48 border-r border-stone-800 bg-stone-950/40 p-4 space-y-2">
             <div className="text-[10px] font-black text-stone-600 uppercase tracking-[0.2em] mb-4 px-2">
-              Axis
+              Category
             </div>
             {categories.map((cat) => (
               <button
@@ -268,7 +268,7 @@ export const ObservationTerminal: React.FC<ObservationTerminalProps> = ({
                   </button>
                   <button
                     onClick={handleConfirm}
-                    className="flex-[2] py-4 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-2xl font-black uppercase tracking-widest shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2"
+                    className="flex-[2] py-4 btn-primary text-stone-950 rounded-2xl font-black uppercase tracking-widest shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="w-5 h-5" /> Commit Status
                   </button>

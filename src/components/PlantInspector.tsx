@@ -9,7 +9,6 @@ import {
   AlertCircle,
   FlaskConical,
   Users,
-  LineChart as ChartIcon,
   History,
 } from "lucide-react";
 import { PlantSpecies, UserLocation } from "../schema/knowledge-graph";
@@ -33,7 +32,6 @@ import { getConfidenceThreshold, isSowingSeason } from "../logic/reasoning";
 import { getDatabase } from "../db";
 import { GrowthGraph } from "./GrowthGraph";
 import { getStageColor } from "../utils/ui-helpers";
-import { GrowthTelemetry } from "./GrowthTelemetry";
 import { waterPlant, harvestPlant, recordLoss } from "../db/queries";
 import { Modal } from "./ui/Modal";
 import { showInfo, showWarning } from "../lib/toast";
@@ -211,6 +209,26 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
   const confidenceLevel = catalogItem
     ? getConfidenceThreshold(catalogItem.confidence_score)
     : 0;
+  const currentStageIndex =
+    currentStage && catalogItem ? catalogItem.stages.indexOf(currentStage) : -1;
+  const lastWateredTimestamp = plant.lastWateredDate ?? plant.plantedDate;
+  const daysSinceWatered = Math.max(
+    0,
+    Math.floor((currentDay - lastWateredTimestamp) / 86400000),
+  );
+  const nextWaterInDays = currentStage
+    ? currentStage.waterFrequencyDays - daysSinceWatered
+    : null;
+  const wateringLabel =
+    nextWaterInDays === null
+      ? "Unknown"
+      : nextWaterInDays <= 0
+        ? "Due now"
+        : `${nextWaterInDays}d left`;
+  const harvestReady =
+    currentStageIndex >= 0 &&
+    catalogItem &&
+    currentStageIndex >= catalogItem.stages.length - 2;
 
   const timelineEvents = useMemo(() => {
     const events: Array<{
@@ -319,21 +337,21 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          {/* Simulation Alerts (Decision Support) */}
+          {/* Care Alerts */}
           {plant.systemDiagnosis && (
             <div className="p-4 rounded-2xl bg-red-900/20 border border-red-500/40 text-red-200 animate-in fade-in zoom-in duration-300">
               <div className="flex items-center gap-2 mb-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
                 <h4 className="text-[10px] uppercase font-black tracking-widest text-red-500">
-                  System Warning: Proposed Mortality
+                  Care Warning
                 </h4>
               </div>
               <p className="text-xs font-bold leading-relaxed">
                 {plant.systemDiagnosis}
               </p>
               <p className="text-[10px] mt-2 opacity-60 italic">
-                This is a theoretical projection. Add a manual observation to
-                override this diagnosis.
+                Add an observation if the plant looks healthier than this
+                projection suggests.
               </p>
             </div>
           )}
@@ -352,7 +370,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               />
               <div className="space-y-1">
                 <h4 className="text-[10px] uppercase font-bold tracking-widest opacity-60">
-                  📅 Seasonal Status
+                  Seasonal Status
                 </h4>
                 <p className="text-xs leading-relaxed">
                   {seasonalAdvice.reason}
@@ -365,38 +383,65 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
               <div className="flex items-center gap-2 mb-2 text-garden-400">
-                <Droplets className="w-4 h-4" />
+                <Info className="w-4 h-4" />
                 <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                  ❤️ Health
+                  Health
                 </span>
               </div>
               <div className="text-xl font-semibold">{plant.healthStatus}</div>
             </div>
             <div className="p-4 bg-stone-800/40 rounded-2xl border border-stone-700/50">
-              <div className="flex items-center gap-2 mb-2 text-amber-400">
-                <ChartIcon className="w-4 h-4" />
+              <div className="flex items-center gap-2 mb-2 text-blue-400">
+                <Droplets className="w-4 h-4" />
                 <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                  🤝 Harmony
+                  Watering
                 </span>
               </div>
-              <div className="text-xl font-semibold">
-                {companionScore > 0 ? `✨ +${companionScore}` : companionScore}
-              </div>
+              <div className="text-xl font-semibold">{wateringLabel}</div>
             </div>
           </div>
 
-          {/* Growth Telemetry */}
-          <GrowthTelemetry
-            data={[
-              { day: 1, health: 80, biomass: 10 },
-              { day: 2, health: 82, biomass: 15 },
-              { day: 3, health: 75, biomass: 20 },
-              { day: 4, health: 85, biomass: 25 },
-              { day: 5, health: 90, biomass: 35 },
-              { day: 6, health: 88, biomass: 45 },
-              { day: 7, health: 92, biomass: 60 },
-            ]}
-          />
+          <section className="rounded-2xl border border-stone-800 bg-stone-950/25 p-4">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-400">
+              Care Plan
+            </h3>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <div className="text-stone-500">Water rhythm</div>
+                <div className="mt-1 font-bold text-stone-200">
+                  {currentStage
+                    ? `Every ${currentStage.waterFrequencyDays} days`
+                    : "Stage data unavailable"}
+                </div>
+              </div>
+              <div>
+                <div className="text-stone-500">Last watered</div>
+                <div className="mt-1 font-bold text-stone-200">
+                  {plant.lastWateredDate
+                    ? `${daysSinceWatered}d ago`
+                    : "Not recorded"}
+                </div>
+              </div>
+              <div>
+                <div className="text-stone-500">Harvest readiness</div>
+                <div
+                  className={`mt-1 font-bold ${harvestReady ? "text-garden-300" : "text-amber-300"}`}
+                >
+                  {harvestReady ? "Likely ready soon" : "Keep growing"}
+                </div>
+              </div>
+              <div>
+                <div className="text-stone-500">Companion fit</div>
+                <div className="mt-1 font-bold text-stone-200">
+                  {companionScore > 0
+                    ? "Helpful nearby"
+                    : companionScore < 0
+                      ? "Check spacing"
+                      : "Neutral"}
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Lifecycle Progress */}
           <section className="space-y-4">
@@ -409,10 +454,10 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                       <h3
                         className={`text-xs uppercase font-bold tracking-widest ${colors.text}`}
                       >
-                        🌱 Lifecycle: {currentStage.name}
+                        Lifecycle: {currentStage.name}
                       </h3>
                       <span className="text-[10px] text-stone-600 font-mono">
-                        Stage {catalogItem.stages.indexOf(currentStage) + 1}/
+                        Stage {currentStageIndex + 1}/
                         {catalogItem.stages.length}
                       </span>
                     </div>
@@ -420,14 +465,14 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                       <div
                         className={`h-full ${colors.bar} shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000`}
                         style={{
-                          width: `${((catalogItem.stages.indexOf(currentStage) + 1) / catalogItem.stages.length) * 100}%`,
+                          width: `${((currentStageIndex + 1) / catalogItem.stages.length) * 100}%`,
                         }}
                       />
                     </div>
                     <p className="text-xs text-stone-400 leading-relaxed">
                       Currently in the{" "}
                       <span className={colors.text}>{currentStage.name}</span>{" "}
-                      stage. Requires watering 💧 every{" "}
+                      stage. Requires watering every{" "}
                       <span className={colors.text}>
                         {currentStage.waterFrequencyDays} days
                       </span>
@@ -602,7 +647,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                 <div className="flex items-center gap-2">
                   <Users className="w-3.5 h-3.5 text-garden-400" />
                   <div className="text-[9px] uppercase font-black tracking-widest text-stone-500">
-                    Companions
+                    Companion Plants
                   </div>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
@@ -652,7 +697,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-400" />
                 <h3 className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
-                  Diagnostics Intel
+                  Growing Notes
                 </h3>
               </div>
 
@@ -835,7 +880,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
             </section>
           )}
 
-          {/* Governance / Explainability */}
+          {/* Source Confidence */}
           <section className="p-4 bg-garden-950/20 rounded-2xl border border-garden-900/30 space-y-3">
             <div className="flex items-center gap-2 text-garden-400 mb-1">
               <Info className="w-4 h-4" />
@@ -924,7 +969,7 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
                   setIsProcessing(false);
                   onClose();
                 }}
-                className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-xl text-sm font-black uppercase tracking-widest transition-all"
+                className="px-6 py-2 btn-primary text-sm font-black uppercase tracking-widest transition-all"
                 disabled={isProcessing}
               >
                 {isProcessing ? "Harvesting..." : "Harvest Now"}
@@ -1043,25 +1088,24 @@ export const PlantInspector: React.FC<PlantInspectorProps> = ({
               onClick={async () => {
                 await waterPlant(plant.id);
                 await syncUpdatedPlant("Syncing watering...");
-                // The query now handles XP (+5)
               }}
-              className="py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-2"
+              className="py-3 btn-primary text-xs font-bold transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
             >
               <Droplets className="w-4 h-4" />
-              Water Now (+5 XP)
+              Water Now
             </button>
             <button
               onClick={() => setModalType("harvest")}
-              className="py-3 bg-garden-600 hover:bg-garden-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-garden-900/20 active:scale-95 flex items-center justify-center gap-2"
+              className="py-3 btn-primary text-xs font-bold transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
             >
-              🧺 Harvest (+50 XP)
+              Harvest
             </button>
           </div>
           <button
             onClick={() => setModalType("loss")}
             className="w-full py-3 bg-stone-800 hover:bg-red-900/40 hover:text-red-400 text-stone-500 rounded-xl text-xs font-bold transition-all border border-stone-700/50 active:scale-95 flex items-center justify-center gap-2"
           >
-            💀 Mark as Lost
+            Mark as Lost
           </button>
         </div>
       </div>

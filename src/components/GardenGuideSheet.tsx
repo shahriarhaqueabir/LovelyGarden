@@ -26,7 +26,6 @@ interface GardenGuideSheetProps {
   currentDay: number;
   hemisphere: "North" | "South";
   weather: WeatherData | null;
-  aiEnabled: boolean;
   onClose: () => void;
   onOpenGeminiCoach: () => void;
 }
@@ -76,7 +75,6 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
   currentDay,
   hemisphere,
   weather,
-  aiEnabled,
   onClose,
   onOpenGeminiCoach,
 }) => {
@@ -158,9 +156,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
                   Garden Guide
                 </h2>
                 <p className="truncate text-[11px] font-bold text-stone-500">
-                  {aiEnabled
-                    ? "Rule guide with AI available"
-                    : "Rule-based care, no API key needed"}
+                  Rule-based care, no download needed
                 </p>
               </div>
             </div>
@@ -225,7 +221,7 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
                 <div className="grid gap-2">
                   {[
                     "Add seeds to your bag",
-                    "Create or open a garden sector",
+                    "Create or open a garden",
                     "Place one in-season seed",
                     "Log the next watering or harvest",
                   ].map((action) => (
@@ -316,10 +312,10 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
             <button
               type="button"
               onClick={onOpenGeminiCoach}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest"
             >
               <Sparkles className="h-4 w-4" />
-              {aiEnabled ? "Ask AI" : "Add AI Key"}
+              Ask Coach
             </button>
           </div>
         </footer>

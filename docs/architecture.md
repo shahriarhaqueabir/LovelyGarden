@@ -59,7 +59,7 @@ graph TD
 2. `usePlantedCards` hook calls `db.planted.insert()`.
 3. XState machine initializes → `seed` state.
 4. `VirtualGardenTab` re-renders grid with new plant.
-5. XP awarded via `useGamification`.
+5. Care events update plant state and are recorded in the logbook.
 
 ### 2. Fuzzy Searching the Catalog
 

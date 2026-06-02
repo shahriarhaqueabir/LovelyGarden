@@ -1,28 +1,20 @@
 import React from "react";
-import {
-  KeyRound,
-  Loader2,
-  Send,
-  Settings2,
-  Sparkles,
-  Trash2,
-  X,
-} from "lucide-react";
+import { CloudOff, Download, Loader2, Send, Sparkles, X } from "lucide-react";
 import type { PlantSpecies } from "../schema/knowledge-graph";
 import type { WeatherData } from "../services/weatherService";
 import {
-  DEFAULT_GEMINI_MODEL,
-  clearGeminiConnection,
-  getStoredGeminiApiKey,
-  getStoredGeminiModel,
-  markGeminiConnected,
-  removeStoredGeminiApiKey,
-  storeGeminiApiKey,
-  storeGeminiModel,
-} from "../ai/geminiSettings";
-import { GARDEN_COACH_QUICK_PROMPTS } from "../ai/gardenCoachInstructions";
-import { generateGardenAdvice } from "../ai/geminiClient";
+  GARDEN_COACH_INSTRUCTIONS,
+  GARDEN_COACH_QUICK_PROMPTS,
+} from "../ai/gardenCoachInstructions";
 import { buildGardenCoachContext } from "../ai/buildGardenContext";
+import {
+  generateLocalAdvice,
+  getModelPipeline,
+  isModelReady,
+  onModelProgress,
+  resetModel,
+  type ModelProgress,
+} from "../ai/localCoachClient";
 
 interface GardenCoachSheetProps {
   catalog: PlantSpecies[];
@@ -44,6 +36,13 @@ const createMessageId = () =>
     ? crypto.randomUUID()
     : `${Date.now()}`;
 
+type ModelState =
+  | { status: "prompt" } // waiting for user to start
+  | { status: "downloading"; percent: number; file: string }
+  | { status: "loading" } // model loaded into memory, warming up
+  | { status: "ready" }
+  | { status: "error"; message: string };
+
 export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
   catalog,
   currentDay,
@@ -52,46 +51,59 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
   onClose,
   onConnectionLost,
 }) => {
-  const [apiKey, setApiKey] = React.useState(getStoredGeminiApiKey);
-  const [draftKey, setDraftKey] = React.useState(apiKey);
-  const [model, setModel] = React.useState(getStoredGeminiModel);
+  const [modelState, setModelState] = React.useState<ModelState>(
+    isModelReady() ? { status: "ready" } : { status: "prompt" },
+  );
   const [messages, setMessages] = React.useState<CoachMessage[]>([]);
   const [input, setInput] = React.useState("");
   const [isSending, setIsSending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [showSettings, setShowSettings] = React.useState(!apiKey);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
-
-  const hasApiKey = apiKey.trim().length > 0;
 
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ block: "end" });
   }, [messages, isSending]);
 
-  const handleSaveSettings = () => {
-    const trimmedKey = draftKey.trim();
-    const trimmedModel = model.trim() || DEFAULT_GEMINI_MODEL;
-    if (trimmedKey) {
-      storeGeminiApiKey(trimmedKey);
-      setApiKey(trimmedKey);
-    }
-    storeGeminiModel(trimmedModel);
-    setModel(trimmedModel);
-    setShowSettings(false);
-    setError(null);
-  };
+  // Listen for model download progress
+  React.useEffect(() => {
+    onModelProgress((p: ModelProgress) => {
+      if (p.status === "download") {
+        setModelState({
+          status: "downloading",
+          percent: p.percent,
+          file: p.file,
+        });
+      } else if (p.status === "loading") {
+        setModelState({ status: "loading" });
+      } else if (p.status === "ready") {
+        setModelState({ status: "ready" });
+      } else if (p.status === "error") {
+        setModelState({ status: "error", message: p.error ?? "Unknown error" });
+      }
+    });
+    return () => onModelProgress(null);
+  }, []);
 
-  const handleRemoveKey = () => {
-    removeStoredGeminiApiKey();
-    setApiKey("");
-    setDraftKey("");
-    setShowSettings(true);
-    onConnectionLost?.();
+  const handleDownloadModel = async () => {
+    setModelState({ status: "downloading", percent: 0, file: "model.onnx" });
+    try {
+      await getModelPipeline();
+      // The progress callback updates the state above
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to download model.";
+      setModelState({ status: "error", message });
+    }
   };
 
   const sendMessage = async (rawMessage: string) => {
     const message = rawMessage.trim();
     if (!message || isSending) return;
+
+    if (!isModelReady()) {
+      setError("Model not loaded. Please download it first.");
+      return;
+    }
 
     setError(null);
     setInput("");
@@ -110,14 +122,12 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
         hemisphere,
         weather,
       });
-      const answer = await generateGardenAdvice({
-        apiKey,
-        model,
+      const answer = await generateLocalAdvice({
+        systemPrompt: GARDEN_COACH_INSTRUCTIONS,
         message,
         context,
         history: messages,
       });
-      markGeminiConnected();
       setMessages((current) => [
         ...current,
         {
@@ -127,7 +137,6 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
         },
       ]);
     } catch (caughtError) {
-      clearGeminiConnection();
       onConnectionLost?.();
       setError(
         caughtError instanceof Error
@@ -171,90 +180,96 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                 Garden Coach
               </h2>
               <p className="truncate text-[11px] font-bold text-stone-500">
-                Gemini, optional and local-key
+                On-device, private, offline-ready
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setShowSettings((current) => !current)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-800 bg-stone-900 text-stone-400 hover:border-garden-500/40 hover:text-garden-300"
-              aria-label="Garden Coach settings"
-              title="Garden Coach settings"
-            >
-              <Settings2 className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-800 bg-stone-900 text-stone-400 hover:border-red-500/40 hover:text-red-300"
-              aria-label="Close Garden Coach"
-              title="Close Garden Coach"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-800 bg-stone-900 text-stone-400 hover:border-red-500/40 hover:text-red-300"
+            aria-label="Close Garden Coach"
+            title="Close Garden Coach"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </header>
 
-        {showSettings ? (
-          <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
-            <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-4">
-              <div className="mb-4 flex items-center gap-2 text-garden-300">
-                <KeyRound className="h-4 w-4" />
-                <h3 className="text-xs font-black uppercase tracking-widest">
-                  Gemini Setup
-                </h3>
+        {modelState.status === "prompt" ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-garden-500/30 bg-garden-950/50">
+              <Sparkles className="h-8 w-8 text-garden-400" />
+            </div>
+            <div>
+              <h3 className="mb-2 text-lg font-black uppercase tracking-wider text-garden-300">
+                Local AI Coach
+              </h3>
+              <p className="text-sm leading-6 text-stone-400">
+                Download the garden coach model to your device. Runs entirely
+                offline — no account, no API key, no data leaves your browser.
+                ~760 MB download.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleDownloadModel}
+              className="inline-flex h-12 items-center gap-3 rounded-xl btn-primary px-6 text-sm font-black uppercase tracking-widest"
+            >
+              <Download className="h-5 w-5" />
+              Download Model
+            </button>
+            <p className="text-xs leading-5 text-stone-600">
+              First-time download only (~760 MB). Cached for offline use.
+              Recommended on WiFi to avoid data charges.
+            </p>
+          </div>
+        ) : modelState.status === "downloading" ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
+            <Loader2 className="h-10 w-10 animate-spin text-garden-400" />
+            <div className="w-full max-w-xs">
+              <div className="mb-2 flex items-center justify-between text-xs font-bold text-stone-400">
+                <span className="truncate">{modelState.file}</span>
+                <span>{modelState.percent}%</span>
               </div>
-              <label className="mb-3 block">
-                <span className="mb-1 block text-[11px] font-black uppercase tracking-widest text-stone-500">
-                  API Key
-                </span>
-                <input
-                  type="password"
-                  value={draftKey}
-                  onChange={(event) => setDraftKey(event.target.value)}
-                  placeholder="Paste your Gemini API key"
-                  className="h-11 w-full rounded-lg border border-stone-800 bg-stone-950 px-3 text-sm text-stone-100 outline-none focus:border-garden-500"
+              <div className="h-2 overflow-hidden rounded-full bg-stone-800">
+                <div
+                  className="h-full rounded-full bg-garden-500 transition-all duration-300"
+                  style={{ width: `${modelState.percent}%` }}
                 />
-              </label>
-              <label className="mb-4 block">
-                <span className="mb-1 block text-[11px] font-black uppercase tracking-widest text-stone-500">
-                  Model
-                </span>
-                <input
-                  type="text"
-                  value={model}
-                  onChange={(event) => setModel(event.target.value)}
-                  placeholder={DEFAULT_GEMINI_MODEL}
-                  className="h-11 w-full rounded-lg border border-stone-800 bg-stone-950 px-3 text-sm text-stone-100 outline-none focus:border-garden-500"
-                />
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleSaveSettings}
-                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={handleRemoveKey}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-stone-800 bg-stone-950 text-stone-400 hover:border-red-500/40 hover:text-red-300"
-                  aria-label="Remove Gemini key"
-                  title="Remove Gemini key"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
               </div>
             </div>
-            <p className="text-xs leading-5 text-stone-500">
-              The key is kept for this browser session only. Garden Coach sends
-              a minimal, sanitized summary of your garden and weather data to
-              Gemini to generate advice. It does not modify your saved gardens,
-              inventory, settings, or logbook entries.
+            <p className="text-xs text-stone-500">
+              Downloading model to your device…
             </p>
+          </div>
+        ) : modelState.status === "loading" ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-garden-400" />
+            <p className="text-xs font-bold text-stone-400">
+              Loading model into memory…
+            </p>
+          </div>
+        ) : modelState.status === "error" ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+            <CloudOff className="h-10 w-10 text-red-400" />
+            <div>
+              <p className="mb-1 text-sm font-bold text-red-300">
+                Download failed
+              </p>
+              <p className="text-xs leading-5 text-stone-400">
+                {modelState.message}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                resetModel();
+                setModelState({ status: "prompt" });
+              }}
+              className="inline-flex h-10 items-center rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest"
+            >
+              Try Again
+            </button>
           </div>
         ) : (
           <>
@@ -272,7 +287,7 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
                       <button
                         key={prompt}
                         type="button"
-                        disabled={!hasApiKey || isSending}
+                        disabled={isSending}
                         onClick={() => void sendMessage(prompt)}
                         className="min-h-11 rounded-lg border border-stone-800 bg-stone-900 px-3 text-left text-xs font-bold text-stone-300 hover:border-garden-500/40 hover:text-garden-200 disabled:opacity-50"
                       >
@@ -314,44 +329,34 @@ export const GardenCoachSheet: React.FC<GardenCoachSheetProps> = ({
               onSubmit={handleSubmit}
               className="border-t border-stone-800 bg-stone-950 px-4 py-3"
             >
-              {!hasApiKey ? (
+              <div className="flex items-end gap-2">
+                <textarea
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="Ask Garden Coach..."
+                  rows={1}
+                  className="max-h-28 min-h-11 flex-1 resize-none rounded-lg border border-stone-800 bg-stone-900 px-3 py-3 text-sm text-stone-100 outline-none placeholder:text-stone-600 focus:border-garden-500"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      void sendMessage(input);
+                    }
+                  }}
+                />
                 <button
-                  type="button"
-                  onClick={() => setShowSettings(true)}
-                  className="h-11 w-full rounded-lg bg-garden-500 px-4 text-xs font-black uppercase tracking-widest text-stone-950 hover:bg-garden-400"
+                  type="submit"
+                  disabled={!input.trim() || isSending}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg btn-primary disabled:opacity-50"
+                  aria-label="Send message"
+                  title="Send message"
                 >
-                  Add Gemini Key
+                  {isSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
                 </button>
-              ) : (
-                <div className="flex items-end gap-2">
-                  <textarea
-                    value={input}
-                    onChange={(event) => setInput(event.target.value)}
-                    placeholder="Ask Garden Coach..."
-                    rows={1}
-                    className="max-h-28 min-h-11 flex-1 resize-none rounded-lg border border-stone-800 bg-stone-900 px-3 py-3 text-sm text-stone-100 outline-none placeholder:text-stone-600 focus:border-garden-500"
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" && !event.shiftKey) {
-                        event.preventDefault();
-                        void sendMessage(input);
-                      }
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!input.trim() || isSending}
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-garden-500 text-stone-950 hover:bg-garden-400 disabled:opacity-50"
-                    aria-label="Send message"
-                    title="Send message"
-                  >
-                    {isSending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              )}
+              </div>
             </form>
           </>
         )}

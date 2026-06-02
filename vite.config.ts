@@ -93,19 +93,55 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id: string) {
-            if (id.includes("node_modules")) {
-              // Database - independent of React
-              if (id.includes("rxdb") || id.includes("dexie")) {
-                return "vendor-db";
-              }
-              // Icons - independent of React
-              if (id.includes("lucide-react")) {
-                return "vendor-icons";
-              }
-              // Everything else (including React and its deps) stays together to avoid circular deps
-              return "vendor-misc";
+            if (!id.includes("node_modules")) return;
+
+            if (id.includes("rxdb") || id.includes("dexie")) return "vendor-db";
+            if (id.includes("lucide-react")) return "vendor-icons";
+
+            if (
+              id.includes("/react-dom/") ||
+              id.includes("/react/") ||
+              id.includes("/scheduler/")
+            ) {
+              return "vendor-react";
             }
-            return undefined;
+
+            if (
+              id.includes("/motion/") ||
+              id.includes("@headlessui") ||
+              id.includes("/recharts/")
+            )
+              return "vendor-ui";
+
+            if (
+              id.includes("/zod/") ||
+              id.includes("/react-hook-form/") ||
+              id.includes("@hookform")
+            )
+              return "vendor-forms";
+
+            if (
+              id.includes("@orama") ||
+              id.includes("@supabase") ||
+              id.includes("/date-fns/") ||
+              id.includes("/dayjs/") ||
+              id.includes("/react-i18next/") ||
+              id.includes("/i18next/") ||
+              id.includes("@tanstack") ||
+              id.includes("/react-hot-toast/") ||
+              id.includes("/react-error-boundary/") ||
+              id.includes("/clsx/") ||
+              id.includes("/tailwind-merge/")
+            )
+              return "vendor-utils";
+
+            if (
+              id.includes("/xstate/") ||
+              id.includes("/zustand/") ||
+              id.includes("/rxjs/") ||
+              id.includes("@legendapp")
+            )
+              return "vendor-misc";
           },
         },
       },

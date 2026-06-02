@@ -157,7 +157,7 @@ export const SeedsInHandTab: React.FC<SeedsInHandTabProps> = ({ catalog }) => {
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <button className="flex-1 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 font-bold rounded-lg text-xs uppercase tracking-widest transition-all">
+                    <button className="flex-1 py-2 btn-primary text-stone-950 font-bold rounded-lg text-xs uppercase tracking-widest transition-all">
                       Plant Now
                     </button>
                     <button className="p-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg transition-colors">
