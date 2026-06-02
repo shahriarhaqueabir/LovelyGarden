@@ -207,10 +207,10 @@ export const InventoryTray: React.FC<{
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={`
-            absolute -right-4 top-1/2 -translate-y-1/2 
-            w-8 h-16 bg-stone-800 border-2 border-stone-700 
+            absolute -right-4 top-1/2 -translate-y-1/2
+            w-8 h-16 bg-stone-800 border-2 border-stone-700
             flex items-center justify-center rounded-xl
-            text-stone-400 hover:text-white hover:bg-stone-700/50 
+            text-stone-400 hover:text-white hover:bg-stone-700/50
             hover:border-garden-500/50 transition-all z-40 shadow-2xl
             group cursor-pointer
           `}
@@ -321,6 +321,7 @@ export const InventoryTray: React.FC<{
                 }
               `}
               title="Open Seed Store"
+              data-testid="seed-store-open"
             >
               <PackagePlus className="h-7 w-7 transition-transform duration-300 group-hover:scale-110" />
               {!collapsed && (
@@ -370,6 +371,7 @@ export const InventoryTray: React.FC<{
               onClick={onOpenStore}
               className="w-[80px] h-[100px] bg-stone-800/20 rounded-3xl border-2 border-dashed border-stone-700 flex flex-col items-center justify-center gap-2 text-stone-600 hover:border-garden-600 hover:text-garden-500 transition-all group shadow-inner"
               title="Open Seed Store"
+              data-testid="seed-store-open"
             >
               <PackagePlus className="h-7 w-7 transition-transform duration-300 group-hover:scale-110" />
               {!collapsed && (

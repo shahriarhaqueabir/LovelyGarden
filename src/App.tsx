@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  BookOpenCheck,
   Cloud,
   CloudOff,
   CloudSun,
@@ -72,6 +71,7 @@ import { listPlantCatalog } from "./services/referenceDataService";
 import { useAuth } from "./hooks/useAuth";
 import { signOut } from "./services/authService";
 import { AuthScreen } from "./components/AuthScreen";
+import { LandingPage } from "./pages/LandingPage";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
 import { SeedStore } from "./components/SeedStore";
@@ -83,8 +83,6 @@ import {
   ensureCloudUserSettings,
   upsertCloudUserSettings,
 } from "./services/userSettingsService";
-import { clearGeminiConnection, hasConnectedGemini } from "./ai/geminiSettings";
-
 const queryClient = new QueryClient();
 
 const getDayOfYear = (date: Date) => {
@@ -100,11 +98,11 @@ const AppContent: React.FC = () => {
   const [showSeedStore, setShowSeedStore] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
-  const [aiEnabled, setAiEnabled] = useState(hasConnectedGemini);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
     null,
   );
   const [savingOnboarding, setSavingOnboarding] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === "undefined" ? true : navigator.onLine,
@@ -392,20 +390,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleAssistantOpen = () => {
-    const connected = hasConnectedGemini();
-    setAiEnabled(connected);
-    if (connected) {
-      setShowGardenCoach(true);
-      return;
-    }
-    setShowGardenGuide(true);
+    setShowGardenCoach(true);
   };
 
-  const handleGeminiConnectionLost = () => {
-    clearGeminiConnection();
-    setAiEnabled(false);
+  const handleCoachClose = () => {
     setShowGardenCoach(false);
-    setShowGardenGuide(true);
   };
 
   const handleCompleteOnboarding = async () => {
@@ -442,6 +431,9 @@ const AppContent: React.FC = () => {
   }
 
   if (!user) {
+    if (!showAuth) {
+      return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+    }
     return <AuthScreen />;
   }
 
@@ -716,14 +708,10 @@ const AppContent: React.FC = () => {
             type="button"
             onClick={handleAssistantOpen}
             className="assistant-fab fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 btn-primary text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
-            aria-label={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
-            title={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
+            aria-label="Open Garden Coach"
+            title="Open Garden Coach"
           >
-            {aiEnabled ? (
-              <Sparkles className="h-5 w-5" />
-            ) : (
-              <BookOpenCheck className="h-5 w-5" />
-            )}
+            <Sparkles className="h-5 w-5" />
           </button>
         )}
         {showGardenGuide && (
@@ -732,7 +720,6 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
             hemisphere={hemisphere}
             weather={weather}
-            aiEnabled={aiEnabled}
             onClose={() => setShowGardenGuide(false)}
             onOpenGeminiCoach={() => {
               setShowGardenGuide(false);
@@ -747,7 +734,7 @@ const AppContent: React.FC = () => {
             hemisphere={hemisphere}
             weather={weather}
             onClose={() => setShowGardenCoach(false)}
-            onConnectionLost={handleGeminiConnectionLost}
+            onConnectionLost={handleCoachClose}
           />
         )}
       </React.Suspense>

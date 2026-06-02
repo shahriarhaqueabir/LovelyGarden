@@ -111,7 +111,6 @@ export const getDatabase = async () => {
   dbPromise = (async () => {
     try {
       const databaseName = getDatabaseName();
-      console.log(`Initializing RxDB [${databaseName}]...`);
       const db = await createRxDatabase({
         name: databaseName,
         storage: createStorage(),
@@ -120,7 +119,6 @@ export const getDatabase = async () => {
         console.error("CRITICAL: createRxDatabase rejected:", err);
         throw err;
       });
-      console.log("RxDB Database created.");
 
       try {
         await db.addCollections({
@@ -220,7 +218,6 @@ export const getDatabase = async () => {
           },
           logbook: { schema: logbookSchema },
         });
-        console.log("Collections added.");
       } catch (colErr: any) {
         console.error("FAILED TO ADD COLLECTIONS:", colErr);
         if (colErr.parameters)
@@ -572,8 +569,6 @@ export const hydrateDatabase = async () => {
     return;
   }
 
-  console.log(`Starting data hydration (v${currentDataVersion})...`);
-
   try {
     const [sourcesRes, plantCatalogRes, plantKbJsonRes] = await Promise.all([
       fetch("/data/sources.json"),
@@ -668,8 +663,6 @@ export const hydrateDatabase = async () => {
         dataVersion: currentDataVersion,
       }),
     ]);
-
-    console.log("Hydration complete!");
   } catch (error) {
     console.error("Hydration failed:", error);
   }

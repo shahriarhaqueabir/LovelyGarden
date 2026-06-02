@@ -765,12 +765,18 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
           <div className="p-6 border-b border-stone-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Package className="w-6 h-6 text-stone-500" />
-              <h2 className="text-xl font-bold text-stone-100">Seed Store</h2>
+              <h2
+                className="text-xl font-bold text-stone-100"
+                data-testid="seed-store-title"
+              >
+                Seed Store
+              </h2>
             </div>
             <button
               onClick={onClose}
               className="text-stone-500 hover:text-stone-300"
               title="Close"
+              data-testid="seed-store-close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -784,6 +790,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Search ${mergedCatalog.length} species...`}
+                data-testid="seed-store-search"
                 className="w-full bg-transparent outline-none text-xs text-stone-200 placeholder:text-stone-600"
               />
             </div>
