@@ -212,7 +212,7 @@ export const plantedMigrationStrategies = {
 
 export const settingsSchema: RxJsonSchema<SettingsDocument> = {
   title: "settings",
-  version: 2,
+  version: 3,
   description: "User settings",
   primaryKey: "id",
   type: "object",
@@ -222,7 +222,6 @@ export const settingsSchema: RxJsonSchema<SettingsDocument> = {
     hemisphere: { type: "string" },
     city: { type: "string" },
     currentDay: { type: "number" },
-    xp: { type: "number" },
     dataVersion: { type: "number" },
   },
   required: ["id", "firstLoadComplete"],

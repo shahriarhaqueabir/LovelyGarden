@@ -1,8 +1,19 @@
 import React from "react";
+import {
+  Apple,
+  FlaskConical,
+  Flower2,
+  Leaf,
+  PackageCheck,
+  Sprout,
+  TreePine,
+} from "lucide-react";
+import { formatPlantName } from "../lib/formatPlantName";
 import { getStageColor } from "../utils/ui-helpers";
 
 interface PlantedCardViewProps {
   catalogId: string;
+  displayName?: string;
   stage: string;
   onClick?: () => void;
   completedStages?: string[];
@@ -10,8 +21,30 @@ interface PlantedCardViewProps {
 }
 
 export const PlantedCardView: React.FC<PlantedCardViewProps> = React.memo(
-  ({ catalogId, stage, onClick, completedStages = [], daysElapsed = 0 }) => {
+  ({
+    catalogId,
+    displayName,
+    stage,
+    onClick,
+    completedStages = [],
+    daysElapsed = 0,
+  }) => {
     const colors = getStageColor(stage);
+    const plantName = displayName ?? formatPlantName(catalogId);
+    const stageKey = stage.toLowerCase();
+    const StageIcon = stageKey.includes("seed")
+      ? Sprout
+      : stageKey.includes("germ")
+        ? FlaskConical
+        : stageKey.includes("veg")
+          ? Leaf
+          : stageKey.includes("flower")
+            ? Flower2
+            : stageKey.includes("fruit")
+              ? Apple
+              : stageKey.includes("harvest")
+                ? PackageCheck
+                : TreePine;
 
     return (
       <div
@@ -30,21 +63,9 @@ export const PlantedCardView: React.FC<PlantedCardViewProps> = React.memo(
         </div>
 
         <div
-          className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center text-xl shadow-inner border ${colors.text.replace("text", "border")} group-hover/card:scale-110 transition-transform duration-300 relative`}
+          className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center shadow-inner border ${colors.text.replace("text", "border")} group-hover/card:scale-110 transition-transform duration-300 relative`}
         >
-          {stage.toLowerCase().includes("seed")
-            ? "🌱"
-            : stage.toLowerCase().includes("germ")
-              ? "🧪"
-              : stage.toLowerCase().includes("veg")
-                ? "🌿"
-                : stage.toLowerCase().includes("flower")
-                  ? "🌸"
-                  : stage.toLowerCase().includes("fruit")
-                    ? "🍎"
-                    : stage.toLowerCase().includes("harvest")
-                      ? "🧺"
-                      : "🌳"}
+          <StageIcon className="h-5 w-5" />
 
           {/* Active Stage Indicator */}
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center border border-stone-700">
@@ -60,12 +81,9 @@ export const PlantedCardView: React.FC<PlantedCardViewProps> = React.memo(
         </div>
         <div
           className="text-[9px] text-stone-500 font-bold uppercase text-center px-0.5 leading-tight group-hover/card:text-stone-400 truncate w-full tracking-tighter"
-          title={catalogId
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
+          title={plantName}
         >
-          {catalogId.replace(/-/g, " ")}
+          {plantName}
         </div>
       </div>
     );
@@ -73,6 +91,7 @@ export const PlantedCardView: React.FC<PlantedCardViewProps> = React.memo(
   (prevProps, nextProps) => {
     return (
       prevProps.catalogId === nextProps.catalogId &&
+      prevProps.displayName === nextProps.displayName &&
       prevProps.stage === nextProps.stage &&
       prevProps.daysElapsed === nextProps.daysElapsed &&
       prevProps.completedStages?.length === nextProps.completedStages?.length

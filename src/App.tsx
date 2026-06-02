@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  BookOpenCheck,
   Cloud,
   CloudOff,
+  CloudSun,
+  Droplets,
   LogOut,
+  MapPin,
   RefreshCw,
   Sparkles,
+  Thermometer,
   UserCircle,
 } from "lucide-react";
 import { hydrateDatabase, getDatabase, setDatabaseOwnerScope } from "./db";
@@ -68,6 +71,7 @@ import { listPlantCatalog } from "./services/referenceDataService";
 import { useAuth } from "./hooks/useAuth";
 import { signOut } from "./services/authService";
 import { AuthScreen } from "./components/AuthScreen";
+import { LandingPage } from "./pages/LandingPage";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
 import { SeedStore } from "./components/SeedStore";
@@ -79,8 +83,6 @@ import {
   ensureCloudUserSettings,
   upsertCloudUserSettings,
 } from "./services/userSettingsService";
-import { clearGeminiConnection, hasConnectedGemini } from "./ai/geminiSettings";
-
 const queryClient = new QueryClient();
 
 const getDayOfYear = (date: Date) => {
@@ -93,15 +95,14 @@ const getDayOfYear = (date: Date) => {
 const AppContent: React.FC = () => {
   const [catalog, setCatalog] = useState<PlantSpecies[]>([]);
   const [currentDateTime, setCurrentDateTime] = useState(() => new Date());
-  const [xp, setXp] = useState(0); // Gamification XP
   const [showSeedStore, setShowSeedStore] = useState(false);
   const [showGardenGuide, setShowGardenGuide] = useState(false);
   const [showGardenCoach, setShowGardenCoach] = useState(false);
-  const [aiEnabled, setAiEnabled] = useState(hasConnectedGemini);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
     null,
   );
   const [savingOnboarding, setSavingOnboarding] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === "undefined" ? true : navigator.onLine,
@@ -267,7 +268,6 @@ const AppContent: React.FC = () => {
 
       const settings = await db.settings.findOne("local-user").exec();
       if (settings) {
-        setXp(settings.xp || 0);
         setHemisphere(
           (settings.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
             "North",
@@ -276,7 +276,6 @@ const AppContent: React.FC = () => {
 
       settingsSub = db.settings.findOne("local-user").$.subscribe((s) => {
         if (s) {
-          setXp(s.xp || 0);
           setHemisphere(
             (s.hemisphere as import("./schema/knowledge-graph").UserLocation["hemisphere"]) ||
               "North",
@@ -343,7 +342,6 @@ const AppContent: React.FC = () => {
           hemisphere: cloudSettings.hemisphere ?? localSettings.hemisphere,
           city: cloudSettings.city ?? localSettings.city,
           currentDay: cloudSettings.currentDay ?? localSettings.currentDay,
-          xp: cloudSettings.xp ?? localSettings.xp,
           dataVersion: cloudSettings.dataVersion ?? localSettings.dataVersion,
         });
         setOnboardingComplete(cloudSettings.firstLoadComplete);
@@ -360,24 +358,6 @@ const AppContent: React.FC = () => {
       cancelled = true;
     };
   }, [userId]);
-
-  // Persist XP changes
-  React.useEffect(() => {
-    const persistXp = async () => {
-      const db = await getDatabase();
-      const settings = await db.settings.findOne("local-user").exec();
-      if (settings && settings.xp !== xp) {
-        await settings.patch({ xp });
-      }
-      if (settings && userId) {
-        await upsertCloudUserSettings(userId, {
-          ...settings.toJSON(),
-          xp,
-        });
-      }
-    };
-    if (xp > 0) persistXp();
-  }, [xp, userId]);
 
   const handleSignOut = async () => {
     setSyncStatus("syncing", "Signing out...");
@@ -410,20 +390,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleAssistantOpen = () => {
-    const connected = hasConnectedGemini();
-    setAiEnabled(connected);
-    if (connected) {
-      setShowGardenCoach(true);
-      return;
-    }
-    setShowGardenGuide(true);
+    setShowGardenCoach(true);
   };
 
-  const handleGeminiConnectionLost = () => {
-    clearGeminiConnection();
-    setAiEnabled(false);
+  const handleCoachClose = () => {
     setShowGardenCoach(false);
-    setShowGardenGuide(true);
   };
 
   const handleCompleteOnboarding = async () => {
@@ -438,7 +409,6 @@ const AppContent: React.FC = () => {
           id: "local-user",
           hemisphere,
           currentDay,
-          xp,
           dataVersion: 0,
         }),
         firstLoadComplete: true,
@@ -461,6 +431,9 @@ const AppContent: React.FC = () => {
   }
 
   if (!user) {
+    if (!showAuth) {
+      return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+    }
     return <AuthScreen />;
   }
 
@@ -478,12 +451,13 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
-      <header className="z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
+    <div className="app-shell flex h-dvh flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
+      <header className="app-header z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
           <h1 className="truncate text-[11px] font-black uppercase tracking-tighter text-garden-500 sm:text-xs">
-            Garden Deck Command
+            <span className="sm:hidden">LovelyGarden</span>
+            <span className="hidden sm:inline">LovelyGarden</span>
           </h1>
         </div>
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-4 lg:gap-6">
@@ -569,7 +543,7 @@ const AppContent: React.FC = () => {
                     className="hidden sm:flex items-center gap-1.5 border-r border-stone-800 pr-4 mr-2"
                     title="Location"
                   >
-                    <span className="text-sm">📍</span>
+                    <MapPin className="h-3.5 w-3.5 text-red-300" />
                     <span className="text-[13px] font-black uppercase tracking-tight text-stone-300">
                       {locationName}
                     </span>
@@ -579,7 +553,7 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.weather_code < 3
                       ? "Sunny"
@@ -589,13 +563,13 @@ const AppContent: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.relative_humidity_2m}%
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold">
                     {weather.current.temperature_2m}°C
                   </span>
@@ -607,15 +581,15 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold">--</span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold">--%</span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold">--°C</span>
                 </div>
               </>
@@ -625,39 +599,25 @@ const AppContent: React.FC = () => {
                   className="flex items-center gap-1.5"
                   title="Weather condition"
                 >
-                  <span className="text-sm">🌤️</span>{" "}
+                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Moisture">
-                  <span className="text-sm">💧</span>{" "}
+                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5" title="Temp">
-                  <span className="text-sm">🌡️</span>{" "}
+                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
                   <span className="text-[13px] font-bold text-red-400">
                     Err
                   </span>
                 </div>
               </>
             )}
-          </div>
-          <div className="hidden items-center gap-2 rounded-full border border-stone-800 bg-stone-900 px-3 py-1 shadow-inner sm:flex">
-            <span className="text-[12px] font-bold text-garden-400">
-              ⭐ {xp} XP
-            </span>
-            <div className="h-2 w-16 bg-stone-800 rounded-full overflow-hidden border border-stone-700">
-              <div
-                className="h-full bg-gradient-to-r from-garden-600 to-garden-400 rounded-full"
-                style={{ width: `${((xp % 100) / 100) * 100}%` }}
-              ></div>
-            </div>
-            <span className="text-[13px] font-bold text-stone-300">
-              Lv.{Math.floor(xp / 100) + 1}
-            </span>
           </div>
         </div>
       </header>
@@ -682,7 +642,6 @@ const AppContent: React.FC = () => {
                 currentDay={currentDay}
                 currentDateTimeLabel={currentDateTimeLabel}
                 currentTimestamp={currentDateTime.getTime()}
-                xp={xp}
                 alerts={alerts}
                 onOpenSeedStore={() => setShowSeedStore(true)}
               />
@@ -748,15 +707,11 @@ const AppContent: React.FC = () => {
           <button
             type="button"
             onClick={handleAssistantOpen}
-            className="fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 bg-garden-500 text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
-            aria-label={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
-            title={aiEnabled ? "Open Garden Coach" : "Open Garden Guide"}
+            className="assistant-fab fixed bottom-20 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-garden-500/30 btn-primary text-stone-950 shadow-2xl shadow-garden-950/50 hover:bg-garden-400 lg:bottom-6 lg:right-6"
+            aria-label="Open Garden Coach"
+            title="Open Garden Coach"
           >
-            {aiEnabled ? (
-              <Sparkles className="h-5 w-5" />
-            ) : (
-              <BookOpenCheck className="h-5 w-5" />
-            )}
+            <Sparkles className="h-5 w-5" />
           </button>
         )}
         {showGardenGuide && (
@@ -765,7 +720,6 @@ const AppContent: React.FC = () => {
             currentDay={currentDay}
             hemisphere={hemisphere}
             weather={weather}
-            aiEnabled={aiEnabled}
             onClose={() => setShowGardenGuide(false)}
             onOpenGeminiCoach={() => {
               setShowGardenGuide(false);
@@ -780,7 +734,7 @@ const AppContent: React.FC = () => {
             hemisphere={hemisphere}
             weather={weather}
             onClose={() => setShowGardenCoach(false)}
-            onConnectionLost={handleGeminiConnectionLost}
+            onConnectionLost={handleCoachClose}
           />
         )}
       </React.Suspense>

@@ -98,7 +98,7 @@ export interface PlantSpecies {
   antagonists: string[]; // IDs of incompatible plants
   confidence_score: ConfidenceScore;
   sources: string[];
-  // Expanded Fields for Command Center UI
+  // Expanded Fields for plant care UI
   seasonality?: {
     sowing: { start_month: string; end_month: string };
     harvest: { start_month: string; end_month: string };

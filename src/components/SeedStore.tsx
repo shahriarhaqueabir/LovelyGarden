@@ -154,7 +154,7 @@ export const DetailModal: React.FC<{
           </div>
         </div>
 
-        {/* Intelligence Grid */}
+        {/* Plant Details Grid */}
         <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {/* Left Column: Core Identity */}
           <div className="space-y-8">
@@ -350,12 +350,12 @@ export const DetailModal: React.FC<{
             </section>
           </div>
 
-          {/* Right Column: Environmental Intelligence */}
+          {/* Right Column: Environmental Guidance */}
           <div className="space-y-8">
             {/* SEASONALITY */}
             <section className="bg-stone-950/50 p-4 rounded-xl border border-stone-800/50 shadow-inner">
               <h4 className="text-[11px] font-black uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
-                📅 Diagnostics Intel
+                Growing Notes
               </h4>
               {plant.seasonality && (
                 <div className="space-y-6">
@@ -530,7 +530,7 @@ export const DetailModal: React.FC<{
         <div className="p-8 border-t border-stone-800 bg-stone-900/50 flex flex-col sm:flex-row gap-6 items-center justify-between">
           <div className="flex flex-col gap-2">
             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-600">
-              KB Intelligence Sources
+              Knowledge Sources
             </h5>
             <div className="flex gap-4">
               {plant.source_metadata?.map((s, i) => (
@@ -559,7 +559,7 @@ export const DetailModal: React.FC<{
                   onBuy();
                   onClose();
                 }}
-                className="flex-1 sm:flex-none px-8 py-3 bg-garden-600 text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-garden-400 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-8 py-3 btn-primary text-stone-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="w-4 h-4" /> Add to Bag
               </button>
@@ -765,12 +765,18 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
           <div className="p-6 border-b border-stone-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Package className="w-6 h-6 text-stone-500" />
-              <h2 className="text-xl font-bold text-stone-100">Seed Store</h2>
+              <h2
+                className="text-xl font-bold text-stone-100"
+                data-testid="seed-store-title"
+              >
+                Seed Store
+              </h2>
             </div>
             <button
               onClick={onClose}
               className="text-stone-500 hover:text-stone-300"
               title="Close"
+              data-testid="seed-store-close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -784,6 +790,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Search ${mergedCatalog.length} species...`}
+                data-testid="seed-store-search"
                 className="w-full bg-transparent outline-none text-xs text-stone-200 placeholder:text-stone-600"
               />
             </div>
@@ -830,7 +837,7 @@ export const SeedStore: React.FC<SeedStoreProps> = ({
                       </button>
                       <button
                         onClick={() => addToInventory(plant.id)}
-                        className="p-2 bg-garden-900/50 rounded-lg text-garden-400 hover:bg-garden-500 hover:text-white transition-all"
+                        className="p-2 btn-primary text-stone-950 rounded-lg transition-all flex items-center justify-center"
                         title="Add to Bag"
                       >
                         {justAdded === plant.id ? (

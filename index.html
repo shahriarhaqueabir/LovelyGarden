@@ -5,17 +5,87 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Lovely Garden — AI-Assisted Gardening Workspace</title>
     <meta
       name="description"
-      content="Lovely Garden is a mobile-first gardening workspace with local-first storage, Supabase sync, and optional AI guidance."
+      content="Plan garden beds, track plant growth, manage seed inventory, and get AI-powered gardening advice. A local-first, privacy-focused gardening app."
     />
-    <meta property="og:title" content="Lovely Garden" />
+    <meta
+      name="keywords"
+      content="gardening app, garden planner, companion planting, plant care, garden tracker, AI garden coach"
+    />
+    <meta name="author" content="Lovely Garden" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lovely-garden.vercel.app/" />
+    <meta
+      property="og:title"
+      content="Lovely Garden — AI-Assisted Gardening Workspace"
+    />
     <meta
       property="og:description"
-      content="Grow your own piece of paradise with synced garden planning, plant knowledge, and optional AI guidance."
+      content="Grow your own piece of paradise with synced garden planning, plant knowledge, seed inventory, and optional AI guidance — all private and offline-friendly."
     />
-    <meta property="og:image" content="/screenshot.png" />
-    <title>Lovely Garden</title>
+    <meta
+      property="og:image"
+      content="https://lovely-garden.vercel.app/screenshot.png"
+    />
+    <meta property="og:image:width" content="540" />
+    <meta property="og:image:height" content="582" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Lovely Garden" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Lovely Garden — AI-Assisted Gardening Workspace"
+    />
+    <meta
+      name="twitter:description"
+      content="Plan garden beds, track plant growth, manage seed inventory, and get AI-powered gardening advice — all offline-friendly and private."
+    />
+    <meta
+      name="twitter:image"
+      content="https://lovely-garden.vercel.app/screenshot.png"
+    />
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Lovely Garden",
+        "url": "https://lovely-garden.vercel.app/",
+        "description": "A mobile-first, local-first gardening app that blends horticulture science with practical care tracking. Features plant knowledgebase, garden grid, companion planting guidance, weather integration, and optional AI coach.",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Web",
+        "browserRequirements": "Requires JavaScript and IndexedDB",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "Lovely Garden"
+        }
+      }
+    </script>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0c0a09" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Lovely Garden" />
   </head>
   <body class="bg-stone-950 text-stone-100 min-h-screen">
     <div id="root"></div>

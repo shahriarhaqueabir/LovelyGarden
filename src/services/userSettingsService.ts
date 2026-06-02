@@ -40,7 +40,6 @@ type UserSettingsRow = {
   hemisphere: string | null;
   city: string | null;
   current_day: number;
-  xp: number;
   data_version: number;
   preferences: UserSettingsPreferences | null;
 };
@@ -52,7 +51,6 @@ const mapRowToSettings = (row: UserSettingsRow): CloudUserSettings => ({
   hemisphere: row.hemisphere ?? undefined,
   city: row.city ?? undefined,
   currentDay: row.current_day,
-  xp: row.xp,
   dataVersion: row.data_version,
   preferences: row.preferences ?? undefined,
 });
@@ -69,7 +67,6 @@ const toRow = (
     hemisphere: settings.hemisphere ?? null,
     city: settings.city ?? null,
     current_day: settings.currentDay ?? 1,
-    xp: settings.xp ?? 0,
     data_version: settings.dataVersion ?? 0,
   };
 

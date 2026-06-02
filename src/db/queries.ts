@@ -100,7 +100,7 @@ export const relocatePlant = async (
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
 
-  if (!plant) throw new Error("Plant unit not found");
+  if (!plant) throw new Error("Plant not found");
 
   // Check if target slot is occupied
   const existing = await db.planted
@@ -144,13 +144,13 @@ export const relocatePlant = async (
 
 /**
  * UNPLANTING LOGIC
- * Reclaims a plant unit back into the bag.
+ * Reclaims a young plant back into the bag.
  */
 export const unplantSeed = async (plantId: string) => {
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
 
-  if (!plant) throw new Error("Plant unit not found");
+  if (!plant) throw new Error("Plant not found");
 
   const catalogId = plant.catalogId;
   const timestamp = Date.now();
@@ -252,7 +252,7 @@ export const addPlantObservation = async (
   const db = await getDatabase();
   const plant = await db.planted.findOne(plantId).exec();
 
-  if (!plant) throw new Error("Plant unit not found");
+  if (!plant) throw new Error("Plant not found");
 
   const data = plant.toJSON();
   const newObservations = [
@@ -318,12 +318,6 @@ export const waterPlant = async (plantId: string) => {
     lastWateredDate: timestamp,
     stressLevel: Math.max(0, (plant.stressLevel || 0) - 10), // Watering reduces stress
   });
-
-  // Grant XP: +5 for watering
-  const settings = await db.settings.findOne("local-user").exec();
-  if (settings) {
-    await settings.patch({ xp: (settings.xp || 0) + 5 });
-  }
 };
 
 export const harvestPlant = async (
@@ -355,12 +349,6 @@ export const harvestPlant = async (
 
   // 2. Remove from garden
   await plant.remove();
-
-  // 3. Grant XP: +50 for successful harvest
-  const settings = await db.settings.findOne("local-user").exec();
-  if (settings) {
-    await settings.patch({ xp: (settings.xp || 0) + 50 });
-  }
 
   return { removedPlant: data, logbookId: id };
 };

@@ -209,7 +209,7 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({
                     <LayoutGrid className="w-3 h-3" /> Grid Matrix
                   </label>
                   <span className="text-[10px] text-stone-600 italic">
-                    1 unit = 20x20cm
+                    1 cell = 20x20cm
                   </span>
                 </div>
 
@@ -264,9 +264,9 @@ export const GardenConfigDialog: React.FC<GardenConfigDialogProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-garden-600 hover:bg-garden-500 text-stone-950 rounded-lg text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 btn-primary text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {mode === "create" ? "Initialize Sector" : "Update Specs"}
+                {mode === "create" ? "Create Garden" : "Update Garden"}
               </button>
             </div>
           </form>
