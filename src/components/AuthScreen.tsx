@@ -82,6 +82,7 @@ export const AuthScreen: React.FC = () => {
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 required
+                data-testid="auth-email"
                 className="h-10 w-full rounded-lg border border-stone-300 bg-white/80 px-3 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="you@example.com"
               />
@@ -100,6 +101,7 @@ export const AuthScreen: React.FC = () => {
                 }
                 minLength={6}
                 required
+                data-testid="auth-password"
                 className="h-10 w-full rounded-lg border border-stone-300 bg-white/80 px-3 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="Minimum 6 characters"
               />
@@ -109,6 +111,7 @@ export const AuthScreen: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
+            data-testid="auth-submit"
             className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg btn-primary px-4 text-xs font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
             <LogIn className="h-4 w-4" />
@@ -121,6 +124,7 @@ export const AuthScreen: React.FC = () => {
 
           <button
             type="button"
+            data-testid="auth-mode-toggle"
             onClick={() =>
               setMode((current) =>
                 current === "sign-in" ? "sign-up" : "sign-in",

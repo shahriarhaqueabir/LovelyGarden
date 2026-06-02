@@ -264,6 +264,7 @@ export const SettingsTab: React.FC = () => {
           </div>
         </button>
         <button
+          data-testid="settings-developer"
           onClick={() => setActiveSubTab("developer")}
           className={`px-6 py-2 rounded-t-lg text-[11px] font-black uppercase tracking-widest transition-all ${
             activeSubTab === "developer"
@@ -508,6 +509,7 @@ export const SettingsTab: React.FC = () => {
               </div>
               <button
                 onClick={handleExport}
+                data-testid="settings-export"
                 className="w-full py-4 bg-stone-950 hover:bg-stone-800 border border-stone-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-stone-400 transition-all flex items-center justify-center gap-2"
               >
                 <Download className="w-3 h-3" /> Export Backup JSON

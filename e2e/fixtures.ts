@@ -47,6 +47,30 @@ function buildMockWeather() {
   };
 }
 
+/** Sign in via the auth form with the given credentials. */
+export async function signInAsTestUser(
+  page: import("@playwright/test").Page,
+  email?: string,
+  password?: string,
+) {
+  const rnd = Date.now();
+  const testEmail = email ?? `playwright+${rnd}@example.com`;
+  const testPassword = password ?? "Test1234!";
+
+  // Check if already authenticated (app shell visible)
+  const appShell = page.locator(".app-shell");
+  if (await appShell.isVisible().catch(() => false)) return;
+
+  await page.waitForSelector('[data-testid="auth-email"]', { timeout: 30_000 });
+  await page.fill('[data-testid="auth-email"]', testEmail);
+  await page.fill('[data-testid="auth-password"]', testPassword);
+  await page.click('[data-testid="auth-submit"]');
+
+  // Wait for auth to resolve — either app shell appears or we stay on the form.
+  // Allow failures so caller can decide how to handle.
+  await appShell.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+}
+
 export const test = base.extend<{ _debugLogs: void }>({
   _debugLogs: [
     async ({ page }, use, testInfo) => {

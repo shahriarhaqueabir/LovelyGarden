@@ -39,6 +39,7 @@ import {
   relocatePlant,
   unplantSeed,
   addPlantObservation,
+  recordLoss,
 } from "../db/queries";
 import { calculateCurrentStage } from "../logic/lifecycle";
 import { GardenConfigDialog, GardenConfig } from "./GardenConfigDialog";
@@ -1422,14 +1423,29 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                       rows={activeGarden.gridHeight}
                       cols={activeGarden.gridWidth}
                       onDelete={async (item: PlantedDocument) => {
-                        const db = await import("../db").then((m) =>
-                          m.getDatabase(),
+                        const catalogItem = catalog.find(
+                          (c) => c.id === item.catalogId,
                         );
-                        await db.planted.findOne(item.id).remove();
+                        const result = await recordLoss(
+                          item.id,
+                          catalogItem?.name || item.catalogId,
+                          "Removed from garden grid",
+                        );
                         if (user) {
                           markSyncing("Syncing plant removal...");
                           try {
-                            await deleteCloudPlantedPlant(user.id, item.id);
+                            const db = await getDatabase();
+                            const entry = await db.logbook
+                              .findOne(result.logbookId)
+                              .exec();
+                            await Promise.all([
+                              deleteCloudPlantedPlant(user.id, item.id),
+                              entry
+                                ? syncLogbookWithCloud(user.id, [
+                                    entry.toJSON(),
+                                  ])
+                                : Promise.resolve(),
+                            ]);
                             markSynced("Plant removal synced.");
                           } catch (error) {
                             handleCloudSyncError(
@@ -1438,7 +1454,9 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
                             );
                           }
                         }
-                        showInfo("Plant removed from garden");
+                        showInfo(
+                          `${catalogItem?.name || "Plant"} removed from garden`,
+                        );
                       }}
                       onOpenObservation={setObservationPlant}
                       onPlantAt={handleTapPlant}
