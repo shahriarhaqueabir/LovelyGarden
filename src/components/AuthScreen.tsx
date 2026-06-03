@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Leaf, LogIn, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Leaf, LogIn, ShieldCheck } from "lucide-react";
 import {
   signInWithPassword,
   signUpWithPassword,
@@ -9,7 +9,11 @@ import { WelcomeBackdrop } from "./WelcomeBackdrop";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export const AuthScreen: React.FC = () => {
+interface AuthScreenProps {
+  onBack?: () => void;
+}
+
+export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack }) => {
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +47,16 @@ export const AuthScreen: React.FC = () => {
     <WelcomeBackdrop contentClassName="flex min-h-dvh items-start justify-center px-4 pb-6 pt-[11vh] sm:pt-[14vh] lg:pt-[16vh]">
       <section className="w-full max-w-[21rem] rounded-lg border border-white/50 bg-white/55 p-4 text-stone-950 shadow-2xl shadow-black/30 backdrop-blur-md">
         <div className="mb-3 flex items-center gap-3">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-300/60 bg-white/60 text-stone-600 transition-colors hover:border-stone-400 hover:text-stone-800"
+              aria-label="Back to home"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          )}
           <div className="flex h-9 w-9 items-center justify-center rounded-full border border-garden-700/20 bg-garden-100/80 text-garden-800">
             <Leaf className="h-4 w-4" />
           </div>
