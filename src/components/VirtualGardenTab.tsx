@@ -1093,14 +1093,7 @@ export const VirtualGardenTab: React.FC<VirtualGardenTabProps> = ({
           </div>
 
           <div className="flex items-center justify-end gap-2 overflow-x-auto no-scrollbar sm:gap-4">
-            {/* 4. Global Alerts Marquee - Hidden below xl */}
-            <div className="max-w-[150px] overflow-hidden hidden 2xl:block border-r border-stone-800 pr-4 mr-2">
-              <div className="animate-marquee whitespace-nowrap text-[10px] text-stone-500 uppercase tracking-widest">
-                {alerts.join(" • ")}
-              </div>
-            </div>
-
-            {/* 6. Spectral Layer Toggle - Hidden below lg */}
+            {/* 5. Spectral Layer Toggle - Hidden below lg */}
             <div className="hidden xl:flex bg-stone-900/85 p-1 rounded-xl border border-stone-700/80 shadow-inner shrink-0 scale-90 origin-right">
               <button
                 onClick={() => setSpectralLayer("normal")}
