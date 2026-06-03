@@ -434,7 +434,7 @@ const AppContent: React.FC = () => {
     if (!showAuth) {
       return <LandingPage onGetStarted={() => setShowAuth(true)} />;
     }
-    return <AuthScreen />;
+    return <AuthScreen onBack={() => setShowAuth(false)} />;
   }
 
   if (onboardingComplete === null) {
