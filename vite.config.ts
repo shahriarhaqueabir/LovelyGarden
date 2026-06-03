@@ -101,7 +101,11 @@ export default defineConfig(({ mode }) => {
             if (
               id.includes("/react-dom/") ||
               id.includes("/react/") ||
-              id.includes("/scheduler/")
+              id.includes("/scheduler/") ||
+              id.includes("/xstate/") ||
+              id.includes("/zustand/") ||
+              id.includes("/rxjs/") ||
+              id.includes("@legendapp")
             ) {
               return "vendor-react";
             }
@@ -134,14 +138,6 @@ export default defineConfig(({ mode }) => {
               id.includes("/tailwind-merge/")
             )
               return "vendor-utils";
-
-            if (
-              id.includes("/xstate/") ||
-              id.includes("/zustand/") ||
-              id.includes("/rxjs/") ||
-              id.includes("@legendapp")
-            )
-              return "vendor-misc";
           },
         },
       },

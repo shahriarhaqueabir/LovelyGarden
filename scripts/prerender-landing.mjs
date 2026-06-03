@@ -52,13 +52,6 @@ async function prerender() {
       `<div id="root">${appHtml}</div>`,
     );
 
-    // Add a script tag that rehydrates the app (it skips the landing
-    // page in browser via the showAuth state flow)
-    html = html.replace(
-      "</body>",
-      "<script>window.__PRERENDERED__ = true;</script>\n</body>",
-    );
-
     writeFileSync(indexPath, html, "utf-8");
     console.log(
       `[prerender] Written ${html.length.toLocaleString()} bytes to index.html`,

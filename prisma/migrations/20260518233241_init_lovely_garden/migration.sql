@@ -1,3 +1,22 @@
+-- Create the auth schema and a mock uid() function if they do not exist for shadow database compatibility.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'auth') THEN
+    CREATE SCHEMA auth;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc p 
+    JOIN pg_namespace n ON p.pronamespace = n.oid 
+    WHERE n.nspname = 'auth' AND p.proname = 'uid'
+  ) THEN
+    CREATE FUNCTION auth.uid() RETURNS uuid AS 'SELECT null::uuid;' LANGUAGE sql STABLE;
+  END IF;
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    NULL;
+END $$;
+
 -- CreateTable
 CREATE TABLE "plant_catalog" (
     "id" TEXT NOT NULL,
