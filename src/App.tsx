@@ -71,6 +71,7 @@ import { listPlantCatalog } from "./services/referenceDataService";
 import { useAuth } from "./hooks/useAuth";
 import { signOut } from "./services/authService";
 import { AuthScreen } from "./components/AuthScreen";
+import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
@@ -79,6 +80,7 @@ import { showError, showSuccess } from "./lib/toast";
 import { useSyncStatus } from "./hooks/useSyncStatus";
 import { setSyncStatus } from "./services/syncStatusService";
 import { retryPendingAccountSync } from "./services/syncRetryService";
+import { notifyWeatherAlert } from "./services/notificationService";
 import {
   ensureCloudUserSettings,
   upsertCloudUserSettings,
@@ -103,6 +105,7 @@ const AppContent: React.FC = () => {
   );
   const [savingOnboarding, setSavingOnboarding] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [hemisphere, setHemisphere] = useState<"North" | "South">("North");
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === "undefined" ? true : navigator.onLine,
@@ -176,6 +179,14 @@ const AppContent: React.FC = () => {
 
     return () => window.clearInterval(interval);
   }, []);
+
+  // Fire browser notifications for weather alerts
+  React.useEffect(() => {
+    if (alerts.length > 0) {
+      const activeAlert = alerts.find((a) => !a.includes("Conditions Normal"));
+      notifyWeatherAlert(activeAlert || alerts[0]);
+    }
+  }, [alerts]);
 
   React.useEffect(() => {
     const updateOnlineState = () => setIsOnline(navigator.onLine);
@@ -453,13 +464,16 @@ const AppContent: React.FC = () => {
   return (
     <div className="app-shell flex h-dvh flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
       <header className="app-header z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <button
+          onClick={() => setActiveTabIndex(0)}
+          className="flex min-w-0 items-center gap-2 sm:gap-3"
+        >
           <div className="w-5 h-5 bg-garden-500 rounded-full animate-pulse" />
           <h1 className="truncate text-[11px] font-black uppercase tracking-tighter text-garden-500 sm:text-xs">
             <span className="sm:hidden">LovelyGarden</span>
             <span className="hidden sm:inline">LovelyGarden</span>
           </h1>
-        </div>
+        </button>
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-4 lg:gap-6">
           <div className="flex min-w-0 items-center gap-2">
             {user ? (
@@ -625,16 +639,11 @@ const AppContent: React.FC = () => {
       <React.Suspense
         fallback={
           <div className="flex-1 flex items-center justify-center p-20">
-            <div className="glass-panel p-8 rounded-3xl border border-stone-800 flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-garden-500/20 border-t-garden-500 rounded-full animate-spin" />
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-stone-500 animate-pulse">
-                Initializing Interface...
-              </p>
-            </div>
+            <LoadingSpinner size="lg" label="Initializing Interface" />
           </div>
         }
       >
-        <Tabs>
+        <Tabs selectedIndex={activeTabIndex} onTabChange={setActiveTabIndex}>
           <TabPanel id="virtual-garden">
             <ErrorBoundary>
               <VirtualGardenTab

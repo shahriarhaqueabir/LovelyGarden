@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Leaf, LogIn, ShieldCheck } from "lucide-react";
 import {
+  resetPasswordForEmail,
   signInWithPassword,
   signUpWithPassword,
 } from "../services/authService";
@@ -119,6 +120,30 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack }) => {
                 className="h-10 w-full rounded-lg border border-stone-300 bg-white/80 px-3 text-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-garden-600"
                 placeholder="Minimum 6 characters"
               />
+              {mode === "sign-in" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!email.trim()) {
+                      showError("Enter your email address first.");
+                      return;
+                    }
+                    setIsSubmitting(true);
+                    const { error } = await resetPasswordForEmail(email.trim());
+                    setIsSubmitting(false);
+                    if (error) {
+                      showError(error.message);
+                    } else {
+                      showSuccess(
+                        "Check your email for a password reset link.",
+                      );
+                    }
+                  }}
+                  className="mt-1.5 text-[11px] font-bold text-stone-500 transition-colors hover:text-garden-700"
+                >
+                  Forgot password?
+                </button>
+              )}
             </label>
           </div>
 

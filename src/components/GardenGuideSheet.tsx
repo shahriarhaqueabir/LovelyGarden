@@ -7,10 +7,10 @@ import {
   ChevronRight,
   Clock3,
   History,
-  Loader2,
   Sparkles,
   X,
 } from "lucide-react";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import type { PlantSpecies } from "../schema/knowledge-graph";
 import type { WeatherData } from "../services/weatherService";
 import { buildGardenCoachContext } from "../ai/buildGardenContext";
@@ -200,11 +200,12 @@ export const GardenGuideSheet: React.FC<GardenGuideSheetProps> = ({
 
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {isLoading ? (
-            <div className="flex min-h-72 flex-col items-center justify-center gap-3 text-stone-500">
-              <Loader2 className="h-6 w-6 animate-spin text-garden-400" />
-              <p className="text-xs font-black uppercase tracking-widest">
-                Reading garden signals
-              </p>
+            <div className="min-h-72">
+              <LoadingSpinner
+                size="sm"
+                label="Reading garden signals"
+                fullScreen
+              />
             </div>
           ) : error ? (
             <div className="rounded-xl border border-red-500/30 bg-red-950/30 p-4 text-sm text-red-200">

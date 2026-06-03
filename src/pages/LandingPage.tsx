@@ -56,14 +56,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       {/* Nav */}
       <nav className="sticky top-0 z-50 border-b border-stone-800 bg-stone-950/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="flex items-center gap-2"
+          >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-garden-500/20">
               <Leaf className="h-4 w-4 text-garden-400" />
             </div>
             <span className="text-sm font-black uppercase tracking-tight text-garden-400">
               Lovely Garden
             </span>
-          </div>
+          </button>
           <button
             onClick={onGetStarted}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg btn-primary px-4 text-[11px] font-black uppercase tracking-widest"

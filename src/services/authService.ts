@@ -67,6 +67,23 @@ export const signUpWithPassword = (email: string, password: string) => {
   });
 };
 
+export const resetPasswordForEmail = (email: string) => {
+  const client = getClient();
+  if (!client) {
+    return Promise.resolve({
+      data: null,
+      error: {
+        name: "AuthUnavailable",
+        message:
+          "Authentication is not configured. Set up Supabase to enable password reset.",
+      },
+    });
+  }
+  return client.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin,
+  });
+};
+
 export const signOut = () => {
   const client = getClient();
   if (!client) {
