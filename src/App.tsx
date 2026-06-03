@@ -3,13 +3,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Cloud,
   CloudOff,
-  CloudSun,
-  Droplets,
   LogOut,
-  MapPin,
   RefreshCw,
   Sparkles,
-  Thermometer,
   UserCircle,
 } from "lucide-react";
 import { hydrateDatabase, getDatabase, setDatabaseOwnerScope } from "./db";
@@ -75,6 +71,7 @@ import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
+import { GardenStatusBanner } from "./components/GardenStatusBanner";
 import { SeedStore } from "./components/SeedStore";
 import { showError, showSuccess } from "./lib/toast";
 import { useSyncStatus } from "./hooks/useSyncStatus";
@@ -462,7 +459,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="app-shell flex h-dvh flex-col overflow-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
+    <div className="app-shell flex min-h-dvh flex-col overflow-y-auto overflow-x-hidden bg-app-background font-sans text-text-primary selection:bg-garden-500/30">
       <header className="app-header z-30 flex min-h-14 items-center justify-between gap-3 border-b border-stone-800 px-3 py-2 glass sm:px-5 lg:h-16 lg:px-8">
         <button
           onClick={() => setActiveTabIndex(0)}
@@ -479,7 +476,7 @@ const AppContent: React.FC = () => {
             {user ? (
               <>
                 <div
-                  className={`inline-flex items-center gap-2 rounded-full border py-1.5 pl-2 pr-1.5 sm:pl-3 sm:pr-2 ${
+                  className={`inline-flex items-center justify-center rounded-full border p-1.5 ${
                     syncStatus.state === "error"
                       ? "border-red-500/30 bg-red-950/20 text-red-300"
                       : isOnline
@@ -500,21 +497,12 @@ const AppContent: React.FC = () => {
                   ) : (
                     <CloudOff className="h-4 w-4" />
                   )}
-                  <span className="hidden text-[11px] font-black uppercase tracking-wide sm:inline">
-                    {syncStatus.state === "error"
-                      ? "Needs Retry"
-                      : syncStatus.state === "syncing"
-                        ? "Syncing"
-                        : isOnline
-                          ? "Online"
-                          : "Saved Local"}
-                  </span>
                   {syncStatus.pendingLocalCount > 0 && (
                     <button
                       type="button"
                       onClick={handleRetrySync}
                       disabled={!isOnline || syncStatus.state === "syncing"}
-                      className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-current/20 bg-black/10 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="-mr-0.5 ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-current/20 bg-black/10 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                       title={
                         isOnline
                           ? "Retry saved local changes now"
@@ -523,7 +511,7 @@ const AppContent: React.FC = () => {
                       aria-label="Retry sync"
                     >
                       <RefreshCw
-                        className={`h-3.5 w-3.5 ${
+                        className={`h-2.5 w-2.5 ${
                           syncStatus.state === "syncing" ? "animate-spin" : ""
                         }`}
                       />
@@ -549,92 +537,18 @@ const AppContent: React.FC = () => {
               </>
             ) : null}
           </div>
-          <div className="hidden items-center gap-4 text-stone-500 lg:flex">
-            {weather ? (
-              <>
-                {locationName && (
-                  <div
-                    className="hidden sm:flex items-center gap-1.5 border-r border-stone-800 pr-4 mr-2"
-                    title="Location"
-                  >
-                    <MapPin className="h-3.5 w-3.5 text-red-300" />
-                    <span className="text-[13px] font-black uppercase tracking-tight text-stone-300">
-                      {locationName}
-                    </span>
-                  </div>
-                )}
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Weather condition"
-                >
-                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
-                  <span className="text-[13px] font-bold">
-                    {weather.current.weather_code < 3
-                      ? "Sunny"
-                      : weather.current.weather_code < 50
-                        ? "Cloudy"
-                        : "Rainy"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Moisture">
-                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
-                  <span className="text-[13px] font-bold">
-                    {weather.current.relative_humidity_2m}%
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Temp">
-                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
-                  <span className="text-[13px] font-bold">
-                    {weather.current.temperature_2m}°C
-                  </span>
-                </div>
-              </>
-            ) : loading ? (
-              <>
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Weather condition"
-                >
-                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
-                  <span className="text-[13px] font-bold">--</span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Moisture">
-                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
-                  <span className="text-[13px] font-bold">--%</span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Temp">
-                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
-                  <span className="text-[13px] font-bold">--°C</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Weather condition"
-                >
-                  <CloudSun className="h-3.5 w-3.5 text-amber-300" />
-                  <span className="text-[13px] font-bold text-red-400">
-                    Err
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Moisture">
-                  <Droplets className="h-3.5 w-3.5 text-blue-300" />
-                  <span className="text-[13px] font-bold text-red-400">
-                    Err
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5" title="Temp">
-                  <Thermometer className="h-3.5 w-3.5 text-pink-300" />
-                  <span className="text-[13px] font-bold text-red-400">
-                    Err
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
         </div>
       </header>
+
+      <GardenStatusBanner
+        weather={weather}
+        weatherLoading={loading}
+        alerts={alerts}
+        syncStatus={syncStatus}
+        isOnline={isOnline}
+        locationName={locationName}
+        onRetrySync={handleRetrySync}
+      />
 
       <React.Suspense
         fallback={
