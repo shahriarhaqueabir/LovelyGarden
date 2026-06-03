@@ -61,6 +61,12 @@ export async function signInAsTestUser(
   const appShell = page.locator(".app-shell");
   if (await appShell.isVisible().catch(() => false)) return;
 
+  // Handle Landing Page if it appears
+  const getStartedBtn = page.getByRole("button", { name: "Get Started Free" });
+  if (await getStartedBtn.isVisible().catch(() => false)) {
+    await getStartedBtn.click();
+  }
+
   await page.waitForSelector('[data-testid="auth-email"]', { timeout: 30_000 });
   await page.fill('[data-testid="auth-email"]', testEmail);
   await page.fill('[data-testid="auth-password"]', testPassword);
