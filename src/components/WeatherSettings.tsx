@@ -134,25 +134,6 @@ export const WeatherSettings: React.FC = () => {
     debouncedFilterCities(watchedCity);
   }, [watchedCity, debouncedFilterCities]);
 
-  const onSubmit = async () => {
-    // Use the location state which is always up to date
-    if (
-      locationState.cityName &&
-      locationState.cityName !== "Select" &&
-      locationState.latitude !== null &&
-      locationState.longitude !== null
-    ) {
-      // Use the coordinates from the selected city
-      setLocation(
-        locationState.latitude,
-        locationState.longitude,
-        locationState.cityName,
-      );
-      await fetchWeatherData(true);
-      toast.success(`Location set to ${locationState.cityName}`);
-    }
-  };
-
   // Handle city selection from dropdown
   const handleCitySelect = (city: (typeof POPULAR_CITIES)[0]) => {
     const cityName = `${city.name}, ${city.country}`;
@@ -228,13 +209,6 @@ export const WeatherSettings: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4 pt-2">
-          <button
-            onClick={onSubmit}
-            className="px-4 py-2 btn-primary rounded-lg text-white font-medium transition-colors"
-          >
-            Save Location
-          </button>
-
           {locationState.latitude !== null &&
             locationState.longitude !== null && (
               <div className="text-sm text-stone-400">
