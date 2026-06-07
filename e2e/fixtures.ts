@@ -62,9 +62,14 @@ export async function signInAsTestUser(
   if (await appShell.isVisible().catch(() => false)) return;
 
   // Handle Landing Page if it appears
-  const getStartedBtn = page.getByRole("button", { name: "Get Started Free" });
-  if (await getStartedBtn.isVisible().catch(() => false)) {
-    await getStartedBtn.click();
+  const landingBtn = page
+    .getByRole("button", { name: /Get Started|Sign In/i })
+    .first();
+  await landingBtn
+    .waitFor({ state: "visible", timeout: 10_000 })
+    .catch(() => {});
+  if (await landingBtn.isVisible().catch(() => false)) {
+    await landingBtn.click();
   }
 
   await page.waitForSelector('[data-testid="auth-email"]', { timeout: 30_000 });
