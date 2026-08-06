@@ -28,7 +28,9 @@ jobs:
 
       - name: Comment with AI summary
         run: |
-          gh issue comment $ISSUE_NUMBER --body "$RESPONSE"
+          # AI response is untrusted content: pipe it via stdin instead of
+          # shell interpolation so it can never execute commands.
+          printf '%s\n' "$RESPONSE" | gh issue comment "$ISSUE_NUMBER" --body-file -
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
